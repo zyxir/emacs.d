@@ -1,5 +1,5 @@
 #+TITLE: Zyxir's Emacs Configuration
-#+STARTUP: overview
+#+STARTUP: content
 
 * Emacs Configuration
 
@@ -95,7 +95,7 @@ location of Zybox should be set here.
       (load my/custom-file))
 #+end_src
 
-Construct absolute paths.
+Construct absolute paths and other file locations.
 
 #+begin_src emacs-lisp
   ;; Fix `my/zybox-path` if it is incorrect.
@@ -103,6 +103,8 @@ Construct absolute paths.
 
   (defvar my/org-path (concat my/zybox-path my/org-relapath)
     "The path of the org directory.")
+  (defvar my/org-carnet (concat my/org-path "carnet.org")
+    "The path of the Carnet.")
   (defvar my/projects-path (concat my/zybox-path my/projects-relapath)
     "The path of the projects directory.")
 #+end_src
@@ -218,6 +220,11 @@ I want to reach several important files quickly with shortcuts.
     (interactive)
     (find-file my/org-path))
   (define-key 'my/quick-access-map (kbd "o") 'my/quick-access-org-dir)
+
+  (defun my/quick-access-carnet ()
+    (interactive)
+    (find-file my/org-carnet))
+  (define-key 'my/quick-access-map (kbd "c") 'my/quick-access-carnet)
 #+end_src
 
 ** Extensions
