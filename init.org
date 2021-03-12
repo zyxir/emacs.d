@@ -54,7 +54,8 @@ Information about the user.
 
 *** File Locations
 
-The location of several important files and directories.
+The location of several important files and directories. Note that the
+location of Zybox is left empty here.
 
 #+begin_src emacs-lisp
   (defvar my/emacs-config-file (concat user-emacs-directory
@@ -62,10 +63,34 @@ The location of several important files and directories.
     "The main Emacs configuration file.")
   (defvar my/zybox-path ""
     "The path of Zybox, the base of all my files.")
-  (defvar my/org-relapath "org"
+  (defvar my/org-relapath "org/"
     "The path of the org directory relative to Zybox.")
-  (defvar my/projects-relapath "projects"
+  (defvar my/projects-relapath "projects/"
     "The path of the projects directory relative to Zybox.")
+#+end_src
+
+These locations varies across my devices, so Emacs should reads an
+external file named ~custom.el~, to get the accurate location. The
+location of Zybox should be set here.
+
+#+begin_src emacs-lisp
+  (defvar my/custom-file (concat user-emacs-directory
+				 "custom.el")
+    "Device-related custom settings.")
+  (if (file-exists-p my/custom-file)
+      (load my/custom-file))
+#+end_src
+
+Construct absolute paths.
+
+#+begin_src emacs-lisp
+  ;; Fix `my/zybox-path` if it is incorrect.
+  (setq my/zybox-path (file-name-as-directory my/zybox-path))
+
+  (defvar my/org-path (concat my/zybox-path my/org-relapath)
+    "The path of the org directory.")
+  (defvar my/projects-path (concat my/zybox-path my/projects-relapath)
+    "The path of the projects directory.")
 #+end_src
 
 ** Text Editor
