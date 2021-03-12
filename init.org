@@ -128,6 +128,14 @@ A better backup and auto save configuration.
 
 ** Workbench
 
+*** Startup
+
+Inhibit startup screen.
+
+#+begin_src emacs-lisp
+  (setq inhibit-startup-screen t)
+#+end_src
+
 *** Appearances
 
 Font and color theme.
