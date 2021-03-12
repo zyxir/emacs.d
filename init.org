@@ -174,9 +174,22 @@ If running with GUI, adjust the frame.
 
 ** Feature
 
-*** Quick Access to Important Files
+*** Quick Access
 
 I want to reach several important files quickly with shortcuts.
+
+#+begin_src emacs-lisp
+  (define-prefix-command 'my/quick-access-map)
+  (global-set-key (kbd "C-c o") 'my/quick-access-map)
+  (define-key 'my/quick-access-map
+    (kbd "e")
+    (lambda () (interactive)
+      (find-file my/emacs-config-file)))
+  (define-key 'my/quick-access-map
+    (kbd "o")
+    (lambda () (interactive)
+      (find-file my/org-path)))
+#+end_src
 
 *** Git
 
