@@ -1,0 +1,122 @@
+#+TITLE: Zyxir's Emacs Configuration
+#+STARTUP: overview
+
+* Emacs Configuration
+
+This is my personal Emacs configuration, made out of the concept of
+literate programming.
+
+As configuration of all aspects is inside this file, I divide them
+into several categories:
+
+- Preconfiguration :: Things that have to be done before anyt
+- Information :: Gathering information about the system, the user,
+  etc..
+- Text Editor :: Settings about text editing.
+- Workbench :: Visual UI settings.
+- Window :: Settings about windows and frames.
+- Feature :: Specific features like version control and project
+  management.
+- Extensions :: Settings for specific file name extensions, like
+  ~.py~.
+
+** Preconfiguration
+
+*** Package Manager
+
+Install ~straight.el~ to manage packages.
+
+#+begin_src emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+#+end_src
+
+** Information
+
+Personal information.
+
+#+begin_src emacs-lisp
+  (setq user-full-name "Eric Zhuo Chen"
+	user-mail-address "zyxirchen@outlook.com")
+#+end_src
+
+** Text Editor
+
+*** Files
+
+Always save cursor position.
+
+#+begin_src emacs-lisp
+  (save-place-mode 1)
+#+end_src
+
+A better backup and auto save configuration.
+
+#+begin_src emacs-lisp
+  (defvar my/backup-directory (concat user-emacs-directory
+				      "backups")
+    "The location of backups.")
+  (unless (file-exists-p my/backup-directory)
+    (make-directory my/backup-directory t))
+  (setq backup-directory-alist `(("." . ,my/backup-directory)))
+  (setq make-backup-files t
+	vc-make-backup-files t
+	backup-by-copying t
+	version-control t
+	delete-old-versions t
+	delete-by-moving-to-trash t
+	kept-old-versions 0
+	kept-new-versions 10
+	auto-save-default t
+	auto-save-timeout 20
+	auto-save-interval 200
+	)
+#+end_src
+
+** Workbench
+
+p*** Appearances
+
+Font and color theme.
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :font "Sarasa Mono CL")
+  (set-frame-font "Sarasa Mono CL")
+
+  (straight-use-package 'solaire-mode)
+  (solaire-global-mode +1)
+  (straight-use-package 'doom-themes)
+  (load-theme 'doom-one t)
+#+end_src
+
+Disable unnecessary UI elements.
+
+#+begin_src emacs-lisp
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+
+** Window
+
+** Feature
+
+*** Git
+
+Magit is a complete text-based user interface to Git.
+
+#+begin_src emacs-lisp
+  (straight-use-package 'magit)
+#+end_src
+
+** Extensions
