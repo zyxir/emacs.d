@@ -188,6 +188,14 @@ If running with GUI, adjust the frame.
 
 ** Feature
 
+*** Git
+
+Magit is a complete text-based user interface to Git.
+
+#+begin_src emacs-lisp
+  (straight-use-package 'magit)
+#+end_src
+
 *** Quick Access
 
 I want to reach several important files quickly with shortcuts.
@@ -203,14 +211,6 @@ I want to reach several important files quickly with shortcuts.
     (kbd "o")
     (lambda () (interactive)
       (find-file my/org-path)))
-#+end_src
-
-*** Git
-
-Magit is a complete text-based user interface to Git.
-
-#+begin_src emacs-lisp
-  (straight-use-package 'magit)
 #+end_src
 
 ** Extensions
