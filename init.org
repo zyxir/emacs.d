@@ -203,14 +203,21 @@ I want to reach several important files quickly with shortcuts.
 #+begin_src emacs-lisp
   (define-prefix-command 'my/quick-access-map)
   (global-set-key (kbd "C-c o") 'my/quick-access-map)
-  (define-key 'my/quick-access-map
-    (kbd "e")
-    (lambda () (interactive)
-      (find-file my/emacs-config-file)))
-  (define-key 'my/quick-access-map
-    (kbd "o")
-    (lambda () (interactive)
-      (find-file my/org-path)))
+
+  (defun my/quick-access-zybox ()
+    (interactive)
+    (find-file my/zybox-path))
+  (define-key 'my/quick-access-map (kbd "z") 'my/quick-access-zybox)
+
+  (defun my/quick-access-emacs-config ()
+    (interactive)
+    (find-file my/emacs-config-file))
+  (define-key 'my/quick-access-map (kbd "e") 'my/quick-access-emacs-config)
+
+  (defun my/quick-access-org-dir ()
+    (interactive)
+    (find-file my/org-path))
+  (define-key 'my/quick-access-map (kbd "o") 'my/quick-access-org-dir)
 #+end_src
 
 ** Extensions
