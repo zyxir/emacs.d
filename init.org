@@ -41,6 +41,20 @@ Install ~straight.el~ to manage packages.
     (load bootstrap-file nil 'nomessage))
 #+end_src
 
+*** Completion Framework
+
+Use the simple ivy, and extend some commands with counsel.
+
+#+begin_src emacs-lisp
+  (straight-use-package 'ivy)
+  (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+
+  (straight-use-package 'counsel)
+  (counsel-mode)
+#+end_src
+
 ** Information
 
 *** Personal Information
