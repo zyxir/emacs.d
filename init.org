@@ -256,6 +256,8 @@ I want to reach several important files quickly with shortcuts.
 Org-roam is a tool for network thought. I decided to try it on
 <2021-03-15 Mon>.
 
+**** Installation
+
 Above all, install it.
 
 #+begin_src emacs-lisp
@@ -277,6 +279,21 @@ Set the org-roam directory, and enable it by default.
   (unless (file-exists-p org-roam-directory)
     (make-directory org-roam-directory))
   (org-roam-mode)
+#+end_src
+
+**** Daily Notes
+
+Use org-roam to write daily notes, a.k.a. journals.
+
+#+begin_src emacs-lisp
+  (setq org-roam-dailies-directory "daily")
+
+  (setq org-roam-dailies-capture-templates
+	'(("d" "default" entry
+	   #'org-roam-capture--get-point
+	   "* %?"
+	   :file-name "daily/%<%Y-%m-%d>"
+	   :head "#+title: %<%Y-%m-%d>\n\n")))
 #+end_src
 
 ** Extensions
