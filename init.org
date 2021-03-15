@@ -28,9 +28,30 @@ Install ~use-package~ for ease of package management.
 
 #+begin_src emacs-lisp
   (require 'package)
-  (package-initialize)
+  (require 'cl-lib)
+
   (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
 			   ("melpa" . "https://melpa.org/packages/")))
+
+  (defun require-package (package &optional min-version no-refresh)
+    "Install given PACKAGE, optionally requiring MIN-VERSION.
+  If NO-REFRESH is non-nil, the available package lists will not be
+  re-downloaded in order to locate PACKAGE."
+    (or (package-installed-p package min-version)
+	(let* ((known (cdr (assoc package package-archive-contents)))
+	       (best (car (sort known (lambda (a b)
+					(version-list-<= (package-desc-version b)
+							 (package-desc-version a)))))))
+	  (if (and best (version-list-<= min-version (package-desc-version best)))
+	      (package-install best)
+	    (if no-refresh
+		(error "No version of %s >= %S is available" package min-version)
+	      (package-refresh-contents)
+	      (require-package package min-version t)))
+	  (package-installed-p package min-version))))
+
+  (setq package-enable-at-startup nil)
+  (package-initialize)
 #+end_src
 
 *** Encoding and Locale
@@ -46,12 +67,12 @@ Use ISO C date format everywhere.
 Use the simple ivy, and extend some commands with counsel.
 
 #+begin_src emacs-lisp
-  (package-install 'ivy)
+  (require-package 'ivy)
   (ivy-mode)
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
 
-  (package-install 'counsel)
+  (require-package 'counsel)
   (counsel-mode)
 #+end_src
 
@@ -162,9 +183,9 @@ Font and color theme.
     (set-fontset-font (frame-parameter nil 'font) charset
 		      (font-spec :family "Sarasa Mono CL")))
 
-  (package-install 'solaire-mode)
+  (require-package 'solaire-mode)
   (solaire-global-mode +1)
-  (package-install 'doom-themes)
+  (require-package 'doom-themes)
   (load-theme 'doom-one t)
 #+end_src
 
@@ -197,7 +218,7 @@ If running with GUI, adjust the frame.
 Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
-  (package-install 'magit)
+  (require-package 'magit)
 #+end_src
 
 *** Quick Access
@@ -237,8 +258,8 @@ Org-roam is a tool for network thought. I decided to try it on
 Above all, install it.
 
 #+begin_src emacs-lisp
-  (package-install 'org)
-  (package-install 'org-roam)
+  (require-package 'org)
+  (require-package 'org-roam)
 #+end_src
 
 Warn if ~sqlite3~ is not located on ~exec-path~.
