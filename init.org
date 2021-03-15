@@ -9,7 +9,7 @@ literate programming.
 As configuration of all aspects is inside this file, I divide them
 into several categories:
 
-- Preconfiguration :: Things that have to be done before anyt
+- General :: General software-wide configuration.
 - Information :: Gathering information about the system, the user,
   etc..
 - Text Editor :: Settings about text editing.
@@ -20,7 +20,7 @@ into several categories:
 - Extensions :: Settings for specific file name extensions, like
   ~.py~.
 
-** Preconfiguration
+** General
 
 *** Package Manager
 
