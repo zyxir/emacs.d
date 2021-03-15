@@ -31,7 +31,6 @@ Install ~use-package~ for ease of package management.
   (package-initialize)
   (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
 			   ("melpa" . "https://melpa.org/packages/")))
-  (package-refresh-contents)
 #+end_src
 
 *** Encoding and Locale
