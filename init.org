@@ -187,7 +187,7 @@ Font and color theme.
   (require-package 'solaire-mode)
   (solaire-global-mode +1)
   (require-package 'doom-themes)
-  (load-theme 'doom-one t)
+  (load-theme 'doom-one-light t)
 #+end_src
 
 Disable unnecessary UI elements.
