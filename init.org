@@ -24,21 +24,14 @@ into several categories:
 
 *** Package Manager
 
-Install use-package for ease of package management.
+Install ~use-package~ for ease of package management.
 
 #+begin_src emacs-lisp
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-	(bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-	  (url-retrieve-synchronously
-	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-	   'silent 'inhibit-cookies)
-	(goto-char (point-max))
-	(eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage))
+  (require 'package)
+  (package-initialize)
+  (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+			   ("melpa" . "https://melpa.org/packages/")))
+  (package-refresh-contents)
 #+end_src
 
 *** Encoding and Locale
@@ -54,12 +47,12 @@ Use ISO C date format everywhere.
 Use the simple ivy, and extend some commands with counsel.
 
 #+begin_src emacs-lisp
-  (straight-use-package 'ivy)
+  (package-install 'ivy)
   (ivy-mode)
   (setq ivy-use-virtual-buffers t)
   (setq enable-recursive-minibuffers t)
 
-  (straight-use-package 'counsel)
+  (package-install 'counsel)
   (counsel-mode)
 #+end_src
 
@@ -93,14 +86,13 @@ location of Zybox is left empty here.
 
 These locations varies across my devices, so Emacs should reads an
 external file named ~custom.el~, to get the accurate location. The
-location of Zybox should be set here.
+location of Zybox should be set there. Emacs itself will also mess up
+with the custom file.
 
 #+begin_src emacs-lisp
-  (defvar my/custom-file (concat user-emacs-directory
-				 "custom.el")
-    "Device-related custom settings.")
-  (if (file-exists-p my/custom-file)
-      (load my/custom-file))
+  (setq custom-file (concat user-emacs-directory "custom.el"))
+  (if (file-exists-p custom-file)
+      (load custom-file))
 #+end_src
 
 Construct absolute paths and other file locations.
@@ -171,9 +163,9 @@ Font and color theme.
     (set-fontset-font (frame-parameter nil 'font) charset
 		      (font-spec :family "Sarasa Mono CL")))
 
-  (straight-use-package 'solaire-mode)
+  (package-install 'solaire-mode)
   (solaire-global-mode +1)
-  (straight-use-package 'doom-themes)
+  (package-install 'doom-themes)
   (load-theme 'doom-one t)
 #+end_src
 
@@ -206,7 +198,7 @@ If running with GUI, adjust the frame.
 Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
-  (straight-use-package 'magit)
+  (package-install 'magit)
 #+end_src
 
 *** Quick Access
@@ -246,8 +238,8 @@ Org-roam is a tool for network thought. I decided to try it on
 Above all, install it.
 
 #+begin_src emacs-lisp
-  (straight-use-package 'org-plus-contrib)
-  (straight-use-package 'org-roam)
+  (package-install 'org)
+  (package-install 'org-roam)
 #+end_src
 
 Warn if ~sqlite3~ is not located on ~exec-path~.
