@@ -194,8 +194,8 @@ If running with GUI, adjust the frame.
 #+begin_src emacs-lisp
   (when (display-graphic-p)
     (setq initial-frame-alist
-	  '((width . 106)
-	    (height . 40)))
+	  '((width . 94)
+	    (height . 36)))
     (setq default-frame-alist initial-frame-alist))
 #+end_src
 
