@@ -24,7 +24,8 @@ into several categories:
 
 *** Package Manager
 
-Install ~use-package~ for ease of package management.
+Use Purcell's ~require-package~ function for package management. It's
+efficient and effective.
 
 #+begin_src emacs-lisp
   (require 'package)
