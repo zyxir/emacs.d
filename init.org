@@ -24,7 +24,7 @@ into several categories:
 
 *** Package Manager
 
-Install ~straight.el~ to manage packages.
+Install use-package for ease of package management.
 
 #+begin_src emacs-lisp
   (defvar bootstrap-version)
@@ -236,6 +236,34 @@ I want to reach several important files quickly with shortcuts.
     (interactive)
     (find-file my/org-carnet))
   (define-key 'my/quick-access-map (kbd "c") 'my/quick-access-carnet)
+#+end_src
+
+*** Org-Roam
+
+Org-roam is a tool for network thought. I decided to try it on
+<2021-03-15 Mon>.
+
+Above all, install it.
+
+#+begin_src emacs-lisp
+  (straight-use-package 'org-plus-contrib)
+  (straight-use-package 'org-roam)
+#+end_src
+
+Warn if ~sqlite3~ is not located on ~exec-path~.
+
+#+begin_src emacs-lisp
+  (unless (executable-find "sqlite3")
+    (message "To make org-roam work, you have to install sqlite3"))
+#+end_src
+
+Set the org-roam directory, and enable it by default.
+
+#+begin_src emacs-lisp
+  (setq org-roam-directory (concat my/zybox-path "org-roam"))
+  (unless (file-exists-p org-roam-directory)
+    (make-directory org-roam-directory))
+  (org-roam-mode)
 #+end_src
 
 ** Extensions
