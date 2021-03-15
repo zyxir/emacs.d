@@ -41,6 +41,14 @@ Install ~straight.el~ to manage packages.
     (load bootstrap-file nil 'nomessage))
 #+end_src
 
+*** Encoding and Locale
+
+Use ISO C date format everywhere.
+
+#+begin_src emacs-lisp
+  (setq system-time-locale "C")
+#+end_src
+
 *** Completion Framework
 
 Use the simple ivy, and extend some commands with counsel.
