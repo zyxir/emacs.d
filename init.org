@@ -296,6 +296,22 @@ Use org-roam to write daily notes, a.k.a. journals.
 	   :head "#+title: %<%Y-%m-%d>\n\n")))
 #+end_src
 
+**** Shortcuts
+
+Define a series of shortcuts for org-roam. Use prefix =C-z=, as its
+original function is useless and it's pretty handy.
+
+#+begin_src emacs-lisp
+  (define-prefix-command 'my/org-roam-map)
+  (global-set-key (kbd "C-z") 'my/org-roam-map)
+
+  (define-key 'my/org-roam-map (kbd "b") 'org-roam-db-build-cache)
+  (define-key 'my/org-roam-map (kbd "d") 'org-roam-dailies-find-today)
+  (define-key 'my/org-roam-map (kbd "f") 'org-roam-find-file)
+  (define-key 'my/org-roam-map (kbd "i") 'org-roam-insert)
+  (define-key 'my/org-roam-map (kbd "t") 'org-roam-buffer-toggle-display)
+#+end_src
+
 ** Extensions
 
 *** Org ~.org~
