@@ -298,12 +298,11 @@ Use org-roam to write daily notes, a.k.a. journals.
 
 **** Shortcuts
 
-Define a series of shortcuts for org-roam. Use prefix =C-z=, as its
-original function is useless and it's pretty handy.
+Define a series of shortcuts for org-roam. "z" for Zettelkasten.
 
 #+begin_src emacs-lisp
   (define-prefix-command 'my/org-roam-map)
-  (global-set-key (kbd "C-z") 'my/org-roam-map)
+  (global-set-key (kbd "C-c z") 'my/org-roam-map)
 
   (define-key 'my/org-roam-map (kbd "b") 'org-roam-db-build-cache)
   (define-key 'my/org-roam-map (kbd "d") 'org-roam-dailies-find-today)
