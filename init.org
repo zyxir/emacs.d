@@ -214,41 +214,25 @@ If running with GUI, adjust the frame.
 
 ** Feature
 
+*** Emojis
+
+Install emojify to display emojis.
+
+#+begin_src emacs-lisp
+  (require-package 'emojify)
+
+  (add-hook 'after-init-hook
+	    (lambda ()
+	      (setq emojify-emoji-styles '(github))
+	      (global-emojify-mode +1)))
+#+end_src
+
 *** Git
 
 Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
   (require-package 'magit)
-#+end_src
-
-*** Quick Access
-
-I want to reach several important files quickly with shortcuts.
-
-#+begin_src emacs-lisp
-  (define-prefix-command 'my/quick-access-map)
-  (global-set-key (kbd "C-c o") 'my/quick-access-map)
-
-  (defun my/quick-access-zybox ()
-    (interactive)
-    (find-file my/zybox-path))
-  (define-key 'my/quick-access-map (kbd "z") 'my/quick-access-zybox)
-
-  (defun my/quick-access-emacs-config ()
-    (interactive)
-    (find-file my/emacs-config-file))
-  (define-key 'my/quick-access-map (kbd "e") 'my/quick-access-emacs-config)
-
-  (defun my/quick-access-org-dir ()
-    (interactive)
-    (find-file my/org-path))
-  (define-key 'my/quick-access-map (kbd "o") 'my/quick-access-org-dir)
-
-  (defun my/quick-access-carnet ()
-    (interactive)
-    (find-file my/org-carnet))
-  (define-key 'my/quick-access-map (kbd "c") 'my/quick-access-carnet)
 #+end_src
 
 *** Org-Roam
@@ -309,6 +293,35 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
   (define-key 'my/org-roam-map (kbd "f") 'org-roam-find-file)
   (define-key 'my/org-roam-map (kbd "i") 'org-roam-insert)
   (define-key 'my/org-roam-map (kbd "t") 'org-roam-buffer-toggle-display)
+#+end_src
+
+*** Quick Access
+
+I want to reach several important files quickly with shortcuts.
+
+#+begin_src emacs-lisp
+  (define-prefix-command 'my/quick-access-map)
+  (global-set-key (kbd "C-c o") 'my/quick-access-map)
+
+  (defun my/quick-access-zybox ()
+    (interactive)
+    (find-file my/zybox-path))
+  (define-key 'my/quick-access-map (kbd "z") 'my/quick-access-zybox)
+
+  (defun my/quick-access-emacs-config ()
+    (interactive)
+    (find-file my/emacs-config-file))
+  (define-key 'my/quick-access-map (kbd "e") 'my/quick-access-emacs-config)
+
+  (defun my/quick-access-org-dir ()
+    (interactive)
+    (find-file my/org-path))
+  (define-key 'my/quick-access-map (kbd "o") 'my/quick-access-org-dir)
+
+  (defun my/quick-access-carnet ()
+    (interactive)
+    (find-file my/org-carnet))
+  (define-key 'my/quick-access-map (kbd "c") 'my/quick-access-carnet)
 #+end_src
 
 ** Extensions
