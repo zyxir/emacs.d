@@ -2,7 +2,7 @@
   "What depth of init.org headers to message at startup.")
 
 (with-temp-buffer
-  (insert-file (expand-file-name "init.org"
+  (insert-file (expand-file-name "README.org"
 				 user-emacs-directory))
   (goto-char (point-min))
   (search-forward "\n* Emacs Configuration")

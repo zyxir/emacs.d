@@ -116,7 +116,7 @@ location of Zybox is left empty here.
 
 #+begin_src emacs-lisp
   (defvar my/emacs-config-file (concat user-emacs-directory
-				       "init.org")
+				       "README.org")
     "The main Emacs configuration file.")
   (defvar my/zybox-path ""
     "The path of Zybox, the base of all my files.")
