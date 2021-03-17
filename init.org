@@ -22,6 +22,15 @@ into several categories:
 
 ** General
 
+*** Load Path
+
+Add load path for third-party elisp scripts.
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path
+	       (concat user-emacs-directory "site-lisp/"))
+#+end_src
+
 *** Package Manager
 
 Use Purcell's ~require-package~ function for package management. It's
