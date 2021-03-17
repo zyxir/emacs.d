@@ -216,6 +216,17 @@ be diminished.
   (diminish 'projectile-mode)
 #+end_src
 
+*** Minibuffer
+
+I want to use smex to enhance my =M-x=, while still having the ivy
+interface for a consistent UI. So I add Purcell's ivy-smex as a
+submodule.
+
+#+begin_src emacs-lisp
+  (require 'ivy-smex)
+  (global-set-key (kbd "M-x") 'ivy-smex)
+#+end_src
+
 ** Window
 
 *** Frame Behavior
