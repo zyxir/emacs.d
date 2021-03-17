@@ -227,6 +227,17 @@ submodule.
   (global-set-key (kbd "M-x") 'ivy-smex)
 #+end_src
 
+*** Which-key
+
+Which-key displays the key bindings following your currently entered
+incomplete command (a prefix) in a popup.
+
+#+begin_src emacs-lisp
+  (require-package 'which-key)
+  (which-key-setup-side-window-bottom)
+  (which-key-mode)
+#+end_src
+
 ** Window
 
 *** Frame Behavior
