@@ -350,6 +350,16 @@ I want to reach several important files quickly with shortcuts.
 
 *** Org ~.org~
 
+**** Attachments
+
+Put attachments in an obvious directory.
+
+#+begin_src emacs-lisp
+  (setq org-attach-id-dir "org-attachments/")
+#+end_src
+
+**** Editing Features
+
 Enable auto fill, and fill to the 80th character.
 
 #+begin_src emacs-lisp
@@ -357,4 +367,21 @@ Enable auto fill, and fill to the 80th character.
 	    (lambda ()
 	      (auto-fill-mode +1)))
   (setq-local fill-column 80)
+#+end_src
+
+**** Insert Image                                                    :ATTACH:
+     :PROPERTIES:
+     :ID:       7824551e-2309-40d6-ab72-0c91659aceaf
+     :END:
+
+Org-download facilitates moving images from filesystem, clipboard, or
+web pages, into an org-mode buffer.
+
+#+begin_src emacs-lisp
+  (require-package 'org-download)
+  (require 'org-download)
+  (add-hook 'dired-mode-hook 'org-download-enable)
+
+  ;; By default, add image as attachment.
+  (setq org-download-method 'attach)
 #+end_src
