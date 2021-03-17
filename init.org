@@ -342,7 +342,7 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
   (global-set-key (kbd "C-c z") 'my/org-roam-map)
 
   (define-key 'my/org-roam-map (kbd "b") 'org-roam-db-build-cache)
-  (define-key 'my/org-roam-map (kbd "d") 'org-roam-dailies-find-today)
+  (define-key 'my/org-roam-map (kbd "d") 'org-roam-dailies-find-date)
   (define-key 'my/org-roam-map (kbd "f") 'org-roam-find-file)
   (define-key 'my/org-roam-map (kbd "i") 'org-roam-insert)
   (define-key 'my/org-roam-map (kbd "t") 'org-roam-buffer-toggle-display)
