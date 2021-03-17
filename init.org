@@ -192,6 +192,21 @@ Disable unnecessary UI elements.
   (scroll-bar-mode -1)
 #+end_src
 
+*** Modeline
+
+**** Hide Minor Modes
+
+There are so many minor modes displayed on the mode line, which should
+be diminished.
+
+#+begin_src emacs-lisp
+  (require-package 'diminish)
+  (diminish 'counsel-mode)
+  (diminish 'ivy-mode)
+  (diminish 'org-roam-mode)
+  (diminish 'projectile-mode)
+#+end_src
+
 ** Window
 
 *** Frame Behavior
