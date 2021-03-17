@@ -1,3 +1,6 @@
 [submodule "use-package"]
 	path = use-package
 	url = https://github.com/jwiegley/use-package
+[submodule "site-lisp/ivy-smex"]
+	path = site-lisp/ivy-smex
+	url = https://github.com/purcell/ivy-smex
