@@ -378,6 +378,16 @@ Put attachments in an obvious directory.
   (setq org-attach-id-dir "org-attachments/")
 #+end_src
 
+**** Bullets
+
+Show org-mode bullets as UTF-8 characters.
+
+#+begin_src emacs-lisp
+  (require-package 'org-bullets)
+  (require 'org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+
 **** Editing Features
 
 Enable auto fill, and fill to the 80th character.
@@ -402,3 +412,4 @@ web pages, into an org-mode buffer.
   ;; By default, add image as attachment.
   (setq org-download-method 'attach)
 #+end_src
+
