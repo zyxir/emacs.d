@@ -210,10 +210,13 @@ be diminished.
 
 #+begin_src emacs-lisp
   (require-package 'diminish)
-  (diminish 'counsel-mode)
-  (diminish 'ivy-mode)
-  (diminish 'org-roam-mode)
-  (diminish 'projectile-mode)
+  (add-hook 'after-init-hook
+	    (lambda ()
+	      (diminish 'counsel-mode)
+	      (diminish 'ivy-mode)
+	      (diminish 'org-roam-mode)
+	      (diminish 'projectile-mode)
+	      (diminish 'which-key-mode)))
 #+end_src
 
 *** Minibuffer
@@ -261,10 +264,8 @@ Install emojify to display emojis.
 #+begin_src emacs-lisp
   (require-package 'emojify)
 
-  (add-hook 'after-init-hook
-	    (lambda ()
-	      (setq emojify-emoji-styles '(github))
-	      (global-emojify-mode +1)))
+  (setq emojify-emoji-styles '(github))
+  (global-emojify-mode +1)
 #+end_src
 
 *** Git
