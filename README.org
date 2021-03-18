@@ -437,3 +437,9 @@ web pages, into an org-mode buffer.
   (setq org-download-method 'attach)
 #+end_src
 
+*** MATLAB ~.m~
+
+#+begin_src emacs-lisp
+  (require-package 'matlab-mode)
+#+end_src
+
