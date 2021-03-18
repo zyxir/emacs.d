@@ -178,6 +178,14 @@ A better backup and auto save configuration.
 	)
 #+end_src
 
+*** Indentation
+
+Set default fill column to 80.
+
+#+begin_src emacs-lisp
+  (setq-default fill-column 80)
+#+end_src
+
 ** Workbench
 
 *** Startup
@@ -420,7 +428,6 @@ Enable auto fill, and fill to the 80th character.
   (add-hook 'org-mode-hook
 	    (lambda ()
 	      (auto-fill-mode +1)))
-  (setq-local fill-column 80)
 #+end_src
 
 **** Insert Image
@@ -441,5 +448,5 @@ web pages, into an org-mode buffer.
 
 #+begin_src emacs-lisp
   (require-package 'matlab-mode)
+  (add-hook 'matlab-mode-hook 'auto-fill-mode) 
 #+end_src
-
