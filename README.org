@@ -463,7 +463,18 @@ web pages, into an org-mode buffer.
 
 *** MATLAB ~.m~
 
+The old but useful MATLAB mode.
+
 #+begin_src emacs-lisp
   (require-package 'matlab-mode)
-  (add-hook 'matlab-mode-hook 'auto-fill-mode) 
+  (add-hook 'matlab-mode-hook 'auto-fill-mode)
+#+end_src
+
+However, my line number configuration doesn't work on matlab-mode, so it
+requires extra configuration.
+
+#+begin_src emacs-lisp
+  (add-hook 'matlab-mode-hook
+	    (lambda ()
+	      (display-line-numbers-mode 1)))
 #+end_src
