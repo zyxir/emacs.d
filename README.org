@@ -178,7 +178,13 @@ A better backup and auto save configuration.
 	)
 #+end_src
 
-*** Indentation
+*** Format
+
+Always show trailing whitespace.
+
+#+begin_src emacs-lisp
+  (setq-default show-trailing-whitespace t)
+#+end_src
 
 Set default fill column to 80.
 
