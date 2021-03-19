@@ -180,10 +180,11 @@ A better backup and auto save configuration.
 
 *** Format
 
-Always show trailing whitespace.
+Always show trailing whitespace, and delete them before save.
 
 #+begin_src emacs-lisp
   (setq-default show-trailing-whitespace t)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
 #+end_src
 
 Set default fill column to 80.
