@@ -216,6 +216,14 @@ Show side line numbers and column number while coding.
   (column-number-mode 1)
 #+end_src
 
+*** Parenthesis
+
+Indicate matching parenthesis.
+
+#+begin_src emacs-lisp
+  (show-paren-mode 1)
+#+end_src
+
 ** Workbench
 
 *** Startup
@@ -498,6 +506,6 @@ Functionalities to be added.
 
 ** DONE completion framework
 
-** TODO pairing indicator
+** DONE pairing indicator
 
 ** TODO general.el shortcut management
