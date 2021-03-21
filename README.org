@@ -150,7 +150,8 @@ Construct absolute paths and other file locations.
 *** Completion
 
 Install company completion framework. Manually complete with =C-M-i=, which is
-originally ~complete-at-point~.
+originally ~complete-at-point~. In some modes, like matlab-mode, this key would
+be overwritten.
 
 #+begin_src emacs-lisp
   (require-package 'company)
