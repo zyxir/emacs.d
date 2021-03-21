@@ -147,6 +147,17 @@ Construct absolute paths and other file locations.
 
 ** Text Editor
 
+*** Completion
+
+Install company completion framework. Manually complete with =C-M-i=, which is
+originally ~complete-at-point~.
+
+#+begin_src emacs-lisp
+  (require-package 'company)
+  (global-company-mode +1)
+  (global-set-key (kbd "C-M-i") 'company-complete)
+#+end_src
+
 *** Files
 
 Always save cursor position.
@@ -484,6 +495,8 @@ requires extra configuration.
 
 Functionalities to be added.
 
-** TODO completion system
+** DONE completion framework
 
 ** TODO pairing indicator
+
+** TODO general.el shortcut management
