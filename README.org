@@ -159,6 +159,15 @@ be overwritten.
   (global-set-key (kbd "C-M-i") 'company-complete)
 #+end_src
 
+*** Encoding
+
+Encoding is a pain, especially on Microsoft Windows. I don't care how Windows
+programs work, I just want everything in UTF-8.
+
+#+begin_src emacs-lisp
+  (set-language-environment "UTF-8")
+#+end_src
+
 *** Files
 
 Always save cursor position.
