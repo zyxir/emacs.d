@@ -279,6 +279,7 @@ be diminished.
   (require-package 'diminish)
   (add-hook 'after-init-hook
 	    (lambda ()
+	      (diminish 'company-mode)
 	      (diminish 'counsel-mode)
 	      (diminish 'ivy-mode)
 	      (diminish 'org-roam-mode)
