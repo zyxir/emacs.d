@@ -351,11 +351,12 @@ Org-roam is a tool for network thought. I decided to try it on
 
 **** Installation
 
-Above all, install it.
+Above all, install it, along with org-roam-server, which visualize notes.
 
 #+begin_src emacs-lisp
   (require-package 'org)
   (require-package 'org-roam)
+  (require-package 'org-roam-server)
 #+end_src
 
 Warn if ~sqlite3~ is not located on ~exec-path~.
@@ -402,6 +403,7 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
   (define-key 'my/org-roam-map (kbd "f") 'org-roam-find-file)
   (define-key 'my/org-roam-map (kbd "i") 'org-roam-insert)
   (define-key 'my/org-roam-map (kbd "t") 'org-roam-buffer-toggle-display)
+  (define-key 'my/org-roam-map (kbd "s") 'org-roam-server-mode)
 #+end_src
 
 *** Project Management
