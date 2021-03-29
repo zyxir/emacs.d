@@ -86,6 +86,14 @@ Use the simple ivy, and extend some commands with counsel.
   (counsel-mode)
 #+end_src
 
+*** Key Binding
+
+Use ~general.el~ for key bindings.
+
+#+begin_src emacs-lisp
+  (require-package 'general)
+#+end_src
+
 *** Bug Fix
 
 Hide this kind of warning:
@@ -156,7 +164,7 @@ be overwritten.
 #+begin_src emacs-lisp
   (require-package 'company)
   (global-company-mode +1)
-  (global-set-key (kbd "C-M-i") 'company-complete)
+  (general-define-key "C-M-i" 'company-complete)
 #+end_src
 
 *** Encoding
@@ -206,6 +214,7 @@ Always show trailing whitespace, and delete them before save.
 #+begin_src emacs-lisp
   (setq-default show-trailing-whitespace t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (general-define-key "C-c d" 'delete-trailing-whitespace)
 #+end_src
 
 Set default fill column to 80.
@@ -334,6 +343,7 @@ Install emojify to display emojis.
 
   (setq emojify-emoji-styles '(github))
   (global-emojify-mode +1)
+  (general-define-key "C-c e" 'emojify-insert-emoji)
 #+end_src
 
 *** Git
@@ -396,14 +406,17 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
 
 #+begin_src emacs-lisp
   (define-prefix-command 'my/org-roam-map)
-  (global-set-key (kbd "C-c z") 'my/org-roam-map)
+  (general-define-key
+   "C-c z" 'my/org-roam-map)
 
-  (define-key 'my/org-roam-map (kbd "b") 'org-roam-db-build-cache)
-  (define-key 'my/org-roam-map (kbd "d") 'org-roam-dailies-find-date)
-  (define-key 'my/org-roam-map (kbd "f") 'org-roam-find-file)
-  (define-key 'my/org-roam-map (kbd "i") 'org-roam-insert)
-  (define-key 'my/org-roam-map (kbd "t") 'org-roam-buffer-toggle-display)
-  (define-key 'my/org-roam-map (kbd "s") 'org-roam-server-mode)
+  (general-define-key
+   :keymaps 'my/org-roam-map
+   "b" 'org-roam-db-build-cache
+   "d" 'org-roam-dailies-find-date
+   "f" 'org-roam-find-file
+   "i" 'org-roam-insert
+   "t" 'org-roam-buffer-toggle-display
+   "s" 'org-roam-server-mode)
 #+end_src
 
 *** Project Management
@@ -430,22 +443,25 @@ I want to reach several important files quickly with shortcuts.
 
 #+begin_src emacs-lisp
   (define-prefix-command 'my/quick-access-map)
-  (global-set-key (kbd "C-c o") 'my/quick-access-map)
+  (general-define-key "C-c o" 'my/quick-access-map)
 
   (defun my/quick-access-zybox ()
     (interactive)
     (find-file my/zybox-path))
-  (define-key 'my/quick-access-map (kbd "z") 'my/quick-access-zybox)
 
   (defun my/quick-access-emacs-config ()
     (interactive)
     (find-file my/emacs-config-file))
-  (define-key 'my/quick-access-map (kbd "e") 'my/quick-access-emacs-config)
 
   (defun my/quick-access-projects ()
     (interactive)
     (find-file my/projects-path))
-  (define-key 'my/quick-access-map (kbd "p") 'my/quick-access-projects)
+
+  (general-define-key
+   :keymaps 'my/quick-access-map
+   "z" 'my/quick-access-zybox
+   "e" 'my/quick-access-emacs-config
+   "p" 'my/quick-access-projects)
 #+end_src
 
 ** Extensions
@@ -485,7 +501,7 @@ Disable =C-c C-i=, which I always mispress.
 #+begin_src emacs-lisp
   (eval-after-load 'org
     (progn
-      (define-key org-mode-map (kbd "C-c C-i") nil)))
+      (general-define-key :keymaps 'org-mode-map "C-c C-i" nil)))
 #+end_src
 
 **** Insert Image
@@ -528,4 +544,4 @@ Functionalities to be added.
 
 ** DONE pairing indicator
 
-** TODO general.el shortcut management
+** DONE general.el shortcut management
