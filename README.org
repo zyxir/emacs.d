@@ -483,6 +483,24 @@ I want to reach several important files quickly with shortcuts.
 
 ** Extensions
 
+*** MATLAB ~.m~
+
+The old but useful MATLAB mode.
+
+#+begin_src emacs-lisp
+  (require-package 'matlab-mode)
+  (add-hook 'matlab-mode-hook 'auto-fill-mode)
+#+end_src
+
+However, my line number configuration doesn't work on matlab-mode, so it
+requires extra configuration.
+
+#+begin_src emacs-lisp
+  (add-hook 'matlab-mode-hook
+	    (lambda ()
+	      (display-line-numbers-mode 1)))
+#+end_src
+
 *** Org ~.org~
 
 **** Attachments
@@ -535,22 +553,12 @@ web pages, into an org-mode buffer.
   (setq org-download-method 'attach)
 #+end_src
 
-*** MATLAB ~.m~
+*** Python ~.py~
 
-The old but useful MATLAB mode.
-
-#+begin_src emacs-lisp
-  (require-package 'matlab-mode)
-  (add-hook 'matlab-mode-hook 'auto-fill-mode)
-#+end_src
-
-However, my line number configuration doesn't work on matlab-mode, so it
-requires extra configuration.
+Install Elpy, the Emacs Python IDE.
 
 #+begin_src emacs-lisp
-  (add-hook 'matlab-mode-hook
-	    (lambda ()
-	      (display-line-numbers-mode 1)))
+  (require-package 'elpy)
 #+end_src
 
 * Todos
@@ -564,3 +572,5 @@ Functionalities to be added.
 ** DONE general.el shortcut management
 
 ** DONE command to delete buffer and file
+
+** TODO Python development environment
