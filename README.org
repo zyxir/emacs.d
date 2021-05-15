@@ -406,6 +406,9 @@ Set the org-roam directory, and enable it by default.
 
 Use org-roam to write daily notes, a.k.a. journals.
 
+Two templates are in use: "default" for normal notes, and "weekly" for weekly
+reports at work.
+
 #+begin_src emacs-lisp
   (setq org-roam-dailies-directory "daily")
 
@@ -414,7 +417,12 @@ Use org-roam to write daily notes, a.k.a. journals.
 	   #'org-roam-capture--get-point
 	   "* %?"
 	   :file-name "daily/%<%Y-%m-%d>"
-	   :head "#+title: %<%Y-%m-%d>\n\n")))
+	   :head "#+title: %<%Y-%m-%d>\n\n")
+	  ("w" "weekly reports" entry
+	   #'org-roam-capture--get-point
+	   "* %?"
+	   :file-name "daily/%<%Y-W%U>"
+	   :head "#+title: %<%Y-W%U> Weekly Report\n")))
 #+end_src
 
 **** Shortcuts
@@ -429,7 +437,7 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
   (general-define-key
    :keymaps 'my/org-roam-map
    "b" 'org-roam-db-build-cache
-   "d" 'org-roam-dailies-find-date
+   "d" 'org-roam-dailies-capture-today
    "f" 'org-roam-find-file
    "i" 'org-roam-insert
    "t" 'org-roam-buffer-toggle-display
