@@ -420,9 +420,9 @@ reports at work.
 	   :head "#+title: %<%Y-%m-%d>\n\n")
 	  ("w" "weekly reports" entry
 	   #'org-roam-capture--get-point
-	   "* %?"
-	   :file-name "daily/%<%Y-W%U>"
-	   :head "#+title: %<%Y-W%U> Weekly Report\n")))
+	   "* Weekly Report %<%Y-W%U>\n:PROPERTIES:\n:EXPORT_AUTHOR: 陈卓\n:END:\n\n** 完成的工作\n\n%?\n\n** 下一步的工作"
+	   :file-name "daily/%<%Y-%m-%d>"
+	   :head "#+title: %<%Y-%m-%d>\n\n")))
 #+end_src
 
 **** Shortcuts
