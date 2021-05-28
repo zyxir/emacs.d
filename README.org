@@ -20,6 +20,11 @@ into several categories:
 - Extensions :: Settings for specific file name extensions, like
   ~.py~.
 
+**Installation Steps:**
+
+1. Init and update all submodules.
+2. Make sure ~sqlite3~ is installed in path.
+
 ** General
 
 *** Load Path
