@@ -320,6 +320,7 @@ interface for a consistent UI. So I add Purcell's ivy-smex as a
 submodule.
 
 #+begin_src emacs-lisp
+  (require-package 'smex)
   (require 'ivy-smex)
   (global-set-key (kbd "M-x") 'ivy-smex)
 #+end_src
