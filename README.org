@@ -279,16 +279,17 @@ Inhibit startup screen.
 Font and color theme.
 
 #+begin_src emacs-lisp
-  (set-face-attribute 'default nil :font "Sarasa Mono CL 11")
-  (set-frame-font "Sarasa Mono CL 11")
-  (dolist (charset '(kana han symbol cjk-misc bopomofo))
-    (set-fontset-font (frame-parameter nil 'font) charset
-		      (font-spec :family "Sarasa Mono CL")))
+  (when (display-graphic-p)
+    (set-face-attribute 'default nil :font "Sarasa Mono CL 11")
+    (set-frame-font "Sarasa Mono CL 11")
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font) charset
+			(font-spec :family "Sarasa Mono CL")))
 
-  (require-package 'solaire-mode)
-  (solaire-global-mode +1)
-  (require-package 'doom-themes)
-  (load-theme 'doom-one-light t)
+    (require-package 'solaire-mode)
+    (solaire-global-mode +1)
+    (require-package 'doom-themes)
+    (load-theme 'doom-one-light t))
 #+end_src
 
 Disable unnecessary UI elements.
