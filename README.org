@@ -1,13 +1,34 @@
 #+TITLE: Zyxir's Emacs Configuration
 #+STARTUP: content
 
+* Introduction
+
+這是我的 Emacs 配置。我主要使用 Emacs 來進行個人知識管理、待辦事項管理、簡單文檔
+撰寫、輕度代碼編輯（我想逐步把 Emacs 打造成我的主力編輯器，但目前還是主要使用
+Visual Studio Code）。
+
+高手的配置通常是以代碼項目的形式管理的（例如 Purcell 的配置，Doom Emacs，Centuar
+Emacs 等等）。但對我個人而言，我更喜歡方便編輯與查看的 literate programming 形式。
+我的配置的每一行代碼，都是以 source block 的形式存放在這個 org 文件中的，而標準
+配置文件 ~init.el~ 的作用，就是讀取與執行本 org 文件中的每塊 source block。使用
+這種配置方法的人也有很多，而其中最知名的應該就是 Sacha Chua 了。
+
+明明有 Evernote、Notion 等用戶體驗良好的商用工具，爲什么還要將 Emacs 用於個人知
+識管理、文檔撰寫等用途？事實上，我本人非常喜歡 Notion，並且曾經用了它很長時間；
+那麼使用 Emacs 而不用 Notion 的原因，我想可以用 Carsten Dominik 於 2008 年在
+Google Tech Talks 上講的一段話來概括：
+
+#+begin_quote
+“Text files are the only truly portable format for files, so we can write things
+down and read it anywhere, read it on a small device, read it on a big device,
+on any computer, Linux, Windows, on a Macintosh, whatever. You can read it truly
+anywhere, that data will never get lost. So, 20 years from now, you will still
+be able to read these files, which you wrote.”。
+#+end_quote
+
 * Emacs Configuration
 
-This is my personal Emacs configuration, made out of the concept of
-literate programming.
-
-As configuration of all aspects is inside this file, I divide them
-into several categories:
+The configuration is divided into these categories:
 
 - General :: General software-wide configuration.
 - Information :: Gathering information about the system, the user,
