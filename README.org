@@ -564,8 +564,8 @@ web pages, into an org-mode buffer.
   (require 'org-download)
   (add-hook 'dired-mode-hook 'org-download-enable)
 
-  ;; By default, add image as attachment.
-  (setq org-download-method 'attach)
+  ;; By default, download images to a dedicated folder.
+  (setq org-download-image-dir "images")
 #+end_src
 
 *** Python ~.py~
