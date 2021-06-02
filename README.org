@@ -399,6 +399,41 @@ Magit is a complete text-based user interface to Git.
   (require-package 'magit)
 #+end_src
 
+*** Org-Journal
+
+Org-journal is a tool to keep journals. I decided to try it on <2021-06-02 Wed>.
+
+#+begin_src emacs-lisp
+  (require-package 'org-journal)
+#+end_src
+
+Set the journal directory as ~Zybox/org-journal~.
+
+#+begin_src emacs-lisp
+  (setq org-journal-dir (concat my/zybox-path "org-journal"))
+  (unless (file-exists-p org-journal-dir)
+    (make-directory org-journal-dir))
+#+end_src
+
+Set shortcuts and templates.
+
+#+begin_src emacs-lisp
+  (general-define-key "C-c j" 'org-journal-new-entry)
+  (setq org-journal-file-format "%F"
+	org-journal-date-format "%F %a W%V\n"
+	org-journal-date-prefix "#+TITLE: "
+	org-journal-time-format "%R "
+	org-journal-time-format-post-midnight "%R Midnight "
+	org-journal-time-prefix "\n* "
+	org-journal-file-header "")
+#+end_src
+
+If it is early than 3 a.m., it is still yesterday.
+
+#+begin_src emacs-lisp
+  (setq org-extend-today-until 3)
+#+end_src
+
 *** Org-Roam
 
 Org-roam is a tool for network thought. I decided to try it on
