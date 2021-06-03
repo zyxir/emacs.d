@@ -621,13 +621,7 @@ Disable =C-c C-i=, which I always mispress.
       (general-define-key :keymaps 'org-mode-map "C-c C-i" nil)))
 #+end_src
 
-**** Images
-
-By default, set image width to 400 px.
-
-#+begin_src emacs-lisp
-  (setq org-image-actual-width 400)
-#+end_src
+**** Insert Image
 
 Org-download facilitates moving images from filesystem, clipboard, or
 web pages, into an org-mode buffer.
