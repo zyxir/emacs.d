@@ -592,6 +592,17 @@ Show org-mode bullets as UTF-8 characters.
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
 
+Render bullets ("•" and "◦") instead of dashes in bulleted lists.
+
+#+begin_src emacs-lisp
+  (font-lock-add-keywords 'org-mode
+			  '(("^ *\\([-]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (font-lock-add-keywords 'org-mode
+			  '(("^ *\\([+]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+#+end_src
+
 **** Editing Features
 
 Enable auto fill, and fill to the 80th character.
