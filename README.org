@@ -656,3 +656,5 @@ Functionalities to be added.
 ** DONE command to delete buffer and file
 
 ** TODO Python development environment
+
+** TODO org-reveal and org-ref
