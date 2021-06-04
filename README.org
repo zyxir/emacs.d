@@ -252,11 +252,15 @@ Function to delete the current buffer and file at the same time. This is from
 
 *** Format
 
-Always show trailing whitespace, and delete them before save.
+Always show trailing whitespace, with a few exceptionals, and delete them before
+save.
 
 #+begin_src emacs-lisp
   (setq-default show-trailing-whitespace t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (add-hook 'calendar-mode-hook
+	    (lambda ()
+	      (setq-local show-trailing-whitespace nil)))
   (general-define-key "C-c d" 'delete-trailing-whitespace)
 #+end_src
 
