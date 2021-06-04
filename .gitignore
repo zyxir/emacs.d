@@ -5,6 +5,7 @@ bookmarks
 custom.el
 elpa
 emojis
+eshell
 org-roam.db
 places
 projectile*
