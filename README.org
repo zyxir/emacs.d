@@ -381,6 +381,112 @@ If running with GUI, adjust the frame.
     (setq default-frame-alist initial-frame-alist))
 #+end_src
 
+** Extensions
+
+*** MATLAB ~.m~
+
+The old but useful MATLAB mode.
+
+#+begin_src emacs-lisp
+  (require-package 'matlab-mode)
+  (add-hook 'matlab-mode-hook 'auto-fill-mode)
+#+end_src
+
+However, my line number configuration doesn't work on matlab-mode, so it
+requires extra configuration.
+
+#+begin_src emacs-lisp
+  (add-hook 'matlab-mode-hook
+	    (lambda ()
+	      (display-line-numbers-mode 1)))
+#+end_src
+
+*** Org ~.org~
+
+**** Markup
+
+Allow Chinese around markups. This comes from [[https://emacs-china.org/t/org-mode/597/4][Emacs China : Org-mode 中文行内格
+式化的问题]], may not be stable.
+
+#+begin_src emacs-lisp
+  (setq org-emphasis-regexp-components
+	;; markup 记号前后允许中文
+	(list (concat " \t('\"{"            "[:nonascii:]")
+	      (concat "- \t.,:!?;'\")}\\["  "[:nonascii:]")
+	      " \t\r\n,\"'"
+	      "."
+	      1))
+#+end_src
+
+**** Attachments
+
+Put attachments in an obvious directory.
+
+#+begin_src emacs-lisp
+  (setq org-attach-id-dir "org-attachments/")
+#+end_src
+
+**** Bullets
+
+Show org-mode bullets as UTF-8 characters.
+
+#+begin_src emacs-lisp
+  (require-package 'org-bullets)
+  (require 'org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+
+Render bullets ("•" and "◦") instead of dashes in bulleted lists.
+
+#+begin_src emacs-lisp
+  (font-lock-add-keywords 'org-mode
+			  '(("^ *\\([-]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+  (font-lock-add-keywords 'org-mode
+			  '(("^ *\\([+]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+#+end_src
+
+**** Editing Features
+
+Enable auto fill, and fill to the 80th character.
+
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook
+	    (lambda ()
+	      (auto-fill-mode +1)))
+#+end_src
+
+Disable =C-c C-i=, which I always mispress.
+
+#+begin_src emacs-lisp
+  (eval-after-load 'org
+    (progn
+      (general-define-key :keymaps 'org-mode-map "C-c C-i" nil)))
+#+end_src
+
+**** Insert Image
+
+Org-download facilitates moving images from filesystem, clipboard, or
+web pages, into an org-mode buffer.
+
+#+begin_src emacs-lisp
+  (require-package 'org-download)
+  (require 'org-download)
+  (add-hook 'dired-mode-hook 'org-download-enable)
+
+  ;; By default, download images to a dedicated folder.
+  (setq org-download-image-dir "images")
+#+end_src
+
+*** Python ~.py~
+
+Install Elpy, the Emacs Python IDE.
+
+#+begin_src emacs-lisp
+  (require-package 'elpy)
+#+end_src
+
 ** Feature
 
 *** Emojis
@@ -531,97 +637,6 @@ I want to reach several important files quickly with shortcuts.
    "z" 'my/quick-access-zybox
    "e" 'my/quick-access-emacs-config
    "p" 'my/quick-access-projects)
-#+end_src
-
-** Extensions
-
-*** MATLAB ~.m~
-
-The old but useful MATLAB mode.
-
-#+begin_src emacs-lisp
-  (require-package 'matlab-mode)
-  (add-hook 'matlab-mode-hook 'auto-fill-mode)
-#+end_src
-
-However, my line number configuration doesn't work on matlab-mode, so it
-requires extra configuration.
-
-#+begin_src emacs-lisp
-  (add-hook 'matlab-mode-hook
-	    (lambda ()
-	      (display-line-numbers-mode 1)))
-#+end_src
-
-*** Org ~.org~
-
-**** Attachments
-
-Put attachments in an obvious directory.
-
-#+begin_src emacs-lisp
-  (setq org-attach-id-dir "org-attachments/")
-#+end_src
-
-**** Bullets
-
-Show org-mode bullets as UTF-8 characters.
-
-#+begin_src emacs-lisp
-  (require-package 'org-bullets)
-  (require 'org-bullets)
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-#+end_src
-
-Render bullets ("•" and "◦") instead of dashes in bulleted lists.
-
-#+begin_src emacs-lisp
-  (font-lock-add-keywords 'org-mode
-			  '(("^ *\\([-]\\) "
-			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (font-lock-add-keywords 'org-mode
-			  '(("^ *\\([+]\\) "
-			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
-#+end_src
-
-**** Editing Features
-
-Enable auto fill, and fill to the 80th character.
-
-#+begin_src emacs-lisp
-  (add-hook 'org-mode-hook
-	    (lambda ()
-	      (auto-fill-mode +1)))
-#+end_src
-
-Disable =C-c C-i=, which I always mispress.
-
-#+begin_src emacs-lisp
-  (eval-after-load 'org
-    (progn
-      (general-define-key :keymaps 'org-mode-map "C-c C-i" nil)))
-#+end_src
-
-**** Insert Image
-
-Org-download facilitates moving images from filesystem, clipboard, or
-web pages, into an org-mode buffer.
-
-#+begin_src emacs-lisp
-  (require-package 'org-download)
-  (require 'org-download)
-  (add-hook 'dired-mode-hook 'org-download-enable)
-
-  ;; By default, download images to a dedicated folder.
-  (setq org-download-image-dir "images")
-#+end_src
-
-*** Python ~.py~
-
-Install Elpy, the Emacs Python IDE.
-
-#+begin_src emacs-lisp
-  (require-package 'elpy)
 #+end_src
 
 * Todos
