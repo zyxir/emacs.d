@@ -204,11 +204,15 @@ programs work, I just want everything in UTF-8.
 
 *** Files
 
+**** Cursor Position
+
 Always save cursor position.
 
 #+begin_src emacs-lisp
   (save-place-mode 1)
 #+end_src
+
+**** Backup
 
 A better backup and auto save configuration.
 
@@ -233,6 +237,8 @@ A better backup and auto save configuration.
 	)
 #+end_src
 
+**** File Manipulation
+
 Function to delete the current buffer and file at the same time. This is from
 [[https://emacsredux.com/blog/2013/04/03/delete-file-and-buffer/][Delete File and Buffer | Emacs Redux]].
 
@@ -248,6 +254,17 @@ Function to delete the current buffer and file at the same time. This is from
 	    (delete-file filename)
 	    (message "Delete file %s" filename)
 	    (kill-buffer))))))
+#+end_src
+
+**** Recent Files
+
+Make use of =recentf.el=.
+
+#+begin_src emacs-lisp
+  (require 'recentf)
+  (setq recentf-max-saved-items 200
+	recentf-max-menu-items 15)
+  (recentf-mode)
 #+end_src
 
 *** Format
@@ -592,6 +609,15 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
    "i" 'org-roam-insert
    "t" 'org-roam-buffer-toggle-display
    "s" 'org-roam-server-mode)
+#+end_src
+
+**** Interaction with =recentf=
+
+Do not show org-roam files in recentf list.
+
+#+begin_src emacs-lisp
+  (add-to-list 'recentf-exclude
+	       (concat org-roam-directory "/.*"))
 #+end_src
 
 *** Project Management
