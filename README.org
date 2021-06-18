@@ -312,6 +312,15 @@ Indicate matching parenthesis.
   (show-paren-mode 1)
 #+end_src
 
+*** Search
+
+Replace isearch with swiper.
+
+#+begin_src emacs-lisp
+  (require-package 'swiper)
+  (general-define-key "C-s" 'swiper)
+#+end_src
+
 ** Workbench
 
 *** Startup
