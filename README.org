@@ -269,16 +269,22 @@ Make use of =recentf.el=.
 
 *** Format
 
-Always show trailing whitespace, with a few exceptionals, and delete them before
-save.
+Always show trailing whitespace.
 
 #+begin_src emacs-lisp
   (setq-default show-trailing-whitespace t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
-  (add-hook 'calendar-mode-hook
-	    (lambda ()
-	      (setq-local show-trailing-whitespace nil)))
   (general-define-key "C-c d" 'delete-trailing-whitespace)
+#+end_src
+
+Do not show trailing whitespace in some modes.
+
+#+begin_src emacs-lisp
+  (defun my/turn-off-trailing-whitespace ()
+    (setq-local show-trailing-whitespace nil))
+
+  (add-hook 'calendar-mode-hook #'my/turn-off-trailing-whitespace)
+  (add-hook 'help-mode-hook #'my/turn-off-trailing-whitespace)
 #+end_src
 
 Set default fill column to 80.
