@@ -327,6 +327,12 @@ Replace isearch with swiper.
   (general-define-key "C-s" 'swiper)
 #+end_src
 
+Enable character folding (having =bar= matching =bár=) for swiper.
+
+#+begin_src emacs-lisp
+  (setq search-default-mode #'char-fold-to-regexp)
+#+end_src
+
 ** Workbench
 
 *** Startup
