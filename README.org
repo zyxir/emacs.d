@@ -152,6 +152,8 @@ location of Zybox is left empty here.
   (defvar my/emacs-config-file (concat user-emacs-directory
 				       "README.org")
     "The main Emacs configuration file.")
+  (defvar my/3rd-party-relapath "3rd-party/"
+    "The path of 3rd-party tools relative to the user Emacs directory.")
   (defvar my/zybox-path ""
     "The path of Zybox, the base of all my files.")
   (defvar my/projects-relapath "projects/"
@@ -175,6 +177,8 @@ Construct absolute paths and other file locations.
   ;; Fix `my/zybox-path` if it is incorrect.
   (setq my/zybox-path (file-name-as-directory my/zybox-path))
 
+  (defvar my/3rd-party-path (concat user-emacs-directory my/3rd-party-relapath)
+    "The path of 3rd-party tools.")
   (defvar my/projects-path (concat my/zybox-path my/projects-relapath)
     "The path of the projects directory.")
 #+end_src
@@ -521,6 +525,21 @@ web pages, into an org-mode buffer.
 
   ;; By default, download images to a dedicated folder.
   (setq org-download-image-dir "images")
+#+end_src
+
+*** PlantUML
+
+Install =plantuml-mode=.
+
+#+begin_src emacs-lisp
+  (require-package 'plantuml-mode)
+#+end_src
+
+Use executable inside Emacs config directory.
+
+#+begin_src emacs-lisp
+  (setq plantuml-jar-path (concat my/3rd-party-path "plantuml/plantuml.jar")
+	plantuml-default-exec-mode 'jar)
 #+end_src
 
 *** Python ~.py~
