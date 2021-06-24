@@ -284,7 +284,7 @@ Always show trailing whitespace.
 #+begin_src emacs-lisp
   (setq-default show-trailing-whitespace t)
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
-  (general-define-key "C-c d" 'delete-trailing-whitespace)
+  (general-define-key "C-c SPC" 'delete-trailing-whitespace)
 #+end_src
 
 Do not show trailing whitespace in some modes.
