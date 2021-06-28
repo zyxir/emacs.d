@@ -45,6 +45,7 @@ The configuration is divided into these categories:
 
 1. Init and update all submodules.
 2. Make sure ~sqlite3~ is installed in path.
+3. Optionally, install ~opencc~ for Chinese conversion support.
 
 ** General
 
@@ -558,6 +559,28 @@ Install Elpy, the Emacs Python IDE.
 #+end_src
 
 ** Feature
+
+*** Chinese Conversion
+
+Conversion between simplified/traditional Chinese with =opencc.el=. 使用
+=opencc.el=進行中文簡繁轉換。
+
+#+begin_src emacs-lisp
+  (require-package 'opencc)
+  (general-define-key "C-c c" 'opencc-replace-at-point)
+#+end_src
+
+=opencc.el= is based on OpenCC:
+
+#+begin_quote
+Open Chinese Convert (OpenCC, 開放中文轉換) is an opensource project for
+conversions between Traditional Chinese, Simplified Chinese and Japanese Kanji
+(Shinjitai). It supports character-level and phrase-level conversion, character
+variant conversion and regional idioms among Mainland China, Taiwan and Hong
+Kong. This is not translation tool between Mandarin and Cantonese, etc.
+#+end_quote
+
+在 Windows 下，需要一些特殊的措施來使 OpenCC 得以正常運行。詳見[[file:documents/opencc-windows-conf.org][在 Windows 下使用 opencc.el]]。
 
 *** Emojis
 
