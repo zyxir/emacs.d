@@ -745,14 +745,7 @@ I want to reach several important files quickly with shortcuts.
 
 Functionalities to be added.
 
-** DONE completion framework
-
-** DONE pairing indicator
-
-** DONE general.el shortcut management
-
-** DONE command to delete buffer and file
-
-** TODO Python development environment
-
-** TODO org-reveal and org-ref
+- Python scripting features
+- org-reveal
+- org-ref
+- enhancements for GNU/Linux
