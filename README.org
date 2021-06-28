@@ -566,7 +566,7 @@ Conversion between simplified/traditional Chinese with =opencc.el=. 使用
 =opencc.el=進行中文簡繁轉換。
 
 #+begin_src emacs-lisp
-  (require-package 'opencc)
+  (require 'opencc)
   (general-define-key "C-c c" 'opencc-replace-at-point)
 #+end_src
 
