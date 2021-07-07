@@ -474,6 +474,12 @@ Allow Chinese around markups. This comes from [[https://emacs-china.org/t/org-mo
 	      1))
 #+end_src
 
+Hide emphasis markups.
+
+#+begin_src emacs-lisp
+  (setq org-hide-emphasis-markers t)
+#+end_src
+
 **** Attachments
 
 Put attachments in an obvious directory.
@@ -619,6 +625,17 @@ Magit is a complete text-based user interface to Git.
 #+begin_src emacs-lisp
   (require-package 'magit)
 #+end_src
+
+*** Lorem Ipsum Generator
+
+Use a package to generate dummy Latin text into a buffer.
+
+#+begin_src emacs-lisp
+  (require-package 'lorem-ipsum)
+#+end_src
+
+Use ~lorem-ipsum-insert-paragraphs~, ~lorem-ipsum-insert-sentences~, and
+~lorem-ipsum-insert-list~.
 
 *** Org-Journal
 
