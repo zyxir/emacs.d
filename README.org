@@ -891,6 +891,8 @@ Agenda is the way to display all my GTD entries.
   (setq org-agenda-files `(,my/gtd-inbox-path
 			   ,my/gtd-gtd-path
 			   ,my/gtd-someday-path))
+
+  (general-define-key "<f6>" 'org-agenda)
 #+end_src
 
 * Todos
