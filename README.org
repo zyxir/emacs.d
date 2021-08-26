@@ -826,7 +826,7 @@ Use more states for precise control.
 
   (setq org-todo-keyword-faces
 	'(("TODO" . (:foreground "#B71C1C" :weight bold))
-	  ("IN PROCESS" . (:foreground "#AED581" :weight bold))
+	  ("IN PROCESS" . (:foreground "#8BC34A" :weight bold))
 	  ("POSTPONED" . (:foreground "#F57C00" :weight bold))
 	  ("DONE" . (:foreground "#33691E" :weight bold))
 	  ("CANCELED" . (:foreground "#757575" :weight bold))))
