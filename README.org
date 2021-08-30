@@ -552,20 +552,27 @@ Disable =C-c C-i=, which I always mispress.
 
 **** Export to HTML
 
-For Chinese users: 去除由于 =fill-paragraph= 導致的多餘空格。
+These code are copied from zwz's blog and only works for org-mode 8.0 or
+higher. They are used to: 清除中文導出 HTML 後產生的多餘空格.
 
 #+begin_src emacs-lisp
-  (defadvice org-html-paragraph (before org-html-paragraph-advice
-					(paragraph contents info) activate)
-    "Join consecutive Chinese lines into a single long line without
-  unwanted space when exporting org-mode to HTML."
-    (let* ((origin-contents (ad-get-arg 1))
-	   (fix-regexp "[[:multibyte:]]")
-	   (fixed-contents
-	    (replace-regexp-in-string
-	     (concat
-	      "\\(" fix-regexp "\\) *\n *\\(" fix-regexp "\\)") "\\1\\2" origin-contents)))
-      (ad-set-arg 1 fixed-contents)))
+  (defun clear-single-linebreak-in-cjk-string (string)
+    "clear single line-break between cjk characters that is usually soft line-breaks"
+    (let* ((regexp "\\([\u4E00-\u9FA5]\\)\n\\([\u4E00-\u9FA5]\\)")
+	   (start (string-match regexp string)))
+      (while start
+	(setq string (replace-match "\\1\\2" nil nil string)
+	      start (string-match regexp string start))))
+    string)
+
+  (require 'ox-man)
+
+  (defun ox-html-clear-single-linebreak-for-cjk (string backend info)
+    (when (org-export-derived-backend-p backend 'html)
+      (clear-single-linebreak-in-cjk-string string)))
+
+  (add-to-list 'org-export-filter-final-output-functions
+	       'ox-html-clear-single-linebreak-for-cjk)
 #+end_src
 
 **** Export to LaTeX
@@ -573,11 +580,11 @@ For Chinese users: 去除由于 =fill-paragraph= 導致的多餘空格。
 LaTeX exporting with Chinese in Emacs is always a pain. I am going to make it no
 longer a pain.
 
-#+begin_src emacs-lisp
-  (setq org-latex-pdf-process
-	'("xelatex -interaction nonstopmode %f"
-	  "xelatex -interaction nonstopmode %f"))
-#+end_src
+For Chinese Users: 如果要輸出帶有中文的 LaTeX 文件，加上這句代碼即可：
+
+#+begin_quote
+#+LATEX_HEADER: \usepackage{ctex}
+#+end_quote
 
 **** Insert Image
 
