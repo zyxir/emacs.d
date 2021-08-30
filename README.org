@@ -91,7 +91,7 @@ efficient and effective.
   (package-initialize)
 #+end_src
 
-*** Encoding and Locale
+*** Date and Time Format
 
 Use ISO C date format everywhere.
 
@@ -200,11 +200,32 @@ be overwritten.
 
 *** Encoding
 
-Encoding is a pain, especially on Microsoft Windows. I don't care how Windows
-programs work, I just want everything in UTF-8.
+I used to set everything to UTF-8 simply by ~set-language-environment~, but that
+broke things on Windows, especially on the Chinese version, as is described in
+[[https://github.com/hick/emacs-chinese#ms-windows-%E7%8E%AF%E5%A2%83%E7%9A%84-utf-8-%E9%85%8D%E7%BD%AE][this page]]:
+
+#+CAPTION: Windows 下 UTF-8 是「二等公民」
+[[file:images/emacs-chinese-utf-8-side-effects.png]]
+
+Now I configure things like this:
 
 #+begin_src emacs-lisp
   (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+  (set-buffer-file-coding-system 'utf-8-unix)
+  (set-clipboard-coding-system 'utf-8-unix)
+  (set-file-name-coding-system 'utf-8-unix)
+  (set-keyboard-coding-system 'utf-8-unix)
+  (set-next-selection-coding-system 'utf-8-unix)
+  (set-selection-coding-system 'utf-8-unix)
+  (set-terminal-coding-system 'utf-8-unix)
+  (setq locale-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8)
+
+  (when (eq system-type 'windows-nt)
+    (set-default 'process-coding-system-alist
+		 '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+		   ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
 #+end_src
 
 *** Files
