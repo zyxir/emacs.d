@@ -575,11 +575,19 @@ higher. They are used to: 清除中文導出 HTML 後產生的多餘空格.
 LaTeX exporting with Chinese in Emacs is always a pain. I am going to make it no
 longer a pain.
 
-For Chinese Users: 如果要輸出帶有中文的 LaTeX 文件，加上這句代碼即可：
+***** 正確導出的方法
+
+就目前而言，衹需要加入一個選項就可以正常導出中文文章：
 
 #+begin_quote
 #+LATEX_HEADER: \usepackage{ctex}
 #+end_quote
+
+其它細致選項，還需要具體地去針對各個文件來調整，例如使用 ~tags:nil~ 選項來去掉輸
+出文件中的標籤。
+
+TODO 接下來的工作，就是精細微調輸出 LaTeX 的各個選項，如頁邊距、字體等，來逐漸積
+累出讓自己滿意的 PDF 文件輸出了。
 
 **** Insert Image
 
