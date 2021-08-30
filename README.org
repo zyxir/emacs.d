@@ -690,8 +690,10 @@ Org-roam is a tool for network thought. I decided to try it on
 Above all, install it, along with org-roam-server, which visualize notes.
 
 #+begin_src emacs-lisp
+  (setq org-roam-v2-ack t)
   (require-package 'org)
   (require-package 'org-roam)
+  (require 'org-roam)
   (require-package 'org-roam-server)
 #+end_src
 
@@ -708,7 +710,7 @@ Set the org-roam directory, and enable it by default.
   (setq org-roam-directory (concat my/zybox-path "org-roam"))
   (unless (file-exists-p org-roam-directory)
     (make-directory org-roam-directory))
-  (org-roam-mode)
+  (org-roam-setup)
 #+end_src
 
 **** Shortcuts
@@ -722,11 +724,10 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
 
   (general-define-key
    :keymaps 'my/org-roam-map
-   "b" 'org-roam-db-build-cache
-   "d" 'org-roam-dailies-capture-today
-   "f" 'org-roam-find-file
-   "i" 'org-roam-insert
-   "t" 'org-roam-buffer-toggle-display
+   "c" 'org-roam-capture
+   "f" 'org-roam-node-find
+   "i" 'org-roam-node-insert
+   "t" 'org-roam-buffer-toggle
    "s" 'org-roam-server-mode)
 #+end_src
 
