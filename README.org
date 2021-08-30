@@ -687,14 +687,14 @@ Org-roam is a tool for network thought. I decided to try it on
 
 **** Installation
 
-Above all, install it, along with org-roam-server, which visualize notes.
+Above all, install it, along with org-roam-ui, which visualize notes. It is
+worth noticing that I upgrade org-roam from v1 to v2 at [2021-08-30 Mon].
 
 #+begin_src emacs-lisp
   (setq org-roam-v2-ack t)
   (require-package 'org)
   (require-package 'org-roam)
   (require 'org-roam)
-  (require-package 'org-roam-server)
 #+end_src
 
 Warn if ~sqlite3~ is not located on ~exec-path~.
@@ -727,8 +727,7 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
    "c" 'org-roam-capture
    "f" 'org-roam-node-find
    "i" 'org-roam-node-insert
-   "t" 'org-roam-buffer-toggle
-   "s" 'org-roam-server-mode)
+   "t" 'org-roam-buffer-toggle)
 #+end_src
 
 **** Interaction with =recentf=
