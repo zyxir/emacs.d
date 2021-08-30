@@ -547,6 +547,17 @@ For Chinese users: 去除由于 =fill-paragraph= 導致的多餘空格。
       (ad-set-arg 1 fixed-contents)))
 #+end_src
 
+**** Export to LaTeX
+
+LaTeX exporting with Chinese in Emacs is always a pain. I am going to make it no
+longer a pain.
+
+#+begin_src emacs-lisp
+  (setq org-latex-pdf-process
+	'("xelatex -interaction nonstopmode %f"
+	  "xelatex -interaction nonstopmode %f"))
+#+end_src
+
 **** Insert Image
 
 Org-download facilitates moving images from filesystem, clipboard, or
