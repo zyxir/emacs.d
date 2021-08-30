@@ -474,12 +474,6 @@ Allow Chinese around markups. This comes from [[https://emacs-china.org/t/org-mo
 	      1))
 #+end_src
 
-Hide emphasis markups.
-
-#+begin_src emacs-lisp
-  (setq org-hide-emphasis-markers t)
-#+end_src
-
 **** Attachments
 
 Put attachments in an obvious directory.
@@ -737,6 +731,25 @@ Do not show org-roam files in recentf list.
 #+begin_src emacs-lisp
   (add-to-list 'recentf-exclude
 	       (concat org-roam-directory "/.*"))
+#+end_src
+
+**** UI with =org-roam-ui=
+
+Org-Roam-UI, in place of Org-Roam-Server for v1, is a frontend for exploring and
+interacting with org-roam notes for Org-Roam v2.
+
+However, it's not yet on MELPA, so I added it as a submodule, and had to install
+its dependencies manually.
+
+#+begin_src emacs-lisp
+  (require-package 'websocket)
+  (require-package 'simple-httpd)
+#+end_src
+
+Then I can load Org-Roam-UI.
+
+#+begin_src emacs-lisp
+  (load-library "org-roam-ui")
 #+end_src
 
 *** Project Management
