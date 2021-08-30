@@ -301,22 +301,17 @@ Open recent files with =C-x r=
 
 *** Format
 
-Always show trailing whitespace.
+Show trailing whitespace for most modes.
 
 #+begin_src emacs-lisp
-  (setq-default show-trailing-whitespace t)
+  (defun my/show-trailing-whitespace ()
+    "Turn on whitespace mode for the current buffer."
+    (setq-local show-trailing-whitespace t))
+  (add-hook 'prog-mode-hook 'my/show-trailing-whitespace)
+  (add-hook 'text-mode-hook 'my/show-trailing-whitespace)
+
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
   (general-define-key "C-c SPC" 'delete-trailing-whitespace)
-#+end_src
-
-Do not show trailing whitespace in some modes.
-
-#+begin_src emacs-lisp
-  (defun my/turn-off-trailing-whitespace ()
-    (setq-local show-trailing-whitespace nil))
-
-  (add-hook 'calendar-mode-hook #'my/turn-off-trailing-whitespace)
-  (add-hook 'help-mode-hook #'my/turn-off-trailing-whitespace)
 #+end_src
 
 Set default fill column to 80.
