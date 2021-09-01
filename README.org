@@ -1,3 +1,4 @@
+# -*- org-edit-src-content-indentation: 0; -*-
 #+TITLE: Zyxir's Emacs Configuration
 #+STARTUP: content
 
@@ -54,8 +55,8 @@ The configuration is divided into these categories:
 Add load path for third-party elisp scripts.
 
 #+begin_src emacs-lisp
-  (let ((default-directory (concat user-emacs-directory "site-lisp/")))
-    (normal-top-level-add-subdirs-to-load-path))
+(let ((default-directory (concat user-emacs-directory "site-lisp/")))
+  (normal-top-level-add-subdirs-to-load-path))
 #+end_src
 
 *** Package Manager
@@ -64,31 +65,31 @@ Use Purcell's ~require-package~ function for package management. It's
 efficient and effective.
 
 #+begin_src emacs-lisp
-  (require 'package)
-  (require 'cl-lib)
+(require 'package)
+(require 'cl-lib)
 
-  (setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-			   ("melpa" . "https://melpa.org/packages/")))
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+			 ("melpa" . "https://melpa.org/packages/")))
 
-  (defun require-package (package &optional min-version no-refresh)
-    "Install given PACKAGE, optionally requiring MIN-VERSION.
-  If NO-REFRESH is non-nil, the available package lists will not be
-  re-downloaded in order to locate PACKAGE."
-    (or (package-installed-p package min-version)
-	(let* ((known (cdr (assoc package package-archive-contents)))
-	       (best (car (sort known (lambda (a b)
-					(version-list-<= (package-desc-version b)
-							 (package-desc-version a)))))))
-	  (if (and best (version-list-<= min-version (package-desc-version best)))
-	      (package-install best)
-	    (if no-refresh
-		(error "No version of %s >= %S is available" package min-version)
-	      (package-refresh-contents)
-	      (require-package package min-version t)))
-	  (package-installed-p package min-version))))
+(defun require-package (package &optional min-version no-refresh)
+  "Install given PACKAGE, optionally requiring MIN-VERSION.
+If NO-REFRESH is non-nil, the available package lists will not be
+re-downloaded in order to locate PACKAGE."
+  (or (package-installed-p package min-version)
+      (let* ((known (cdr (assoc package package-archive-contents)))
+	     (best (car (sort known (lambda (a b)
+				      (version-list-<= (package-desc-version b)
+						       (package-desc-version a)))))))
+	(if (and best (version-list-<= min-version (package-desc-version best)))
+	    (package-install best)
+	  (if no-refresh
+	      (error "No version of %s >= %S is available" package min-version)
+	    (package-refresh-contents)
+	    (require-package package min-version t)))
+	(package-installed-p package min-version))))
 
-  (setq package-enable-at-startup nil)
-  (package-initialize)
+(setq package-enable-at-startup nil)
+(package-initialize)
 #+end_src
 
 *** Date and Time Format
@@ -96,7 +97,7 @@ efficient and effective.
 Use ISO C date format everywhere.
 
 #+begin_src emacs-lisp
-  (setq system-time-locale "C")
+(setq system-time-locale "C")
 #+end_src
 
 *** Completion Framework
@@ -104,13 +105,13 @@ Use ISO C date format everywhere.
 Use the simple ivy, and extend some commands with counsel.
 
 #+begin_src emacs-lisp
-  (require-package 'ivy)
-  (ivy-mode)
-  (setq ivy-use-virtual-buffers t)
-  (setq enable-recursive-minibuffers t)
+(require-package 'ivy)
+(ivy-mode)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
 
-  (require-package 'counsel)
-  (counsel-mode)
+(require-package 'counsel)
+(counsel-mode)
 #+end_src
 
 *** Key Binding
@@ -118,7 +119,7 @@ Use the simple ivy, and extend some commands with counsel.
 Use ~general.el~ for key bindings.
 
 #+begin_src emacs-lisp
-  (require-package 'general)
+(require-package 'general)
 #+end_src
 
 *** Bug Fix
@@ -130,7 +131,7 @@ ad-handle-definition: 'text-scale-increase' got redefined.
 #+end_quote
 
 #+begin_src emacs-lisp
-  (setq ad-redefinition-action 'accept)
+(setq ad-redefinition-action 'accept)
 #+end_src
 
 ** Information
@@ -140,8 +141,8 @@ ad-handle-definition: 'text-scale-increase' got redefined.
 Information about the user.
 
 #+begin_src emacs-lisp
-  (setq user-full-name "Eric Zhuo Chen"
-	user-mail-address "zyxirchen@outlook.com")
+(setq user-full-name "Eric Zhuo Chen"
+      user-mail-address "zyxirchen@outlook.com")
 #+end_src
 
 *** File Locations
@@ -150,15 +151,15 @@ The location of several important files and directories. Note that the
 location of Zybox is left empty here.
 
 #+begin_src emacs-lisp
-  (defvar my/emacs-config-file (concat user-emacs-directory
-				       "README.org")
-    "The main Emacs configuration file.")
-  (defvar my/3rd-party-relapath "3rd-party/"
-    "The path of 3rd-party tools relative to the user Emacs directory.")
-  (defvar my/zybox-path ""
-    "The path of Zybox, the base of all my files.")
-  (defvar my/projects-relapath "projects/"
-    "The path of the projects directory relative to Zybox.")
+(defvar my/emacs-config-file (concat user-emacs-directory
+				     "README.org")
+  "The main Emacs configuration file.")
+(defvar my/3rd-party-relapath "3rd-party/"
+  "The path of 3rd-party tools relative to the user Emacs directory.")
+(defvar my/zybox-path ""
+  "The path of Zybox, the base of all my files.")
+(defvar my/projects-relapath "projects/"
+  "The path of the projects directory relative to Zybox.")
 #+end_src
 
 These locations varies across my devices, so Emacs should reads an
@@ -167,21 +168,21 @@ location of Zybox should be set there. Emacs itself will also mess up
 with the custom file.
 
 #+begin_src emacs-lisp
-  (setq custom-file (concat user-emacs-directory "custom.el"))
-  (if (file-exists-p custom-file)
-      (load custom-file))
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(if (file-exists-p custom-file)
+    (load custom-file))
 #+end_src
 
 Construct absolute paths and other file locations.
 
 #+begin_src emacs-lisp
-  ;; Fix `my/zybox-path` if it is incorrect.
-  (setq my/zybox-path (file-name-as-directory my/zybox-path))
+;; Fix `my/zybox-path` if it is incorrect.
+(setq my/zybox-path (file-name-as-directory my/zybox-path))
 
-  (defvar my/3rd-party-path (concat user-emacs-directory my/3rd-party-relapath)
-    "The path of 3rd-party tools.")
-  (defvar my/projects-path (concat my/zybox-path my/projects-relapath)
-    "The path of the projects directory.")
+(defvar my/3rd-party-path (concat user-emacs-directory my/3rd-party-relapath)
+  "The path of 3rd-party tools.")
+(defvar my/projects-path (concat my/zybox-path my/projects-relapath)
+  "The path of the projects directory.")
 #+end_src
 
 ** Text Editor
@@ -193,9 +194,9 @@ originally ~complete-at-point~. In some modes, like matlab-mode, this key would
 be overwritten.
 
 #+begin_src emacs-lisp
-  (require-package 'company)
-  (global-company-mode +1)
-  (general-define-key "C-M-i" 'company-complete)
+(require-package 'company)
+(global-company-mode +1)
+(general-define-key "C-M-i" 'company-complete)
 #+end_src
 
 *** Encoding
@@ -210,22 +211,22 @@ broke things on Windows, especially on the Chinese version, as is described in
 Now I configure things like this:
 
 #+begin_src emacs-lisp
-  (set-language-environment "UTF-8")
-  (set-default-coding-systems 'utf-8)
-  (set-buffer-file-coding-system 'utf-8-unix)
-  (set-clipboard-coding-system 'utf-8-unix)
-  (set-file-name-coding-system 'utf-8-unix)
-  (set-keyboard-coding-system 'utf-8-unix)
-  (set-next-selection-coding-system 'utf-8-unix)
-  (set-selection-coding-system 'utf-8-unix)
-  (set-terminal-coding-system 'utf-8-unix)
-  (setq locale-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8)
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+(set-buffer-file-coding-system 'utf-8-unix)
+(set-clipboard-coding-system 'utf-8-unix)
+(set-file-name-coding-system 'utf-8-unix)
+(set-keyboard-coding-system 'utf-8-unix)
+(set-next-selection-coding-system 'utf-8-unix)
+(set-selection-coding-system 'utf-8-unix)
+(set-terminal-coding-system 'utf-8-unix)
+(setq locale-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
 
-  (when (eq system-type 'windows-nt)
-    (set-default 'process-coding-system-alist
-		 '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
-		   ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+(when (eq system-type 'windows-nt)
+  (set-default 'process-coding-system-alist
+	       '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+		 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
 #+end_src
 
 *** Files
@@ -235,7 +236,7 @@ Now I configure things like this:
 Always save cursor position.
 
 #+begin_src emacs-lisp
-  (save-place-mode 1)
+(save-place-mode 1)
 #+end_src
 
 **** Backup
@@ -243,24 +244,24 @@ Always save cursor position.
 A better backup and auto save configuration.
 
 #+begin_src emacs-lisp
-  (defvar my/backup-directory (concat user-emacs-directory
-				      "backups")
-    "The location of backups.")
-  (unless (file-exists-p my/backup-directory)
-    (make-directory my/backup-directory t))
-  (setq backup-directory-alist `(("." . ,my/backup-directory)))
-  (setq make-backup-files t
-	vc-make-backup-files t
-	backup-by-copying t
-	version-control t
-	delete-old-versions t
-	delete-by-moving-to-trash t
-	kept-old-versions 0
-	kept-new-versions 10
-	auto-save-default t
-	auto-save-timeout 20
-	auto-save-interval 200
-	)
+(defvar my/backup-directory (concat user-emacs-directory
+				    "backups")
+  "The location of backups.")
+(unless (file-exists-p my/backup-directory)
+  (make-directory my/backup-directory t))
+(setq backup-directory-alist `(("." . ,my/backup-directory)))
+(setq make-backup-files t
+      vc-make-backup-files t
+      backup-by-copying t
+      version-control t
+      delete-old-versions t
+      delete-by-moving-to-trash t
+      kept-old-versions 0
+      kept-new-versions 10
+      auto-save-default t
+      auto-save-timeout 20
+      auto-save-interval 200
+      )
 #+end_src
 
 **** File Manipulation
@@ -269,17 +270,17 @@ Function to delete the current buffer and file at the same time. This is from
 [[https://emacsredux.com/blog/2013/04/03/delete-file-and-buffer/][Delete File and Buffer | Emacs Redux]].
 
 #+begin_src emacs-lisp
-  (defun my/delete-file-and-buffer ()
-    "Kill the current buffer and deletes the file it is visiting."
-    (interactive)
-    (let ((filename (buffer-file-name)))
-      (when filename
-	(if (vc-backend filename)
-	    (vc-delete-file filename)
-	  (progn
-	    (delete-file filename)
-	    (message "Delete file %s" filename)
-	    (kill-buffer))))))
+(defun my/delete-file-and-buffer ()
+  "Kill the current buffer and deletes the file it is visiting."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (when filename
+      (if (vc-backend filename)
+	  (vc-delete-file filename)
+	(progn
+	  (delete-file filename)
+	  (message "Delete file %s" filename)
+	  (kill-buffer))))))
 #+end_src
 
 **** Recent Files
@@ -287,16 +288,16 @@ Function to delete the current buffer and file at the same time. This is from
 Make use of =recentf.el=.
 
 #+begin_src emacs-lisp
-  (require 'recentf)
-  (setq recentf-max-saved-items 200
-	recentf-max-menu-items 15)
-  (recentf-mode)
+(require 'recentf)
+(setq recentf-max-saved-items 200
+      recentf-max-menu-items 15)
+(recentf-mode)
 #+end_src
 
 Open recent files with =C-x r=
 
 #+begin_src emacs-lisp
-  (general-define-key "C-x r" 'counsel-recentf)
+(general-define-key "C-x r" 'counsel-recentf)
 #+end_src
 
 *** Format
@@ -304,20 +305,20 @@ Open recent files with =C-x r=
 Show trailing whitespace for most modes.
 
 #+begin_src emacs-lisp
-  (defun my/show-trailing-whitespace ()
-    "Turn on whitespace mode for the current buffer."
-    (setq-local show-trailing-whitespace t))
-  (add-hook 'prog-mode-hook 'my/show-trailing-whitespace)
-  (add-hook 'text-mode-hook 'my/show-trailing-whitespace)
+(defun my/show-trailing-whitespace ()
+  "Turn on whitespace mode for the current buffer."
+  (setq-local show-trailing-whitespace t))
+(add-hook 'prog-mode-hook 'my/show-trailing-whitespace)
+(add-hook 'text-mode-hook 'my/show-trailing-whitespace)
 
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
-  (general-define-key "C-c SPC" 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(general-define-key "C-c SPC" 'delete-trailing-whitespace)
 #+end_src
 
 Set default fill column to 80.
 
 #+begin_src emacs-lisp
-  (setq-default fill-column 80)
+(setq-default fill-column 80)
 #+end_src
 
 *** Location
@@ -325,10 +326,10 @@ Set default fill column to 80.
 Show side line numbers and column number while coding.
 
 #+begin_src emacs-lisp
-  (add-hook 'prog-mode-hook
-	    (lambda ()
-	      (display-line-numbers-mode 1)))
-  (column-number-mode 1)
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (display-line-numbers-mode 1)))
+(column-number-mode 1)
 #+end_src
 
 *** Parenthesis
@@ -336,7 +337,7 @@ Show side line numbers and column number while coding.
 Indicate matching parenthesis.
 
 #+begin_src emacs-lisp
-  (show-paren-mode 1)
+(show-paren-mode 1)
 #+end_src
 
 *** Search
@@ -344,14 +345,14 @@ Indicate matching parenthesis.
 Replace isearch with swiper.
 
 #+begin_src emacs-lisp
-  (require-package 'swiper)
-  (general-define-key "C-s" 'swiper)
+(require-package 'swiper)
+(general-define-key "C-s" 'swiper)
 #+end_src
 
 Enable character folding (having =bar= matching =bár=) for swiper.
 
 #+begin_src emacs-lisp
-  (setq search-default-mode #'char-fold-to-regexp)
+(setq search-default-mode #'char-fold-to-regexp)
 #+end_src
 
 ** Workbench
@@ -361,7 +362,7 @@ Enable character folding (having =bar= matching =bár=) for swiper.
 Inhibit startup screen.
 
 #+begin_src emacs-lisp
-  (setq inhibit-startup-screen t)
+(setq inhibit-startup-screen t)
 #+end_src
 
 *** Appearances
@@ -369,32 +370,32 @@ Inhibit startup screen.
 Font and color theme.
 
 #+begin_src emacs-lisp
-  (defvar my/main-font-name "Sarasa Mono CL"
-    "Main font name for the whole program.")
-  (defvar my/main-font-size 11
-    "The default size for the main font.")
-  (setq my/main-font-full (concat my/main-font-name " "
-			       (number-to-string my/main-font-size)))
+(defvar my/main-font-name "Sarasa Mono CL"
+  "Main font name for the whole program.")
+(defvar my/main-font-size 11
+  "The default size for the main font.")
+(setq my/main-font-full (concat my/main-font-name " "
+			     (number-to-string my/main-font-size)))
 
-  (when (display-graphic-p)
-    (set-face-attribute 'default nil :font my/main-font-full)
-    (set-frame-font my/main-font-full)
-    (dolist (charset '(kana han symbol cjk-misc bopomofo))
-      (set-fontset-font (frame-parameter nil 'font) charset
-			(font-spec :family my/main-font-name)))
+(when (display-graphic-p)
+  (set-face-attribute 'default nil :font my/main-font-full)
+  (set-frame-font my/main-font-full)
+  (dolist (charset '(kana han symbol cjk-misc bopomofo))
+    (set-fontset-font (frame-parameter nil 'font) charset
+		      (font-spec :family my/main-font-name)))
 
-    (require-package 'solaire-mode)
-    (solaire-global-mode +1)
-    (require-package 'doom-themes)
-    (load-theme 'doom-one-light t))
+  (require-package 'solaire-mode)
+  (solaire-global-mode +1)
+  (require-package 'doom-themes)
+  (load-theme 'doom-one-light t))
 #+end_src
 
 Disable unnecessary UI elements.
 
 #+begin_src emacs-lisp
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
-  (scroll-bar-mode -1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
 #+end_src
 
 *** Modeline
@@ -405,15 +406,15 @@ There are so many minor modes displayed on the mode line, which should
 be diminished.
 
 #+begin_src emacs-lisp
-  (require-package 'diminish)
-  (add-hook 'after-init-hook
-	    (lambda ()
-	      (diminish 'company-mode)
-	      (diminish 'counsel-mode)
-	      (diminish 'ivy-mode)
-	      (diminish 'org-roam-mode)
-	      (diminish 'projectile-mode)
-	      (diminish 'which-key-mode)))
+(require-package 'diminish)
+(add-hook 'after-init-hook
+	  (lambda ()
+	    (diminish 'company-mode)
+	    (diminish 'counsel-mode)
+	    (diminish 'ivy-mode)
+	    (diminish 'org-roam-mode)
+	    (diminish 'projectile-mode)
+	    (diminish 'which-key-mode)))
 #+end_src
 
 *** Minibuffer
@@ -423,9 +424,9 @@ interface for a consistent UI. So I add Purcell's ivy-smex as a
 submodule.
 
 #+begin_src emacs-lisp
-  (require-package 'smex)
-  (require 'ivy-smex)
-  (global-set-key (kbd "M-x") 'ivy-smex)
+(require-package 'smex)
+(require 'ivy-smex)
+(global-set-key (kbd "M-x") 'ivy-smex)
 #+end_src
 
 *** Which-key
@@ -434,9 +435,9 @@ Which-key displays the key bindings following your currently entered
 incomplete command (a prefix) in a popup.
 
 #+begin_src emacs-lisp
-  (require-package 'which-key)
-  (which-key-setup-side-window-bottom)
-  (which-key-mode)
+(require-package 'which-key)
+(which-key-setup-side-window-bottom)
+(which-key-mode)
 #+end_src
 
 ** Window
@@ -446,11 +447,11 @@ incomplete command (a prefix) in a popup.
 If running with GUI, adjust the frame.
 
 #+begin_src emacs-lisp
-  (when (display-graphic-p)
-    (setq initial-frame-alist
-	  '((width . 110)
-	    (height . 40)))
-    (setq default-frame-alist initial-frame-alist))
+(when (display-graphic-p)
+  (setq initial-frame-alist
+	'((width . 110)
+	  (height . 40)))
+  (setq default-frame-alist initial-frame-alist))
 #+end_src
 
 ** Extensions
@@ -460,17 +461,17 @@ If running with GUI, adjust the frame.
 The old but useful MATLAB mode.
 
 #+begin_src emacs-lisp
-  (require-package 'matlab-mode)
-  (add-hook 'matlab-mode-hook 'auto-fill-mode)
+(require-package 'matlab-mode)
+(add-hook 'matlab-mode-hook 'auto-fill-mode)
 #+end_src
 
 However, my line number configuration doesn't work on matlab-mode, so it
 requires extra configuration.
 
 #+begin_src emacs-lisp
-  (add-hook 'matlab-mode-hook
-	    (lambda ()
-	      (display-line-numbers-mode 1)))
+(add-hook 'matlab-mode-hook
+	  (lambda ()
+	    (display-line-numbers-mode 1)))
 #+end_src
 
 *** Org ~.org~
@@ -481,13 +482,13 @@ Allow Chinese around markups. This comes from [[https://emacs-china.org/t/org-mo
 式化的问题]], may not be stable.
 
 #+begin_src emacs-lisp
-  (setq org-emphasis-regexp-components
-	;; markup 记号前后允许中文
-	(list (concat " \t('\"{"            "[:nonascii:]")
-	      (concat "- \t.,:!?;'\")}\\["  "[:nonascii:]")
-	      " \t\r\n,\"'"
-	      "."
-	      1))
+(setq org-emphasis-regexp-components
+      ;; markup 记号前后允许中文
+      (list (concat " \t('\"{"            "[:nonascii:]")
+	    (concat "- \t.,:!?;'\")}\\["  "[:nonascii:]")
+	    " \t\r\n,\"'"
+	    "."
+	    1))
 #+end_src
 
 **** Attachments
@@ -495,7 +496,7 @@ Allow Chinese around markups. This comes from [[https://emacs-china.org/t/org-mo
 Put attachments in an obvious directory.
 
 #+begin_src emacs-lisp
-  (setq org-attach-id-dir "org-attachments/")
+(setq org-attach-id-dir "org-attachments/")
 #+end_src
 
 **** Bullets
@@ -503,20 +504,20 @@ Put attachments in an obvious directory.
 Show org-mode bullets as UTF-8 characters.
 
 #+begin_src emacs-lisp
-  (require-package 'org-bullets)
-  (require 'org-bullets)
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(require-package 'org-bullets)
+(require 'org-bullets)
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
 
 Render bullets ("•" and "◦") instead of dashes in bulleted lists.
 
 #+begin_src emacs-lisp
-  (font-lock-add-keywords 'org-mode
-			  '(("^ *\\([-]\\) "
-			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-  (font-lock-add-keywords 'org-mode
-			  '(("^ *\\([+]\\) "
-			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+(font-lock-add-keywords 'org-mode
+			'(("^ *\\([-]\\) "
+			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(font-lock-add-keywords 'org-mode
+			'(("^ *\\([+]\\) "
+			   (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
 #+end_src
 
 **** Capture
@@ -524,7 +525,7 @@ Render bullets ("•" and "◦") instead of dashes in bulleted lists.
 Utilize the ~org-capture~ mechanism.
 
 #+begin_src emacs-lisp
-  (general-define-key "<f5>" 'org-capture)
+(general-define-key "<f5>" 'org-capture)
 #+end_src
 
 **** Editing Features
@@ -532,17 +533,17 @@ Utilize the ~org-capture~ mechanism.
 Enable auto fill, and fill to the 80th character.
 
 #+begin_src emacs-lisp
-  (add-hook 'org-mode-hook
-	    (lambda ()
-	      (auto-fill-mode +1)))
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (auto-fill-mode +1)))
 #+end_src
 
 Disable =C-c C-i=, which I always mispress.
 
 #+begin_src emacs-lisp
-  (eval-after-load 'org
-    (progn
-      (general-define-key :keymaps 'org-mode-map "C-c C-i" nil)))
+(eval-after-load 'org
+  (progn
+    (general-define-key :keymaps 'org-mode-map "C-c C-i" nil)))
 #+end_src
 
 **** Export to HTML
@@ -551,23 +552,23 @@ These code are copied from zwz's blog and only works for org-mode 8.0 or
 higher. They are used to: 清除中文導出 HTML 後產生的多餘空格.
 
 #+begin_src emacs-lisp
-  (defun clear-single-linebreak-in-cjk-string (string)
-    "clear single line-break between cjk characters that is usually soft line-breaks"
-    (let* ((regexp "\\([\u4E00-\u9FA5]\\)\n\\([\u4E00-\u9FA5]\\)")
-	   (start (string-match regexp string)))
-      (while start
-	(setq string (replace-match "\\1\\2" nil nil string)
-	      start (string-match regexp string start))))
-    string)
+(defun clear-single-linebreak-in-cjk-string (string)
+  "clear single line-break between cjk characters that is usually soft line-breaks"
+  (let* ((regexp "\\([\u4E00-\u9FA5]\\)\n\\([\u4E00-\u9FA5]\\)")
+	 (start (string-match regexp string)))
+    (while start
+      (setq string (replace-match "\\1\\2" nil nil string)
+	    start (string-match regexp string start))))
+  string)
 
-  (require 'ox-man)
+(require 'ox-man)
 
-  (defun ox-html-clear-single-linebreak-for-cjk (string backend info)
-    (when (org-export-derived-backend-p backend 'html)
-      (clear-single-linebreak-in-cjk-string string)))
+(defun ox-html-clear-single-linebreak-for-cjk (string backend info)
+  (when (org-export-derived-backend-p backend 'html)
+    (clear-single-linebreak-in-cjk-string string)))
 
-  (add-to-list 'org-export-filter-final-output-functions
-	       'ox-html-clear-single-linebreak-for-cjk)
+(add-to-list 'org-export-filter-final-output-functions
+	     'ox-html-clear-single-linebreak-for-cjk)
 #+end_src
 
 **** Export to LaTeX
@@ -591,19 +592,19 @@ longer a pain.
 弄出一系列還不錯的預設選項，集成到 cn-article 類中，讓日後的文檔輸出更方便。
 
 #+begin_src emacs-lisp
-  (add-to-list 'org-latex-classes
-	       '("cn-article"
-		 "\\documentclass{article}
-  \\usepackage{ctex}
-  \\usepackage[margin=1in]{geometry}
-  [NO-DEFAULT-PACKAGES]
-  [PACKAGES]
-  [EXTRA]"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes
+	     '("cn-article"
+	       "\\documentclass{article}
+\\usepackage{ctex}
+\\usepackage[margin=1in]{geometry}
+[NO-DEFAULT-PACKAGES]
+[PACKAGES]
+[EXTRA]"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
 **** Insert Image
@@ -612,12 +613,12 @@ Org-download facilitates moving images from filesystem, clipboard, or
 web pages, into an org-mode buffer.
 
 #+begin_src emacs-lisp
-  (require-package 'org-download)
-  (require 'org-download)
-  (add-hook 'dired-mode-hook 'org-download-enable)
+(require-package 'org-download)
+(require 'org-download)
+(add-hook 'dired-mode-hook 'org-download-enable)
 
-  ;; By default, download images to a dedicated folder.
-  (setq org-download-image-dir "images")
+;; By default, download images to a dedicated folder.
+(setq org-download-image-dir "images")
 #+end_src
 
 *** PlantUML
@@ -625,14 +626,14 @@ web pages, into an org-mode buffer.
 Install =plantuml-mode=.
 
 #+begin_src emacs-lisp
-  (require-package 'plantuml-mode)
+(require-package 'plantuml-mode)
 #+end_src
 
 Use executable inside Emacs config directory.
 
 #+begin_src emacs-lisp
-  (setq plantuml-jar-path (concat my/3rd-party-path "plantuml/plantuml.jar")
-	plantuml-default-exec-mode 'jar)
+(setq plantuml-jar-path (concat my/3rd-party-path "plantuml/plantuml.jar")
+      plantuml-default-exec-mode 'jar)
 #+end_src
 
 *** Python ~.py~
@@ -640,7 +641,7 @@ Use executable inside Emacs config directory.
 Install Elpy, the Emacs Python IDE.
 
 #+begin_src emacs-lisp
-  (require-package 'elpy)
+(require-package 'elpy)
 #+end_src
 
 ** Feature
@@ -651,8 +652,8 @@ Conversion between simplified/traditional Chinese with =opencc.el=. 使用
 =opencc.el=進行中文簡繁轉換。
 
 #+begin_src emacs-lisp
-  (require 'opencc)
-  (general-define-key "C-c c" 'opencc-replace-at-point)
+(require 'opencc)
+(general-define-key "C-c c" 'opencc-replace-at-point)
 #+end_src
 
 =opencc.el= is based on OpenCC:
@@ -672,11 +673,11 @@ Kong. This is not translation tool between Mandarin and Cantonese, etc.
 Install emojify to display emojis.
 
 #+begin_src emacs-lisp
-  (require-package 'emojify)
+(require-package 'emojify)
 
-  (setq emojify-emoji-styles '(github))
-  (global-emojify-mode +1)
-  (general-define-key "C-c e" 'emojify-insert-emoji)
+(setq emojify-emoji-styles '(github))
+(global-emojify-mode +1)
+(general-define-key "C-c e" 'emojify-insert-emoji)
 #+end_src
 
 *** Git
@@ -684,7 +685,7 @@ Install emojify to display emojis.
 Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
-  (require-package 'magit)
+(require-package 'magit)
 #+end_src
 
 *** Lorem Ipsum Generator
@@ -692,7 +693,7 @@ Magit is a complete text-based user interface to Git.
 Use a package to generate dummy Latin text into a buffer.
 
 #+begin_src emacs-lisp
-  (require-package 'lorem-ipsum)
+(require-package 'lorem-ipsum)
 #+end_src
 
 Use ~lorem-ipsum-insert-paragraphs~, ~lorem-ipsum-insert-sentences~, and
@@ -703,34 +704,34 @@ Use ~lorem-ipsum-insert-paragraphs~, ~lorem-ipsum-insert-sentences~, and
 Org-journal is a tool to keep journals. I decided to try it on <2021-06-02 Wed>.
 
 #+begin_src emacs-lisp
-  (require-package 'org-journal)
+(require-package 'org-journal)
 #+end_src
 
 Set the journal directory as ~Zybox/org-journal~.
 
 #+begin_src emacs-lisp
-  (setq org-journal-dir (concat my/zybox-path "org-journal"))
-  (unless (file-exists-p org-journal-dir)
-    (make-directory org-journal-dir))
+(setq org-journal-dir (concat my/zybox-path "org-journal"))
+(unless (file-exists-p org-journal-dir)
+  (make-directory org-journal-dir))
 #+end_src
 
 Set shortcuts and templates.
 
 #+begin_src emacs-lisp
-  (general-define-key "C-c j" 'org-journal-new-entry)
-  (setq org-journal-file-format "%F"
-	org-journal-date-format "%F %a W%V\n"
-	org-journal-date-prefix "#+TITLE: "
-	org-journal-time-format "%R "
-	org-journal-time-format-post-midnight "%R (midnight) "
-	org-journal-time-prefix "\n* "
-	org-journal-file-header "")
+(general-define-key "C-c j" 'org-journal-new-entry)
+(setq org-journal-file-format "%F"
+      org-journal-date-format "%F %a W%V\n"
+      org-journal-date-prefix "#+TITLE: "
+      org-journal-time-format "%R "
+      org-journal-time-format-post-midnight "%R (midnight) "
+      org-journal-time-prefix "\n* "
+      org-journal-file-header "")
 #+end_src
 
 If it is early than 3 a.m., it is still yesterday.
 
 #+begin_src emacs-lisp
-  (setq org-extend-today-until 3)
+(setq org-extend-today-until 3)
 #+end_src
 
 *** Org-Roam
@@ -744,26 +745,26 @@ Above all, install it, along with org-roam-ui, which visualize notes. It is
 worth noticing that I upgrade org-roam from v1 to v2 at [2021-08-30 Mon].
 
 #+begin_src emacs-lisp
-  (setq org-roam-v2-ack t)
-  (require-package 'org)
-  (require-package 'org-roam)
-  (require 'org-roam)
+(setq org-roam-v2-ack t)
+(require-package 'org)
+(require-package 'org-roam)
+(require 'org-roam)
 #+end_src
 
 Warn if ~sqlite3~ is not located on ~exec-path~.
 
 #+begin_src emacs-lisp
-  (unless (executable-find "sqlite3")
-    (message "To make org-roam work, you have to install sqlite3"))
+(unless (executable-find "sqlite3")
+  (message "To make org-roam work, you have to install sqlite3"))
 #+end_src
 
 Set the org-roam directory, and enable it by default.
 
 #+begin_src emacs-lisp
-  (setq org-roam-directory (concat my/zybox-path "org-roam"))
-  (unless (file-exists-p org-roam-directory)
-    (make-directory org-roam-directory))
-  (org-roam-setup)
+(setq org-roam-directory (concat my/zybox-path "org-roam"))
+(unless (file-exists-p org-roam-directory)
+  (make-directory org-roam-directory))
+(org-roam-setup)
 #+end_src
 
 **** Shortcuts
@@ -771,16 +772,16 @@ Set the org-roam directory, and enable it by default.
 Define a series of shortcuts for org-roam. "z" for Zettelkasten.
 
 #+begin_src emacs-lisp
-  (define-prefix-command 'my/org-roam-map)
-  (general-define-key
-   "C-c z" 'my/org-roam-map)
+(define-prefix-command 'my/org-roam-map)
+(general-define-key
+ "C-c z" 'my/org-roam-map)
 
-  (general-define-key
-   :keymaps 'my/org-roam-map
-   "c" 'org-roam-capture
-   "f" 'org-roam-node-find
-   "i" 'org-roam-node-insert
-   "t" 'org-roam-buffer-toggle)
+(general-define-key
+ :keymaps 'my/org-roam-map
+ "c" 'org-roam-capture
+ "f" 'org-roam-node-find
+ "i" 'org-roam-node-insert
+ "t" 'org-roam-buffer-toggle)
 #+end_src
 
 **** Interaction with =recentf=
@@ -788,8 +789,8 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
 Do not show org-roam files in recentf list.
 
 #+begin_src emacs-lisp
-  (add-to-list 'recentf-exclude
-	       (concat org-roam-directory "/.*"))
+(add-to-list 'recentf-exclude
+	     (concat org-roam-directory "/.*"))
 #+end_src
 
 **** UI with =org-roam-ui=
@@ -801,14 +802,14 @@ However, it's not yet on MELPA, so I added it as a submodule, and had to install
 its dependencies manually.
 
 #+begin_src emacs-lisp
-  (require-package 'websocket)
-  (require-package 'simple-httpd)
+(require-package 'websocket)
+(require-package 'simple-httpd)
 #+end_src
 
 Then I can load Org-Roam-UI.
 
 #+begin_src emacs-lisp
-  (load-library "org-roam-ui")
+(load-library "org-roam-ui")
 #+end_src
 
 *** Project Management
@@ -816,9 +817,9 @@ Then I can load Org-Roam-UI.
 Manage projects with projectile, and use =C-c p= as the shortcut.
 
 #+begin_src emacs-lisp
-  (require-package 'projectile)
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(require-package 'projectile)
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 #+end_src
 
 **** Search Path
@@ -826,7 +827,7 @@ Manage projects with projectile, and use =C-c p= as the shortcut.
 Default search for projects in the user defined projects path.
 
 #+begin_src emacs-lisp
-  (setq projectile-project-search-path `(,my/projects-path))
+(setq projectile-project-search-path `(,my/projects-path))
 #+end_src
 
 *** Quick Access
@@ -834,26 +835,26 @@ Default search for projects in the user defined projects path.
 I want to reach several important files quickly with shortcuts.
 
 #+begin_src emacs-lisp
-  (define-prefix-command 'my/quick-access-map)
-  (general-define-key "C-c o" 'my/quick-access-map)
+(define-prefix-command 'my/quick-access-map)
+(general-define-key "C-c o" 'my/quick-access-map)
 
-  (defun my/quick-access-zybox ()
-    (interactive)
-    (find-file my/zybox-path))
+(defun my/quick-access-zybox ()
+  (interactive)
+  (find-file my/zybox-path))
 
-  (defun my/quick-access-emacs-config ()
-    (interactive)
-    (find-file my/emacs-config-file))
+(defun my/quick-access-emacs-config ()
+  (interactive)
+  (find-file my/emacs-config-file))
 
-  (defun my/quick-access-projects ()
-    (interactive)
-    (find-file my/projects-path))
+(defun my/quick-access-projects ()
+  (interactive)
+  (find-file my/projects-path))
 
-  (general-define-key
-   :keymaps 'my/quick-access-map
-   "z" 'my/quick-access-zybox
-   "e" 'my/quick-access-emacs-config
-   "p" 'my/quick-access-projects)
+(general-define-key
+ :keymaps 'my/quick-access-map
+ "z" 'my/quick-access-zybox
+ "e" 'my/quick-access-emacs-config
+ "p" 'my/quick-access-projects)
 #+end_src
 
 *** GTD
@@ -865,21 +866,21 @@ The aim is to implement a GTD system with org-mode.
 Define those relevant files.
 
 #+begin_src emacs-lisp
-  (defvar my/gtd-path
-    (concat my/zybox-path "org-gtd/")
-    "The path of my GTD system root.")
+(defvar my/gtd-path
+  (concat my/zybox-path "org-gtd/")
+  "The path of my GTD system root.")
 
-  (defvar my/gtd-inbox-path
-    (concat my/gtd-path "inbox.org")
-    "The path of `inbox.org' of my GTD system.")
+(defvar my/gtd-inbox-path
+  (concat my/gtd-path "inbox.org")
+  "The path of `inbox.org' of my GTD system.")
 
-  (defvar my/gtd-gtd-path
-    (concat my/gtd-path "gtd.org")
-    "The path of `gtd.org' of my GTD system.")
+(defvar my/gtd-gtd-path
+  (concat my/gtd-path "gtd.org")
+  "The path of `gtd.org' of my GTD system.")
 
-  (defvar my/gtd-someday-path
-    (concat my/gtd-path "someday.org")
-    "The path of `someday.org' of my GTD system.")
+(defvar my/gtd-someday-path
+  (concat my/gtd-path "someday.org")
+  "The path of `someday.org' of my GTD system.")
 #+end_src
 
 **** Todo States
@@ -887,21 +888,21 @@ Define those relevant files.
 Use more states for precise control.
 
 #+begin_src emacs-lisp
-  (setq org-todo-keywords
-	'((sequence "TODO(t)"
-		    "IN PROCESS(i)"
-		    "POSTPONED(p)"
-		    "|"
-		    "DONE(d)")
-	  (sequence "|"
-		    "CANCELED(c)")))
+(setq org-todo-keywords
+      '((sequence "TODO(t)"
+		  "IN PROCESS(i)"
+		  "POSTPONED(p)"
+		  "|"
+		  "DONE(d)")
+	(sequence "|"
+		  "CANCELED(c)")))
 
-  (setq org-todo-keyword-faces
-	'(("TODO" . (:foreground "#B71C1C" :weight bold))
-	  ("IN PROCESS" . (:foreground "#8BC34A" :weight bold))
-	  ("POSTPONED" . (:foreground "#F57C00" :weight bold))
-	  ("DONE" . (:foreground "#33691E" :weight bold))
-	  ("CANCELED" . (:foreground "#757575" :weight bold))))
+(setq org-todo-keyword-faces
+      '(("TODO" . (:foreground "#B71C1C" :weight bold))
+	("IN PROCESS" . (:foreground "#8BC34A" :weight bold))
+	("POSTPONED" . (:foreground "#F57C00" :weight bold))
+	("DONE" . (:foreground "#33691E" :weight bold))
+	("CANCELED" . (:foreground "#757575" :weight bold))))
 #+end_src
 
 **** Capturing System
@@ -909,21 +910,21 @@ Use more states for precise control.
 Capture entries via ~org-capture~.
 
 #+begin_src emacs-lisp
-  (add-to-list 'org-capture-templates
-	       `("i" "inbox" entry
-		 (file+headline ,my/gtd-inbox-path "inbox")
-		 "* TODO [#B] %U %i%?"
-		 :empty-lines 1))
-  (add-to-list 'org-capture-templates
-	       `("s" "someday" entry
-		 (file+headline ,my/gtd-someday-path "someday")
-		 "* TODO [#C] %U %i%?"
-		 :empty-lines 1))
-  (add-to-list 'org-capture-templates
-	       `("g" "GTD" entry
-		 (file+datetree ,my/gtd-gtd-path)
-		 "* TODO [#B] %U %i%?"
-		 :empty-lines 1))
+(add-to-list 'org-capture-templates
+	     `("i" "inbox" entry
+	       (file+headline ,my/gtd-inbox-path "inbox")
+	       "* TODO [#B] %U %i%?"
+	       :empty-lines 1))
+(add-to-list 'org-capture-templates
+	     `("s" "someday" entry
+	       (file+headline ,my/gtd-someday-path "someday")
+	       "* TODO [#C] %U %i%?"
+	       :empty-lines 1))
+(add-to-list 'org-capture-templates
+	     `("g" "GTD" entry
+	       (file+datetree ,my/gtd-gtd-path)
+	       "* TODO [#B] %U %i%?"
+	       :empty-lines 1))
 #+end_src
 
 **** Refile Mechanism
@@ -931,28 +932,28 @@ Capture entries via ~org-capture~.
 Use the ~org-refile~ mechanism to distribute inbox items.
 
 #+begin_src emacs-lisp
-  (add-to-list 'org-refile-targets `(,my/gtd-gtd-path :maxlevel . 3))
-  (add-to-list 'org-refile-targets `(,my/gtd-someday-path :level . 1))
+(add-to-list 'org-refile-targets `(,my/gtd-gtd-path :maxlevel . 3))
+(add-to-list 'org-refile-targets `(,my/gtd-someday-path :level . 1))
 #+end_src
 
 Additional function to refile entry to datetree.
 
 #+begin_src emacs-lisp
-  (defun my/org-read-datetree-date (d)
-    (let ((dtmp (nthcdr 3 (parse-time-string d))))
-      (list (cadr dtmp) (car dtmp) (caddr dtmp))))
+(defun my/org-read-datetree-date (d)
+  (let ((dtmp (nthcdr 3 (parse-time-string d))))
+    (list (cadr dtmp) (car dtmp) (caddr dtmp))))
 
-  (defun my/org-refile-to-gtd-datetree (&optional bfn)
-    (interactive)
-    "Refile an entry into the datetree of `gtd.org'"
-    (require 'org-datetree)
-    (let* ((bfn (or bfn (find-file-noselect (expand-file-name my/gtd-gtd-path))))
-	   (datetree-date (my/org-read-datetree-date (org-read-date t nil))))
-      (org-refile nil nil (list nil (buffer-file-name bfn) nil
-				(with-current-buffer bfn
-				  (save-excursion
-				    (org-datetree-find-date-create datetree-date)
-				    (point)))))))
+(defun my/org-refile-to-gtd-datetree (&optional bfn)
+  (interactive)
+  "Refile an entry into the datetree of `gtd.org'"
+  (require 'org-datetree)
+  (let* ((bfn (or bfn (find-file-noselect (expand-file-name my/gtd-gtd-path))))
+	 (datetree-date (my/org-read-datetree-date (org-read-date t nil))))
+    (org-refile nil nil (list nil (buffer-file-name bfn) nil
+			      (with-current-buffer bfn
+				(save-excursion
+				  (org-datetree-find-date-create datetree-date)
+				  (point)))))))
 #+end_src
 
 **** Agenda
@@ -960,11 +961,11 @@ Additional function to refile entry to datetree.
 Agenda is the way to display all my GTD entries.
 
 #+begin_src emacs-lisp
-  (setq org-agenda-files `(,my/gtd-inbox-path
-			   ,my/gtd-gtd-path
-			   ,my/gtd-someday-path))
+(setq org-agenda-files `(,my/gtd-inbox-path
+			 ,my/gtd-gtd-path
+			 ,my/gtd-someday-path))
 
-  (general-define-key "<f6>" 'org-agenda)
+(general-define-key "<f6>" 'org-agenda)
 #+end_src
 
 * Todos
