@@ -586,8 +586,25 @@ longer a pain.
 其它細致選項，還需要具體地去針對各個文件來調整，例如使用 ~tags:nil~ 選項來去掉輸
 出文件中的標籤。
 
-TODO 接下來的工作，就是精細微調輸出 LaTeX 的各個選項，如頁邊距、字體等，來逐漸積
-累出讓自己滿意的 PDF 文件輸出了。
+***** 細調中文文檔類 cn-article
+
+弄出一系列還不錯的預設選項，集成到 cn-article 類中，讓日後的文檔輸出更方便。
+
+#+begin_src emacs-lisp
+  (add-to-list 'org-latex-classes
+	       '("cn-article"
+		 "\\documentclass{article}
+  \\usepackage{ctex}
+  \\usepackage[margin=1in]{geometry}
+  [NO-DEFAULT-PACKAGES]
+  [PACKAGES]
+  [EXTRA]"
+		 ("\\section{%s}" . "\\section*{%s}")
+		 ("\\subsection{%s}" . "\\subsection*{%s}")
+		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+#+end_src
 
 **** Insert Image
 
