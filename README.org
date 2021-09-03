@@ -595,8 +595,8 @@ longer a pain.
 #+begin_src emacs-lisp
 (add-to-list 'org-latex-classes
 	     '("cn-article"
-	       "\\documentclass{ctexart}
-\\usepackage[margin=1in]{geometry}"
+	       "\\documentclass[lang=cn]{elegantpaper}
+\\usepackage{ctex}"
 	       ("\\section{%s}" . "\\section*{%s}")
 	       ("\\subsection{%s}" . "\\subsection*{%s}")
 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
