@@ -492,6 +492,14 @@ Allow Chinese around markups. This comes from [[https://emacs-china.org/t/org-mo
 	    1))
 #+end_src
 
+**** Indentation
+
+Do no indent each paragraph according to the heading.
+
+#+begin_src emacs-lisp
+(setq-default org-adapt-indentation 'headline-data)
+#+end_src
+
 **** Attachments
 
 Put attachments in an obvious directory.
