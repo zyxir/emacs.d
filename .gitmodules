@@ -1,6 +1,3 @@
-[submodule "site-lisp/ivy-smex"]
-	path = site-lisp/ivy-smex
-	url = https://github.com/purcell/ivy-smex
 [submodule "site-lisp/opencc"]
 	path = site-lisp/opencc
 	url = git@github.com:zyxir/emacs-opencc.git

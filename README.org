@@ -418,18 +418,6 @@ be diminished.
 	    (diminish 'which-key-mode)))
 #+end_src
 
-*** Minibuffer
-
-I want to use smex to enhance my =M-x=, while still having the ivy
-interface for a consistent UI. So I add Purcell's ivy-smex as a
-submodule.
-
-#+begin_src emacs-lisp
-(require-package 'smex)
-(require 'ivy-smex)
-(global-set-key (kbd "M-x") 'ivy-smex)
-#+end_src
-
 *** Which-key
 
 Which-key displays the key bindings following your currently entered
