@@ -45,7 +45,8 @@ The configuration is divided into these categories:
 **Installation Steps:**
 
 1. Init and update all submodules.
-2. Make sure ~sqlite3~ is installed in path.
+2. Make sure ~msys2~ or ~mingw~ is installed, as a C compiler is required by
+   some functionalities.
 3. Optionally, install ~opencc~ for Chinese conversion support.
 
 ** General
@@ -582,12 +583,8 @@ longer a pain.
 #+begin_src emacs-lisp
 (add-to-list 'org-latex-classes
 	     '("cn-article"
-	       "\\documentclass{article}
-\\usepackage{ctex}
-\\usepackage[margin=1in]{geometry}
-[NO-DEFAULT-PACKAGES]
-[PACKAGES]
-[EXTRA]"
+	       "\\documentclass{ctexart}
+\\usepackage[margin=1in]{geometry}"
 	       ("\\section{%s}" . "\\section*{%s}")
 	       ("\\subsection{%s}" . "\\subsection*{%s}")
 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
@@ -737,13 +734,6 @@ worth noticing that I upgrade org-roam from v1 to v2 at [2021-08-30 Mon].
 (require-package 'org)
 (require-package 'org-roam)
 (require 'org-roam)
-#+end_src
-
-Warn if ~sqlite3~ is not located on ~exec-path~.
-
-#+begin_src emacs-lisp
-(unless (executable-find "sqlite3")
-  (message "To make org-roam work, you have to install sqlite3"))
 #+end_src
 
 Set the org-roam directory, and enable it by default.
