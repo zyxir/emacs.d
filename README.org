@@ -219,7 +219,9 @@ Now I configure things like this:
 (set-file-name-coding-system 'utf-8-unix)
 (set-keyboard-coding-system 'utf-8-unix)
 (set-next-selection-coding-system 'utf-8-unix)
-(set-selection-coding-system 'utf-8-unix)
+(if (eq system-type 'windows-nt)
+    (set-selection-coding-system 'utf-16le-dos)
+  (set-selection-coding-system 'utf-8-unix))
 (set-terminal-coding-system 'utf-8-unix)
 (setq locale-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
@@ -639,6 +641,48 @@ Install Elpy, the Emacs Python IDE.
 
 ** Feature
 
+*** Calendar and Org-Journal
+
+Assign a key to toggle the calendar.
+
+#+begin_src emacs-lisp
+(general-define-key "<f7>" 'calendar)
+#+end_src
+
+Org-journal is a tool to keep journals, and it works with the built-in
+calendar. I decided to try it on <2021-06-02 Wed>.
+
+#+begin_src emacs-lisp
+(require-package 'org-journal)
+#+end_src
+
+Set the journal directory as ~Zybox/org-journal~.
+
+#+begin_src emacs-lisp
+(setq org-journal-dir (concat my/zybox-path "org-journal"))
+(unless (file-exists-p org-journal-dir)
+  (make-directory org-journal-dir))
+#+end_src
+
+Set shortcuts and templates.
+
+#+begin_src emacs-lisp
+(general-define-key "C-c j" 'org-journal-new-entry)
+(setq org-journal-file-format "%F"
+      org-journal-date-format "%F %a W%V\n"
+      org-journal-date-prefix "#+TITLE: "
+      org-journal-time-format "%R "
+      org-journal-time-format-post-midnight "%R (midnight) "
+      org-journal-time-prefix "\n* "
+      org-journal-file-header "")
+#+end_src
+
+If it is early than 3 a.m., it is still yesterday.
+
+#+begin_src emacs-lisp
+(setq org-extend-today-until 3)
+#+end_src
+
 *** Chinese Conversion
 
 Conversion between simplified/traditional Chinese with =opencc.el=. 使用
@@ -691,41 +735,6 @@ Use a package to generate dummy Latin text into a buffer.
 
 Use ~lorem-ipsum-insert-paragraphs~, ~lorem-ipsum-insert-sentences~, and
 ~lorem-ipsum-insert-list~.
-
-*** Org-Journal
-
-Org-journal is a tool to keep journals. I decided to try it on <2021-06-02 Wed>.
-
-#+begin_src emacs-lisp
-(require-package 'org-journal)
-#+end_src
-
-Set the journal directory as ~Zybox/org-journal~.
-
-#+begin_src emacs-lisp
-(setq org-journal-dir (concat my/zybox-path "org-journal"))
-(unless (file-exists-p org-journal-dir)
-  (make-directory org-journal-dir))
-#+end_src
-
-Set shortcuts and templates.
-
-#+begin_src emacs-lisp
-(general-define-key "C-c j" 'org-journal-new-entry)
-(setq org-journal-file-format "%F"
-      org-journal-date-format "%F %a W%V\n"
-      org-journal-date-prefix "#+TITLE: "
-      org-journal-time-format "%R "
-      org-journal-time-format-post-midnight "%R (midnight) "
-      org-journal-time-prefix "\n* "
-      org-journal-file-header "")
-#+end_src
-
-If it is early than 3 a.m., it is still yesterday.
-
-#+begin_src emacs-lisp
-(setq org-extend-today-until 3)
-#+end_src
 
 *** Org-Roam
 
