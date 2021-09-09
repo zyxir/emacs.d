@@ -27,6 +27,14 @@ anywhere, that data will never get lost. So, 20 years from now, you will still
 be able to read these files, which you wrote.”。
 #+end_quote
 
+** Installation Steps
+
+1. Init and update all submodules.
+2. Make sure ~msys2~ or ~mingw~ is installed on Windows, as a C compiler is
+   required by some functionalities.
+3. Optionally, install ~opencc~ for Chinese conversion support.
+4. Write own =custom.el= based on =example-custom.el=.
+
 * Emacs Configuration
 
 The configuration is divided into these categories:
@@ -41,13 +49,6 @@ The configuration is divided into these categories:
   management.
 - Extensions :: Settings for specific file name extensions, like
   ~.py~.
-
-**Installation Steps:**
-
-1. Init and update all submodules.
-2. Make sure ~msys2~ or ~mingw~ is installed, as a C compiler is required by
-   some functionalities.
-3. Optionally, install ~opencc~ for Chinese conversion support.
 
 ** General
 
