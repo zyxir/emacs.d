@@ -33,7 +33,8 @@ be able to read these files, which you wrote.”。
 2. Make sure ~msys2~ or ~mingw~ is installed on Windows, as a C compiler is
    required by some functionalities.
 3. Optionally, install ~opencc~ for Chinese conversion support.
-4. Write own =custom.el= based on =example-custom.el=.
+4. Write own =custom.el= based on =example-custom.el=. Make sure your configured
+   font is installed on your system.
 
 * Emacs Configuration
 
