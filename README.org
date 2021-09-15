@@ -326,6 +326,16 @@ Set default fill column to 80.
 (setq-default fill-column 80)
 #+end_src
 
+*** Input Method
+
+Use ~sis~ (smart input source) to reduce manual switch for OS input source.
+
+#+begin_src emacs-lisp
+(require-package 'sis)
+#+end_src
+
+More should be configured in custom.el in accordance to the README of ~sis~.
+
 *** Location
 
 Show side line numbers and column number while coding.
