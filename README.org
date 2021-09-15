@@ -332,9 +332,11 @@ Use ~sis~ (smart input source) to reduce manual switch for OS input source.
 
 #+begin_src emacs-lisp
 (require-package 'sis)
+(sis-global-respect-mode t)
 #+end_src
 
-More should be configured in custom.el in accordance to the README of ~sis~.
+**Platform-specific settings should be configured in custom.el** in accordance
+to the README of ~sis~.
 
 *** Location
 
