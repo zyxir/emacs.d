@@ -35,6 +35,8 @@ be able to read these files, which you wrote.”。
 3. Optionally, install ~opencc~ for Chinese conversion support.
 4. Write own =custom.el= based on =example-custom.el=. Make sure your configured
    font is installed on your system.
+5. On Windows, add =./3rd-party/im-select/im-select.exe= to path, to enable
+   smart input source support.
 
 * Emacs Configuration
 
