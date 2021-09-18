@@ -208,6 +208,14 @@ be overwritten.
 (general-define-key "C-M-i" 'company-complete)
 #+end_src
 
+*** Camel Case Editing
+
+Make Emacs aware of camel case.
+
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook 'subword-mode)
+#+end_src
+
 *** Encoding
 
 I used to set everything to UTF-8 simply by ~set-language-environment~, but that
