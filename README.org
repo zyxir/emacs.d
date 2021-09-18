@@ -421,6 +421,14 @@ Disable unnecessary UI elements.
 (scroll-bar-mode -1)
 #+end_src
 
+Add a vertical line indicating the fill-column for all programming modes.
+
+#+begin_src emacs-lisp
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (display-fill-column-indicator-mode t)))
+#+end_src
+
 *** Modeline
 
 **** Hide Minor Modes
