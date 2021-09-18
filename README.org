@@ -653,12 +653,6 @@ Use executable inside Emacs config directory.
 
 *** Python ~.py~
 
-Install Elpy, the Emacs Python IDE.
-
-#+begin_src emacs-lisp
-(require-package 'elpy)
-#+end_src
-
 ** Feature
 
 *** Calendar and Org-Journal
@@ -743,6 +737,16 @@ Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
 (require-package 'magit)
+#+end_src
+
+*** Language Server Protocol
+
+Language server protocol is the future. It is well suited for Emacs, a free and
+open source text editor.
+
+#+begin_src emacs-lisp
+(require-package 'lsp-mode)
+(require-package 'lsp-ui)
 #+end_src
 
 *** Lorem Ipsum Generator
