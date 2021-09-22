@@ -560,7 +560,7 @@ Render bullets ("•" and "◦") instead of dashes in bulleted lists.
 Utilize the ~org-capture~ mechanism.
 
 #+begin_src emacs-lisp
-(general-define-key "<f5>" 'org-capture)
+(general-define-key "C-c c" 'org-capture)
 #+end_src
 
 **** Editing Features
@@ -676,7 +676,7 @@ Use executable inside Emacs config directory.
 Assign a key to toggle the calendar.
 
 #+begin_src emacs-lisp
-(general-define-key "<f7>" 'calendar)
+(general-define-key "C-c g" 'calendar)
 #+end_src
 
 Org-journal is a tool to keep journals, and it works with the built-in
@@ -720,7 +720,6 @@ Conversion between simplified/traditional Chinese with =opencc.el=. 使用
 
 #+begin_src emacs-lisp
 (require 'opencc)
-(general-define-key "C-c c" 'opencc-replace-at-point)
 #+end_src
 
 =opencc.el= is based on OpenCC:
@@ -1005,7 +1004,7 @@ Agenda is the way to display all my GTD entries.
 			 ,my/gtd-gtd-path
 			 ,my/gtd-someday-path))
 
-(general-define-key "<f6>" 'org-agenda)
+(general-define-key "C-c a" 'org-agenda)
 #+end_src
 
 * Todos
