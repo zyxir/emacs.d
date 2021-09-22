@@ -334,10 +334,10 @@ Show trailing whitespace for most modes.
 (general-define-key "C-c SPC" 'delete-trailing-whitespace)
 #+end_src
 
-Set default fill column to 80.
+Set default fill column to 79.
 
 #+begin_src emacs-lisp
-(setq-default fill-column 80)
+(setq-default fill-column 79)
 #+end_src
 
 *** Input Method
