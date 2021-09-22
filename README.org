@@ -854,7 +854,7 @@ Manage projects with projectile, and use =C-c p= as the shortcut.
 #+begin_src emacs-lisp
 (require-package 'projectile)
 (projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
 #+end_src
 
 **** Search Path
