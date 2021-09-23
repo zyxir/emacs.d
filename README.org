@@ -401,7 +401,7 @@ Inhibit startup screen.
 Font and color theme.
 
 #+begin_src emacs-lisp
-(defvar my/main-font-name "Sarasa Mono TC"
+(defvar my/main-font-name "Sarasa Mono CL"
   "Main font name for the whole program.")
 (defvar my/main-font-size 11
   "The default size for the main font.")
