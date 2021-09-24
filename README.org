@@ -1011,12 +1011,3 @@ Agenda is the way to display all my GTD entries.
 
 (general-define-key "C-c a" 'org-agenda)
 #+end_src
-
-* Todos
-
-Functionalities to be added.
-
-- Python scripting features
-- org-reveal
-- org-ref
-- enhancements for GNU/Linux
