@@ -741,10 +741,14 @@ Enable syntax checking with ~pylint~ via flycheck.
 (add-hook 'python-mode-hook #'flycheck-mode)
 #+end_src
 
-Enable lsp mode for python, with jedi language server as the server.
+Enable lsp mode for python, with pyright as the server.
 
 #+begin_src emacs-lisp
-(add-hook 'python-mode-hook #'lsp-mode)
+(require-package 'lsp-pyright)
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (require 'lsp-pyright)
+	    (lsp)))
 #+end_src
 
 ** Feature
@@ -854,7 +858,9 @@ open source text editor.
 
 ~lsp-mode~ should be enabled for each mode individually.
 
-**** Peek
+**** UI
+
+Settings for lsp-ui.
 
 Remap =xref-find-{definitions,references}= (=M-.= and =M-?= by default).
 
