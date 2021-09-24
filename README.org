@@ -512,6 +512,14 @@ Use doom theme on treemacs.
 (doom-themes-treemacs-config)
 #+end_src
 
+Bind keys for treemacs.
+
+#+begin_src emacs-lisp
+(general-define-key
+ :keymap global-map
+ "M-0" 'treemacs-select-window)
+#+end_src
+
 *** Which-key
 
 Which-key displays the key bindings following your currently entered
