@@ -416,14 +416,6 @@ Use flycheck for syntax checking.
 
 Enable flycheck-mode for each language specifically.
 
-*** Treemacs
-
-Treemacs is a great feature for IDE-like experience.
-
-#+begin_src emacs-lisp
-(require-package 'treemacs)
-#+end_src
-
 ** Workbench
 
 *** Startup
@@ -492,6 +484,15 @@ be diminished.
 	    (diminish 'org-roam-mode)
 	    (diminish 'projectile-mode)
 	    (diminish 'which-key-mode)))
+#+end_src
+
+*** Treemacs
+
+Treemacs is a great feature for IDE-like experience.
+
+#+begin_src emacs-lisp
+(require-package 'treemacs)
+(require-package 'treemacs-projectile)
 #+end_src
 
 *** Which-key
