@@ -36,8 +36,9 @@ be able to read these files, which you wrote.”。
    font is installed on your system.
 4. On Windows, add =./3rd-party/im-select/im-select.exe= to path, to enable
   smart input source support.
-5. For Python development:
-6. Other small functionalities:
+5. Run =M-x all-the-icons-install-fonts= for icon support.
+6. For Python development:
+7. Other small functionalities:
    - Install ~opencc~ for Chinese conversion support.
 
 * Emacs Configuration
@@ -426,6 +427,14 @@ Inhibit startup screen.
 (setq inhibit-startup-screen t)
 #+end_src
 
+*** Icon
+
+Add icon support.
+
+#+begin_src emacs-lisp
+(require-package 'all-the-icons)
+#+end_src
+
 *** Appearances
 
 Font and color theme.
@@ -493,6 +502,14 @@ Treemacs is a great feature for IDE-like experience.
 #+begin_src emacs-lisp
 (require-package 'treemacs)
 (require-package 'treemacs-projectile)
+#+end_src
+
+Use doom theme on treemacs.
+
+#+begin_src emacs-lisp
+(setq doom-theme-treemacs-theme "doom-colors"
+      doom-themes-treemacs-enable-variable-pitch nil)
+(doom-themes-treemacs-config)
 #+end_src
 
 *** Which-key
@@ -799,6 +816,12 @@ Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
 (require-package 'magit)
+#+end_src
+
+Integration fix with treemacs.
+
+#+begin_src emacs-lisp
+(require-package 'treemacs-magit)
 #+end_src
 
 *** Language Server Protocol
