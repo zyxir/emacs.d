@@ -1,5 +1,6 @@
 .cache
 .org-id-locations
+.lsp*
 auto-save-list
 backups
 bookmarks
