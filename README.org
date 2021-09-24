@@ -741,6 +741,12 @@ Enable syntax checking with ~pylint~ via flycheck.
 (add-hook 'python-mode-hook #'flycheck-mode)
 #+end_src
 
+Enable lsp mode for python, with jedi language server as the server.
+
+#+begin_src emacs-lisp
+(add-hook 'python-mode-hook #'lsp-mode)
+#+end_src
+
 ** Feature
 
 *** Calendar and Org-Journal
@@ -840,6 +846,23 @@ open source text editor.
 #+begin_src emacs-lisp
 (require-package 'lsp-mode)
 (require-package 'lsp-ui)
+(require-package 'lsp-ivy)
+
+(setq lsp-keymap-prefix "C-c l")
+(require 'lsp-mode)
+#+end_src
+
+~lsp-mode~ should be enabled for each mode individually.
+
+**** Peek
+
+Remap =xref-find-{definitions,references}= (=M-.= and =M-?= by default).
+
+#+begin_src emacs-lisp
+(general-define-key
+ :keymap 'lsp-ui-mode-map
+ "M-." #'lsp-ui-peek-find-definitions
+ "M-?" #'lsp-ui-peek-find-references)
 #+end_src
 
 *** Lorem Ipsum Generator
