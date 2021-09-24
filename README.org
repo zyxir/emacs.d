@@ -373,6 +373,24 @@ Indicate matching parenthesis.
 (show-paren-mode 1)
 #+end_src
 
+*** Project Management
+
+Manage projects with projectile, and use =C-c p= as the shortcut.
+
+#+begin_src emacs-lisp
+(require-package 'projectile)
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+#+end_src
+
+**** Search Path
+
+Default search for projects in the user defined projects path.
+
+#+begin_src emacs-lisp
+(setq projectile-project-search-path `(,my/projects-path))
+#+end_src
+
 *** Search
 
 Replace isearch with swiper.
@@ -397,6 +415,14 @@ Use flycheck for syntax checking.
 #+end_src
 
 Enable flycheck-mode for each language specifically.
+
+*** Treemacs
+
+Treemacs is a great feature for IDE-like experience.
+
+#+begin_src emacs-lisp
+(require-package 'treemacs)
+#+end_src
 
 ** Workbench
 
@@ -864,24 +890,6 @@ Then I can load Org-Roam-UI.
 
 #+begin_src emacs-lisp
 (load-library "org-roam-ui")
-#+end_src
-
-*** Project Management
-
-Manage projects with projectile, and use =C-c p= as the shortcut.
-
-#+begin_src emacs-lisp
-(require-package 'projectile)
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
-#+end_src
-
-**** Search Path
-
-Default search for projects in the user defined projects path.
-
-#+begin_src emacs-lisp
-(setq projectile-project-search-path `(,my/projects-path))
 #+end_src
 
 *** Quick Access
