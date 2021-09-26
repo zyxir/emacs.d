@@ -547,6 +547,36 @@ If running with GUI, adjust the frame.
 
 ** Extensions
 
+*** LaTeX ~.tex~
+
+Install and utilize AUCTeX.
+
+#+begin_src emacs-lisp
+(require-package 'auctex)
+(setq TeX-auto-save t)
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)
+#+end_src
+
+Use truncate lines instead of fill-column, and other handy settings.
+
+#+begin_src emacs-lisp
+(add-hook 'LaTeX-mode-hook
+	  (lambda ()
+	    (turn-off-auto-fill)
+	    (setq-local truncate-lines t)
+	    (display-line-numbers-mode 2)
+	    (TeX-fold-mode 1)))
+#+end_src
+
+**** RefTeX
+
+Configure RefTeX for better cross-referencing support.
+
+#+begin_src emacs-lisp
+(add-hook 'LaTeX-mode-hook #'reftex-mode)
+#+end_src
+
 *** MATLAB ~.m~
 
 The old but useful MATLAB mode.
