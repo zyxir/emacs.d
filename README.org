@@ -695,6 +695,8 @@ Render bullets ("•" and "◦") instead of dashes in bulleted lists.
 Utilize the ~org-capture~ mechanism.
 
 #+begin_src emacs-lisp
+(autoload 'org-capture "org-capture"
+  "Capture something." t nil)
 (general-define-key "C-c c" 'org-capture)
 #+end_src
 
@@ -971,21 +973,22 @@ Use more states for precise control.
 Capture entries via ~org-capture~.
 
 #+begin_src emacs-lisp
-(add-to-list 'org-capture-templates
-	     `("i" "inbox" entry
-	       (file+headline ,my/gtd-inbox-path "inbox")
-	       "* TODO [#B] %U %i%?"
-	       :empty-lines 1))
-(add-to-list 'org-capture-templates
-	     `("s" "someday" entry
-	       (file+headline ,my/gtd-someday-path "someday")
-	       "* TODO [#C] %U %i%?"
-	       :empty-lines 1))
-(add-to-list 'org-capture-templates
-	     `("g" "GTD" entry
-	       (file+datetree ,my/gtd-gtd-path)
-	       "* TODO [#B] %U %i%?"
-	       :empty-lines 1))
+(with-eval-after-load "org-mode"
+  (add-to-list 'org-capture-templates
+	       `("i" "inbox" entry
+		 (file+headline ,my/gtd-inbox-path "inbox")
+		 "* TODO [#B] %U %i%?"
+		 :empty-lines 1))
+  (add-to-list 'org-capture-templates
+	       `("s" "someday" entry
+		 (file+headline ,my/gtd-someday-path "someday")
+		 "* TODO [#C] %U %i%?"
+		 :empty-lines 1))
+  (add-to-list 'org-capture-templates
+	       `("g" "GTD" entry
+		 (file+datetree ,my/gtd-gtd-path)
+		 "* TODO [#B] %U %i%?"
+		 :empty-lines 1)))
 #+end_src
 
 **** Refile Mechanism
