@@ -599,6 +599,12 @@ If running with GUI, adjust the frame.
 
 ** Extensions
 
+*** CMake Files
+
+#+begin_src emacs-lisp
+(require-package 'cmake-mode)
+#+end_src
+
 *** LaTeX ~.tex~
 
 Install and utilize AUCTeX.
