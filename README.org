@@ -990,7 +990,7 @@ Use more states for precise control.
 Capture entries via ~org-capture~.
 
 #+begin_src emacs-lisp
-(with-eval-after-load "org-mode"
+(with-eval-after-load "org-capture"
   (add-to-list 'org-capture-templates
 	       `("i" "inbox" entry
 		 (file+headline ,my/gtd-inbox-path "inbox")
