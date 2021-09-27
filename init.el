@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (defvar my/init.org-message-depth 3
   "What depth of init.org headers to message at startup.")
 
