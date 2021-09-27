@@ -10,6 +10,7 @@
 - [ ] Replace auctex with a LaTeX language server.
 - [ ] Use LSP as a company backend.
 - [ ] Use org-sidebar for easier org-mode navigation.
+- [ ] Integrate window numbering to the system.
 
 ** Installation Steps
 
