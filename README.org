@@ -913,6 +913,122 @@ Integration fix with treemacs.
 (require-package 'treemacs-magit)
 #+end_src
 
+*** GTD
+
+The aim is to implement a GTD system with org-mode.
+
+**** Relevant Files
+
+Define those relevant files.
+
+#+begin_src emacs-lisp
+(defvar my/gtd-path nil
+  "The path of my GTD system root.")
+
+(defvar my/gtd-inbox-path nil
+  "The path of `inbox.org' of my GTD system.")
+
+(defvar my/gtd-gtd-path nil
+  "The path of `gtd.org' of my GTD system.")
+
+(defvar my/gtd-someday-path nil
+  "The path of `someday.org' of my GTD system.")
+
+(setq my/gtd-path
+      (concat my/zybox-path "org-gtd/")
+      my/gtd-inbox-path
+      (concat my/gtd-path "inbox.org")
+      my/gtd-gtd-path
+      (concat my/gtd-path "gtd.org")
+      my/gtd-someday-path
+      (concat my/gtd-path "someday.org"))
+#+end_src
+
+**** Todo States
+
+Use more states for precise control.
+
+#+begin_src emacs-lisp
+(setq org-todo-keywords
+      '((sequence "TODO(t)"
+		  "IN PROCESS(i)"
+		  "POSTPONED(p)"
+		  "|"
+		  "DONE(d)")
+	(sequence "|"
+		  "CANCELED(c)")))
+
+(setq org-todo-keyword-faces
+      '(("TODO" . (:foreground "#B71C1C" :weight bold))
+	("IN PROCESS" . (:foreground "#8BC34A" :weight bold))
+	("POSTPONED" . (:foreground "#F57C00" :weight bold))
+	("DONE" . (:foreground "#33691E" :weight bold))
+	("CANCELED" . (:foreground "#757575" :weight bold))))
+#+end_src
+
+**** Capturing System
+
+Capture entries via ~org-capture~.
+
+#+begin_src emacs-lisp
+(add-to-list 'org-capture-templates
+	     `("i" "inbox" entry
+	       (file+headline ,my/gtd-inbox-path "inbox")
+	       "* TODO [#B] %U %i%?"
+	       :empty-lines 1))
+(add-to-list 'org-capture-templates
+	     `("s" "someday" entry
+	       (file+headline ,my/gtd-someday-path "someday")
+	       "* TODO [#C] %U %i%?"
+	       :empty-lines 1))
+(add-to-list 'org-capture-templates
+	     `("g" "GTD" entry
+	       (file+datetree ,my/gtd-gtd-path)
+	       "* TODO [#B] %U %i%?"
+	       :empty-lines 1))
+#+end_src
+
+**** Refile Mechanism
+
+Use the ~org-refile~ mechanism to distribute inbox items.
+
+#+begin_src emacs-lisp
+(add-to-list 'org-refile-targets `(,my/gtd-gtd-path :maxlevel . 3))
+(add-to-list 'org-refile-targets `(,my/gtd-someday-path :level . 1))
+#+end_src
+
+Additional function to refile entry to datetree.
+
+#+begin_src emacs-lisp
+(defun my/org-read-datetree-date (d)
+  (let ((dtmp (nthcdr 3 (parse-time-string d))))
+    (list (cadr dtmp) (car dtmp) (caddr dtmp))))
+
+(defun my/org-refile-to-gtd-datetree (&optional bfn)
+  (interactive)
+  "Refile an entry into the datetree of `gtd.org'"
+  (require 'org-datetree)
+  (let* ((bfn (or bfn (find-file-noselect (expand-file-name my/gtd-gtd-path))))
+	 (datetree-date (my/org-read-datetree-date (org-read-date t nil))))
+    (org-refile nil nil (list nil (buffer-file-name bfn) nil
+			      (with-current-buffer bfn
+				(save-excursion
+				  (org-datetree-find-date-create datetree-date)
+				  (point)))))))
+#+end_src
+
+**** Agenda
+
+Agenda is the way to display all my GTD entries.
+
+#+begin_src emacs-lisp
+(setq org-agenda-files `(,my/gtd-inbox-path
+			 ,my/gtd-gtd-path
+			 ,my/gtd-someday-path))
+
+(general-define-key "C-c a" 'org-agenda)
+#+end_src
+
 *** Language Server Protocol
 
 Language server protocol is the future. It is well suited for Emacs, a free and
@@ -1059,120 +1175,4 @@ Quick access paths are defined in `my/quick-access-choices'"
     (funcall find-file-function target)))
 
 (general-define-key "C-c o" #'my/quick-access)
-#+end_src
-
-*** GTD
-
-The aim is to implement a GTD system with org-mode.
-
-**** Relevant Files
-
-Define those relevant files.
-
-#+begin_src emacs-lisp
-(defvar my/gtd-path nil
-  "The path of my GTD system root.")
-
-(defvar my/gtd-inbox-path nil
-  "The path of `inbox.org' of my GTD system.")
-
-(defvar my/gtd-gtd-path nil
-  "The path of `gtd.org' of my GTD system.")
-
-(defvar my/gtd-someday-path nil
-  "The path of `someday.org' of my GTD system.")
-
-(setq my/gtd-path
-      (concat my/zybox-path "org-gtd/")
-      my/gtd-inbox-path
-      (concat my/gtd-path "inbox.org")
-      my/gtd-gtd-path
-      (concat my/gtd-path "gtd.org")
-      my/gtd-someday-path
-      (concat my/gtd-path "someday.org"))
-#+end_src
-
-**** Todo States
-
-Use more states for precise control.
-
-#+begin_src emacs-lisp
-(setq org-todo-keywords
-      '((sequence "TODO(t)"
-		  "IN PROCESS(i)"
-		  "POSTPONED(p)"
-		  "|"
-		  "DONE(d)")
-	(sequence "|"
-		  "CANCELED(c)")))
-
-(setq org-todo-keyword-faces
-      '(("TODO" . (:foreground "#B71C1C" :weight bold))
-	("IN PROCESS" . (:foreground "#8BC34A" :weight bold))
-	("POSTPONED" . (:foreground "#F57C00" :weight bold))
-	("DONE" . (:foreground "#33691E" :weight bold))
-	("CANCELED" . (:foreground "#757575" :weight bold))))
-#+end_src
-
-**** Capturing System
-
-Capture entries via ~org-capture~.
-
-#+begin_src emacs-lisp
-(add-to-list 'org-capture-templates
-	     `("i" "inbox" entry
-	       (file+headline ,my/gtd-inbox-path "inbox")
-	       "* TODO [#B] %U %i%?"
-	       :empty-lines 1))
-(add-to-list 'org-capture-templates
-	     `("s" "someday" entry
-	       (file+headline ,my/gtd-someday-path "someday")
-	       "* TODO [#C] %U %i%?"
-	       :empty-lines 1))
-(add-to-list 'org-capture-templates
-	     `("g" "GTD" entry
-	       (file+datetree ,my/gtd-gtd-path)
-	       "* TODO [#B] %U %i%?"
-	       :empty-lines 1))
-#+end_src
-
-**** Refile Mechanism
-
-Use the ~org-refile~ mechanism to distribute inbox items.
-
-#+begin_src emacs-lisp
-(add-to-list 'org-refile-targets `(,my/gtd-gtd-path :maxlevel . 3))
-(add-to-list 'org-refile-targets `(,my/gtd-someday-path :level . 1))
-#+end_src
-
-Additional function to refile entry to datetree.
-
-#+begin_src emacs-lisp
-(defun my/org-read-datetree-date (d)
-  (let ((dtmp (nthcdr 3 (parse-time-string d))))
-    (list (cadr dtmp) (car dtmp) (caddr dtmp))))
-
-(defun my/org-refile-to-gtd-datetree (&optional bfn)
-  (interactive)
-  "Refile an entry into the datetree of `gtd.org'"
-  (require 'org-datetree)
-  (let* ((bfn (or bfn (find-file-noselect (expand-file-name my/gtd-gtd-path))))
-	 (datetree-date (my/org-read-datetree-date (org-read-date t nil))))
-    (org-refile nil nil (list nil (buffer-file-name bfn) nil
-			      (with-current-buffer bfn
-				(save-excursion
-				  (org-datetree-find-date-create datetree-date)
-				  (point)))))))
-#+end_src
-
-**** Agenda
-
-Agenda is the way to display all my GTD entries.
-
-#+begin_src emacs-lisp
-(setq org-agenda-files `(,my/gtd-inbox-path
-			 ,my/gtd-gtd-path
-			 ,my/gtd-someday-path))
-
-(general-define-key "C-c a" 'org-agenda)
 #+end_src
