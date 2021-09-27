@@ -222,8 +222,12 @@ be overwritten.
 
 #+begin_src emacs-lisp
 (require-package 'company)
-(global-company-mode +1)
-(general-define-key "C-M-i" 'company-complete)
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (company-mode 1)
+	    (general-define-key
+	     :keymaps 'prog-mode-map
+	     "C-M-i" 'company-complete)))
 #+end_src
 
 *** Camel Case Editing
