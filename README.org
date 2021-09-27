@@ -159,28 +159,38 @@ The location of several important files and directories. Note that the
 location of Zybox is left empty here.
 
 #+begin_src emacs-lisp
-(defvar my/emacs-config-file (concat user-emacs-directory
-				     "README.org")
+(defvar my/emacs-config-file nil
   "The main Emacs configuration file.")
-(defvar my/3rd-party-relapath "3rd-party/"
+(setq my/emacs-config-file (concat user-emacs-directory
+				   "README.org"))
+
+(defvar my/3rd-party-relapath nil
   "The path of 3rd-party tools relative to the user Emacs directory.")
-(defvar my/zybox-path ""
+(setq my/3rd-party-relapath "3rd-party/")
+
+(defvar my/zybox-path nil
   "The path of Zybox, the base of all my files.")
-(defvar my/projects-relapath "projects/"
+
+(defvar my/projects-relapath nil
   "The path of the projects directory relative to Zybox.")
-(defvar my/std-proj-relapath "projects/ego/std/std-proj/README.org"
+(setq my/projects-relapath "projects/")
+
+(defvar my/std-proj-relapath nil
   "The path of my Project Standard specification file, relative to Zybox.")
+(setq my/std-proj-relapath "projects/ego/std/std-proj/README.org")
 #+end_src
 
-These locations varies across my devices, so Emacs should reads an
-external file named ~custom.el~, to get the accurate location. The
-location of Zybox should be set there. Emacs itself will also mess up
-with the custom file.
+These locations varies across my devices, so Emacs should reads an external
+file named ~custom.el~, to get the accurate location. The location of Zybox
+should be set there. If no Zybox location is assigned, an error would be
+signaled.
 
 #+begin_src emacs-lisp
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (if (file-exists-p custom-file)
     (load custom-file))
+(when (equal my/zybox-path nil)
+  (error "No Zybox path is assigned!"))
 #+end_src
 
 Construct absolute paths and other file locations.
@@ -189,12 +199,17 @@ Construct absolute paths and other file locations.
 ;; Fix `my/zybox-path` if it is incorrect.
 (setq my/zybox-path (file-name-as-directory my/zybox-path))
 
-(defvar my/3rd-party-path (concat user-emacs-directory my/3rd-party-relapath)
+(defvar my/3rd-party-path nil
   "The path of 3rd-party tools.")
-(defvar my/projects-path (concat my/zybox-path my/projects-relapath)
+(setq my/3rd-party-path (concat user-emacs-directory my/3rd-party-relapath))
+
+(defvar my/projects-path nil
   "The path of the projects directory.")
-(defvar my/std-proj-path (concat my/zybox-path my/std-proj-relapath)
+(setq my/projects-path (concat my/zybox-path my/projects-relapath))
+
+(defvar my/std-proj-path nil
   "The path of my Project Standard specification file.")
+(setq my/std-proj-path (concat my/zybox-path my/std-proj-relapath))
 #+end_src
 
 ** Text Editor
@@ -266,9 +281,12 @@ Always save cursor position.
 A better backup and auto save configuration.
 
 #+begin_src emacs-lisp
-(defvar my/backup-directory (concat user-emacs-directory
-				    "backups")
+(defvar my/backup-directory nil
   "The location of backups.")
+(setq my/backup-directory
+      (concat user-emacs-directory
+	      "backups"))
+
 (unless (file-exists-p my/backup-directory)
   (make-directory my/backup-directory t))
 (setq backup-directory-alist `(("." . ,my/backup-directory)))
@@ -440,10 +458,14 @@ Add icon support.
 Font and color theme.
 
 #+begin_src emacs-lisp
-(defvar my/main-font-name "Sarasa Mono CL"
+(defvar my/main-font-name nil
   "Main font name for the whole program.")
-(defvar my/main-font-size 11
+(setq my/main-font-name "Sarasa Mono CL")
+
+(defvar my/main-font-size nil
   "The default size for the main font.")
+(setq my/main-font-size 11)
+
 (setq my/main-font-full (concat my/main-font-name " "
 			     (number-to-string my/main-font-size)))
 
@@ -1029,21 +1051,26 @@ The aim is to implement a GTD system with org-mode.
 Define those relevant files.
 
 #+begin_src emacs-lisp
-(defvar my/gtd-path
-  (concat my/zybox-path "org-gtd/")
+(defvar my/gtd-path nil
   "The path of my GTD system root.")
 
-(defvar my/gtd-inbox-path
-  (concat my/gtd-path "inbox.org")
+(defvar my/gtd-inbox-path nil
   "The path of `inbox.org' of my GTD system.")
 
-(defvar my/gtd-gtd-path
-  (concat my/gtd-path "gtd.org")
+(defvar my/gtd-gtd-path nil
   "The path of `gtd.org' of my GTD system.")
 
-(defvar my/gtd-someday-path
-  (concat my/gtd-path "someday.org")
+(defvar my/gtd-someday-path nil
   "The path of `someday.org' of my GTD system.")
+
+(setq my/gtd-path
+      (concat my/zybox-path "org-gtd/")
+      my/gtd-inbox-path
+      (concat my/gtd-path "inbox.org")
+      my/gtd-gtd-path
+      (concat my/gtd-path "gtd.org")
+      my/gtd-someday-path
+      (concat my/gtd-path "someday.org"))
 #+end_src
 
 **** Todo States
