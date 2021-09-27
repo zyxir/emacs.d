@@ -4,9 +4,33 @@
 
 * Introduction
 
+** Todos
+
+- [ ] Gradually replace everything with ~use-package~ for better startup performance.
+- [ ] Replace auctex with a LaTeX language server.
+- [ ] Use LSP as a company backend.
+- [ ] Use org-sidebar for easier org-mode navigation.
+
+** Installation Steps
+
+These steps is **for myself only**. You may adapt my config, but it is never
+recommended to use it directly.
+
+1. Init and update all submodules.
+2. Make sure ~msys2~ or ~mingw~ is installed on Windows, as a C compiler is
+   required to compile some functionalities.
+3. Write own =custom.el= based on =example-custom.el=. Make sure your configured
+   font is installed on your system.
+4. On Windows, add =./3rd-party/im-select/im-select.exe= to path, to enable
+  smart input source support.
+5. Run =M-x all-the-icons-install-fonts= for icon support.
+6. Other small functionalities:
+   - Install ~opencc~ for Chinese conversion support.
+
+** (Chinese) 配置介紹
+
 這是我的 Emacs 配置。我主要使用 Emacs 來進行個人知識管理、待辦事項管理、簡單文檔
-撰寫、輕度代碼編輯（我想逐步把 Emacs 打造成我的主力編輯器，但目前還是主要使用
-Visual Studio Code）。
+撰寫、輕度代碼編輯。
 
 高手的配置通常是以代碼項目的形式管理的（例如 Purcell 的配置，Doom Emacs，Centuar
 Emacs 等等）。但對我個人而言，我更喜歡方便編輯與查看的 literate programming 形式。
@@ -26,20 +50,6 @@ on any computer, Linux, Windows, on a Macintosh, whatever. You can read it truly
 anywhere, that data will never get lost. So, 20 years from now, you will still
 be able to read these files, which you wrote.”。
 #+end_quote
-
-** Installation Tips
-
-1. Init and update all submodules.
-2. Make sure ~msys2~ or ~mingw~ is installed on Windows, as a C compiler is
-   required to compile some functionalities.
-3. Write own =custom.el= based on =example-custom.el=. Make sure your configured
-   font is installed on your system.
-4. On Windows, add =./3rd-party/im-select/im-select.exe= to path, to enable
-  smart input source support.
-5. Run =M-x all-the-icons-install-fonts= for icon support.
-6. For Python development:
-7. Other small functionalities:
-   - Install ~opencc~ for Chinese conversion support.
 
 * Emacs Configuration
 
