@@ -478,7 +478,7 @@ Inhibit startup screen.
 Add icon support.
 
 #+begin_src emacs-lisp
-(require-package 'all-the-icons)
+(use-package all-the-icons)
 #+end_src
 
 *** Appearances
@@ -502,12 +502,17 @@ Font and color theme.
   (set-frame-font zy/main-font-full)
   (dolist (charset '(kana han symbol cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font) charset
-		      (font-spec :family zy/main-font-name)))
+		      (font-spec :family zy/main-font-name))))
 
-  (require-package 'solaire-mode)
-  (solaire-global-mode +1)
-  (require-package 'doom-themes)
+(use-package doom-themes
+  :if window-system
+  :config
   (load-theme 'doom-one-light t))
+
+(use-package solaire-mode
+  :if window-system
+  :config
+  (solaire-global-mode t))
 #+end_src
 
 Disable unnecessary UI elements.
