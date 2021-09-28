@@ -394,16 +394,14 @@ Function to rename the current buffer and file at the same time. This is from
 Make use of =recentf.el=.
 
 #+begin_src emacs-lisp
-(require 'recentf)
-(setq recentf-max-saved-items 200
-      recentf-max-menu-items 15)
-(recentf-mode)
-#+end_src
-
-Open recent files with =C-x r=
-
-#+begin_src emacs-lisp
-(general-define-key "C-x r" 'counsel-recentf)
+(use-package recentf
+  :general
+  ("C-x r" 'counsel-recentf)
+  :config
+  ;; Tweak it.
+  (setq recentf-max-saved-items 200
+	recentf-max-menu-items 15)
+  (recentf-mode 1))
 #+end_src
 
 *** Format
@@ -1265,15 +1263,6 @@ Define a series of shortcuts for org-roam. "z" for Zettelkasten.
  "t" 'org-roam-buffer-toggle)
 #+end_src
 
-**** Interaction with =recentf=
-
-Do not show org-roam files in recentf list.
-
-#+begin_src emacs-lisp
-(add-to-list 'recentf-exclude
-	     (concat org-roam-directory "/.*"))
-#+end_src
-
 **** UI with =org-roam-ui=
 
 Org-Roam-UI, in place of Org-Roam-Server for v1, is a frontend for exploring and
@@ -1291,6 +1280,16 @@ Then I can load Org-Roam-UI.
 
 #+begin_src emacs-lisp
 (load-library "org-roam-ui")
+#+end_src
+
+**** Exclude Org-Roam from Recentf
+
+#+begin_src emacs-lisp
+(use-package recentf
+  :config
+  (with-eval-after-load "org-roam"
+    (add-to-list 'recentf-exclude
+		 org-roam-directory)))
 #+end_src
 
 *** Quick Access
