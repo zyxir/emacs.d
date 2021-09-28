@@ -273,7 +273,9 @@ be overwritten.
 Make Emacs aware of camel case.
 
 #+begin_src emacs-lisp
-(add-hook 'prog-mode-hook 'subword-mode)
+(use-package emacs
+  :config
+  (add-hook 'prog-mode-hook 'subword-mode))
 #+end_src
 
 *** Encoding
@@ -288,24 +290,25 @@ broke things on Windows, especially on the Chinese version, as is described in
 Now I configure things like this:
 
 #+begin_src emacs-lisp
-(set-language-environment "UTF-8")
-(set-default-coding-systems 'utf-8)
-(set-buffer-file-coding-system 'utf-8-unix)
-(set-clipboard-coding-system 'utf-8-unix)
-(set-file-name-coding-system 'utf-8-unix)
-(set-keyboard-coding-system 'utf-8-unix)
-(set-next-selection-coding-system 'utf-8-unix)
-(if (eq system-type 'windows-nt)
-    (set-selection-coding-system 'utf-16le-dos)
-  (set-selection-coding-system 'utf-8-unix))
-(set-terminal-coding-system 'utf-8-unix)
-(setq locale-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
-
-(when (eq system-type 'windows-nt)
-  (set-default 'process-coding-system-alist
-	       '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
-		 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+(use-package emacs
+  :config
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+  (set-buffer-file-coding-system 'utf-8-unix)
+  (set-clipboard-coding-system 'utf-8-unix)
+  (set-file-name-coding-system 'utf-8-unix)
+  (set-keyboard-coding-system 'utf-8-unix)
+  (set-next-selection-coding-system 'utf-8-unix)
+  (if (eq system-type 'windows-nt)
+      (progn
+	(set-selection-coding-system 'utf-16le-dos)
+	(set-default 'process-coding-system-alist
+		     '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+		       ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+    (set-selection-coding-system 'utf-8-unix))
+  (set-terminal-coding-system 'utf-8-unix)
+  (setq locale-coding-system 'utf-8)
+  (prefer-coding-system 'utf-8))
 #+end_src
 
 *** Buffers and Files
@@ -315,7 +318,9 @@ Now I configure things like this:
 Always save cursor position.
 
 #+begin_src emacs-lisp
-(save-place-mode 1)
+(use-package emacs
+  :config
+  (save-place-mode 1))
 #+end_src
 
 **** Backup
@@ -323,27 +328,28 @@ Always save cursor position.
 A better backup and auto save configuration.
 
 #+begin_src emacs-lisp
-(defvar zy/backup-directory nil
-  "The location of backups.")
-(setq zy/backup-directory
-      (concat user-emacs-directory
-	      "backups"))
+(use-package emacs
+  :config
+  (defvar zy/backup-directory nil
+    "The location of backups.")
+  (setq zy/backup-directory
+	(concat user-emacs-directory
+		"backups"))
 
-(unless (file-exists-p zy/backup-directory)
-  (make-directory zy/backup-directory t))
-(setq backup-directory-alist `(("." . ,zy/backup-directory)))
-(setq make-backup-files t
-      vc-make-backup-files t
-      backup-by-copying t
-      version-control t
-      delete-old-versions t
-      delete-by-moving-to-trash t
-      kept-old-versions 0
-      kept-new-versions 10
-      auto-save-default t
-      auto-save-timeout 20
-      auto-save-interval 200
-      )
+  (unless (file-exists-p zy/backup-directory)
+    (make-directory zy/backup-directory t))
+  (setq backup-directory-alist `(("." . ,zy/backup-directory)))
+  (setq make-backup-files t
+	vc-make-backup-files t
+	backup-by-copying t
+	version-control t
+	delete-old-versions t
+	delete-by-moving-to-trash t
+	kept-old-versions 0
+	kept-new-versions 10
+	auto-save-default t
+	auto-save-timeout 20
+	auto-save-interval 200))
 #+end_src
 
 **** File Manipulation
@@ -375,14 +381,17 @@ Make use of =recentf.el=.
 Show trailing whitespace for most modes.
 
 #+begin_src emacs-lisp
-(defun zy/show-trailing-whitespace ()
-  "Turn on whitespace mode for the current buffer."
-  (setq-local show-trailing-whitespace t))
-(add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
-(add-hook 'text-mode-hook 'zy/show-trailing-whitespace)
+(use-package emacs
+  :general
+  ("C-c SPC" 'delete-trailing-whitespace)
+  :config
+  (defun zy/show-trailing-whitespace ()
+    "Turn on whitespace mode for the current buffer."
+    (setq-local show-trailing-whitespace t))
+  (add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
+  (add-hook 'text-mode-hook 'zy/show-trailing-whitespace)
 
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(general-define-key "C-c SPC" 'delete-trailing-whitespace)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace))
 #+end_src
 
 Set default fill column to 79.
@@ -431,7 +440,8 @@ Manage projects with projectile, and use =C-x p= as the shortcut.
 (use-package projectile
   :diminish
   :general
-  ("C-x p" 'projectile-command-map)
+  (:keymaps 'ctl-x-map
+   "p" 'projectile-command-map)
   :config
   (projectile-mode t))
 #+end_src
@@ -575,7 +585,9 @@ incomplete command (a prefix) in a popup.
 If running with GUI, adjust the frame.
 
 #+begin_src emacs-lisp
-(when (display-graphic-p)
+(use-package emacs
+  :if window-system
+  :config
   (setq initial-frame-alist
 	'((width . 110)
 	  (height . 40)))
@@ -598,10 +610,6 @@ Stop Emacs from indenting quoted and unquoted lists as functions. See [[https://
 StackExchange answer]] for more information.
 
 #+begin_src emacs-lisp
-(advice-add #'calculate-lisp-indent
-	    :override
-	    #'void~calculate-lisp-indent)
-
 (defun void~calculate-lisp-indent (&optional parse-start)
   "Add better indentation for quoted and backquoted lists."
   ;; This line because `calculate-lisp-indent-last-sexp` was defined with `defvar`
@@ -692,7 +700,10 @@ StackExchange answer]] for more information.
                                       (goto-char (1+ point))
                                       (looking-at-p
                                        "\\(?:back\\)?quote[\t\n\f\s]+(")))))
-                           any-quoted-p))))
+                           any-quoted-p))
+			(when-let (char-after (char-after (1+ containing-sexp)))
+			  (char-equal char-after ?:))
+			))
                      ;; Containing sexp has nothing before this line
                      ;; except the first element.  Indent under that element.
                      nil
@@ -776,6 +787,10 @@ StackExchange answer]] for more information.
               (desired-indent)
               (t
                normal-indent))))))
+
+(advice-add #'calculate-lisp-indent
+	    :override
+	    #'void~calculate-lisp-indent)
 #+end_src
 
 *** LaTeX ~.tex~
