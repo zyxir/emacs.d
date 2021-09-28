@@ -393,8 +393,9 @@ Set default fill column to 79.
 Use ~sis~ (smart input source) to reduce manual switch for OS input source.
 
 #+begin_src emacs-lisp
-(require-package 'sis)
-(sis-global-respect-mode t)
+(use-package sis
+  :config
+  (sis-global-respect-mode t))
 #+end_src
 
 **Platform-specific settings should be configured in custom.el** in accordance
@@ -424,9 +425,11 @@ Indicate matching parenthesis.
 Manage projects with projectile, and use =C-x p= as the shortcut.
 
 #+begin_src emacs-lisp
-(require-package 'projectile)
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "C-x p") 'projectile-command-map)
+(use-package projectile
+  :general
+  ("C-x p" 'projectile-command-map)
+  :config
+  (projectile-mode t))
 #+end_src
 
 **** Search Path
@@ -442,14 +445,12 @@ Default search for projects in the user defined projects path.
 Replace isearch with swiper.
 
 #+begin_src emacs-lisp
-(require-package 'swiper)
-(general-define-key "C-s" 'swiper)
-#+end_src
-
-Enable character folding (having =bar= matching =bár=) for swiper.
-
-#+begin_src emacs-lisp
-(setq search-default-mode #'char-fold-to-regexp)
+(use-package swiper
+  :general
+  ("C-s" 'swiper)
+  :config
+  ;; Enable character folding (having =bar= matching =bár=) for swiper.
+  (setq search-default-mode #'char-fold-to-regexp))
 #+end_src
 
 *** Syntax Checking
@@ -457,7 +458,7 @@ Enable character folding (having =bar= matching =bár=) for swiper.
 Use flycheck for syntax checking.
 
 #+begin_src emacs-lisp
-(require-package 'flycheck)
+(use-package flycheck)
 #+end_src
 
 Enable flycheck-mode for each language specifically.
