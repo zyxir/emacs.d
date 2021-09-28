@@ -85,7 +85,6 @@ default is 800 kilobytes, which is too low for modern machines.
 
 *** Load Path
 
-
 Add load path for third-party elisp scripts.
 
 #+begin_src emacs-lisp
@@ -126,6 +125,19 @@ re-downloaded in order to locate PACKAGE."
 (package-initialize)
 #+end_src
 
+Install ~use-package~, and manage package with it from now on.
+
+#+begin_src emacs-lisp
+(require 'package)
+(setq package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
+			 ("melpa" . "https://melpa.org/packages/")))
+(package-install 'use-package)
+(eval-when-compile
+  (require 'use-package))
+;; Always install missing packages.
+(setq use-package-always-ensure t)
+#+end_src
+
 *** Date and Time Format
 
 Use ISO C date format everywhere.
@@ -134,18 +146,22 @@ Use ISO C date format everywhere.
 (setq system-time-locale "C")
 #+end_src
 
-*** Completion Framework
+*** Command Completion
 
 Use the simple ivy, and extend some commands with counsel.
 
 #+begin_src emacs-lisp
-(require-package 'ivy)
-(ivy-mode)
-(setq ivy-use-virtual-buffers t)
-(setq enable-recursive-minibuffers t)
+(use-package ivy
+  :config
+  (ivy-mode)
+  ;; Add recent files/bookmarks to ivy-switch-buffer.
+  (setq ivy-use-virtual-buffers t)
+  ;; Enable minibuffer inside minibuffer.
+  (setq enable-recursive-minibuffers t))
 
-(require-package 'counsel)
-(counsel-mode)
+(use-package counsel
+  :config
+  (counsel-mode))
 #+end_src
 
 *** Key Binding
@@ -153,7 +169,7 @@ Use the simple ivy, and extend some commands with counsel.
 Use ~general.el~ for key bindings.
 
 #+begin_src emacs-lisp
-(require-package 'general)
+(use-package general)
 #+end_src
 
 *** Bug Fix
@@ -247,13 +263,14 @@ originally ~complete-at-point~. In some modes, like matlab-mode, this key would
 be overwritten.
 
 #+begin_src emacs-lisp
-(require-package 'company)
-(add-hook 'prog-mode-hook
-	  (lambda ()
-	    (company-mode 1)
-	    (general-define-key
-	     :keymaps 'prog-mode-map
-	     "C-M-i" 'company-complete)))
+(use-package company
+  :hook
+  (prog-mode .
+	     (lambda ()
+	       (company-mode 1)
+	       (general-define-key
+		:keymaps 'local
+		"C-M-i" 'company-complete))))
 #+end_src
 
 *** Camel Case Editing
