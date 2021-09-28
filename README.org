@@ -900,6 +900,17 @@ web pages, into an org-mode buffer.
 (setq org-download-image-dir "images")
 #+end_src
 
+**** Structure Templates
+
+Add a new structure template for Emacs Lisp source blocks.
+
+#+begin_src emacs-lisp
+(use-package org
+  :config
+  (add-to-list 'org-structure-template-alist
+	       '(";" . "src emacs-lisp")))
+#+end_src
+
 *** PlantUML
 
 Install =plantuml-mode=.
