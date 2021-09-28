@@ -975,44 +975,31 @@ Enable lsp mode for python, with pyright as the server.
 
 *** Calendar and Org-Journal
 
-Assign a key to toggle the calendar.
+I seldom use the built-in calendar of Emacs. But org-journal is great tool for
+keeping daily journals, and calendar is essential to work with it.
 
 #+begin_src emacs-lisp
-(general-define-key "C-c g" 'calendar)
-#+end_src
+(use-package calendar
+  :general
+  ("C-c g" 'calendar))
 
-Org-journal is a tool to keep journals, and it works with the built-in
-calendar. I decided to try it on <2021-06-02 Wed>.
-
-#+begin_src emacs-lisp
-(require-package 'org-journal)
-#+end_src
-
-Set the journal directory as ~Zybox/org-journal~.
-
-#+begin_src emacs-lisp
-(setq org-journal-dir (concat zy/zybox-path "org-journal"))
-(unless (file-exists-p org-journal-dir)
-  (make-directory org-journal-dir))
-#+end_src
-
-Set shortcuts and templates.
-
-#+begin_src emacs-lisp
-(general-define-key "C-c j" 'org-journal-new-entry)
-(setq org-journal-file-format "%F"
-      org-journal-date-format "%F %a W%V\n"
-      org-journal-date-prefix "#+TITLE: "
-      org-journal-time-format "%R "
-      org-journal-time-format-post-midnight "%R (midnight) "
-      org-journal-time-prefix "\n* "
-      org-journal-file-header "")
-#+end_src
-
-If it is early than 3 a.m., it is still yesterday.
-
-#+begin_src emacs-lisp
-(setq org-extend-today-until 3)
+(use-package org-journal
+  :general
+  ("C-c j" 'org-journal-new-entry)
+  :config
+  (setq org-journal-dir (concat zy/zybox-path "org-journal"))
+  (unless (file-exists-p org-journal-dir)
+    (make-directory org-journal-dir))
+  ;; Configure the template.
+  (setq org-journal-file-format "%F"
+	org-journal-date-format "%F %a W%V\n"
+	org-journal-date-prefix "#+TITLE: "
+	org-journal-time-format "%R "
+	org-journal-time-format-post-midnight "%R (midnight) "
+	org-journal-time-prefix "\n* "
+	org-journal-file-header "")
+  ;; If it is early than 3 a.m., it is still yesterday.
+  (setq org-extend-today-until 3))
 #+end_src
 
 *** Chinese Conversion
@@ -1042,11 +1029,12 @@ Kong. This is not translation tool between Mandarin and Cantonese, etc.
 Install emojify to display emojis.
 
 #+begin_src emacs-lisp
-(require-package 'emojify)
-
-(setq emojify-emoji-styles '(github))
-(global-emojify-mode +1)
-(general-define-key "C-c e" 'emojify-insert-emoji)
+(use-package emojify
+  :general
+  ("C-c e" 'emojify-insert-emoji)
+  :config
+  (setq emojify-emoji-styles '(github))
+  (global-emojify-mode +1))
 #+end_src
 
 *** Git
@@ -1054,13 +1042,9 @@ Install emojify to display emojis.
 Magit is a complete text-based user interface to Git.
 
 #+begin_src emacs-lisp
-(require-package 'magit)
-#+end_src
-
-Integration fix with treemacs.
-
-#+begin_src emacs-lisp
-(require-package 'treemacs-magit)
+(use-package magit)
+(use-package treemacs-magit
+  :after (magit treemacs))
 #+end_src
 
 *** GTD
@@ -1186,12 +1170,16 @@ Language server protocol is the future. It is well suited for Emacs, a free and
 open source text editor.
 
 #+begin_src emacs-lisp
-(require-package 'lsp-mode)
-(require-package 'lsp-ui)
-(require-package 'lsp-ivy)
+(use-package lsp-mode
+  :requires lsp-mode
+  :config
+  (setq lsp-keymap-prefix "C-c l"))
 
-(setq lsp-keymap-prefix "C-c l")
-(require 'lsp-mode)
+(use-package lsp-ui
+  :after lsp-mode)
+
+(use-package lsp-ivy
+  :after (lsp-mode ivy))
 #+end_src
 
 ~lsp-mode~ should be enabled for each mode individually.
@@ -1214,7 +1202,7 @@ Remap =xref-find-{definitions,references}= (=M-.= and =M-?= by default).
 Use a package to generate dummy Latin text into a buffer.
 
 #+begin_src emacs-lisp
-(require-package 'lorem-ipsum)
+(use-package lorem-ipsum)
 #+end_src
 
 Use ~lorem-ipsum-insert-paragraphs~, ~lorem-ipsum-insert-sentences~, and
