@@ -1,12 +1,12 @@
 ;; This is an example custom file.
 
 ;; Set the path of Zybox.
-(setq my/zybox-path "C:\\Zybox")	; Windows
-;; (setq my/zybox-path "~/Zybox")		;Linux
+(setq zy/zybox-path "C:\\Zybox")	; Windows
+;; (setq zy/zybox-path "~/Zybox")		;Linux
 
 ;; Set default font and size.
-(setq my/main-font-name "Sarasa Mono CL"
-      my/main-font-size 12)
+(setq zy/main-font-name "Sarasa Mono CL"
+      zy/main-font-size 12)
 ;; Default size is 11.
 
 ;; Configure sis for specific platform.
