@@ -144,7 +144,7 @@ Use the simple ivy, and extend some commands with counsel.
 
 #+begin_src emacs-lisp
 (use-package ivy
-  :delight
+  :diminish
   :config
   (ivy-mode)
   ;; Add recent files/bookmarks to ivy-switch-buffer.
@@ -153,7 +153,7 @@ Use the simple ivy, and extend some commands with counsel.
   (setq enable-recursive-minibuffers t))
 
 (use-package counsel
-  :delight
+  :diminish
   :config
   (counsel-mode))
 #+end_src
@@ -265,7 +265,7 @@ be overwritten.
 	       (general-define-key
 		:keymaps 'local
 		"C-M-i" 'company-complete)))
-  :delight)
+  :diminish)
 #+end_src
 
 *** Camel Case Editing
@@ -429,8 +429,7 @@ Manage projects with projectile, and use =C-x p= as the shortcut.
 
 #+begin_src emacs-lisp
 (use-package projectile
-  :delight
-  '(:eval (concat " " (projectile-project-name)))
+  :diminish
   :general
   ("C-x p" 'projectile-command-map)
   :config
@@ -560,11 +559,8 @@ Which-key displays the key bindings following your currently entered
 incomplete command (a prefix) in a popup.
 
 #+begin_src emacs-lisp
-(require-package 'which-key)
-(which-key-setup-side-window-bottom)
-(which-key-mode)
 (use-package which-key
-  :delight
+  :diminish
   :config
   ;; Popup side window on bottom.
   (which-key-setup-side-window-bottom)
