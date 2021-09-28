@@ -144,6 +144,7 @@ Use the simple ivy, and extend some commands with counsel.
 
 #+begin_src emacs-lisp
 (use-package ivy
+  :delight
   :config
   (ivy-mode)
   ;; Add recent files/bookmarks to ivy-switch-buffer.
@@ -152,6 +153,7 @@ Use the simple ivy, and extend some commands with counsel.
   (setq enable-recursive-minibuffers t))
 
 (use-package counsel
+  :delight
   :config
   (counsel-mode))
 #+end_src
@@ -262,7 +264,8 @@ be overwritten.
 	       (company-mode 1)
 	       (general-define-key
 		:keymaps 'local
-		"C-M-i" 'company-complete))))
+		"C-M-i" 'company-complete)))
+  :delight)
 #+end_src
 
 *** Camel Case Editing
@@ -426,6 +429,8 @@ Manage projects with projectile, and use =C-x p= as the shortcut.
 
 #+begin_src emacs-lisp
 (use-package projectile
+  :delight
+  '(:eval (concat " " (projectile-project-name)))
   :general
   ("C-x p" 'projectile-command-map)
   :config
@@ -531,48 +536,22 @@ Add a vertical line indicating the fill-column for all programming modes.
 	    (display-fill-column-indicator-mode t)))
 #+end_src
 
-*** Modeline
-
-**** Hide Minor Modes
-
-There are so many minor modes displayed on the mode line, which should
-be diminished.
-
-#+begin_src emacs-lisp
-(require-package 'diminish)
-(add-hook 'after-init-hook
-	  (lambda ()
-	    (diminish 'company-mode)
-	    (diminish 'counsel-mode)
-	    (diminish 'ivy-mode)
-	    (diminish 'org-roam-mode)
-	    (diminish 'projectile-mode)
-	    (diminish 'which-key-mode)))
-#+end_src
-
 *** Treemacs
 
 Treemacs is a great feature for IDE-like experience.
 
 #+begin_src emacs-lisp
-(require-package 'treemacs)
-(require-package 'treemacs-projectile)
-#+end_src
+(use-package treemacs
+  :general
+  ("M-0" 'treemacs-select-window)
+  :config
+  ;; Use doom theme.
+  (setq doom-theme-treemacs-theme "doom-colors"
+	doom-theme-treemacs-enable-variable-pitch nil)
+  (doom-themes-treemacs-config))
 
-Use doom theme on treemacs.
-
-#+begin_src emacs-lisp
-(setq doom-theme-treemacs-theme "doom-colors"
-      doom-themes-treemacs-enable-variable-pitch nil)
-(doom-themes-treemacs-config)
-#+end_src
-
-Bind keys for treemacs.
-
-#+begin_src emacs-lisp
-(general-define-key
- :keymap global-map
- "M-0" 'treemacs-select-window)
+(use-package treemacs-projectile
+  :after treemacs)
 #+end_src
 
 *** Which-key
@@ -584,6 +563,13 @@ incomplete command (a prefix) in a popup.
 (require-package 'which-key)
 (which-key-setup-side-window-bottom)
 (which-key-mode)
+(use-package which-key
+  :delight
+  :config
+  ;; Popup side window on bottom.
+  (which-key-setup-side-window-bottom)
+  ;; Show which-key on C-h.
+  (setq which-key-show-early-on-C-h t))
 #+end_src
 
 ** Window
