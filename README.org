@@ -604,6 +604,13 @@ If running with GUI, adjust the frame.
 
 *** Emacs Lisp
 
+Diminish eldoc-mode.
+
+#+begin_src emacs-lisp
+(use-package eldoc
+  :diminish)
+#+end_src
+
 **** Indent Behavior Modification
 
 Stop Emacs from indenting quoted and unquoted lists as functions. See [[https://emacs.stackexchange.com/a/52789][this
@@ -941,37 +948,27 @@ longer a pain.
 
 *** PlantUML
 
-Install =plantuml-mode=.
+Install =plantuml-mode=, and use executable inside the 3rd-party directory.
 
 #+begin_src emacs-lisp
-(require-package 'plantuml-mode)
-#+end_src
-
-Use executable inside Emacs config directory.
-
-#+begin_src emacs-lisp
-(setq plantuml-jar-path (concat zy/3rd-party-path "plantuml/plantuml.jar")
-      plantuml-default-exec-mode 'jar)
+(use-package plantuml-mode
+  :config
+  (setq plantuml-jar-path (concat zy/3rd-party-path "plantuml/plantuml.jar")
+	plantuml-default-exec-mode 'jar))
 #+end_src
 
 *** Python ~.py~
 
-Enable syntax checking with ~pylint~ via flycheck.
-
-#+begin_src emacs-lisp
-(eval-after-load "python-mode"
-  (setq flycheck-python-pylint-executable "python"))
-(add-hook 'python-mode-hook #'flycheck-mode)
-#+end_src
-
 Enable lsp mode for python, with pyright as the server.
 
 #+begin_src emacs-lisp
-(require-package 'lsp-pyright)
-(add-hook 'python-mode-hook
-	  (lambda ()
-	    (require 'lsp-pyright)
-	    (lsp)))
+(use-package lsp-pyright
+  :after lsp
+  :hook
+  (python-mode .
+	       (lambda ()
+		 (require 'lsp-pyright)
+		 (lsp))))
 #+end_src
 
 ** Feature
