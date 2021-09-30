@@ -24,13 +24,17 @@
   (unless maybe-disabled
     (load (file-truename (format "%s/%s" zy/lisp-path pkg)) t t)))
 
-;; Package management.
+;; Management utilities for packages, keybindings, etc..
 
-(zy/load 'init-pkg)
+(zy/load 'init-mngt)
 
 ;; Config for different file types.
 
 (zy/load 'init-elisp)
+
+;; Benchmarking.
+
+(zy/load 'init-benchmark)
 
 ;; Local Variables:
 ;; coding: utf-8

@@ -3,6 +3,6 @@
 
 ;; Settings about Emacs Lisp files.
 
-(provide 'init-elisp)
-
 ;;; Code:
+
+(provide 'init-elisp)

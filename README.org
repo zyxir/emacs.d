@@ -101,14 +101,6 @@ Use the simple ivy, and extend some commands with counsel.
   (counsel-mode))
 #+end_src
 
-*** Key Binding
-
-Use ~general.el~ for key bindings.
-
-#+begin_src emacs-lisp
-(use-package general)
-#+end_src
-
 *** Bug Fix
 
 Hide this kind of warning:
@@ -211,16 +203,6 @@ be overwritten.
   :diminish)
 #+end_src
 
-*** Camel Case Editing
-
-Make Emacs aware of camel case.
-
-#+begin_src emacs-lisp
-(use-package emacs
-  :ensure nil
-  :config
-  (add-hook 'prog-mode-hook 'subword-mode))
-#+end_src
 
 *** Encoding
 
@@ -325,23 +307,6 @@ Make use of =recentf.el=.
 #+end_src
 
 *** Format
-
-Show trailing whitespace for most modes.
-
-#+begin_src emacs-lisp
-(use-package emacs
-  :ensure nil
-  :general
-  ("C-c SPC" 'delete-trailing-whitespace)
-  :config
-  (defun zy/show-trailing-whitespace ()
-    "Turn on whitespace mode for the current buffer."
-    (setq-local show-trailing-whitespace t))
-  (add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
-  (add-hook 'text-mode-hook 'zy/show-trailing-whitespace)
-
-  (add-hook 'before-save-hook 'delete-trailing-whitespace))
-#+end_src
 
 Set default fill column to 79.
 
