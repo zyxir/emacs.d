@@ -1,6 +1,8 @@
+*.temp
 .cache
 .org-id-locations
 .lsp*
+.mc-lists.el
 auto-save-list
 backups
 bookmarks
@@ -8,6 +10,7 @@ custom.el
 elpa
 emojis
 eshell
+network-security.data
 org-roam.db
 places
 projectile*
