@@ -28,6 +28,10 @@
 
 (zy/load 'init-mngt)
 
+;; Visual things like themes and fonts.
+
+(zy/load 'init-visual)
+
 ;; File utilities.
 
 (zy/load 'init-files)

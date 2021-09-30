@@ -51,9 +51,4 @@
   :config
   (counsel-mode +1))
 
-;; Startup benchmarking with esup.
-
-(use-package esup
-  :straight t)
-
 (provide 'init-mngt)
