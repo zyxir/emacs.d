@@ -6,7 +6,7 @@
 
 ** Todos
 
-- [ ] Gradually replace everything with ~use-package~ for better startup performance.
+- [X] Gradually replace everything with ~use-package~ for better startup performance.
 - [ ] Replace auctex with a LaTeX language server.
 - [ ] Use LSP as a company backend.
 - [ ] Use org-sidebar for easier org-mode navigation.
@@ -52,6 +52,8 @@ on any computer, Linux, Windows, on a Macintosh, whatever. You can read it truly
 anywhere, that data will never get lost. So, 20 years from now, you will still
 be able to read these files, which you wrote.”。
 #+end_quote
+
+[[file:documents/20210930-next-iteration-plan.org][Next Iteration Plan]]
 
 * Emacs Configuration
 
@@ -1004,7 +1006,7 @@ variant conversion and regional idioms among Mainland China, Taiwan and Hong
 Kong. This is not translation tool between Mandarin and Cantonese, etc.
 #+end_quote
 
-在 Windows 下，需要一些特殊的措施來使 OpenCC 得以正常運行。詳見[[file:documents/opencc-windows-conf.org][在 Windows 下使用 opencc.el]]。
+在 Windows 下，需要一些特殊的措施來使 OpenCC 得以正常運行。詳見[[file:documents/20210628-opencc-windows-conf.org][在 Windows 下使用 opencc.el]]。
 
 *** Emojis
 
