@@ -1,26 +1,37 @@
-;;; -*- lexical-binding: t -*-
+;;; -*- lexical-binding: t; -*-
+;;; Commentary:
 
-(defvar my/init.org-message-depth 3
-  "What depth of init.org headers to message at startup.")
+;; This file bootstraps the configuration, which is divided into a number of
+;; other files.
 
-(with-temp-buffer
-  (insert-file (expand-file-name "README.org"
-				 user-emacs-directory))
-  (goto-char (point-min))
-  (search-forward "\n* Emacs Configuration")
-  (while (not (eobp))
-    (forward-line 1)
-    (cond
-     ;; Report headers.
-     ((looking-at
-       (format "\\*\\{2,%s\\} +.*$"
-	       my/init.org-message-depth))
-      (message "%s" (match-string 0)))
-     ;; Evaluate code blocks.
-     ((looking-at "^#\\+BEGIN_SRC +emacs-lisp.*$*")
-      (let ((l (match-end 0)))
-	(search-forward "\n#+END_SRC")
-	(eval-region l (match-beginning 0))))
-     ;; Finish on the next level-1 header.
-     ((looking-at "^\\* ")
-      (goto-char (point-max))))))
+;;; Code:
+
+;; Define config file locations.
+
+(defconst zy/emacs-d (file-name-as-directory user-emacs-directory)
+  "The path of .emacs.d.")
+(defconst zy/lisp-path (concat zy/emacs-d "lisp")
+  "The path of all my config files.")
+(defconst zy/site-lisp-path (concat zy/emacs-d "site-lisp")
+  "The path of all external lisp files.")
+(defconst zy/3rd-party-path (concat zy/emacs-d "3rd-party")
+  "The path of all 3rd-party tools.")
+
+;; Fast loader for separate config files.
+
+(defun zy/load (pkg &optional maybe-disabled)
+  "Load PKG if MAYBE-DISABLED is nil."
+  (unless maybe-disabled
+    (load (file-truename (format "%s/%s" zy/lisp-path pkg)) t t)))
+
+;; Package management.
+
+(zy/load 'init-pkg)
+
+;; Config for different file types.
+
+(zy/load 'init-elisp)
+
+;; Local Variables:
+;; coding: utf-8
+;; End:

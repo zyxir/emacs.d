@@ -72,38 +72,6 @@ The configuration is divided into these categories:
 
 ** General
 
-*** Garbage Collection Threshold
-
-Make startup faster by reducing the frequency of garbage collection. The
-default is 800 kilobytes, which is too low for modern machines.
-
-#+begin_src emacs-lisp
-(let ((normal-gc-cons-threshold (* 20 1024 1024))
-      (init-gc-cons-threshold (* 128 1024 1024)))
-  (setq gc-cons-threshold init-gc-cons-threshold)
-  (add-hook 'emacs-startup-hook
-	    (lambda ()
-	      (setq gc-cons-threshold normal-gc-cons-threshold))))
-#+end_src
-
-*** Package Manager
-
-Install ~use-package~, and manage package with it from now on.
-
-#+begin_src emacs-lisp
-(require 'package)
-(setq package-archives
-      '(("melpa" . "http://mirrors.ustc.edu.cn/elpa/melpa/")
-	("org"   . "http://mirrors.ustc.edu.cn/elpa/org/"))
-      package-archive-priorities
-      '(("melpa" . 10)
-	("org" . 20)))
-(package-install 'use-package)
-(eval-when-compile
-  (require 'use-package))
-;; Always install missing packages.
-(setq use-package-always-ensure t)
-#+end_src
 
 *** Date and Time Format
 
@@ -402,7 +370,6 @@ Show side line numbers and column number while coding.
 (add-hook 'prog-mode-hook
 	  (lambda ()
 	    (display-line-numbers-mode 1)))
-(column-number-mode 1)
 #+end_src
 
 *** Parenthesis
@@ -508,14 +475,6 @@ Font and color theme.
   :if window-system
   :config
   (solaire-global-mode t))
-#+end_src
-
-Disable unnecessary UI elements.
-
-#+begin_src emacs-lisp
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
 #+end_src
 
 Add a vertical line indicating the fill-column for all programming modes.
