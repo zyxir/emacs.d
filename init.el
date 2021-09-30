@@ -22,19 +22,23 @@
 (defun zy/load (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil."
   (unless maybe-disabled
-    (load (file-truename (format "%s/%s" zy/lisp-path pkg)) t t)))
+    (load (file-truename (format "%s/%s" zy/lisp-path pkg)) nil t)))
 
 ;; Management utilities for packages, keybindings, etc..
 
 (zy/load 'init-mngt)
 
+;; File utilities.
+
+(zy/load 'init-files)
+
+;; Editing features.
+
+(zy/load 'init-editing)
+
 ;; Config for different file types.
 
 (zy/load 'init-elisp)
-
-;; Benchmarking.
-
-(zy/load 'init-benchmark)
 
 ;; Local Variables:
 ;; coding: utf-8

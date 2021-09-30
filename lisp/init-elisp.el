@@ -5,4 +5,9 @@
 
 ;;; Code:
 
+;; Diminish eldoc-mode.
+
+(use-package eldoc
+  :delight)
+
 (provide 'init-elisp)

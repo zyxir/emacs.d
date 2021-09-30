@@ -29,6 +29,28 @@
 (use-package general
   :straight t)
 
+;; Hide mode text with delight.
+
+(use-package delight
+  :straight t)
+
+;; Minibuffer completion with ivy and counsel.
+
+(use-package ivy
+  :straight t
+  :delight
+  :config
+  (ivy-mode +1)
+  (setq ivy-use-virtual-buffers t
+	enable-recursive-minibuffers t))
+
+(use-package counsel
+  :straight t
+  :after ivy
+  :delight
+  :config
+  (counsel-mode +1))
+
 ;; Startup benchmarking with esup.
 
 (use-package esup

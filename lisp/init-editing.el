@@ -7,6 +7,13 @@
 
 ;;;; For All Modes
 
+;; Show matching parenthesis.
+
+(use-package paren
+  :defer 2
+  :config
+  (show-paren-mode +1))
+
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
@@ -17,7 +24,7 @@
   :config
   (defun zy/show-trailing-whitespace ()
     "Show trailing whitespace for the current buffer."
-    (setq-local show-trailing-whitespace t))  
+    (setq-local show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
   (add-hook 'text-mode-hook 'zy/show-trailing-whitespace)
   (add-hook 'before-save-hook 'delete-trailing-whitespace))
