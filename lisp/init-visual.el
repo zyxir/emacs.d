@@ -5,17 +5,12 @@
 
 ;;; Code:
 
-;; Install and enable nano theme.
+;; Install and enable spacemacs theme.
 
-(use-package nano-theme
-  :straight (nano-theme :type git :host github :repo "404cn/nano-theme.el")
+(use-package spacemacs-common
+  :straight spacemacs-theme
   :config
-  (setq nano-theme-light/dark 'light
-	nano-theme-comment-italic t
-	nano-theme-keyword-italic nil
-	nano-theme-padded-modeline 2
-	nano-theme-overline-modeline nil)
-  (load-theme 'nano t))
+  (load-theme 'spacemacs-light t))
 
 ;; Solaire mode.
 
@@ -23,3 +18,7 @@
   :straight t
   :config
   (solaire-global-mode +1))
+
+;; End of config.
+
+(provide 'init-visual)

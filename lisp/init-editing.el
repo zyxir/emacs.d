@@ -39,4 +39,6 @@
 
 (add-hook 'prog-mode-hook 'subword-mode)
 
+;; End of config.
+
 (provide 'init-editing)

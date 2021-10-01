@@ -664,16 +664,6 @@ Install emojify to display emojis.
   (global-emojify-mode +1))
 #+end_src
 
-*** Git
-
-Magit is a complete text-based user interface to Git.
-
-#+begin_src emacs-lisp
-(use-package magit)
-(use-package treemacs-magit
-  :after (magit treemacs))
-#+end_src
-
 *** GTD
 
 The aim is to implement a GTD system with org-mode.

@@ -32,13 +32,11 @@
 
 (zy/load 'init-visual)
 
-;; File utilities.
-
-(zy/load 'init-files)
-
-;; Editing features.
+;; Feature sets.
 
 (zy/load 'init-editing)
+(zy/load 'init-files)
+(zy/load 'init-vc)
 
 ;; Config for different file types.
 

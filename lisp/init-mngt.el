@@ -24,10 +24,10 @@
 
 (straight-use-package 'use-package)
 
-;; Manage keybindings with general.
-
 (use-package general
   :straight t)
+
+;; The keymap of my customized shortcuts.
 
 ;; Hide mode text with delight.
 
@@ -50,5 +50,7 @@
   :delight
   :config
   (counsel-mode +1))
+
+;; End of config.
 
 (provide 'init-mngt)

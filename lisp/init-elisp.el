@@ -10,4 +10,6 @@
 (use-package eldoc
   :delight)
 
+;; End of config.
+
 (provide 'init-elisp)

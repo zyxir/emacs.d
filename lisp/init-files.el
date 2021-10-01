@@ -17,18 +17,22 @@
 (use-package recentf
   :defer 1
   :general
-  ("C-x r" 'counsel-recentf)
+  (:keymaps 'ctl-x-map
+	    "C-r" 'counsel-recentf)
   :config
   (setq recentf-max-saved-items 200
 	recentf-max-menu-items 15)
   (recentf-mode +1))
 
-;; Automatically revert files that changed on disk.
+;; Revert file with hotkey.
+;; However, auto-revert-mode is sometimes dangerous, see URL
+;; `https://magit.vc/manual/magit/Risk-of-Reverting-Automatically.html#Risk-of-Reverting-Automatically'.
 
-(use-package autorevert
-  :defer 2
-  :config
-  (global-auto-revert-mode +1))
+(general-define-key
+ "C-c r"
+ (lambda ()
+   (interactive)
+   (revert-buffer nil t)))
 
 ;; More reasonable unique buffer names.
 
@@ -66,3 +70,7 @@
 	    "p" 'projectile-command-map)
   :config
   (projectile-mode +1))
+
+;; End of config.
+
+(provide 'init-files)
