@@ -15,13 +15,15 @@
       user-mail-address "zyxirchen@outlook.com")
 
 ;; The location of Zybox, my all-in-one file center.
-;; This value should be manually set in init-local.el, as it is different on
-;; different machines.
 
 (defvar zy/zybox-path nil
-  "The path of Zybox, the collection of all my files.")
+  "The path of Zybox, the collection of all my files.
 
-;; If Zybox is not set in init-local.el, try to guess one based on `system-type'.
+This value should be manually set in custom.el, as it is
+different on different machines.")
+
+;; If Zybox is not set in custom.el, try to guess one based on
+;; `system-type', and warn about this.
 
 (unless zy/zybox-path
   (require 'cl-extra)

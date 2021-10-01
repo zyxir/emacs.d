@@ -36,17 +36,16 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 	   (file-name-as-directory
 	    (if at-root zy/emacs-d zy/lisp-path))
 	   (format "%s" pkg))
-	  nil t)))
+	  'noerror 'nomessage)))
 
 ;; Load benchmark utils.
 
 (zy/load 'init-benchmark)
 
-;; Load custom file.
+;; Load custom file if there is one.
 
 (setq custom-file (concat zy/emacs-d "custom.el"))
-(when (file-exists-p custom-file)
-  (zy/load custom-file nil 'at-root))
+(zy/load custom-file nil 'at-root)
 
 ;; Top level utilities and definitions.
 

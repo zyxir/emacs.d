@@ -1,26 +1,40 @@
-;; This is an example custom file.
+;;; -*- coding: utf-8; lexical-binding: t; -*-
+;;; Commentary:
 
-;; Set the path of Zybox.
-(setq zy/zybox-path "C:\\Zybox")	; Windows
-;; (setq zy/zybox-path "~/Zybox")		;Linux
+;; This is an example custom.el file. Copy it as custom.el, and uncomment the
+;; lines you want.
 
-;; Set default font and size.
-(setq zy/main-font-name "Sarasa Mono CL"
-      zy/main-font-size 12)
-;; Default size is 11.
+;;; Code:
 
-;; Configure sis for specific platform.
-;; For example, on a GNU/Linux system with fcitx5 setup, the config would be:
+;;;; Set the path of Zybox.
+
+;; (setq zy/zybox-path "C:\\Zybox")
+;; (setq zy/zybox-path "~/Zybox")
+
+;;;; Set default font and pixel size.
+
+;; (setq zy/custom-font "Source Han Sans HW TC")
+;; (setq zy/default-font-size 14)
+
+;;;; Configure sis for specific platform.
+
+;; Linux + Fcitx
+
+;; (with-eval-after-load "sis"
+;;   (sis-ism-lazyman-config "1" "2" 'fcitx))
+
+;; Linux + Fcitx5
+
 ;; (with-eval-after-load "sis"
 ;;   (sis-ism-lazyman-config "1" "2" 'fcitx5))
 
-;; Configure LaTeX PDF viewer.
-;; (setq TeX-view-program-list
-;;       '(("SumatraPDF" "sumatrapdf %o"))
-;;       TeX-view-program-selection
-;;       '((output-pdf "SumatraPDF")))
+;; Linux + IBus
 
-;; OpenCC configuration for Windows.
+;; (with-eval-after-load "sis"
+;;   (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
+
+;;;; OpenCC configuration for Windows.
+
 ;; (setq opencc-configuration-files-prefix
 ;;       "C:/Zybox/projects/windows-portable-tools/opencc/share/opencc/"
 ;;       opencc-configuration-files-suffix
