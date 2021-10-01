@@ -310,21 +310,6 @@ Treemacs is a great feature for IDE-like experience.
 
 ** Window
 
-*** Frame Behavior
-
-If running with GUI, adjust the frame.
-
-#+begin_src emacs-lisp
-(use-package emacs
-  :ensure nil
-  :if window-system
-  :config
-  (setq initial-frame-alist
-	'((width . 110)
-	  (height . 40)))
-  (setq default-frame-alist initial-frame-alist))
-#+end_src
-
 ** Extensions
 
 *** CMake Files

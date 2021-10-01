@@ -31,7 +31,12 @@
 (scroll-bar-mode -1)
 (column-number-mode +1)
 
-;; Disable built-in vc.
+;; A reasonable default GUI size.
+
+(when window-system
+  (setq default-frame-alist '((width . 90) (height . 40))))
+
+;; Disable built-in vc. This makes config file loading a bit faster.
 
 (setq vc-handled-backends nil)
 
