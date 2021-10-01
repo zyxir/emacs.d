@@ -24,10 +24,23 @@
 
 (straight-use-package 'use-package)
 
+;; Manage shortcuts with general.
+
 (use-package general
   :straight t)
 
-;; The keymap of my customized shortcuts.
+;; Shortcut hint with which-key.
+
+(use-package which-key
+  :straight t
+  :defer 2
+  :delight
+  :config
+  ;; Popup side window on bottom.
+  (which-key-setup-side-window-bottom)
+  ;; Show which-key on C-h.
+  (setq which-key-show-early-on-C-h t)
+  (which-key-mode +1))
 
 ;; Hide mode text with delight.
 
