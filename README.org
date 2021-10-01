@@ -124,7 +124,6 @@ Now I configure things like this:
   (prefer-coding-system 'utf-8))
 #+end_src
 
-
 *** Input Method
 
 Use ~sis~ (smart input source) to reduce manual switch for OS input source.
@@ -137,27 +136,6 @@ Use ~sis~ (smart input source) to reduce manual switch for OS input source.
 
 **Platform-specific settings should be configured in custom.el** in accordance
 to the README of ~sis~.
-
-**** Search Path
-
-Default search for projects in the user defined projects path.
-
-#+begin_src emacs-lisp
-(setq projectile-project-search-path `(,zy/projects-path))
-#+end_src
-
-*** Search
-
-Replace isearch with swiper.
-
-#+begin_src emacs-lisp
-(use-package swiper
-  :general
-  ("C-s" 'swiper)
-  :config
-  ;; Enable character folding (having =bar= matching =bár=) for swiper.
-  (setq search-default-mode #'char-fold-to-regexp))
-#+end_src
 
 *** Syntax Checking
 
@@ -188,8 +166,6 @@ Treemacs is a great feature for IDE-like experience.
 (use-package treemacs-projectile
   :after treemacs)
 #+end_src
-
-** Window
 
 ** Extensions
 
