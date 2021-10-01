@@ -19,6 +19,87 @@
   :config
   (solaire-global-mode +1))
 
+;; Enable icons support.
+;; Remember to run `all-the-icons-install-fonts'.
+
+(use-package all-the-icons
+  :straight t)
+
+;; Font setter.
+
+(defconst zy/default-fonts
+  '("Source Han Sans HW TC"
+    "Sarasa Mono TC")
+  "Default fallback font list.")
+
+(defvar zy/custom-font nil
+  "Custom font assigned by the user.")
+
+(defvar zy:current-font nil
+  "The current enabled font. Would be nil if it is the system
+fallback font.")
+
+(defvar zy/default-font-size 14
+  "Default font pixel size.
+
+Chinese characters and latin letters will align perfectly only
+when the font pixel size is an even number, even if a hybrid
+monospace font (like Source Han Sans HW) is used.")
+
+(defun zy/font-exists-p (font)
+  "Check if FONT exists in the system."
+  (if (null (x-list-fonts font)) nil t))
+
+(defun zy/find-first-available-font (fontlist)
+  "Return the first available font in the list"
+  (let ((font-found nil))
+    (dolist (font fontlist)
+      (when (zy/font-exists-p font)
+	(setq font-found font)))
+    font-found))
+
+(defun zy:set-font (font &optional size)
+  "Set FONT as the universal font.
+
+SIZE is the font size. If it is nil, `zy/default-font-size' will
+be used."
+  (let* ((size (or size zy/default-font-size))
+	 (full-font (concat font ":pixelsize=" (number-to-string size))))
+    (set-frame-font full-font nil t)
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font (frame-parameter nil 'font) charset
+			(font-spec :family full-font)))
+    (setq zy:current-font font)))
+
+(defun zy/set-font ()
+  "Set font wisely.
+
+If `window-system' is nil, this function only pops up a warning
+message, as it is impossible to set font in a terminal
+environment.
+
+The font will be `zy/custom-font', if it is not nil, or the first
+available font listed in `zy/default-fonts'. If non of them is
+available, this function does nothing except popping up a warning
+message.
+
+If proper font is set, these two lines of Chinese characters and
+latin letters would have the same length:
+
+想讓中文和英文對齊可真難呀
+abcdefghijklmnopqrstuvwxyz"
+  (interactive)
+  (if window-system
+      (let* ((font (or zy/custom-font
+		       (zy/find-first-available-font
+			zy/default-fonts))))
+	(if font
+	    (zy:set-font font zy/default-font-size)
+	  (message "No custom font or preset font available.")))
+    (message "Cannot set font without window system.")))
+
+(add-hook 'after-init-hook #'zy/set-font)
+
 ;; End of config.
 
 (provide 'init-visual)

@@ -81,26 +81,6 @@ Use ISO C date format everywhere.
 (setq system-time-locale "C")
 #+end_src
 
-*** Command Completion
-
-Use the simple ivy, and extend some commands with counsel.
-
-#+begin_src emacs-lisp
-(use-package ivy
-  :diminish
-  :config
-  (ivy-mode)
-  ;; Add recent files/bookmarks to ivy-switch-buffer.
-  (setq ivy-use-virtual-buffers t)
-  ;; Enable minibuffer inside minibuffer.
-  (setq enable-recursive-minibuffers t))
-
-(use-package counsel
-  :diminish
-  :config
-  (counsel-mode))
-#+end_src
-
 *** Bug Fix
 
 Hide this kind of warning:
@@ -310,64 +290,6 @@ Enable flycheck-mode for each language specifically.
 
 ** Workbench
 
-*** Startup
-
-Inhibit startup screen.
-
-#+begin_src emacs-lisp
-(setq inhibit-startup-screen t)
-#+end_src
-
-*** Icon
-
-Add icon support.
-
-#+begin_src emacs-lisp
-(use-package all-the-icons)
-#+end_src
-
-*** Appearances
-
-Font and color theme.
-
-#+begin_src emacs-lisp
-(defvar zy/main-font-name nil
-  "Main font name for the whole program.")
-(setq zy/main-font-name "Sarasa Mono CL")
-
-(defvar zy/main-font-size nil
-  "The default size for the main font.")
-(setq zy/main-font-size 11)
-
-(setq zy/main-font-full (concat zy/main-font-name " "
-			     (number-to-string zy/main-font-size)))
-
-(when (display-graphic-p)
-  (set-face-attribute 'default nil :font zy/main-font-full)
-  (set-frame-font zy/main-font-full)
-  (dolist (charset '(kana han symbol cjk-misc bopomofo))
-    (set-fontset-font (frame-parameter nil 'font) charset
-		      (font-spec :family zy/main-font-name))))
-
-(use-package doom-themes
-  :if window-system
-  :config
-  (load-theme 'doom-one-light t))
-
-(use-package solaire-mode
-  :if window-system
-  :config
-  (solaire-global-mode t))
-#+end_src
-
-Add a vertical line indicating the fill-column for all programming modes.
-
-#+begin_src emacs-lisp
-(add-hook 'prog-mode-hook
-	  (lambda ()
-	    (display-fill-column-indicator-mode t)))
-#+end_src
-
 *** Treemacs
 
 Treemacs is a great feature for IDE-like experience.
@@ -384,21 +306,6 @@ Treemacs is a great feature for IDE-like experience.
 
 (use-package treemacs-projectile
   :after treemacs)
-#+end_src
-
-*** Which-key
-
-Which-key displays the key bindings following your currently entered
-incomplete command (a prefix) in a popup.
-
-#+begin_src emacs-lisp
-(use-package which-key
-  :diminish
-  :config
-  ;; Popup side window on bottom.
-  (which-key-setup-side-window-bottom)
-  ;; Show which-key on C-h.
-  (setq which-key-show-early-on-C-h t))
 #+end_src
 
 ** Window

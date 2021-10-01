@@ -36,6 +36,8 @@
 
 (zy/load 'init-visual)
 
+;; Locale and personal info.
+
 ;; Feature sets.
 
 (zy/load 'init-editing)
