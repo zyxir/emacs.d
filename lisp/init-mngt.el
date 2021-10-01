@@ -38,11 +38,23 @@
 
 (use-package ivy
   :straight t
+  :defer 1
   :delight
+  :general
+  ("M-x" 'counsel-M-x
+   "C-x C-f" 'counsel-find-file)
   :config
   (ivy-mode +1)
   (setq ivy-use-virtual-buffers t
 	enable-recursive-minibuffers t))
+
+(use-package counsel
+  :straight t
+  :defer 1
+  :after ivy
+  :delight
+  :config
+  (counsel-mode +1))
 
 (use-package swiper
   :straight t
@@ -50,13 +62,6 @@
   :general
   ("C-s" 'swiper-isearch
    "C-r" 'swiper-isearch-backward))
-
-(use-package counsel
-  :straight t
-  :after ivy
-  :delight
-  :config
-  (counsel-mode +1))
 
 ;; End of config.
 

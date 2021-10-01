@@ -58,7 +58,7 @@
 ;; Project management with projectile.
 
 (use-package projectile
-  :defer 1
+  :defer 2
   :straight t
   :delight '(:eval (concat " " (projectile-project-name)))
   :general

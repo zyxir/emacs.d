@@ -5,6 +5,9 @@
 
 ;;; Code:
 
+(setq zy/init-benchmark-start-time (current-time))
+
+
 (defun zy/time-subtract-millis (b a)
   (* 1000.0 (float-time (time-subtract b a))))
 
@@ -67,11 +70,17 @@ LOAD-DURATION is the time taken in milliseconds to load FEATURE.")
    (display-buffer (current-buffer))))
 
 
-;; Redefine startup message with init time.
-
 (defun display-startup-echo-area-message ()
   (message "init completed in %.3f milliseconds."
 	   (zy/time-subtract-millis after-init-time before-init-time)))
+
+(add-to-list 'zy/load-times
+	     (list
+	      'init-benchmark
+	      zy/init-benchmark-start-time
+	      (zy/time-subtract-millis
+	       (current-time)
+	       zy/init-benchmark-start-time)))
 
 ;; End of config.
 
