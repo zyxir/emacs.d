@@ -17,10 +17,6 @@
 (defconst zy/3rd-party-path (concat zy/emacs-d "3rd-party")
   "The path of all 3rd-party tools.")
 
-;; Require common lisp utilities.
-
-(require 'cl-lib)
-
 ;; Fast loader for separate config files.
 
 (defun zy/load (pkg &optional maybe-disabled)
