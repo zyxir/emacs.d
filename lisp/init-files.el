@@ -39,25 +39,20 @@
 (use-package uniquify
   :defer 2)
 
-;; A more reasonable backup and auto save config.
+;; Do not create backup files, as version control is common these days.
 
-(defvar zy/backup-directory nil
-  "The location of backups.")
-(setq zy/backup-directory (concat zy/emacs-d "backups"))
-(unless (file-exists-p zy/backup-directory)
-  (make-directory zy/backup-directory t))
-(setq backup-directory-alist `(("." . ,zy/backup-directory)))
-(setq make-backup-files t
-      vc-make-backup-files t
-      backup-by-copying t
-      version-control t
-      delete-old-versions t
-      delete-by-moving-to-trash t
-      kept-old-versions 0
-      kept-new-versions 10
-      auto-save-default t
-      auto-save-timeout 20
-      auto-save-interval 200)
+(setq make-backup-files nil)
+
+;; Replace built-in autosave with super-save.
+
+(setq auto-save-default nil)
+(use-package super-save
+  :straight t
+  :defer 2
+  :delight
+  :config
+  (setq super-save-auto-save-when-idle t)
+  (super-save-mode +1))
 
 ;; Project management with projectile.
 
