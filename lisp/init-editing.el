@@ -43,7 +43,9 @@
 
 ;; Make Emacs aware of camel case.
 
-(add-hook 'prog-mode-hook 'subword-mode)
+(use-package subword
+  :hook (prog-mode-hook . subword-mode)
+  :delight)
 
 ;; End of config.
 

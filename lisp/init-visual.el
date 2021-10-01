@@ -28,8 +28,10 @@
 ;; Font setter.
 
 (defconst zy/default-fonts
-  '("Source Han Sans HW TC"
-    "Sarasa Mono TC")
+  '("Sarasa Mono TC"
+    "Source Han Sans HW TC"
+    "WenQuanYi Zen Hei Mono"
+    "HeiTi")
   "Default fallback font list.")
 
 (defvar zy/custom-font nil
@@ -47,16 +49,12 @@ when the font pixel size is an even number, even if a hybrid
 monospace font (like Source Han Sans HW) is used.")
 
 (defun zy/font-exists-p (font)
-  "Check if FONT exists in the system."
-  (if (null (x-list-fonts font)) nil t))
+  "Check if FONT exists in the system.
 
-(defun zy/find-first-available-font (fontlist)
-  "Return the first available font in the list"
-  (let ((font-found nil))
-    (dolist (font fontlist)
-      (when (zy/font-exists-p font)
-	(setq font-found font)))
-    font-found))
+If it does exist, return itself.  If it doesn't, return nil."
+  (if (null (x-list-fonts font))
+      nil
+    font))
 
 (defun zy:set-font (font &optional size)
   "Set FONT as the universal font.
@@ -91,7 +89,8 @@ abcdefghijklmnopqrstuvwxyz"
   (interactive)
   (if window-system
       (let* ((font (or zy/custom-font
-		       (zy/find-first-available-font
+		       (cl-some
+			#'zy/font-exists-p
 			zy/default-fonts))))
 	(if font
 	    (zy:set-font font zy/default-font-size)

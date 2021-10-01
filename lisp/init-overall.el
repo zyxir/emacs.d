@@ -43,10 +43,29 @@ different on different machines.")
 	    (*linux* zybox-possible-locs-linux)))))
     (if guessed-zybox-path
 	(progn
-	  (setq zy/zybox-path (file-truename guessed-zybox-path))
+	  (setq zy/zybox-path guessed-zybox-path)
 	  (warn
 	   "Zybox should be manually set instead of auto detected!"))
       (warn "No Zybox path is detected, many features will be unavailable!"))))
+
+;; Make sure the path is absolute and with a slash.
+
+(when zy/zybox-path
+  (setq zy/zybox-path
+	(file-name-as-directory
+	 (file-truename
+	  zy/zybox-path))))
+
+;; Other important paths relative to Zybox, which could also be set in
+;; custom.el.
+
+(when zy/zybox-path
+  (defvar zy/projects-path
+    (concat zy/zybox-path "projects/")
+    "The directory of all projects.")
+  (defvar zy/std-proj-path
+    (concat zy/projects-path "ego/std/std-proj/README.org")
+    "My project standard specification."))
 
 ;; End of config.
 

@@ -58,13 +58,16 @@
 ;; Project management with projectile.
 
 (use-package projectile
-  :defer 2
   :straight t
-  :delight '(:eval (concat " " (projectile-project-name)))
+  :defer 2
+  :delight
   :general
   (:keymaps 'ctl-x-map
 	    "p" 'projectile-command-map)
   :config
+  (when (boundp 'zy/projects-path)
+    (add-to-list 'projectile-project-search-path zy/projects-path))
+  (setq projectile-sort-order 'recently-active)
   (projectile-mode +1))
 
 ;; End of config.

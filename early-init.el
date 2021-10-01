@@ -34,7 +34,7 @@
 ;; A reasonable default GUI size.
 
 (when window-system
-  (setq default-frame-alist '((width . 90) (height . 40))))
+  (setq default-frame-alist '((width . 120) (height . 40))))
 
 ;; Disable built-in vc. This makes config file loading a bit faster.
 
