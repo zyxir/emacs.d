@@ -35,7 +35,7 @@
 (defvar zy/custom-font nil
   "Custom font assigned by the user.")
 
-(defvar zy:current-font nil
+(defvar zy/current-font nil
   "The current enabled font. Would be nil if it is the system
 fallback font.")
 
@@ -69,7 +69,7 @@ be used."
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font) charset
 			(font-spec :family full-font)))
-    (setq zy:current-font font)))
+    (setq zy/current-font font)))
 
 (defun zy/set-font ()
   "Set font wisely.

@@ -35,6 +35,12 @@
 
 (setq-default fill-column 79)
 
+;; Show line numbers.
+
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (display-line-numbers-mode +1)))
+
 ;; Make Emacs aware of camel case.
 
 (add-hook 'prog-mode-hook 'subword-mode)

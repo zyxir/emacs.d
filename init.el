@@ -6,9 +6,17 @@
 
 ;;; Code:
 
+;; System type.
+;; Currently, only Windows and Linux is supported, as I don't use other OSs.
+
+(setq *win64* (eq system-type 'windows-nt))
+(setq *cygwin* (eq system-type 'cygwin))
+(setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)))
+
 ;; Define config file locations.
 
-(defconst zy/emacs-d (file-name-as-directory user-emacs-directory)
+(defconst zy/emacs-d
+  (file-name-as-directory (file-truename user-emacs-directory))
   "The path of .emacs.d.")
 (defconst zy/lisp-path (concat zy/emacs-d "lisp")
   "The path of all my config files.")
@@ -19,17 +27,30 @@
 
 ;; Fast loader for separate config files.
 
-(defun zy/load (pkg &optional maybe-disabled)
-  "Load PKG if MAYBE-DISABLED is nil."
+(defun zy/load (pkg &optional maybe-disabled at-root)
+  "Load PKG if MAYBE-DISABLED is nil.
+
+If AT-ROOT is non-nil, load the file at the .emacs.d directory."
   (unless maybe-disabled
-    (load (file-truename (format "%s/%s" zy/lisp-path pkg)) nil t)))
+    (load (concat
+	   (file-name-as-directory
+	    (if at-root zy/emacs-d zy/lisp-path))
+	   (format "%s" pkg))
+	  nil t)))
 
 ;; Load benchmark utils.
 
 (zy/load 'init-benchmark)
 
-;; Management utilities for packages, keybindings, etc..
+;; Load custom file.
 
+(setq custom-file (concat zy/emacs-d "custom.el"))
+(when (file-exists-p custom-file)
+  (zy/load custom-file nil 'at-root))
+
+;; Top level utilities and definitions.
+
+(zy/load 'init-overall)
 (zy/load 'init-mngt)
 
 ;; Visual things like themes and fonts.

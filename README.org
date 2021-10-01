@@ -69,41 +69,7 @@ The configuration is divided into these categories:
   management.
 - Extensions :: Settings for specific file name extensions, like
   ~.py~.
-
-** General
-
-
-*** Date and Time Format
-
-Use ISO C date format everywhere.
-
-#+begin_src emacs-lisp
-(setq system-time-locale "C")
-#+end_src
-
-*** Bug Fix
-
-Hide this kind of warning:
-
-#+begin_quote
-ad-handle-definition: 'text-scale-increase' got redefined.
-#+end_quote
-
-#+begin_src emacs-lisp
-(setq ad-redefinition-action 'accept)
-#+end_src
-
 ** Information
-
-*** Personal Information
-
-Information about the user.
-
-#+begin_src emacs-lisp
-(setq user-full-name "Eric Zhuo Chen"
-      user-mail-address "zyxirchen@outlook.com")
-#+end_src
-
 *** File Locations
 
 The location of several important files and directories. Note that the
@@ -231,31 +197,6 @@ Use ~sis~ (smart input source) to reduce manual switch for OS input source.
 
 **Platform-specific settings should be configured in custom.el** in accordance
 to the README of ~sis~.
-
-*** Location
-
-Show side line numbers and column number while coding.
-
-#+begin_src emacs-lisp
-(add-hook 'prog-mode-hook
-	  (lambda ()
-	    (display-line-numbers-mode 1)))
-#+end_src
-
-
-*** Project Management
-
-Manage projects with projectile, and use =C-x p= as the shortcut.
-
-#+begin_src emacs-lisp
-(use-package projectile
-  :diminish
-  :general
-  (:keymaps 'ctl-x-map
-   "p" 'projectile-command-map)
-  :config
-  (projectile-mode t))
-#+end_src
 
 **** Search Path
 

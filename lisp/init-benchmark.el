@@ -7,10 +7,6 @@
 
 (setq zy/init-benchmark-start-time (current-time))
 
-;; Require common lisp utilities.
-
-(require 'cl-lib)
-
 
 (defun zy/time-subtract-millis (b a)
   (* 1000.0 (float-time (time-subtract b a))))
