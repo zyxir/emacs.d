@@ -34,7 +34,7 @@
 (use-package delight
   :straight t)
 
-;; Minibuffer completion with ivy and counsel.
+;; Minibuffer completion with the ivy suite.
 
 (use-package ivy
   :straight t
@@ -43,6 +43,13 @@
   (ivy-mode +1)
   (setq ivy-use-virtual-buffers t
 	enable-recursive-minibuffers t))
+
+(use-package swiper
+  :straight t
+  :after ivy
+  :general
+  ("C-s" 'swiper-isearch
+   "C-r" 'swiper-isearch-backward))
 
 (use-package counsel
   :straight t

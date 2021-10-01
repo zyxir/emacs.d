@@ -17,12 +17,20 @@
 (defconst zy/3rd-party-path (concat zy/emacs-d "3rd-party")
   "The path of all 3rd-party tools.")
 
+;; Require common lisp utilities.
+
+(require 'cl-lib)
+
 ;; Fast loader for separate config files.
 
 (defun zy/load (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil."
   (unless maybe-disabled
     (load (file-truename (format "%s/%s" zy/lisp-path pkg)) nil t)))
+
+;; Load benchmark utils.
+
+(zy/load 'init-benchmark)
 
 ;; Management utilities for packages, keybindings, etc..
 

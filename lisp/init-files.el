@@ -22,7 +22,8 @@
   :config
   (setq recentf-max-saved-items 200
 	recentf-max-menu-items 15)
-  (recentf-mode +1))
+  (let ((inhibit-message t))
+    (recentf-mode +1)))
 
 ;; Revert file with hotkey.
 ;; However, auto-revert-mode is sometimes dangerous, see URL
