@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t; -*-
+;;; -*- coding: utf-8; lexical-binding: t; -*-
 ;;; Commentary:
 
 ;; This file bootstraps the configuration, which is divided into a number of
@@ -42,6 +42,6 @@
 
 (zy/load 'init-elisp)
 
-;; Local Variables:
-;; coding: utf-8
-;; End:
+;; End of config.
+
+(provide 'init)

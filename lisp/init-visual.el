@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t; -*-
+;;; -*- coding: utf-8; lexical-binding: t; -*-
 ;;; Commentary:
 
 ;; Visual configurations like themes and fonts.

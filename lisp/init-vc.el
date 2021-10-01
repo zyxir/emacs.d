@@ -1,4 +1,4 @@
-;;; -*- lexical-binding: t; -*-
+;;; -*- coding: utf-8; lexical-binding: t; -*-
 ;;; Commentary:
 
 ;; Version control settings.
@@ -12,7 +12,7 @@
   :config
   ;; Do not show diff on commit by default.
   ;; Toggle diff with C-c C-d.
-  (remove-hook 'magit-refs-section-hook 'magit-insert-tags))
+  (remove-hook 'server-switch-hook 'magit-commit-diff))
 
 ;; End of config.
 

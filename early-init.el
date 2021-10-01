@@ -31,4 +31,10 @@
 (scroll-bar-mode -1)
 (column-number-mode +1)
 
+;; Disable built-in vc.
+
+(setq vc-handled-backends nil)
+
+;; End of config.
+
 (provide 'early-init)
