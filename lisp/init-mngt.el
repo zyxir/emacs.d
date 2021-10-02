@@ -55,7 +55,8 @@
   :delight
   :general
   ("M-x" 'counsel-M-x
-   "C-x C-f" 'counsel-find-file)
+   "C-x C-f" 'counsel-find-file
+   "C-x b" 'ivy-switch-buffer)
   :config
   (ivy-mode +1)
   (setq ivy-use-virtual-buffers t

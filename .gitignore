@@ -1,3 +1,4 @@
+*.temp
 .cache
 .org-id-locations
 .lsp*
