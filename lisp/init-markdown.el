@@ -20,22 +20,13 @@
 	    (lambda ()
 	      (setq markdown-command "pandoc -f gfm -t html5"))))
 
-;; Live preview Github Flavored Markdown with vmd.
-;; This makes vmd as an optional dependency.
+;; Live preview Markdown with grip.
 
-(defun zy:setup-vmd ()
-  "Setup vmd-mode if vmd exists."
-  (when (executable-find "vmd")
-    (use-package vmd-mode
-      :straight
-      (vmd-mode :type git :host github :repo "blak3mill3r/vmd-mode")
-      :commands vmd-mode
-      :general
-      (:keymaps 'gfm-mode-map
-		"C-c C-c p" 'vmd-mode))
-    (remove-hook 'gfm-mode-hook #'zy:setup-vmd)))
-
-(add-hook 'gfm-mode-hook #'zy:setup-vmd)
+(use-package grip-mode
+  :straight t
+  :general
+  (:keymaps 'markdown-mode-command-map
+	    "g" #'grip-mode))
 
 ;; Enable C-c ' editing.
 

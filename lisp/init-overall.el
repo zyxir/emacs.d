@@ -25,6 +25,10 @@ different on different machines.")
 ;; If Zybox is not set in custom.el, try to guess one based on
 ;; `system-type', and warn about this.
 
+(defun zy:file-directory-ret (path)
+  (when (file-directory-p path)
+    path))
+
 (unless zy/zybox-path
   (require 'cl-extra)
   (let* ((zybox-possible-locs-win64
@@ -35,9 +39,7 @@ different on different machines.")
 	    "~/Documents/Zybox"))
 	 (guessed-zybox-path
 	  (cl-some
-	   (lambda (path)
-	     (when (file-directory-p path)
-	       path))
+	   #'zy:file-directory-ret
 	   (cond
 	    (*win64* zybox-possible-locs-win64)
 	    (*linux* zybox-possible-locs-linux)))))
