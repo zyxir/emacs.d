@@ -22,7 +22,18 @@ IMAGE PLACEHOLDER
 
 <hr>
 
-### Table of Contents
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [Zyxir's Emacs Configuration](#zyxirs-emacs-configuration)
+    - [Introduction](#introduction)
+    - [Features](#features)
+    - [Install](#install)
+    - [Roadmap](#roadmap)
+    - [Changelog](#changelog)
+
+<!-- markdown-toc end -->
+
 
 ## Introduction
 
@@ -44,7 +55,7 @@ A LOT OF FEATURES
 7. Other optional modules:
    - Install [opencc] for Chinese conversion support.
    - Install [pandoc] for document conversion support, which is needed by many features, such as org-mode PDF export.
-   - Install [grip] for real-time Markdown preview (toggled with <kbd>C-c C-c g</kbd>).
+   - Install [vmd] for real-time Markdown preview (toggled with <kbd>C-c C-c p</kbd>).
 
 [msys2]: https://www.msys2.org/
 [mingw]: https://www.mingw-w64.org/

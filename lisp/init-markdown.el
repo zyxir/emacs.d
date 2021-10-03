@@ -20,13 +20,28 @@
 	    (lambda ()
 	      (setq markdown-command "pandoc -f gfm -t html5"))))
 
-;; Live preview Markdown with grip.
+;; TOC support.
 
-(use-package grip-mode
+(use-package markdown-toc
   :straight t
+  :commands (markdown-toc-generate-or-refresh-toc)
   :general
   (:keymaps 'markdown-mode-command-map
-	    "g" #'grip-mode))
+	    "T" 'markdown-toc-generate-or-refresh-toc))
+
+;; If vmd is installed, use it to live preview Markdown.
+
+(defun zy:setup-vmd ()
+  "Setup vmd-mode for markdown-mode."
+  (when (executable-find "vmd")
+    (use-package vmd-mode
+      :straight t
+      :general
+      (:keymaps 'markdown-mode-command-map
+		"p" 'vmd-mode))
+    (remove-hook 'markdown-mode-hook #'zy:setup-vmd)))
+
+(add-hook 'markdown-mode-hook #'zy:setup-vmd)
 
 ;; Enable C-c ' editing.
 
