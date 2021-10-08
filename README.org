@@ -120,31 +120,7 @@ Treemacs is a great feature for IDE-like experience.
 
 ** Extensions
 
-*** CMake Files
-
-#+begin_src emacs-lisp
-(use-package cmake-mode)
-#+end_src
-
 *** LaTeX ~.tex~
-
-*** MATLAB ~.m~
-
-The old but useful MATLAB mode.
-
-#+begin_src emacs-lisp
-(use-package matlab
-  :ensure matlab-mode
-  :config
-  ;; Treat .m files as MATLAB files.
-  (add-to-list
-   'auto-mode-alist
-   '("\\.m\\'" . matlab-mode))
-  (add-hook 'matlab-mode-hook
-	    (lambda ()
-	      (auto-fill-mode t)
-	      (display-line-numbers-mode t))))
-#+end_src
 
 *** Org ~.org~
 
@@ -272,17 +248,6 @@ longer a pain.
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
-*** PlantUML
-
-Install =plantuml-mode=, and use executable inside the 3rd-party directory.
-
-#+begin_src emacs-lisp
-(use-package plantuml-mode
-  :config
-  (setq plantuml-jar-path (concat zy/3rd-party-path "plantuml/plantuml.jar")
-	plantuml-default-exec-mode 'jar))
-#+end_src
-
 *** Python ~.py~
 
 Enable lsp mode for python, with pyright as the server.
@@ -327,41 +292,6 @@ keeping daily journals, and calendar is essential to work with it.
 	org-journal-file-header "")
   ;; If it is early than 3 a.m., it is still yesterday.
   (setq org-extend-today-until 3))
-#+end_src
-
-*** Chinese Conversion
-
-Conversion between simplified/traditional Chinese with =opencc.el=. 使用
-=opencc.el=進行中文簡繁轉換。
-
-#+begin_src emacs-lisp
-(use-package opencc
-  :load-path "site-lisp/opencc/")
-#+end_src
-
-=opencc.el= is based on OpenCC:
-
-#+begin_quote
-Open Chinese Convert (OpenCC, 開放中文轉換) is an opensource project for
-conversions between Traditional Chinese, Simplified Chinese and Japanese Kanji
-(Shinjitai). It supports character-level and phrase-level conversion, character
-variant conversion and regional idioms among Mainland China, Taiwan and Hong
-Kong. This is not translation tool between Mandarin and Cantonese, etc.
-#+end_quote
-
-在 Windows 下，需要一些特殊的措施來使 OpenCC 得以正常運行。詳見[[file:documents/20210628-opencc-windows-conf.org][在 Windows 下使用 opencc.el]]。
-
-*** Emojis
-
-Install emojify to display emojis.
-
-#+begin_src emacs-lisp
-(use-package emojify
-  :general
-  ("C-c e" 'emojify-insert-emoji)
-  :config
-  (setq emojify-emoji-styles '(github))
-  (global-emojify-mode +1))
 #+end_src
 
 *** GTD
@@ -504,17 +434,6 @@ Remap =xref-find-{definitions,references}= (=M-.= and =M-?= by default).
  "M-." #'lsp-ui-peek-find-definitions
  "M-?" #'lsp-ui-peek-find-references)
 #+end_src
-
-*** Lorem Ipsum Generator
-
-Use a package to generate dummy Latin text into a buffer.
-
-#+begin_src emacs-lisp
-(use-package lorem-ipsum)
-#+end_src
-
-Use ~lorem-ipsum-insert-paragraphs~, ~lorem-ipsum-insert-sentences~, and
-~lorem-ipsum-insert-list~.
 
 *** Org-Roam
 

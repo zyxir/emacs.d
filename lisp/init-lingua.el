@@ -13,6 +13,16 @@
   :config
   (sis-global-respect-mode t))
 
+;; OpenCC.
+
+(use-package opencc
+  :load-path "site-lisp/opencc/")
+
+;; Lorem Ipsum Generator.
+
+(use-package lorem-ipsum
+  :straight t)
+
 ;; End of config.
 
 (provide 'init-chinese)
