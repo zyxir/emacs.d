@@ -61,10 +61,9 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 
 (zy/load 'init-visual)
 
-;; Locale and personal info.
-
 ;; Feature sets.
 
+(zy/load 'init-chinese)
 (zy/load 'init-editing)
 (zy/load 'init-files)
 (zy/load 'init-vc)

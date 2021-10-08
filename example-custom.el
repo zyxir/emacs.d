@@ -33,6 +33,12 @@
 ;; (with-eval-after-load "sis"
 ;;   (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
 
+;; Microsoft Windows
+;; Make sure that "im-select.exe" is installed in PATH.
+
+;; (with-eval-after-load "sis"
+;;   (sis-ism-lazyman-config "1033" "2052" 'im-select))
+
 ;;;; OpenCC configuration for Windows.
 
 ;; (setq opencc-configuration-files-prefix
