@@ -66,7 +66,8 @@ be used."
     (set-frame-font full-font nil t)
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font) charset
-			(font-spec :family full-font)))
+			(font-spec :family font
+				   :size size)))
     (setq zy/current-font font)))
 
 (defun zy/set-font ()
