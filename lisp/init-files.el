@@ -67,6 +67,7 @@
   :config
   (when (boundp 'zy/projects-path)
     (add-to-list 'projectile-project-search-path zy/projects-path))
+  (add-to-list 'projectile-project-search-path zy/emacs-d)
   (setq projectile-sort-order 'recently-active)
   (projectile-mode +1))
 
