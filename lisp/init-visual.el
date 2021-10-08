@@ -30,8 +30,7 @@
 (defconst zy/default-fonts
   '("Sarasa Mono TC"
     "Source Han Sans HW TC"
-    "WenQuanYi Zen Hei Mono"
-    "HeiTi")
+    "WenQuanYi Zen Hei Mono")
   "Default fallback font list.")
 
 (defvar zy/custom-font nil
@@ -61,9 +60,10 @@ If it does exist, return itself.  If it doesn't, return nil."
 
 SIZE is the font size. If it is nil, `zy/default-font-size' will
 be used."
-  (let* ((size (or size zy/default-font-size))
-	 (full-font (concat font ":pixelsize=" (number-to-string size))))
-    (set-frame-font full-font nil t)
+  (let* ((size (or size zy/default-font-size)))
+    (set-face-attribute 'default nil :font
+			(font-spec :family font
+				   :size size))
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font) charset
 			(font-spec :family font
