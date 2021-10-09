@@ -25,6 +25,7 @@
 ;; Manage package and settings with use-package.
 
 (straight-use-package 'use-package)
+(setq straight-vc-git-default-clone-depth 1)
 
 ;; Hide mode text with delight.
 
