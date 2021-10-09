@@ -28,6 +28,12 @@ Personal Emacs configuration for everyday use.
     - [Features](#features)
     - [Documents](#documents)
     - [Install](#install)
+    - [Changelog](#changelog)
+        - [Version 2.X](#version-2x)
+            - [[2.0.1] - 2021-10-09](#201---2021-10-09)
+            - [[2.0.0] - 2021-10-09](#200---2021-10-09)
+        - [Version 1.X](#version-1x)
+            - [[1.0.0] - 2021-09-30](#100---2021-09-30)
 
 <!-- markdown-toc end -->
 
