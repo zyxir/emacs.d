@@ -82,6 +82,7 @@
 
 (use-package swiper
   :straight t
+  :defer 1
   :after ivy
   :general
   ("C-s" 'swiper-isearch

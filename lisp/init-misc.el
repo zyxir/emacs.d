@@ -7,8 +7,9 @@
 
 (use-package matlab
   :straight matlab-mode
-  :mode "\\.m\\'"
-  :config
+  :defer t
+  :mode ("\\.m\\'" . matlab-mode)
+  :init
   (add-hook 'matlab-mode-hook
 	    (lambda ()
 	      (auto-fill-mode t)
@@ -16,6 +17,7 @@
 
 (use-package plantuml-mode
   :straight t
+  :defer t
   :config
   (setq plantuml-jar-path (concat zy/3rd-party-path "plantuml/plantuml.jar")
 	plantuml-default-exec-mode 'jar))

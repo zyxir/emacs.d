@@ -136,7 +136,7 @@ abcdefghijklmnopqrstuvwxyz"
 	  (message "Some font is not available.")))
     (message "Cannot set font without window system.")))
 
-(add-hook 'after-init-hook #'zy/set-font)
+(zy/set-font)
 
 ;; End of config.
 

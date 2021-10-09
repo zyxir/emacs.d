@@ -41,6 +41,7 @@
 
 (use-package beacon
   :straight t
+  :delight
   :config
   (beacon-mode +1))
 
