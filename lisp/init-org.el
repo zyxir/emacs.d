@@ -27,6 +27,10 @@
   ;; Put attachments in an obvious directory.
   (setq org-attach-id-dir "org-attachments/"))
 
+(use-package org-bullets
+  :straight t
+  :hook (org-mode . org-bullets-mode))
+
 ;;;; Export to HTML
 
 (use-package org

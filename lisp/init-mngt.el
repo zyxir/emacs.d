@@ -57,10 +57,12 @@
   ("M-x" 'counsel-M-x
    "C-x C-f" 'counsel-find-file
    "C-x b" 'ivy-switch-buffer)
-  :config
-  (ivy-mode +1)
+  :init
   (setq ivy-use-virtual-buffers t
-	enable-recursive-minibuffers t))
+	enable-recursive-minibuffers t
+	ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+  :config
+  (ivy-mode +1))
 
 (use-package counsel
   :straight t
