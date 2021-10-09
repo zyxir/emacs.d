@@ -80,13 +80,13 @@ This is like my dev blog on this repository.
 
 ## Changelog
 
-### Version 2
+### Version 2.X
 
 #### [2.0.0] - 2021-10-09
 
 The whole thing has been reworked, from a org-based literate configuration, to a complex collection of emacs-lisp scripts. Most of the original functionalities is kept or improved.
 
-### Version 1
+### Version 1.X
 
 #### [1.0.0] - 2021-09-30
 
