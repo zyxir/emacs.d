@@ -30,6 +30,7 @@ Personal Emacs configuration for everyday use.
     - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
+            - [[Unreleased]](#unreleased)
             - [[2.0.1] - 2021-10-09](#201---2021-10-09)
             - [[2.0.0] - 2021-10-09](#200---2021-10-09)
         - [Version 1.X](#version-1x)
@@ -87,6 +88,10 @@ This is like my dev blog on this repository.
 ## Changelog
 
 ### Version 2.X
+
+#### [Unreleased]
+
+- Remap `C-x C--/C-+/C-=/C-0` to a self implemented font size adjuster.
 
 #### [2.0.1] - 2021-10-09
 
