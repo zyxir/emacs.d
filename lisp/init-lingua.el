@@ -16,7 +16,14 @@
 ;; OpenCC.
 
 (use-package opencc
-  :load-path "site-lisp/opencc/")
+  :commands (opencc-message
+	     opencc-replace-at-point
+	     opencc-print-buffer
+	     opencc-insert-mode
+	     opencc-isearch-mode)
+  :straight
+  (opencc :host github
+	  :repo "zyxir/emacs-opencc"))
 
 ;; Lorem Ipsum Generator.
 

@@ -1,6 +1,0 @@
-[submodule "site-lisp/opencc"]
-	path = site-lisp/opencc
-	url = git@github.com:zyxir/emacs-opencc.git
-[submodule "site-lisp/org-roam-ui"]
-	path = site-lisp/org-roam-ui
-	url = https://github.com/org-roam/org-roam-ui
