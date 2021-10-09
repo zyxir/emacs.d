@@ -28,8 +28,12 @@
 ;; Lorem Ipsum Generator.
 
 (use-package lorem-ipsum
-  :straight t)
+  :straight t
+  :commands
+  (lorem-ipsum-insert-list
+   lorem-ipsum-insert-sentences
+   lorem-ipsum-insert-paragraphs))
 
 ;; End of config.
 
-(provide 'init-chinese)
+(provide 'init-lingua)

@@ -8,9 +8,9 @@
 
 - [X] Gradually replace everything with ~use-package~ for better startup performance.
 - [ ] Replace auctex with a LaTeX language server.
-- [ ] Use LSP as a company backend.
-- [ ] Use org-sidebar for easier org-mode navigation.
-- [ ] Integrate window numbering to the system.
+- [X] Use LSP as a company backend.
+- [ ] +Use org-sidebar for easier org-mode navigation.+
+- [X] Integrate window numbering to the system.
 - [X] Rename all "my" symbol names with "zy".
 
 ** Installation Steps

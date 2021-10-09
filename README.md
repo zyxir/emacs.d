@@ -4,12 +4,11 @@
 
 Personal Emacs configuration for everyday use.
 
-[Install] • [設計理念] • [Screenshots] • [Changelog]
+[Install] • [Documents] • [Screenshots]
 
 [Install]: #install
-[設計理念]: abc
+[Documents]: #documents
 [Screenshots]: abc
-[Changelog]: abc
 
 ![Minimum Emacs version supported: 27.2](https://img.shields.io/badge/Emacs-27.2+-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)
 ![Latest commit](https://img.shields.io/github/last-commit/zyxir/dot-emacs/develop?style=flat-square)
@@ -28,18 +27,34 @@ IMAGE PLACEHOLDER
 - [Zyxir's Emacs Configuration](#zyxirs-emacs-configuration)
     - [Introduction](#introduction)
     - [Features](#features)
+    - [Documents](#documents)
     - [Install](#install)
-    - [Roadmap](#roadmap)
-    - [Changelog](#changelog)
 
 <!-- markdown-toc end -->
 
-
 ## Introduction
+
+This is my configuration of Emacs, which is mainly for GTD (getting things done), PKM (personal knowledge management), document writing and casual coding.
+
+There are mature tools for GTD (like Google Keep), PKM (like Notion), document writing (like Microsoft Word) and coding (like Sublime Text), then why use Emacs? Aside from Emacs being an unified, highly configurable environment, there is another reason, which could be explained by Carsten Dominik's words on Google Tech Talks 2008:
+
+> Text files are the only truly portable format for files, so we can write things down and read it anywhere, read it on a small device, read it on a big device, on any computer, Linux, Windows, on a Macintosh, whatever. You can read it truly anywhere, that data will never get lost. So, 20 years from now, you will still be able to read these files, which you wrote.
 
 ## Features
 
-A LOT OF FEATURES
+- Efficient text editing features, like LSP and ripgrep.
+- Org-mode powered GTD, PKM and diary system.
+- Tailored for different file formats: Markdown, Python, etc..
+- Other handy features like OpenCC and PlantUML support.
+
+## Documents
+
+This is like my dev blog on this repository.
+
+| Date | Title |
+| -- | -- |
+| `2021-06-28` | [在 Windows 下使用 opencc.el](documents/20210628-opencc-windows-conf.org) |
+| `2021-09-30` | [Next Iteration Plan](documents/20210930-next-iteration-plan.org) |
 
 ## Install
 
@@ -64,11 +79,3 @@ A LOT OF FEATURES
 [pandoc]: https://pandoc.org/
 [git]: https://git-scm.com/
 [grip]: https://github.com/joeyespo/grip/
-
-## Roadmap
-
-THIS IS ROADMAP
-
-## Changelog
-
-THIS IS CHANGELOG

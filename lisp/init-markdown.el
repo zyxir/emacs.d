@@ -16,6 +16,9 @@
   :init
   (setq markdown-command "pandoc -f markdown -t html5")
   :config
+  (add-hook 'markdown-mode-hook
+	    (lambda ()
+	      (setq truncate-lines nil)))
   (add-hook 'gfm-mode-hook
 	    (lambda ()
 	      (setq markdown-command "pandoc -f gfm -t html5"))))
