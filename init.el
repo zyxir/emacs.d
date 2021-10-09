@@ -67,6 +67,7 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 (zy/load 'init-files)
 (zy/load 'init-lingua)
 (zy/load 'init-outline)
+(zy/load 'init-ui)
 (zy/load 'init-vc)
 
 ;; Personal features.

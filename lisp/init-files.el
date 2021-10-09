@@ -73,22 +73,6 @@
   (setq projectile-sort-order 'recently-active)
   (projectile-mode +1))
 
-;; Treemacs.
-
-(use-package treemacs
-  :straight t
-  :after doom-themes
-  :general
-  ("M-0" 'treemacs-select-window)
-  :config
-  ;; Use doom theming.
-  (setq doom-themes-treemacs-theme "doom-colors")
-  (doom-themes-treemacs-config))
-
-(use-package treemacs-projectile
-  :straight t
-  :after (treemacs projectile))
-
 ;; End of config.
 
 (provide 'init-files)

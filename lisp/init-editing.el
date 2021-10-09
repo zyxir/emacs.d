@@ -14,6 +14,15 @@
   :config
   (show-paren-mode +1))
 
+;; Multiple cursors.
+
+(use-package multiple-cursors
+  :straight t
+  :general
+  ("C-c m" 'mc/edit-lines
+   "M-<down-mouse-1>" nil
+   "M-<mouse-1>" 'mc/add-cursor-on-click))
+
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
