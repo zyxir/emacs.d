@@ -5,11 +5,9 @@
 
 ;;; Code:
 
-(use-package outshine
-  :straight t
-  :hook (prog-mode . outshine-mode)
-  :init
-  (setq outline-minor-mode-prefix "\M-#"))
+(use-package outline
+  :delight outline-minor-mode
+  :hook (prog-mode . outline-minor-mode))
 
 ;; End of config.
 

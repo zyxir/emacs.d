@@ -87,7 +87,11 @@
 (use-package lsp-ui
   :straight t
   :after lsp-mode
-  :commands lsp-ui-mode)
+  :commands lsp-ui-mode
+  :general
+  (:keymap 'lsp-ui-mode-map
+	   "M-." #'lsp-ui-peek-find-definitions
+	   "M-?" #'lsp-ui-peek-find-references))
 
 (use-package lsp-ivy
   :straight t

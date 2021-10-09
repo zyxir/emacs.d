@@ -29,11 +29,13 @@
 ;; However, auto-revert-mode is sometimes dangerous, see URL
 ;; `https://magit.vc/manual/magit/Risk-of-Reverting-Automatically.html#Risk-of-Reverting-Automatically'.
 
-(general-define-key
- "C-c r"
- (lambda ()
-   (interactive)
-   (revert-buffer nil t)))
+(use-package autorevert
+  :delight auto-revert-mode
+  :general
+  ("C-c r"
+   (lambda ()
+     (interactive)
+     (revert-buffer nil t))))
 
 ;; More reasonable unique buffer names.
 
