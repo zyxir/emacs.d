@@ -7,11 +7,8 @@
 
 (use-package matlab
   :straight matlab-mode
+  :mode "\\.m\\'"
   :config
-  ;; Treat .m files as MATLAB files.
-  (add-to-list
-   'auto-mode-alist
-   '("\\.m\\'" . matlab-mode))
   (add-hook 'matlab-mode-hook
 	    (lambda ()
 	      (auto-fill-mode t)

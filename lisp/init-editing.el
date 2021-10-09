@@ -47,6 +47,26 @@
   :hook (prog-mode-hook . subword-mode)
   :delight)
 
+;; Company as code completion framework.
+
+(use-package company
+  :straight t
+  :defer 1
+  :delight
+  :config
+  (add-hook 'prog-mode-hook
+	    (lambda ()
+	       (company-mode +1)
+	       (general-define-key
+		:keymaps 'local
+		"C-M-i" 'company-complete))))
+
+;; Flycheck as syntax checking framework.
+
+(use-package flycheck
+  :straight t
+  :defer 2)
+
 ;; End of config.
 
 (provide 'init-editing)

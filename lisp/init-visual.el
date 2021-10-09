@@ -7,10 +7,17 @@
 
 ;; Install and enable spacemacs theme.
 
-(use-package spacemacs-common
-  :straight spacemacs-theme
+;; (use-package spacemacs-common
+;;   :straight spacemacs-theme
+;;   :config
+;;   (load-theme 'spacemacs-light t))
+
+(use-package doom-themes
+  :straight t
   :config
-  (load-theme 'spacemacs-light t))
+  (setq doom-themes-enable-bold t
+	doom-themes-enable-italic t)
+  (load-theme 'doom-tomorrow-day t))
 
 ;; Solaire mode.
 
