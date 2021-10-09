@@ -50,6 +50,16 @@
 	  (lambda ()
 	    (display-line-numbers-mode +1)))
 
+;; Highlight indentation.
+
+(use-package highlight-indent-guides
+  :straight t
+  :delight
+  :hook (prog-mode . highlight-indent-guides-mode)
+  :init
+  (setq highlight-indent-guides-method 'character
+	highlight-indent-guides-responsive 'top))
+
 ;; Make Emacs aware of camel case.
 
 (use-package subword

@@ -12,6 +12,8 @@
   :after doom-themes
   :general
   ("M-0" 'treemacs-select-window)
+  :init
+  (setq treemacs-is-never-other-window t)
   :config
   ;; Use doom theming.
   (setq doom-themes-treemacs-theme "doom-colors")
@@ -26,9 +28,10 @@
 (use-package ace-window
   :straight t
   :general
-  ("C-x o" 'ace-window)
+  ("C-x w" 'ace-window)
   :init
-  (setq aw-scope 'frame)
+  (setq aw-scope 'frame
+	aw-dispatch-always t)
   :config
   (custom-set-faces
    '(aw-leading-char-face

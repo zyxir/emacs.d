@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+;;;; Package management
+
 ;; Make sure that straight.el is installed.
 
 (defvar bootstrap-version)
@@ -24,10 +26,12 @@
 
 (straight-use-package 'use-package)
 
-;; Manage shortcuts with general.
+;; Hide mode text with delight.
 
-(use-package general
+(use-package delight
   :straight t)
+
+;;;; Keybinding management
 
 ;; Shortcut hint with which-key.
 
@@ -42,10 +46,12 @@
   (setq which-key-show-early-on-C-h t)
   (which-key-mode +1))
 
-;; Hide mode text with delight.
+;; Manage shortcuts with general.
 
-(use-package delight
+(use-package general
   :straight t)
+
+;;;; Minibuffer
 
 ;; Minibuffer completion with the ivy suite.
 
