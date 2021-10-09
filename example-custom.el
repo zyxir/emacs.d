@@ -46,16 +46,17 @@
 
 ;;;; OpenCC configuration for Windows.
 
-;; (setq opencc-configuration-files-prefix
-;;       "C:/Zybox/projects/windows-portable-tools/opencc/share/opencc/"
-;;       opencc-configuration-files-suffix
-;;       ".json"
-;;       opencc-configuration-files-original
-;;       '("s2t" "t2s" "s2tw" "tw2s" "s2hk" "hk2s" "s2twp" "tw2sp")
-;;       opencc-configuration-files nil)
-;; (dolist (filename opencc-configuration-files-original)
-;;   (let ((fullpath
-;; 	 (concat opencc-configuration-files-prefix
-;; 		 filename
-;; 		 opencc-configuration-files-suffix)))
-;;     (add-to-list 'opencc-configuration-files fullpath t)))
+;; (with-eval-after-load "opencc"
+;;   (setq opencc-configuration-files-prefix
+;; 	"C:/Zybox/projects/windows-portable-tools/opencc/share/opencc/"
+;; 	opencc-configuration-files-suffix
+;; 	".json"
+;; 	opencc-configuration-files-original
+;; 	'("s2t" "t2s" "s2tw" "tw2s" "s2hk" "hk2s" "s2twp" "tw2sp")
+;; 	opencc-configuration-files nil)
+;;   (dolist (filename opencc-configuration-files-original)
+;;     (let ((fullpath
+;; 	   (concat opencc-configuration-files-prefix
+;; 		   filename
+;; 		   opencc-configuration-files-suffix)))
+;;       (add-to-list 'opencc-configuration-files fullpath t))))

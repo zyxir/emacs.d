@@ -80,7 +80,7 @@ usually soft line-breaks"
   :general
   ("C-c j" 'org-journal-new-entry)
   :config
-  (setq org-journal-dir (concat zy/zybox-path "org-journal"))
+  (setq org-journal-dir (concat zy/zybox-path "org/org-journal"))
   (unless (file-exists-p org-journal-dir)
     (make-directory org-journal-dir))
   ;; Configure the template.
@@ -107,7 +107,7 @@ usually soft line-breaks"
 (defvar zy/gtd-someday-path nil
   "The path of `someday.org' of my GTD system.")
 (setq zy/gtd-path
-      (concat zy/zybox-path "org-gtd/")
+      (concat zy/zybox-path "org/org-gtd/")
       zy/gtd-inbox-path
       (concat zy/gtd-path "inbox.org")
       zy/gtd-gtd-path
@@ -163,5 +163,42 @@ usually soft line-breaks"
   (setq org-agenda-files `(,zy/gtd-inbox-path
 			   ,zy/gtd-gtd-path
 			   ,zy/gtd-someday-path)))
+
+;;;; Org-Roam
+
+(define-prefix-command 'zy/org-roam-map)
+(general-define-key "C-c z" 'zy/org-roam-map)
+
+(use-package org-roam
+  :straight t
+  :general
+  (:keymaps 'zy/org-roam-map
+	    "c" 'org-roam-capture
+	    "f" 'org-roam-node-find
+	    "l" 'org-roam-buffer-toggle
+	    "i" 'org-roam-node-insert)
+  :init
+  (setq org-roam-v2-ack t
+	org-roam-directory (concat zy/zybox-path "org/org-roam"))
+  :config
+  (unless (file-directory-p org-roam-directory)
+    (make-directory org-roam-directory))
+  (org-roam-db-autosync-mode))
+
+(use-package org-roam-ui
+  :straight (org-roam-ui :host github
+			 :repo "org-roam/org-roam-ui"
+			 :branch "main"
+			 :files ("*.el" "out"))
+  :requires (websocket simple-httpd)
+  :after org-roam
+  :general
+  (:keymaps 'zy/org-roam-map
+	    "u" 'org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+	org-roam-ui-follow t
+	org-roam-ui-update-on-save t
+	org-roam-ui-open-on-start t))
 
 (provide 'init-org)

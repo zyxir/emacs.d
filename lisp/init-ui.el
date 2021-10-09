@@ -8,7 +8,17 @@
 ;;;; Window size
 
 (setq default-frame-alist
-      '((width . 100) (height . 46)))
+      '((width . 100) (height . 50)))
+
+;;;; Modeline
+
+(use-package doom-modeline
+  :straight t
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-buffer-file-name-style 'truncate-with-project
+	doom-modeline-minor-modes t
+	doom-modeline-lsp t))
 
 ;;;; Side bar
 

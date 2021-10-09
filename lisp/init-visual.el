@@ -29,7 +29,7 @@
 (use-package all-the-icons
   :straight t)
 
-;;;; Fonts
+;;;; Fonts setter
 
 ;; Font setter.
 
@@ -40,12 +40,13 @@
   "Default fallback font list.")
 
 (defconst zy/default-vpfonts
-  '("Verdana"
-    "Times New Roman"
-    "Georgia"
-    "Helvetica"
-    "Aria")
-  "Default fallback variable pitch font list.
+  '("Times New Roman"
+    "Source Serif"
+    "Noto Serif"
+    "Verdana"
+    "Noto Sans"
+    "Ubuntu")
+  "Default fallback variable-pitch font list.
 
 Fonts are selected according to recommendations from Bureau of
 Internet Accessibility.")
@@ -54,14 +55,14 @@ Internet Accessibility.")
   "Custom font assigned by the user.")
 
 (defvar zy/custom-vpfont nil
-  "Custom variable pitch font assigned by the user.")
+  "Custom variable-pitch font assigned by the user.")
 
 (defvar zy/current-font nil
   "The current enabled font. Would be nil if it is the system
 fallback font.")
 
 (defvar zy/current-vpfont nil
-  "The current enabled variable pitch font. Would be nil if it is
+  "The current enabled variable-pitch font. Would be nil if it is
 the system fallback font.")
 
 (defvar zy/default-font-size 14
@@ -79,26 +80,30 @@ If it does exist, return itself.  If it doesn't, return nil."
       nil
     font))
 
-(defun zy:set-font (font &optional size vpfont)
+(defun zy:set-font (font &optional size)
   "Set FONT as the universal font.
 
 SIZE is the font size. If it is nil, `zy/default-font-size' will
-be used.
-
-Optionally set the variable pitch font as VPFONT."
+be used."
   (let* ((size (or size zy/default-font-size)))
     (set-face-attribute 'default nil :font
 			(font-spec :family font
 				   :size size))
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font) charset
-			(font-spec :family font
-				   :size size)))
-    (when vpfont
+			(font-spec :family font)))
+    (setq zy/current-font font)))
+
+(defun zy:set-vpfont (vpfont &optional size)
+  "Set VPFONT as the default variable-pitch font.
+
+SIZE is the font size. If it is nil, `zy/default-font-size' will
+be used."
+  (let* ((size (or size zy/default-font-size)))
       (set-face-attribute 'variable-pitch nil :font
 			  (font-spec :family vpfont
-				     :size size)))
-    (setq zy/current-font font)))
+				     :size size))
+      (setq zy/current-vpfont vpfont)))
 
 (defun zy/set-font ()
   "Set font wisely.
@@ -112,7 +117,7 @@ nil, or the first available font listed in `zy/default-fonts'. If
 non of them is available, this function does nothing except
 popping up a warning message.
 
-The same thing is applied to variable pitch font, which defaults
+The same thing is applied to variable-pitch font, which defaults
 to `zy/custom-vpfont', and will choose one from
 `zy/default-vpfonts' by default.
 
@@ -131,12 +136,27 @@ abcdefghijklmnopqrstuvwxyz"
 			 (cl-some
 			  #'zy/font-exists-p
 			  zy/default-vpfonts))))
-	(if (and font vpfont)
-	    (zy:set-font font zy/default-font-size vpfont)
-	  (message "Some font is not available.")))
+	(list
+	 (if font
+	     (zy:set-font font)
+	   (message "No custom or recommended font is available."))
+	 (if vpfont
+	     (zy:set-vpfont vpfont)
+	   (message "No custom or recommended variable-pitch font is available."))))
     (message "Cannot set font without window system.")))
 
-(zy/set-font)
+(when window-system
+  (zy/set-font))
+
+;;;; Font size management
+
+(use-package init-visual-font-size
+  :load-path "lisp"
+  :general
+  ("C-x C-0" 'zy/font-size-adjust
+   "C-x C-=" 'zy/font-size-adjust
+   "C-x C--" 'zy/font-size-adjust
+   "C-x C-+" 'zy/font-size-adjust))
 
 ;; End of config.
 

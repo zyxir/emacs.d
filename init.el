@@ -51,11 +51,7 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 
 (zy/load 'init-overall)
 (zy/load 'init-mngt)
-
-;; OS-dependent settings.
-
-(cond
- ((or *win64* *cygwin*) (zy/load 'init-windows)))
+(zy/load 'init-encoding)
 
 ;; Visual things like themes and fonts.
 
@@ -77,6 +73,7 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 ;; Config for different file types.
 
 (zy/load 'init-elisp)
+(zy/load 'init-latex)
 (zy/load 'init-markdown)
 (zy/load 'init-org)
 (zy/load 'init-python)

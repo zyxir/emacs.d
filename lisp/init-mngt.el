@@ -25,6 +25,7 @@
 ;; Manage package and settings with use-package.
 
 (straight-use-package 'use-package)
+(setq straight-vc-git-default-clone-depth 1)
 
 ;; Hide mode text with delight.
 
@@ -58,10 +59,6 @@
 (use-package ivy
   :straight t
   :delight
-  :general
-  ("M-x" 'counsel-M-x
-   "C-x C-f" 'counsel-find-file
-   "C-x b" 'ivy-switch-buffer)
   :init
   (setq ivy-use-virtual-buffers t
 	enable-recursive-minibuffers t
@@ -78,12 +75,36 @@
   :config
   (counsel-mode +1))
 
+;; Install smex, which will be automatically used by counsel-M-x.
+
+(use-package smex
+  :straight t)
+
 (use-package swiper
   :straight t
   :after ivy
   :general
   ("C-s" 'swiper-isearch
    "C-r" 'swiper-isearch-backward))
+
+;; Command map for tweakering functions.
+
+(define-prefix-command 'zy/tweakering-map)
+(general-define-key "C-c \\" 'zy/tweakering-map)
+(general-define-key
+ :keymaps 'zy/tweakering-map
+ "l" 'zy/load-times)
+
+;; Restart Emacs from within Emacs.
+
+(use-package restart-emacs
+  :straight t
+  :general
+  (:keymaps 'zy/tweakering-map
+	    "R" 'restart-emacs
+	    "N" 'restart-emacs-start-new-emacs)
+  :commands (restart-emacs
+	     restart-emacs-start-new-emacs))
 
 ;; End of config.
 

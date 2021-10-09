@@ -8,12 +8,17 @@
 ;; Use Pyright as default language server.
 
 (use-package lsp-pyright
-  :after lsp
+  :straight t
+  :defer t
   :hook
   (python-mode .
 	       (lambda ()
 		 (require 'lsp-pyright)
 		 (lsp))))
+
+(use-package python
+  :hook
+  (python-mode . display-fill-column-indicator-mode))
 
 ;; End of config.
 

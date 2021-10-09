@@ -30,6 +30,7 @@ Personal Emacs configuration for everyday use.
     - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
+            - [[2.1.0] - 2021-11-1](#210---2021-11-1)
             - [[2.0.1] - 2021-10-09](#201---2021-10-09)
             - [[2.0.0] - 2021-10-09](#200---2021-10-09)
         - [Version 1.X](#version-1x)
@@ -52,6 +53,10 @@ There are mature tools for GTD (like Google Keep), PKM (like Notion), document w
 - Tailored for different file formats: Markdown, Python, etc..
 - Other handy features like OpenCC and PlantUML support.
 
+Future features:
+
+- Emacs 28 native comp.
+
 ## Documents
 
 This is like my dev blog on this repository.
@@ -65,9 +70,10 @@ This is like my dev blog on this repository.
 
 > This configuration is **tailored for my personal workflow**. Therefore it is not suggested for you to use it directly. However, you can make it a start point of your own configuration.
 
-1. Install [git], and clone the repo as `.emacs.d`.
+1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
 3. Write `custom.el` based on `example-custom.el`.
 4. For Microsoft Windows:
+   - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
    - If [smart-input-source] should be enabled, add `./3rd-party/im-select/im-select.exe` to path.
 5. One the first run, do `M-x all-the-icons-install-fonts` for icon support.
@@ -87,6 +93,18 @@ This is like my dev blog on this repository.
 ## Changelog
 
 ### Version 2.X
+
+#### [2.1.0] - 2021-11-1
+
+- Remap `C-x C--/C-+/C-=/C-0` to a self implemented font size adjuster.
+- Rewrite encoding settings, everything for UTF-8 now.
+- Python with LSP integrated.
+- LaTeX with LSP integrated.
+- Other minor modifications.
+- Add tweakering functions triggered by the `C-c \` prefix.
+- Modeline updated.
+- Snippet support finally added.
+- Other minor changes.
 
 #### [2.0.1] - 2021-10-09
 

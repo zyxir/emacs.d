@@ -39,8 +39,20 @@
     "Show trailing whitespace for the current buffer."
     (setq-local show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
-  (add-hook 'text-mode-hook 'zy/show-trailing-whitespace)
-  (add-hook 'before-save-hook 'delete-trailing-whitespace))
+  (add-hook 'text-mode-hook 'zy/show-trailing-whitespace))
+
+;; Snippet support.
+
+(use-package yasnippet
+  :straight t
+  :general
+  ("C-c s" 'yas-insert-snippet)
+  :hook ((text-mode prog-mode) . yas-minor-mode)
+  :delight yas-minor-mode)
+
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet)
 
 ;;;; For `prog-mode' Only
 
@@ -84,18 +96,11 @@
 		:keymaps 'local
 		"C-M-i" 'company-complete))))
 
-;; Use LSP as company backend.
-
-(use-package company-lsp
-  :straight t
-  :after (company lsp-mode)
-  :config
-  (push 'company-lsp company-backends))
-
 ;; Flycheck as syntax checking framework.
 
 (use-package flycheck
   :straight t
+  :delight
   :defer 2)
 
 ;; Language server protocol support.
