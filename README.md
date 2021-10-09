@@ -8,15 +8,13 @@ Personal Emacs configuration for everyday use.
 
 [Install]: #install
 [Documents]: #documents
-[Screenshots]: abc
+[Screenshots]: screenshots.md
 [Changelog]: #changelog
 
 ![Minimum Emacs version supported: 27.2](https://img.shields.io/badge/Emacs-27.2+-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)
 ![Latest commit](https://img.shields.io/github/last-commit/zyxir/dot-emacs/master?style=flat-square)
 ![Windows](https://img.shields.io/badge/-Windows-lightblue?logo=windows&style=flat&logoColor=blue)
 ![Linux](https://img.shields.io/badge/-Linux-fcc624?logo=linux&style=flat&logoColor=black)
-
-IMAGE PLACEHOLDER
 
 </div>
 
