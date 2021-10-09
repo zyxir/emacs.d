@@ -92,8 +92,7 @@ Optionally set the variable pitch font as VPFONT."
 				   :size size))
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font (frame-parameter nil 'font) charset
-			(font-spec :family font
-				   :size size)))
+			(font-spec :family font)))
     (when vpfont
       (set-face-attribute 'variable-pitch nil :font
 			  (font-spec :family vpfont
