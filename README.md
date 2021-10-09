@@ -4,11 +4,12 @@
 
 Personal Emacs configuration for everyday use.
 
-[Install] • [Documents] • [Screenshots]
+[Install] • [Documents] • [Screenshots] • [Changelog]
 
 [Install]: #install
 [Documents]: #documents
 [Screenshots]: abc
+[Changelog]: #changelog
 
 ![Minimum Emacs version supported: 27.2](https://img.shields.io/badge/Emacs-27.2+-blueviolet.svg?style=flat-square&logo=GNU%20Emacs&logoColor=white)
 ![Latest commit](https://img.shields.io/github/last-commit/zyxir/dot-emacs/master?style=flat-square)
@@ -61,7 +62,6 @@ This is like my dev blog on this repository.
 > This configuration is **tailored for my personal workflow**. Therefore it is not suggested for you to use it directly. However, you can make it a start point of your own configuration.
 
 1. Install [git], and clone the repo as `.emacs.d`.
-2. Init and update all git submodules.
 3. Write `custom.el` based on `example-custom.el`.
 4. For Microsoft Windows:
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
@@ -79,3 +79,17 @@ This is like my dev blog on this repository.
 [pandoc]: https://pandoc.org/
 [git]: https://git-scm.com/
 [grip]: https://github.com/joeyespo/grip/
+
+## Changelog
+
+### Version 2
+
+#### [2.0.0] - 2021-10-09
+
+The whole thing has been reworked, from a org-based literate configuration, to a complex collection of emacs-lisp scripts. Most of the original functionalities is kept or improved.
+
+### Version 1
+
+#### [1.0.0] - 2021-09-30
+
+The configuration is almost stable for everyday usage, but a rewrite is planned.
