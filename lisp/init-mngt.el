@@ -67,6 +67,8 @@
   :defer 1
   :after ivy
   :delight
+  :general
+  ("M-s g" 'counsel-rg)
   :config
   (counsel-mode +1))
 

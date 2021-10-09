@@ -72,8 +72,6 @@ The configuration is divided into these categories:
 
 ** Extensions
 
-*** LaTeX ~.tex~
-
 *** Org ~.org~
 
 #+begin_src emacs-lisp
@@ -200,19 +198,6 @@ longer a pain.
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
 #+end_src
 
-*** Python ~.py~
-
-Enable lsp mode for python, with pyright as the server.
-
-#+begin_src emacs-lisp
-(use-package lsp-pyright
-  :after lsp
-  :hook
-  (python-mode .
-	       (lambda ()
-		 (require 'lsp-pyright)
-		 (lsp))))
-#+end_src
 
 ** Feature
 
@@ -353,26 +338,6 @@ Agenda is the way to display all my GTD entries.
 			   ,zy/gtd-gtd-path
 			   ,zy/gtd-someday-path)))
 #+end_src
-
-*** Language Server Protocol
-
-Language server protocol is the future. It is well suited for Emacs, a free and
-open source text editor.
-
-#+begin_src emacs-lisp
-(use-package lsp-mode
-  :requires lsp-mode
-  :config
-  (setq lsp-keymap-prefix "C-c l"))
-
-(use-package lsp-ui
-  :after lsp-mode)
-
-(use-package lsp-ivy
-  :after (lsp-mode ivy))
-#+end_src
-
-~lsp-mode~ should be enabled for each mode individually.
 
 **** UI
 

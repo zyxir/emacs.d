@@ -61,11 +61,38 @@
 		:keymaps 'local
 		"C-M-i" 'company-complete))))
 
+;; Use LSP as company backend.
+
+(use-package company-lsp
+  :straight t
+  :after (company lsp-mode)
+  :config
+  (push 'company-lsp company-backends))
+
 ;; Flycheck as syntax checking framework.
 
 (use-package flycheck
   :straight t
   :defer 2)
+
+;; Language server protocol support.
+
+(use-package lsp-mode
+  :straight t
+  :delight
+  :init
+  (setq lsp-keymap-prefix "C-c l")
+  :commands lsp)
+
+(use-package lsp-ui
+  :straight t
+  :after lsp-mode
+  :commands lsp-ui-mode)
+
+(use-package lsp-ivy
+  :straight t
+  :after (lsp-mode ivy)
+  :commands lsp-ivy-workspace-symbol)
 
 ;; End of config.
 

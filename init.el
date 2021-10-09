@@ -76,6 +76,8 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 
 (zy/load 'init-elisp)
 (zy/load 'init-markdown)
+(zy/load 'init-python)
+
 (zy/load 'init-misc)
 
 ;; End of config.
