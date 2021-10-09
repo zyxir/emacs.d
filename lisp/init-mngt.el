@@ -57,7 +57,6 @@
 
 (use-package ivy
   :straight t
-  :defer 1
   :delight
   :general
   ("M-x" 'counsel-M-x
@@ -72,7 +71,6 @@
 
 (use-package counsel
   :straight t
-  :defer 1
   :after ivy
   :delight
   :general
@@ -82,7 +80,6 @@
 
 (use-package swiper
   :straight t
-  :defer 1
   :after ivy
   :general
   ("C-s" 'swiper-isearch

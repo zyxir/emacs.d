@@ -7,7 +7,8 @@
 
 (use-package outline
   :hook ((emacs-lisp-mode
-	   python-mode) . outline-minor-mode))
+	  python-mode) . outline-minor-mode)
+  :delight outline-minor-mode)
 
 (use-package outshine
   :straight t

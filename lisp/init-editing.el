@@ -7,6 +7,10 @@
 
 ;;;; For All Modes
 
+;; Do not truncate lines by default.
+
+(setq-default truncate-lines t)
+
 ;; Show matching parenthesis.
 
 (use-package paren
