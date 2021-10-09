@@ -10,7 +10,7 @@
 (setq package-enable-at-startup nil)
 
 ;; Modify garbage collection at startup and after it.
-;; URL `https://www.reddit.com/r/emacs/comments/ofhket/further_boost_start_up_time_with_a_simple_tweak/'
+;; https://www.reddit.com/r/emacs/comments/ofhket/further_boost_start_up_time_with_a_simple_tweak/
 
 (defvar tmp/file-name-handler-alist file-name-handler-alist
   "Temporary storer for file-name-handler-alist at startup.")
@@ -30,11 +30,6 @@
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
 (column-number-mode +1)
-
-;; A reasonable default GUI size.
-
-(when window-system
-  (setq default-frame-alist '((width . 120) (height . 40))))
 
 ;; Disable built-in vc. This makes config file loading a bit faster.
 

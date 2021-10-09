@@ -5,6 +5,11 @@
 
 ;;; Code:
 
+;;;; Window size
+
+(setq default-frame-alist
+      '((width . 100) (height . 46)))
+
 ;;;; Side bar
 
 (use-package treemacs
