@@ -5,19 +5,16 @@
 
 ;;; Code:
 
-;; Install and enable spacemacs theme.
-
-;; (use-package spacemacs-common
-;;   :straight spacemacs-theme
-;;   :config
-;;   (load-theme 'spacemacs-light t))
+;;;; Themes and Icons
 
 (use-package doom-themes
   :straight t
   :config
   (setq doom-themes-enable-bold t
 	doom-themes-enable-italic t)
-  (load-theme 'doom-tomorrow-day t))
+  (defvar zy/default-theme 'doom-tomorrow-day
+    "Default doom theme to use.")
+  (load-theme zy/default-theme t))
 
 ;; Solaire mode.
 
@@ -32,6 +29,8 @@
 (use-package all-the-icons
   :straight t)
 
+;;;; Fonts
+
 ;; Font setter.
 
 (defconst zy/default-fonts
@@ -40,12 +39,30 @@
     "WenQuanYi Zen Hei Mono")
   "Default fallback font list.")
 
+(defconst zy/default-vpfonts
+  '("Verdana"
+    "Times New Roman"
+    "Georgia"
+    "Helvetica"
+    "Aria")
+  "Default fallback variable pitch font list.
+
+Fonts are selected according to recommendations from Bureau of
+Internet Accessibility.")
+
 (defvar zy/custom-font nil
   "Custom font assigned by the user.")
+
+(defvar zy/custom-vpfont nil
+  "Custom variable pitch font assigned by the user.")
 
 (defvar zy/current-font nil
   "The current enabled font. Would be nil if it is the system
 fallback font.")
+
+(defvar zy/current-vpfont nil
+  "The current enabled variable pitch font. Would be nil if it is
+the system fallback font.")
 
 (defvar zy/default-font-size 14
   "Default font pixel size.
@@ -62,11 +79,13 @@ If it does exist, return itself.  If it doesn't, return nil."
       nil
     font))
 
-(defun zy:set-font (font &optional size)
+(defun zy:set-font (font &optional size vpfont)
   "Set FONT as the universal font.
 
 SIZE is the font size. If it is nil, `zy/default-font-size' will
-be used."
+be used.
+
+Optionally set the variable pitch font as VPFONT."
   (let* ((size (or size zy/default-font-size)))
     (set-face-attribute 'default nil :font
 			(font-spec :family font
@@ -75,6 +94,10 @@ be used."
       (set-fontset-font (frame-parameter nil 'font) charset
 			(font-spec :family font
 				   :size size)))
+    (when vpfont
+      (set-face-attribute 'variable-pitch nil :font
+			  (font-spec :family vpfont
+				     :size size)))
     (setq zy/current-font font)))
 
 (defun zy/set-font ()
@@ -84,10 +107,14 @@ If `window-system' is nil, this function only pops up a warning
 message, as it is impossible to set font in a terminal
 environment.
 
-The font will be `zy/custom-font', if it is not nil, or the first
-available font listed in `zy/default-fonts'. If non of them is
-available, this function does nothing except popping up a warning
-message.
+The default font will be set to `zy/custom-font', if it is not
+nil, or the first available font listed in `zy/default-fonts'. If
+non of them is available, this function does nothing except
+popping up a warning message.
+
+The same thing is applied to variable pitch font, which defaults
+to `zy/custom-vpfont', and will choose one from
+`zy/default-vpfonts' by default.
 
 If proper font is set, these two lines of Chinese characters and
 latin letters would have the same length:
@@ -99,10 +126,14 @@ abcdefghijklmnopqrstuvwxyz"
       (let* ((font (or zy/custom-font
 		       (cl-some
 			#'zy/font-exists-p
-			zy/default-fonts))))
-	(if font
-	    (zy:set-font font zy/default-font-size)
-	  (message "No custom font or preset font available.")))
+			zy/default-fonts)))
+	     (vpfont (or zy/custom-vpfont
+			 (cl-some
+			  #'zy/font-exists-p
+			  zy/default-vpfonts))))
+	(if (and font vpfont)
+	    (zy:set-font font zy/default-font-size vpfont)
+	  (message "Some font is not available.")))
     (message "Cannot set font without window system.")))
 
 (add-hook 'after-init-hook #'zy/set-font)

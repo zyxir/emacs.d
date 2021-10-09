@@ -14,7 +14,12 @@
 ;;;; Set default font and pixel size.
 
 ;; (setq zy/custom-font "Source Han Sans HW TC")
+;; (setq zy/custom-vpfont "Georgia")
 ;; (setq zy/default-font-size 14)
+
+;;;; Set default theme (one of doom themes).
+
+;; (setq zy/default-theme 'doom-one-light)
 
 ;;;; Configure sis for specific platform.
 

@@ -70,26 +70,6 @@ The configuration is divided into these categories:
 - Extensions :: Settings for specific file name extensions, like
   ~.py~.
 
-** Workbench
-
-*** Treemacs
-
-Treemacs is a great feature for IDE-like experience.
-
-#+begin_src emacs-lisp
-(use-package treemacs
-  :general
-  ("M-0" 'treemacs-select-window)
-  :config
-  ;; Use doom theme.
-  (setq doom-theme-treemacs-theme "doom-colors"
-	doom-theme-treemacs-enable-variable-pitch nil)
-  (doom-themes-treemacs-config))
-
-(use-package treemacs-projectile
-  :after treemacs)
-#+end_src
-
 ** Extensions
 
 *** LaTeX ~.tex~
