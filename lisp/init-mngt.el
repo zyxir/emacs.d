@@ -81,6 +81,11 @@
   :config
   (counsel-mode +1))
 
+;; Install smex, which will be automatically used by counsel-M-x.
+
+(use-package smex
+  :straight t)
+
 (use-package swiper
   :straight t
   :after ivy

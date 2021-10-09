@@ -6,6 +6,10 @@
 
 ;;; Code:
 
+;; Always enter debug on error.
+
+(setq debug-on-error t)
+
 ;; System type.
 ;; Currently, only Windows and Linux is supported, as I don't use other OSs.
 

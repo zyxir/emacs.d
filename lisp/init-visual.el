@@ -29,7 +29,7 @@
 (use-package all-the-icons
   :straight t)
 
-;;;; Fonts
+;;;; Fonts setter
 
 ;; Font setter.
 
