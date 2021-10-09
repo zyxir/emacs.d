@@ -82,6 +82,10 @@ This is like my dev blog on this repository.
 
 ### Version 2.X
 
+#### [2.0.1] - 2021-10-09
+
+The README is polished, as the "changelog" and "screenshots" sections are added.
+
 #### [2.0.0] - 2021-10-09
 
 The whole thing has been reworked, from a org-based literate configuration, to a complex collection of emacs-lisp scripts. Most of the original functionalities is kept or improved.
