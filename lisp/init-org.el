@@ -80,7 +80,7 @@ usually soft line-breaks"
   :general
   ("C-c j" 'org-journal-new-entry)
   :config
-  (setq org-journal-dir (concat zy/zybox-path "org-journal"))
+  (setq org-journal-dir (concat zy/zybox-path "org/org-journal"))
   (unless (file-exists-p org-journal-dir)
     (make-directory org-journal-dir))
   ;; Configure the template.
@@ -107,7 +107,7 @@ usually soft line-breaks"
 (defvar zy/gtd-someday-path nil
   "The path of `someday.org' of my GTD system.")
 (setq zy/gtd-path
-      (concat zy/zybox-path "org-gtd/")
+      (concat zy/zybox-path "org/org-gtd/")
       zy/gtd-inbox-path
       (concat zy/gtd-path "inbox.org")
       zy/gtd-gtd-path
