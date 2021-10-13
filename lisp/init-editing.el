@@ -84,14 +84,6 @@
 		:keymaps 'local
 		"C-M-i" 'company-complete))))
 
-;; Use LSP as company backend.
-
-(use-package company-lsp
-  :straight t
-  :after (company lsp-mode)
-  :config
-  (push 'company-lsp company-backends))
-
 ;; Flycheck as syntax checking framework.
 
 (use-package flycheck
