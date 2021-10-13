@@ -93,6 +93,13 @@
   ("C-s" 'swiper-isearch
    "C-r" 'swiper-isearch-backward))
 
+;; Restart Emacs from within Emacs.
+
+(use-package restart-emacs
+  :straight t
+  :commands (restart-emacs
+	     restart-emacs-start-new-emacs))
+
 ;; End of config.
 
 (provide 'init-mngt)
