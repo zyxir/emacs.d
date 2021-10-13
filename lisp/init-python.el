@@ -8,7 +8,7 @@
 ;; Use Pyright as default language server.
 
 (use-package lsp-pyright
-  :after lsp
+  :straight t
   :hook
   (python-mode .
 	       (lambda ()

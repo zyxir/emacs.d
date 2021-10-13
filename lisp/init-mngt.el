@@ -59,6 +59,7 @@
 (use-package ivy
   :straight t
   :delight
+  :defer 2
   :general
   ("M-x" 'counsel-M-x
    "C-x C-f" 'counsel-find-file
@@ -76,6 +77,7 @@
   :straight t
   :after ivy
   :delight
+  :defer 2
   :general
   ("M-s g" 'counsel-rg)
   :config
