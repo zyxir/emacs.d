@@ -39,8 +39,7 @@
     "Show trailing whitespace for the current buffer."
     (setq-local show-trailing-whitespace t))
   (add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
-  (add-hook 'text-mode-hook 'zy/show-trailing-whitespace)
-  (add-hook 'before-save-hook 'delete-trailing-whitespace))
+  (add-hook 'text-mode-hook 'zy/show-trailing-whitespace))
 
 ;;;; For `prog-mode' Only
 
