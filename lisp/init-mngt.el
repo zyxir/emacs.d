@@ -59,13 +59,6 @@
 (use-package ivy
   :straight t
   :delight
-  :defer 2
-  :general
-  ("M-x" 'counsel-M-x
-   "C-x C-f" 'counsel-find-file
-   "C-h v" 'counsel-describe-variable
-   "C-h f" 'counsel-describe-function
-   "C-x b" 'ivy-switch-buffer)
   :init
   (setq ivy-use-virtual-buffers t
 	enable-recursive-minibuffers t
@@ -77,7 +70,6 @@
   :straight t
   :after ivy
   :delight
-  :defer 2
   :general
   ("M-s g" 'counsel-rg)
   :config

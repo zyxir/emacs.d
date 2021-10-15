@@ -61,18 +61,19 @@
 
 (use-package projectile
   :straight t
-  :defer 2
   :delight
   :general
-  (:keymaps 'ctl-x-map
-	    "p" 'projectile-command-map)
+  ("C-x p f" 'projectile-find-file
+   "C-x p d" 'projectile-find-dir)
+  ;; Only these two functions are auto loaded.
   :config
-  (when (boundp 'zy/projects-path)
+  (when (boundp 'zy/prodjects-path)
     (add-to-list 'projectile-project-search-path zy/projects-path))
   (add-to-list 'projectile-project-search-path zy/emacs-d)
   (setq projectile-sort-order 'recently-active)
-  (projectile-mode +1))
+  (projectile-mode +1)
+  (general-define-key "C-x p" 'projectile-command-map))
 
 ;; End of config.
 
-(provide 'init-files)
+(provide 'init-file)
