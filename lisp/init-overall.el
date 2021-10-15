@@ -16,6 +16,10 @@
 (when (boundp 'buffer-file-coding-system)
   (setq-default buffer-file-coding-system 'utf-8-unix))
 
+;; Enable all disabled commands.
+
+(setq disabled-command-function nil)
+
 ;; Persoanl information.
 
 (setq user-full-name "Eric Zhuo Chen"
