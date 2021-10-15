@@ -11,7 +11,9 @@
 
 ;; Set encoding to paste Chinese correctly.
 
+(set-next-selection-coding-system 'utf-16-le)
 (set-selection-coding-system 'utf-16le-dos)
+(set-clipboard-coding-system 'utf-16-le)
 (set-default 'process-coding-system-alist
 	     '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
 	       ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)))
