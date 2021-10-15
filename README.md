@@ -112,6 +112,7 @@ This is like my dev blog on this repository.
 - Rewrite encoding settings, everything for UTF-8 now.
 - Python with LSP integrated.
 - Other minor modifications.
+- Add tweakering functions triggered by the `C-c \` prefix.
 
 #### [2.0.1] - 2021-10-09
 

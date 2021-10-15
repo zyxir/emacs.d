@@ -87,10 +87,22 @@
   ("C-s" 'swiper-isearch
    "C-r" 'swiper-isearch-backward))
 
+;; Command map for tweakering functions.
+
+(define-prefix-command 'zy/tweakering-map)
+(general-define-key "C-c \\" 'zy/tweakering-map)
+(general-define-key
+ :keymaps 'zy/tweakering-map
+ "l" 'zy/load-times)
+
 ;; Restart Emacs from within Emacs.
 
 (use-package restart-emacs
   :straight t
+  :general
+  (:keymaps 'zy/tweakering-map
+	    "R" 'restart-emacs
+	    "N" 'restart-emacs-start-new-emacs)
   :commands (restart-emacs
 	     restart-emacs-start-new-emacs))
 
