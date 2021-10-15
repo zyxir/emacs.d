@@ -64,7 +64,8 @@
   :delight
   :general
   ("C-x p f" 'projectile-find-file
-   "C-x p d" 'projectile-find-dir)
+   "C-x p d" 'projectile-find-dir
+   "C-x p p" 'projectile-switch-project)
   ;; Only these two functions are auto loaded.
   :config
   (when (boundp 'zy/prodjects-path)

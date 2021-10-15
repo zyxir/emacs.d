@@ -19,7 +19,7 @@
       file-name-handler-alist nil)
 (add-hook 'emacs-startup-hook
 	  (lambda ()
-	    (setq gc-cons-threshold 67108864 ; 64 MB
+	    (setq gc-cons-threshold 134217728 ; 128 MB
 		  gc-cons-percentage 0.1
 		  file-name-handler-alist tmp/file-name-handler-alist)))
 
