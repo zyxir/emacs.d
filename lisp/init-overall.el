@@ -5,17 +5,9 @@
 
 ;;; Code:
 
-;; Always use the ISO C date format.
+;; Use the ISO C date format (YYYY-MM-DD).
 
 (setq system-time-locale "C")
-
-;; Use UTF-8 as default in several places.
-
-(prefer-coding-system 'gb18030)
-(prefer-coding-system 'utf-8)
-(set-default-coding-systems 'utf-8)
-(when (boundp 'buffer-file-coding-system)
-  (setq-default buffer-file-coding-system 'utf-8-unix))
 
 ;; Enable all disabled commands.
 
