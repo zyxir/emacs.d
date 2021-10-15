@@ -85,6 +85,7 @@ This is like my dev blog on this repository.
 1. Install [git], and clone the repo as `.emacs.d`.
 3. Write `custom.el` based on `example-custom.el`.
 4. For Microsoft Windows:
+   - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
    - If [smart-input-source] should be enabled, add `./3rd-party/im-select/im-select.exe` to path.
 5. One the first run, do `M-x all-the-icons-install-fonts` for icon support.
@@ -108,6 +109,9 @@ This is like my dev blog on this repository.
 #### [Unreleased]
 
 - Remap `C-x C--/C-+/C-=/C-0` to a self implemented font size adjuster.
+- Rewrite encoding settings, everything for UTF-8 now.
+- Python with LSP integrated.
+- Other minor modifications.
 
 #### [2.0.1] - 2021-10-09
 
