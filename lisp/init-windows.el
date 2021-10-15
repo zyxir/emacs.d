@@ -5,6 +5,10 @@
 
 ;;; Code:
 
+;; Run program successfully on Chinese Windows.
+
+(set-language-environment 'Chinese-GB18030)
+
 ;; Set encoding to paste Chinese correctly.
 
 (set-selection-coding-system 'utf-16le-dos)
