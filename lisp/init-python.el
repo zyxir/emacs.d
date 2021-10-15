@@ -16,6 +16,10 @@
 		 (require 'lsp-pyright)
 		 (lsp))))
 
+(use-package python
+  :hook
+  (python-mode . display-fill-column-indicator-mode))
+
 ;; End of config.
 
 (provide 'init-python)
