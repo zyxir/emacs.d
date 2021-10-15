@@ -9,6 +9,7 @@
 
 (use-package lsp-pyright
   :straight t
+  :defer t
   :hook
   (python-mode .
 	       (lambda ()
