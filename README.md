@@ -82,7 +82,7 @@ This is like my dev blog on this repository.
 
 > This configuration is **tailored for my personal workflow**. Therefore it is not suggested for you to use it directly. However, you can make it a start point of your own configuration.
 
-1. Install [git], and clone the repo as `.emacs.d`.
+1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
 3. Write `custom.el` based on `example-custom.el`.
 4. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
@@ -113,6 +113,7 @@ This is like my dev blog on this repository.
 - Python with LSP integrated.
 - Other minor modifications.
 - Add tweakering functions triggered by the `C-c \` prefix.
+- Other minor changes.
 
 #### [2.0.1] - 2021-10-09
 
