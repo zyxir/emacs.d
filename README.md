@@ -69,6 +69,10 @@ There are mature tools for GTD (like Google Keep), PKM (like Notion), document w
 - Tailored for different file formats: Markdown, Python, etc..
 - Other handy features like OpenCC and PlantUML support.
 
+Future features:
+
+- Emacs 28 native comp.
+
 ## Documents
 
 This is like my dev blog on this repository.
@@ -111,6 +115,7 @@ This is like my dev blog on this repository.
 - Remap `C-x C--/C-+/C-=/C-0` to a self implemented font size adjuster.
 - Rewrite encoding settings, everything for UTF-8 now.
 - Python with LSP integrated.
+- LaTeX with LSP integrated.
 - Other minor modifications.
 - Add tweakering functions triggered by the `C-c \` prefix.
 - Other minor changes.

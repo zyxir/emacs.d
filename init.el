@@ -6,10 +6,6 @@
 
 ;;; Code:
 
-;; Always enter debug on error.
-
-(setq debug-on-error t)
-
 ;; System type.
 ;; Currently, only Windows and Linux is supported, as I don't use other OSs.
 
@@ -77,6 +73,7 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 ;; Config for different file types.
 
 (zy/load 'init-elisp)
+(zy/load 'init-latex)
 (zy/load 'init-markdown)
 (zy/load 'init-org)
 (zy/load 'init-python)
