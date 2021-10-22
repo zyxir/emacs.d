@@ -7,7 +7,7 @@
 
 (use-package lsp-latex
   :straight t
-  :after lsp-mode
+  :defer t
   :hook
   ((latex-mode yatex-mode bibtex-mode) .
    (lambda ()
