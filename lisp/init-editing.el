@@ -41,6 +41,19 @@
   (add-hook 'prog-mode-hook 'zy/show-trailing-whitespace)
   (add-hook 'text-mode-hook 'zy/show-trailing-whitespace))
 
+;; Snippet support.
+
+(use-package yasnippet
+  :straight t
+  :general
+  ("C-c s" 'yas-insert-snippet)
+  :hook ((text-mode prog-mode) . yas-minor-mode)
+  :delight yas-minor-mode)
+
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet)
+
 ;;;; For `prog-mode' Only
 
 ;; Set default fill column.
@@ -87,6 +100,7 @@
 
 (use-package flycheck
   :straight t
+  :delight
   :defer 2)
 
 ;; Language server protocol support.

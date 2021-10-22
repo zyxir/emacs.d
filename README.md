@@ -118,6 +118,8 @@ This is like my dev blog on this repository.
 - LaTeX with LSP integrated.
 - Other minor modifications.
 - Add tweakering functions triggered by the `C-c \` prefix.
+- Modeline updated.
+- Snippet support finally added.
 - Other minor changes.
 
 #### [2.0.1] - 2021-10-09
