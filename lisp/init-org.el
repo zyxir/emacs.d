@@ -25,13 +25,23 @@
   ;; Put attachments in an obvious directory.
   (setq org-attach-id-dir "org-attachments/"))
 
+;; Headline bullets.
 (use-package org-bullets
   :straight t
-  :hook (org-mode . org-bullets-mode))
+  :hook
+  (org-mode . org-bullets-mode))
+
+;; Hide markers, and show them on cursor over.
+(use-package org-appear
+  :straight t
+  :hook
+  (org-mode . org-appear-mode)
+  :init
+  (setq-default org-hide-emphasis-markers t))
 
 ;;;; Export to HTML
 
-(use-package ox
+(use-package ox-html
   :commands org-export-dispatch
   :config
   ;; Remove spaces for Chinese output.
@@ -54,7 +64,7 @@ usually soft line-breaks"
 
 ;;;; Export to LaTeX
 
-(use-package ox
+(use-package ox-latex
   :commands org-export-dispatch
   :config
   ;; Main class for Chinese articles.
@@ -190,12 +200,14 @@ usually soft line-breaks"
 			 :repo "org-roam/org-roam-ui"
 			 :branch "main"
 			 :files ("*.el" "out"))
-  :requires (websocket simple-httpd)
-  :after org-roam
   :general
   (:keymaps 'zy/org-roam-map
 	    "u" 'org-roam-ui-mode)
   :config
+  (use-package websocket
+    :straight t)
+  (use-package simple-httpd
+    :straight t)
   (setq org-roam-ui-sync-theme t
 	org-roam-ui-follow t
 	org-roam-ui-update-on-save t

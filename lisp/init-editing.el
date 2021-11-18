@@ -10,6 +10,7 @@
 ;; Do not truncate lines by default.
 
 (setq-default truncate-lines t)
+(general-define-key "C-c $" #'toggle-truncate-lines)
 
 ;; Show matching parenthesis.
 
@@ -26,6 +27,18 @@
   ("C-c m" 'mc/edit-lines
    "M-<down-mouse-1>" nil
    "M-<mouse-1>" 'mc/add-cursor-on-click))
+
+;; Set default fill column.
+
+(setq-default fill-column 79)
+
+;; Function to unfill paragraph.
+
+(defun unfill-paragraph ()
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
 
 ;;;; For `prog-mode' and `text-mode'
 
@@ -55,10 +68,6 @@
   :after yasnippet)
 
 ;;;; For `prog-mode' Only
-
-;; Set default fill column.
-
-(setq-default fill-column 79)
 
 ;; Show line numbers.
 
@@ -110,6 +119,7 @@
   :delight
   :init
   (setq lsp-keymap-prefix "C-c l")
+  (setq read-process-output-max (* 1024 1024))
   :commands lsp)
 
 (use-package lsp-ui

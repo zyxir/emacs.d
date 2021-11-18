@@ -30,7 +30,8 @@ Personal Emacs configuration for everyday use.
     - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
-            - [[2.1.0] - 2021-11-1](#210---2021-11-1)
+            - [[2.1.1] - 2022-02-25](#211---2022-02-25)
+            - [[2.1.0] - 2021-11-01](#210---2021-11-01)
             - [[2.0.1] - 2021-10-09](#201---2021-10-09)
             - [[2.0.0] - 2021-10-09](#200---2021-10-09)
         - [Version 1.X](#version-1x)
@@ -94,7 +95,14 @@ This is like my dev blog on this repository.
 
 ### Version 2.X
 
-#### [2.1.0] - 2021-11-1
+#### [2.1.1] - 2022-02-25
+
+- Use AucTeX instead of LaTeX LSP.
+- Org-mode markup improvements.
+- Org-roam fixed and optimized.
+- Other minor changes.
+
+#### [2.1.0] - 2021-11-01
 
 - Remap `C-x C--/C-+/C-=/C-0` to a self implemented font size adjuster.
 - Rewrite encoding settings, everything for UTF-8 now.
