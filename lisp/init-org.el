@@ -37,9 +37,7 @@
   :hook
   (org-mode . org-appear-mode)
   :init
-  (setq-default org-hide-emphasis-markers t)
-  :config
-  (setq org-appear-autolinks t))
+  (setq-default org-hide-emphasis-markers t))
 
 ;;;; Export to HTML
 
