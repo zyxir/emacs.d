@@ -197,22 +197,19 @@ usually soft line-breaks"
     (make-directory org-roam-directory))
   (org-roam-db-autosync-mode))
 
-(use-package websocket
-  :straight t)
-
-(use-package simple-httpd
-  :straight t)
-
 (use-package org-roam-ui
   :straight (org-roam-ui :host github
 			 :repo "org-roam/org-roam-ui"
 			 :branch "main"
 			 :files ("*.el" "out"))
-  :after (org-roam websocket simple-httpd)
   :general
   (:keymaps 'zy/org-roam-map
 	    "u" 'org-roam-ui-mode)
   :config
+  (use-package websocket
+    :straight t)
+  (use-package simple-httpd
+    :straight t)
   (setq org-roam-ui-sync-theme t
 	org-roam-ui-follow t
 	org-roam-ui-update-on-save t

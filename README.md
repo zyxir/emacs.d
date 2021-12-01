@@ -98,6 +98,9 @@ This is like my dev blog on this repository.
 #### Unreleased
 
 - Use AucTeX instead of LaTeX LSP.
+- Org-mode markup improvements.
+- Org-roam fixed and optimized.
+- Other minor changes.
 
 #### [2.1.0] - 2021-11-1
 
