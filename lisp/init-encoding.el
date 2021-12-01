@@ -19,6 +19,13 @@
 (setq locale-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
+;; On Microsoft Windows, set clipboard encoding.
+
+(when (eq system-type 'windows-nt)
+  (set-next-selection-coding-system 'utf-16-le)
+  (set-selection-coding-system 'utf-16-le)
+  (set-clipboard-coding-system 'utf-16-le))
+
 ;; Use Unicad to decide file coding system.
 
 (use-package unicad
