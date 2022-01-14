@@ -41,7 +41,7 @@
 
 ;;;; Export to HTML
 
-(use-package ox
+(use-package ox-html
   :commands org-export-dispatch
   :config
   ;; Remove spaces for Chinese output.
@@ -64,7 +64,7 @@ usually soft line-breaks"
 
 ;;;; Export to LaTeX
 
-(use-package ox
+(use-package ox-latex
   :commands org-export-dispatch
   :config
   ;; Main class for Chinese articles.
