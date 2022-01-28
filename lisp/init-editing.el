@@ -27,6 +27,18 @@
    "M-<down-mouse-1>" nil
    "M-<mouse-1>" 'mc/add-cursor-on-click))
 
+;; Set default fill column.
+
+(setq-default fill-column 79)
+
+;; Function to unfill paragraph.
+
+(defun unfill-paragraph ()
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive)
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil)))
+
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
@@ -55,10 +67,6 @@
   :after yasnippet)
 
 ;;;; For `prog-mode' Only
-
-;; Set default fill column.
-
-(setq-default fill-column 79)
 
 ;; Show line numbers.
 
