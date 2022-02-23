@@ -61,8 +61,7 @@
   :delight
   :init
   (setq ivy-use-virtual-buffers t
-	enable-recursive-minibuffers t
-	ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+	enable-recursive-minibuffers t)
   :config
   (ivy-mode +1))
 
