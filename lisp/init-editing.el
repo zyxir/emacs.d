@@ -10,6 +10,7 @@
 ;; Do not truncate lines by default.
 
 (setq-default truncate-lines t)
+(general-define-key "C-c $" #'toggle-truncate-lines)
 
 ;; Show matching parenthesis.
 
