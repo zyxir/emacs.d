@@ -18,7 +18,7 @@
 	TeX-parse-self t
 	TeX-show-compilation t
 	TeX-command-force "LaTeX"
-	TeX-electric-escape t)
+	TeX-electric-escape nil)
   (setq-default TeX-master nil
 		font-latex-fontify-script nil)
   ;; PDF Viewer.
