@@ -31,24 +31,26 @@
 			    (mode-io-correlate " -forward-search %b %n ") " %o"))))
     (assq-delete-all 'output-pdf TeX-view-program-selection)
     (add-to-list 'TeX-view-program-selection '(output-pdf "SumatraPDF")))
+
   ;; Find master file automatically.
   (defun TeX-find-master-file ()
     "Finds the master file for TeX/LaTeX project by searching for
   'main.tex' in the good directories"
     (let (foundFiles (currPath (expand-file-name "./")) foundFile)
-      (while (or foundFiles (equal currPath "/"))
-	(setq foundFiles (directory-files currPath t "main\.tex"))
+      (while (not (or foundFiles (equal currPath "/")))
+	(setq foundFiles (directory-files currPath t "main\\.tex"))
 	(setq currPath (expand-file-name (concat currPath "../"))))
       (and
        (setq foundFile (car foundFiles))
-       (setq foundFile (file-name-sans-extension foundFile))
        (file-exists-p foundFile)
+       (setq foundFile (file-name-sans-extension foundFile))
+       (message "found %s" foundFile)
        foundFile)))
   (defun TeX-set-master-file (&optional ignore1 ignore2 ignore3)
     "Finds the master file by means of TeX-find-master-file and
   set TeX-master to it value"
     (setq TeX-master (or (TeX-find-master-file) TeX-master)))
-  (add-hook 'TeX-mode-hook 'TeX-set-master-file)
+  (add-hook 'latex-mode-hook 'TeX-set-master-file)
   ;; From URL `https://emacs.stackexchange.com/questions/38258/close-latex-compilation-window-when-successful'
   (setq TeX-buf-close-at-warnings-only t)
   (defun my-tex-close-TeX-buffer (_output)
