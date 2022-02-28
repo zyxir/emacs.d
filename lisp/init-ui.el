@@ -5,10 +5,27 @@
 
 ;;; Code:
 
-;;;; Window size
+;;;; Frame Settings
 
+;; Default frame name.
+(setq frame-title-format
+      '("" "emacs" " [%b]"))
+
+;; Default frame parameters.
+(defun zy/frame-func (frame)
+  "Function to run after a frame is created."
+  (select-frame frame)
+  ;; Set font.
+  (zy/set-font)
+  ;; Set frame parameters.
+  (scroll-bar-mode -1)
+  (set-frame-height frame 40)
+  ;; Load theme again.
+  (load-theme zy/default-theme t))
+(add-hook 'after-make-frame-functions #'zy/frame-func)
 (setq default-frame-alist
-      '((width . 100) (height . 50)))
+      '((height . 40)
+	(width . 80)))
 
 ;;;; Modeline
 

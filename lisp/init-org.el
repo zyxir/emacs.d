@@ -13,6 +13,8 @@
   :general
   ("C-c C-i" nil)
   :init
+  ;; Doom themes improvements.
+  (doom-themes-org-config)
   ;; Allow Chinese around markups, maybe unstable, from
   ;; https://emacs-china.org/t/org-mode/597/4
   (setq org-emphasis-regexp-components
@@ -32,12 +34,14 @@
   (org-mode . org-bullets-mode))
 
 ;; Hide markers, and show them on cursor over.
-(use-package org-appear
-  :straight t
-  :hook
-  (org-mode . org-appear-mode)
-  :init
-  (setq-default org-hide-emphasis-markers t))
+;; org-appear doesn't work with org-fold now.
+;; Waiting for its fix.
+;; (use-package org-appear
+;;   :straight t
+;;   :hook
+;;   (org-mode . org-appear-mode)
+;;   :init
+;;   (setq-default org-hide-emphasis-markers t))
 
 ;;;; Export to HTML
 

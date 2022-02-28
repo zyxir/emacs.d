@@ -5,13 +5,26 @@
 
 ;;; Code:
 
-;; Smart input source.
-;; Platform-specific settings should be included in custom.el.
+;; Built-in Rime input method.
 
-(use-package sis
+(use-package rime
   :straight t
   :config
-  (sis-global-respect-mode t))
+  (setq rime-user-data-dir (concat user-emacs-directory "rime")
+	default-input-method "rime"
+	rime-show-candidate 'posframe)
+  ;; Change cursor color to orange if IM is active.
+  (defvar zy/im-cursor-color "Orange"
+    "Default cursor color if an input method is active.")
+  (defvar zy/default-cursor-color (frame-parameter nil 'cursor-color)
+    "Default text cursor color.")
+  (defun zy/change-cursor-color-on-im ()
+    "Set cursor color depending IM state."
+    (interactive)
+    (set-cursor-color (if current-input-method
+			  zy/im-cursor-color
+			zy/default-cursor-color)))
+  (add-hook 'post-command-hook 'zy/change-cursor-color-on-im))
 
 ;; OpenCC.
 

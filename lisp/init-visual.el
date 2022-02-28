@@ -12,7 +12,7 @@
   :config
   (setq doom-themes-enable-bold t
 	doom-themes-enable-italic t)
-  (defvar zy/default-theme 'doom-tomorrow-day
+  (defvar zy/default-theme 'doom-solarized-light
     "Default doom theme to use.")
   (load-theme zy/default-theme t))
 
@@ -85,7 +85,10 @@ If it does exist, return itself.  If it doesn't, return nil."
 
 SIZE is the font size. If it is nil, `zy/default-font-size' will
 be used."
-  (let* ((size (or size zy/default-font-size)))
+  (let* ((size (or size
+		   (and (boundp 'zy/current-font-size)
+			zy/current-font-size)
+		   zy/default-font-size)))
     (set-face-attribute 'default nil :font
 			(font-spec :family font
 				   :size size))
@@ -145,12 +148,11 @@ abcdefghijklmnopqrstuvwxyz"
 	   (message "No custom or recommended variable-pitch font is available."))))
     (message "Cannot set font without window system.")))
 
-(when window-system
-  (zy/set-font))
+(zy/set-font)
 
 ;;;; Font size management
 
-(use-package init-visual-font-size
+(use-package init-visual_font-size
   :load-path "lisp"
   :general
   ("C-x C-0" 'zy/font-size-adjust

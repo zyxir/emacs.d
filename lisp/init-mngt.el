@@ -76,7 +76,7 @@
 
 ;; Install smex, which will be automatically used by counsel-M-x.
 
-(use-package smex
+(use-package amx
   :straight t)
 
 (use-package swiper
@@ -89,7 +89,7 @@
 ;; Command map for tweakering functions.
 
 (define-prefix-command 'zy/tweakering-map)
-(general-define-key "C-c \\" 'zy/tweakering-map)
+(general-define-key "C-c T" 'zy/tweakering-map)
 (general-define-key
  :keymaps 'zy/tweakering-map
  "l" 'zy/load-times)

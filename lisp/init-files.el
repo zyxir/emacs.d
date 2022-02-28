@@ -68,7 +68,7 @@
    "C-x p p" 'projectile-switch-project)
   ;; Only these two functions are auto loaded.
   :config
-  (when (boundp 'zy/prodjects-path)
+  (when (boundp 'zy/projects-path)
     (add-to-list 'projectile-project-search-path zy/projects-path))
   (add-to-list 'projectile-project-search-path zy/emacs-d)
   (setq projectile-sort-order 'recently-active)

@@ -22,6 +22,10 @@
   (setq plantuml-jar-path (concat zy/3rd-party-path "plantuml/plantuml.jar")
 	plantuml-default-exec-mode 'jar))
 
+(use-package yaml-mode
+  :straight t
+  :mode ("\\.yml\\'" . yaml-mode))
+
 ;; End of config.
 
 (provide 'init-misc)

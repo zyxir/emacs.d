@@ -2,7 +2,7 @@
 
 # Zyxir's Emacs Configuration
 
-Personal Emacs configuration for everyday use.
+Personal Emacs configuration for everyday use, mainly on WSL.
 
 [Install] • [Documents] • [Screenshots] • [Changelog]
 
@@ -20,6 +20,10 @@ Personal Emacs configuration for everyday use.
 
 <hr>
 
+Bugs to fix:
+
+1. Very long load time on init-org.el.
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
@@ -30,6 +34,7 @@ Personal Emacs configuration for everyday use.
     - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
+            - [[2.2.0] - 2022-03-04](#220---2022-03-04)
             - [[2.1.1] - 2022-02-25](#211---2022-02-25)
             - [[2.1.0] - 2021-11-01](#210---2021-11-01)
             - [[2.0.1] - 2021-10-09](#201---2021-10-09)
@@ -41,7 +46,7 @@ Personal Emacs configuration for everyday use.
 
 ## Introduction
 
-This is my configuration of Emacs, which is mainly for GTD (getting things done), PKM (personal knowledge management), document writing and casual coding.
+This is my configuration of Emacs, which is mainly for GTD (getting things done), PKM (personal knowledge management), document writing and casual coding. On Windows, this configuration is tailored for WSL for better overall performance.
 
 There are mature tools for GTD (like Google Keep), PKM (like Notion), document writing (like Microsoft Word) and coding (like Sublime Text), then why use Emacs? Aside from Emacs being an unified, highly configurable environment, there is another reason, which could be explained by Carsten Dominik's words on Google Tech Talks 2008:
 
@@ -54,10 +59,6 @@ There are mature tools for GTD (like Google Keep), PKM (like Notion), document w
 - Tailored for different file formats: Markdown, Python, etc..
 - Other handy features like OpenCC and PlantUML support.
 
-Future features:
-
-- Emacs 28 native comp.
-
 ## Documents
 
 This is like my dev blog on this repository.
@@ -66,34 +67,47 @@ This is like my dev blog on this repository.
 | -- | -- |
 | `2021-06-28` | [在 Windows 下使用 opencc.el](documents/20210628-opencc-windows-conf.org) |
 | `2021-09-30` | [Next Iteration Plan](documents/20210930-next-iteration-plan.org) |
+| `2022-03-03` | [使用左 Shift 切换 emacs-rime 的状态](documents/20220303-switch-state-with-lshift-for-emacs-rime.org) |
 
 ## Install
 
 > This configuration is **tailored for my personal workflow**. Therefore it is not suggested for you to use it directly. However, you can make it a start point of your own configuration.
 
 1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
-3. Write `custom.el` based on `example-custom.el`.
-4. For Microsoft Windows:
+1. Write `custom.el` based on `example-custom.el`.
+1. Install librime, or emacs-rime won't compile.
+1. For WSL:
+   - Read [this article](documents/20220303-switch-state-with-lshift-for-emacs-rime.org).
+   - Make use of the bat scripts in `scripts` dir.
+1. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
-   - If [smart-input-source] should be enabled, add `./3rd-party/im-select/im-select.exe` to path.
-5. One the first run, do `M-x all-the-icons-install-fonts` for icon support.
-7. Other optional modules:
+1. Run `M-x all-the-icons-install-fonts` for icon support, `pdf-tools-install` for PDF support.
+1. Other optional modules:
+   - Install [ripgrep] for advanced search support.
    - Install [opencc] for Chinese conversion support.
    - Install [pandoc] for document conversion support, which is needed by many features, such as org-mode PDF export.
-   - Install [vmd] for real-time Markdown preview (toggled with <kbd>C-c C-c p</kbd>).
 
 [msys2]: https://www.msys2.org/
 [mingw]: https://www.mingw-w64.org/
 [smart-input-source]: https://github.com/laishulu/emacs-smart-input-source/
+[ripgrep]: https://github.com/BurntSushi/ripgrep/
 [opencc]: https://github.com/BYVoid/OpenCC/
 [pandoc]: https://pandoc.org/
 [git]: https://git-scm.com/
-[grip]: https://github.com/joeyespo/grip/
 
 ## Changelog
 
 ### Version 2.X
+
+#### [2.2.0] - 2022-03-04
+
+- Target platform moved to WSL.
+- Built-in Rime input method.
+- Built-in PDF viewer.
+- Multi-frames enhancements.
+- AucTeX enhancements.
+- Minor improvements.
 
 #### [2.1.1] - 2022-02-25
 

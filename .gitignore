@@ -3,6 +3,7 @@
 .org-id-locations
 .lsp*
 .mc-lists.el
+amx-items
 auto-save-list
 backups
 bookmarks
