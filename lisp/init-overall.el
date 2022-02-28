@@ -37,10 +37,14 @@ different on different machines.")
   (require 'cl-extra)
   (let* ((zybox-possible-locs-win64
 	  '("C:\\Zybox"
+	    "C:\\Users\\zyxir\\Zybox"
 	    "C:\\Users\\zyxir\\Documents\\Zybox"))
 	 (zybox-possible-locs-linux
 	  '("~/Zybox"
-	    "~/Documents/Zybox"))
+	    "~/Documents/Zybox"
+	    "/mnt/c/Zybox"
+	    "/mnt/c/Users/zyxir/Zybox"
+	    "/mnt/c/Users/Documents/Zybox"))
 	 (guessed-zybox-path
 	  (cl-some
 	   #'zy:file-directory-ret
