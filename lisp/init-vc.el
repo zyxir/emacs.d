@@ -12,11 +12,7 @@
   :general
   (:keymaps 'ctl-x-map
 	    "g" 'magit-status
-	    "M-g" 'magit-dispatch)
-  :config
-  ;; Do not show diff on commit by default.
-  ;; Toggle diff with C-c C-d.
-  (remove-hook 'server-switch-hook 'magit-commit-diff))
+	    "M-g" 'magit-dispatch))
 
 ;; End of config.
 
