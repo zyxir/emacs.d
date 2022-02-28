@@ -8,7 +8,7 @@
 ;;;; Window size
 
 (setq default-frame-alist
-      '((width . 100) (height . 50)))
+      '((width . 100) (height . 40)))
 
 ;;;; Modeline
 
