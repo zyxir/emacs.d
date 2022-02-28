@@ -25,8 +25,7 @@
     (if guessed-rime-data
 	(progn
 	  (setq rime-user-data-dir guessed-rime-data
-		*builtin-rime* t)
-	  (warn "Rime user data directory is auto detected."))
+		*builtin-rime* t))
       (warn "No Rime user data is detected, so Rime is unavailable"))))
 (when *builtin-rime*
   (use-package rime
