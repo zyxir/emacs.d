@@ -17,20 +17,16 @@
   (setq TeX-auto-save t
 	TeX-parse-self t
 	TeX-show-compilation t
-	TeX-command-force "LaTeX"
-	TeX-electric-escape nil)
+	TeX-command-force "XeLaTeX")
   (setq-default TeX-master nil
-		font-latex-fontify-script nil)
-  ;; PDF Viewer.
-  (setq TeX-PDF-mode t)
-  (setq-default TeX-source-correlate-mode t)
-  (setq-default TeX-source-correlate-method 'synctex)
-  (when (executable-find "sumatrapdf")
-    (setq TeX-view-program-list
-	  '(("Sumatra PDF" ("\"path/to/SumatraPDF/SumatraPDF.exe\" -reuse-instance"
-			    (mode-io-correlate " -forward-search %b %n ") " %o"))))
-    (assq-delete-all 'output-pdf TeX-view-program-selection)
-    (add-to-list 'TeX-view-program-selection '(output-pdf "SumatraPDF")))
+		font-latex-fontify-script nil
+		TeX-PDF-mode t)
+
+  ;; PDF Preview with PDF Tools.
+  (setq-default TeX-view-program-selection '((output-pdf "PDF Tools"))
+		TeX-source-correlate-start-server t)
+  (add-hook 'TeX-after-compilation-finished-functions
+           #'TeX-revert-document-buffer)
 
   ;; Find master file automatically.
   (defun TeX-find-master-file ()
@@ -44,13 +40,13 @@
        (setq foundFile (car foundFiles))
        (file-exists-p foundFile)
        (setq foundFile (file-name-sans-extension foundFile))
-       (message "found %s" foundFile)
        foundFile)))
   (defun TeX-set-master-file (&optional ignore1 ignore2 ignore3)
     "Finds the master file by means of TeX-find-master-file and
   set TeX-master to it value"
     (setq TeX-master (or (TeX-find-master-file) TeX-master)))
-  (add-hook 'latex-mode-hook 'TeX-set-master-file)
+  (add-hook 'TeX-mode-hook 'TeX-set-master-file)
+
   ;; From URL `https://emacs.stackexchange.com/questions/38258/close-latex-compilation-window-when-successful'
   (setq TeX-buf-close-at-warnings-only t)
   (defun my-tex-close-TeX-buffer (_output)

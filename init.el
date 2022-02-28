@@ -76,6 +76,7 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 (zy/load 'init-latex)
 (zy/load 'init-markdown)
 (zy/load 'init-org)
+(zy/load 'init-pdf)
 (zy/load 'init-python)
 
 (zy/load 'init-misc)
