@@ -2,7 +2,7 @@
 
 # Zyxir's Emacs Configuration
 
-Personal Emacs configuration for everyday use.
+Personal Emacs configuration for everyday use, mainly on WSL.
 
 [Install] • [Documents] • [Screenshots] • [Changelog]
 
@@ -30,6 +30,7 @@ Personal Emacs configuration for everyday use.
     - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
+            - [[2.2.0] - Unreleased](#220---unreleased)
             - [[2.1.1] - 2022-02-25](#211---2022-02-25)
             - [[2.1.0] - 2021-11-01](#210---2021-11-01)
             - [[2.0.1] - 2021-10-09](#201---2021-10-09)
@@ -41,7 +42,7 @@ Personal Emacs configuration for everyday use.
 
 ## Introduction
 
-This is my configuration of Emacs, which is mainly for GTD (getting things done), PKM (personal knowledge management), document writing and casual coding.
+This is my configuration of Emacs, which is mainly for GTD (getting things done), PKM (personal knowledge management), document writing and casual coding. On Windows, this configuration is tailored for WSL for better overall performance.
 
 There are mature tools for GTD (like Google Keep), PKM (like Notion), document writing (like Microsoft Word) and coding (like Sublime Text), then why use Emacs? Aside from Emacs being an unified, highly configurable environment, there is another reason, which could be explained by Carsten Dominik's words on Google Tech Talks 2008:
 
@@ -79,6 +80,7 @@ This is like my dev blog on this repository.
    - If [smart-input-source] should be enabled, add `./3rd-party/im-select/im-select.exe` to path.
 5. One the first run, do `M-x all-the-icons-install-fonts` for icon support.
 7. Other optional modules:
+   - Install [ripgrep] for advanced search support.
    - Install [opencc] for Chinese conversion support.
    - Install [pandoc] for document conversion support, which is needed by many features, such as org-mode PDF export.
    - Install [vmd] for real-time Markdown preview (toggled with <kbd>C-c C-c p</kbd>).
@@ -86,14 +88,18 @@ This is like my dev blog on this repository.
 [msys2]: https://www.msys2.org/
 [mingw]: https://www.mingw-w64.org/
 [smart-input-source]: https://github.com/laishulu/emacs-smart-input-source/
+[ripgrep]: https://github.com/BurntSushi/ripgrep/
 [opencc]: https://github.com/BYVoid/OpenCC/
 [pandoc]: https://pandoc.org/
 [git]: https://git-scm.com/
-[grip]: https://github.com/joeyespo/grip/
 
 ## Changelog
 
 ### Version 2.X
+
+#### [2.2.0] - Unreleased
+
+- Target platform moved to WSL.
 
 #### [2.1.1] - 2022-02-25
 
