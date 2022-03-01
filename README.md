@@ -73,13 +73,15 @@ This is like my dev blog on this repository.
 > This configuration is **tailored for my personal workflow**. Therefore it is not suggested for you to use it directly. However, you can make it a start point of your own configuration.
 
 1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
-3. Write `custom.el` based on `example-custom.el`.
-4. For Microsoft Windows:
+1. Write `custom.el` based on `example-custom.el`.
+1. For WSL:
+   - Install a Chinese IM like fcitx-rime, or use the built-in emacs-rime.
+1. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
    - If [smart-input-source] should be enabled, add `./3rd-party/im-select/im-select.exe` to path.
-5. One the first run, do `M-x all-the-icons-install-fonts` for icon support.
-7. Other optional modules:
+1. Run `M-x all-the-icons-install-fonts` for icon support, `pdf-tools-install` for PDF support.
+1. Other optional modules:
    - Install [ripgrep] for advanced search support.
    - Install [opencc] for Chinese conversion support.
    - Install [pandoc] for document conversion support, which is needed by many features, such as org-mode PDF export.
@@ -100,6 +102,8 @@ This is like my dev blog on this repository.
 #### [2.2.0] - Unreleased
 
 - Target platform moved to WSL.
+- Built-in Rime input method integrated.
+- Built-in PDF viewer
 
 #### [2.1.1] - 2022-02-25
 
