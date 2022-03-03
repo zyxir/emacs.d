@@ -81,6 +81,10 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 
 (zy/load 'init-misc)
 
+;; Start Emacs server.
+
+(server-start)
+
 ;; End of config.
 
 (provide 'init)

@@ -145,8 +145,7 @@ abcdefghijklmnopqrstuvwxyz"
 	   (message "No custom or recommended variable-pitch font is available."))))
     (message "Cannot set font without window system.")))
 
-(when window-system
-  (zy/set-font))
+(zy/set-font)
 
 ;;;; Font size management
 

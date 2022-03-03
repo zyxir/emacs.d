@@ -76,7 +76,8 @@ This is like my dev blog on this repository.
 1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
 1. Write `custom.el` based on `example-custom.el`.
 1. For WSL:
-   - Read [this article](documents/20220303-switch-state-with-lshift-for-emacs-rime.org). If you can't read it, you do not need it.
+   - Read [this article](documents/20220303-switch-state-with-lshift-for-emacs-rime.org).
+   - Make use of the bat scripts in `scripts` dir.
 1. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
@@ -103,6 +104,7 @@ This is like my dev blog on this repository.
 - Target platform moved to WSL.
 - Built-in Rime input method.
 - Built-in PDF viewer.
+- Emacsclient supported.
 
 #### [2.1.1] - 2022-02-25
 

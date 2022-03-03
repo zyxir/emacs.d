@@ -32,3 +32,11 @@ key 作爲輸入，因此無法使用單獨的左 Shift 鍵來切換中西文狀
 
 衹要把這個腳本加入開機啟動，Emacs 的使用體驗就無比高了。從此開始，不管在什麼操
 作系統、什么運行環境（甚至是純服務器環境）下，都態穩定地使用 rime 輸入法了！
+
+不過，如果 Emacs 有多個 frame 的話，其窗口名稱將不再以 emacs 開頭。爲了保證該
+ahk 腳本能用，我在 Emacs 配置中修改了 Emacs 窗口的命名規則：
+
+#+begin_src emacs-lisp
+  (setq frame-title-format
+	'("" "emacs" " [%b]"))
+#+end_src
