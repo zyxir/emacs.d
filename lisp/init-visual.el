@@ -12,7 +12,7 @@
   :config
   (setq doom-themes-enable-bold t
 	doom-themes-enable-italic t)
-  (defvar zy/default-theme 'doom-tomorrow-day
+  (defvar zy/default-theme 'doom-solarized-light
     "Default doom theme to use.")
   (load-theme zy/default-theme t))
 
@@ -150,7 +150,7 @@ abcdefghijklmnopqrstuvwxyz"
 
 ;;;; Font size management
 
-(use-package init-visual-font-size
+(use-package init-visual_font-size
   :load-path "lisp"
   :general
   ("C-x C-0" 'zy/font-size-adjust

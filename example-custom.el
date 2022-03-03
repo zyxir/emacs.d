@@ -9,6 +9,8 @@
 ;;;; Set the path of Zybox.
 
 ;; (setq zy/zybox-path "C:\\Zybox")
+;; (setq zy/zybox-path "C:\\Users\\zyxir\\Zybox")
+;; (setq zy/zybox-path "/mnt/c/Users/zyxir/Zybox")
 ;; (setq zy/zybox-path "~/Zybox")
 
 ;;;; Set default font and pixel size.
