@@ -67,6 +67,7 @@ This is like my dev blog on this repository.
 | -- | -- |
 | `2021-06-28` | [在 Windows 下使用 opencc.el](documents/20210628-opencc-windows-conf.org) |
 | `2021-09-30` | [Next Iteration Plan](documents/20210930-next-iteration-plan.org) |
+| `2022-03-03` | [使用左 Shift 切换 emacs-rime 的状态](documents/20220303-switch-state-with-lshift-for-emacs-rime.org) |
 
 ## Install
 
@@ -75,7 +76,7 @@ This is like my dev blog on this repository.
 1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
 1. Write `custom.el` based on `example-custom.el`.
 1. For WSL:
-   - Install a Chinese IM like fcitx-rime, or use the built-in emacs-rime.
+   - Read [這篇日誌](documents/20220303-switch-state-with-lshift-for-emacs-rime.org).
 1. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
@@ -102,8 +103,8 @@ This is like my dev blog on this repository.
 #### [2.2.0] - Unreleased
 
 - Target platform moved to WSL.
-- Built-in Rime input method integrated.
-- Built-in PDF viewer
+- Built-in Rime input method.
+- Built-in PDF viewer.
 
 #### [2.1.1] - 2022-02-25
 
