@@ -32,20 +32,6 @@
   (:keymaps 'markdown-mode-command-map
 	    "T" 'markdown-toc-generate-or-refresh-toc))
 
-;; If vmd is installed, use it to live preview Markdown.
-
-(defun zy:setup-vmd ()
-  "Setup vmd-mode for markdown-mode."
-  (when (executable-find "vmd")
-    (use-package vmd-mode
-      :straight t
-      :general
-      (:keymaps 'markdown-mode-command-map
-		"p" 'vmd-mode))
-    (remove-hook 'markdown-mode-hook #'zy:setup-vmd)))
-
-(add-hook 'markdown-mode-hook #'zy:setup-vmd)
-
 ;; Enable C-c ' editing.
 
 (use-package edit-indirect

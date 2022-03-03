@@ -76,7 +76,7 @@ This is like my dev blog on this repository.
 1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
 1. Write `custom.el` based on `example-custom.el`.
 1. For WSL:
-   - Read [這篇日誌](documents/20220303-switch-state-with-lshift-for-emacs-rime.org).
+   - Read [this article](documents/20220303-switch-state-with-lshift-for-emacs-rime.org). If you can't read it, you do not need it.
 1. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
@@ -86,7 +86,6 @@ This is like my dev blog on this repository.
    - Install [ripgrep] for advanced search support.
    - Install [opencc] for Chinese conversion support.
    - Install [pandoc] for document conversion support, which is needed by many features, such as org-mode PDF export.
-   - Install [vmd] for real-time Markdown preview (toggled with <kbd>C-c C-c p</kbd>).
 
 [msys2]: https://www.msys2.org/
 [mingw]: https://www.mingw-w64.org/
