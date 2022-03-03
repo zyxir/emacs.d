@@ -21,29 +21,6 @@
 
 ;; (setq zy/default-theme 'doom-one-light)
 
-;;;; Configure sis for specific platform.
-
-;; Linux + Fcitx
-
-;; (with-eval-after-load "sis"
-;;   (sis-ism-lazyman-config "1" "2" 'fcitx))
-
-;; Linux + Fcitx5
-
-;; (with-eval-after-load "sis"
-;;   (sis-ism-lazyman-config "1" "2" 'fcitx5))
-
-;; Linux + IBus
-
-;; (with-eval-after-load "sis"
-;;   (sis-ism-lazyman-config "xkb:us::eng" "OTHER_INPUT_SOURCE" 'ibus))
-
-;; Microsoft Windows
-;; Make sure that "im-select.exe" is installed in PATH.
-
-;; (with-eval-after-load "sis"
-;;   (sis-ism-lazyman-config "1033" "2052" 'im-select))
-
 ;;;; OpenCC configuration for Windows.
 
 ;; (with-eval-after-load "opencc"

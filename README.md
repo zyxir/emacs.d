@@ -80,7 +80,6 @@ This is like my dev blog on this repository.
 1. For Microsoft Windows:
    - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
    - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
-   - If [smart-input-source] should be enabled, add `./3rd-party/im-select/im-select.exe` to path.
 1. Run `M-x all-the-icons-install-fonts` for icon support, `pdf-tools-install` for PDF support.
 1. Other optional modules:
    - Install [ripgrep] for advanced search support.
