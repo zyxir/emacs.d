@@ -13,6 +13,8 @@
   :general
   ("C-c C-i" nil)
   :init
+  ;; Doom themes improvements.
+  (doom-themes-org-config)
   ;; Allow Chinese around markups, maybe unstable, from
   ;; https://emacs-china.org/t/org-mode/597/4
   (setq org-emphasis-regexp-components
