@@ -1,0 +1,4 @@
+2022/03/03-15:50:17.333833 140385259423488 Log #3: 0 ops saved to Table #4 OK
+2022/03/03-15:50:17.334838 140385259423488 Archiving /home/zyxir/.emacs.d/rime/luna_pinyin.userdb/000003.log: OK
+2022/03/03-15:50:17.337124 140385259423488 Archiving /home/zyxir/.emacs.d/rime/luna_pinyin.userdb/MANIFEST-000001: OK
+2022/03/03-15:50:17.341650 140385259423488 **** Repaired leveldb /home/zyxir/.emacs.d/rime/luna_pinyin.userdb; recovered 0 files; 0 bytes. Some data may have been lost. ****

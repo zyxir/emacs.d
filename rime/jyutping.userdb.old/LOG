@@ -1,0 +1,10 @@
+2022/03/03-15:53:06.144143 140614640011008 Log #3: 0 ops saved to Table #7 OK
+2022/03/03-15:53:06.145307 140614640011008 Archiving /home/zyxir/.emacs.d/rime/jyutping.userdb/000003.log: OK
+2022/03/03-15:53:06.145837 140614640011008 Log #4: 0 ops saved to Table #8 OK
+2022/03/03-15:53:06.147176 140614640011008 Archiving /home/zyxir/.emacs.d/rime/jyutping.userdb/000004.log: OK
+2022/03/03-15:53:06.147588 140614640011008 Log #5: 0 ops saved to Table #9 OK
+2022/03/03-15:53:06.148647 140614640011008 Archiving /home/zyxir/.emacs.d/rime/jyutping.userdb/000005.log: OK
+2022/03/03-15:53:06.148962 140614640011008 Log #6: 0 ops saved to Table #10 OK
+2022/03/03-15:53:06.149973 140614640011008 Archiving /home/zyxir/.emacs.d/rime/jyutping.userdb/000006.log: OK
+2022/03/03-15:53:06.152284 140614640011008 Archiving /home/zyxir/.emacs.d/rime/jyutping.userdb/MANIFEST-000001: OK
+2022/03/03-15:53:06.156734 140614640011008 **** Repaired leveldb /home/zyxir/.emacs.d/rime/jyutping.userdb; recovered 0 files; 0 bytes. Some data may have been lost. ****
