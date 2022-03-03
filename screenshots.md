@@ -1,5 +1,5 @@
 # Screenshots
 
-## On Windows
+## On Windows (WSL)
 
 ![](screenshots/windows-ui.png)
