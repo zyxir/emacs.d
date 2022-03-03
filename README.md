@@ -75,6 +75,7 @@ This is like my dev blog on this repository.
 
 1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
 1. Write `custom.el` based on `example-custom.el`.
+1. Install librime, or emacs-rime won't compile.
 1. For WSL:
    - Read [this article](documents/20220303-switch-state-with-lshift-for-emacs-rime.org).
    - Make use of the bat scripts in `scripts` dir.
