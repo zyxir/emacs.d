@@ -9,13 +9,22 @@
 
 (use-package rime
   :straight t
-  :general
-  ("C-`" 'rime-send-keybinding)
-  ("M-m" 'rime-inline-ascii)
   :config
   (setq rime-user-data-dir (concat user-emacs-directory "rime")
 	default-input-method "rime"
-	rime-show-candidate 'posframe))
+	rime-show-candidate 'posframe)
+  ;; Change cursor color to orange if IM is active.
+  (defvar zy/im-cursor-color "Orange"
+    "Default cursor color if an input method is active.")
+  (defvar zy/default-cursor-color (frame-parameter nil 'cursor-color)
+    "Default text cursor color.")
+  (defun zy/change-cursor-color-on-im ()
+    "Set cursor color depending IM state."
+    (interactive)
+    (set-cursor-color (if current-input-method
+			  zy/im-cursor-color
+			zy/default-cursor-color)))
+  (add-hook 'post-command-hook 'zy/change-cursor-color-on-im))
 
 ;; OpenCC.
 
