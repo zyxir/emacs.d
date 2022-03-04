@@ -23,7 +23,6 @@ Personal Emacs configuration for everyday use, mainly on WSL.
 Bugs to fix:
 
 1. Very long load time on init-org.el.
-1. Modeline exceeds the window on WSL.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -35,7 +34,7 @@ Bugs to fix:
     - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
-            - [[2.2.0] - Unreleased](#220---unreleased)
+            - [[2.2.0] - 2022-03-04](#220---2022-03-04)
             - [[2.1.1] - 2022-02-25](#211---2022-02-25)
             - [[2.1.0] - 2021-11-01](#210---2021-11-01)
             - [[2.0.1] - 2021-10-09](#201---2021-10-09)
@@ -101,12 +100,14 @@ This is like my dev blog on this repository.
 
 ### Version 2.X
 
-#### [2.2.0] - Unreleased
+#### [2.2.0] - 2022-03-04
 
 - Target platform moved to WSL.
 - Built-in Rime input method.
 - Built-in PDF viewer.
-- Emacsclient supported.
+- Multi-frames enhancements.
+- AucTeX enhancements.
+- Minor improvements.
 
 #### [2.1.1] - 2022-02-25
 
