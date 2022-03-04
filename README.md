@@ -20,6 +20,11 @@ Personal Emacs configuration for everyday use, mainly on WSL.
 
 <hr>
 
+Bugs to fix:
+
+1. Very long load time on init-org.el.
+1. Modeline exceeds the window on WSL.
+
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
@@ -54,10 +59,6 @@ There are mature tools for GTD (like Google Keep), PKM (like Notion), document w
 - Org-mode powered GTD, PKM and diary system.
 - Tailored for different file formats: Markdown, Python, etc..
 - Other handy features like OpenCC and PlantUML support.
-
-Future features:
-
-- Emacs 28 native comp.
 
 ## Documents
 
