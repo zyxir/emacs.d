@@ -68,6 +68,7 @@ If AT-ROOT is non-nil, load the file at the .emacs.d directory."
 
 ;; Personal features.
 
+(zy/load 'init-commands)
 (zy/load 'init-quick-access)
 
 ;; Config for different file types.
