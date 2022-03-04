@@ -6,8 +6,10 @@
 ;;; Code:
 
 (use-package pdf-tools
-  :straight t)
+  :straight t
+  :config
+  (pdf-loader-install))
 
 ;; End of config.
 
-(provide 'init-elisp)
+(provide 'init-pdf)
