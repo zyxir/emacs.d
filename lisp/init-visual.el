@@ -85,7 +85,10 @@ If it does exist, return itself.  If it doesn't, return nil."
 
 SIZE is the font size. If it is nil, `zy/default-font-size' will
 be used."
-  (let* ((size (or size zy/default-font-size)))
+  (let* ((size (or size
+		   (and (boundp 'zy/current-font-size)
+			zy/current-font-size)
+		   zy/default-font-size)))
     (set-face-attribute 'default nil :font
 			(font-spec :family font
 				   :size size))
