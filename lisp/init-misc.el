@@ -26,10 +26,6 @@
   :straight t
   :mode ("\\.yml\\'" . yaml-mode))
 
-(use-package powershell
-  :straight t
-  :mode ("\\.ps1\\'" . powershell-mode))
-
 ;; End of config.
 
 (provide 'init-misc)
