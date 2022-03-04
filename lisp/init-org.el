@@ -34,12 +34,14 @@
   (org-mode . org-bullets-mode))
 
 ;; Hide markers, and show them on cursor over.
-(use-package org-appear
-  :straight t
-  :hook
-  (org-mode . org-appear-mode)
-  :init
-  (setq-default org-hide-emphasis-markers t))
+;; org-appear doesn't work with org-fold now.
+;; Waiting for its fix.
+;; (use-package org-appear
+;;   :straight t
+;;   :hook
+;;   (org-mode . org-appear-mode)
+;;   :init
+;;   (setq-default org-hide-emphasis-markers t))
 
 ;;;; Export to HTML
 
