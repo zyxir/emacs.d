@@ -10,20 +10,22 @@
   :straight auctex
   :config
   (add-to-list 'TeX-command-list '("XeLaTeX"
-				   "%`xelatex%(mode)%' %t"
+				   "%`xelatex%(mode)%' --synctex=1%(mode)%' %t"
 				   TeX-run-TeX
 				   nil
 				   t))
   (setq TeX-auto-save t
 	TeX-parse-self t
 	TeX-show-compilation t
-	TeX-command-force "XeLaTeX")
+	TeX-command-force "XeLaTeX"
+	TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view)))
   (setq-default TeX-master nil
 		font-latex-fontify-script nil
 		TeX-PDF-mode t)
 
   ;; PDF Preview with PDF Tools.
   (setq-default TeX-view-program-selection '((output-pdf "PDF Tools"))
+		TeX-source-correlate-mode t
 		TeX-source-correlate-start-server t)
   (add-hook 'TeX-after-compilation-finished-functions
            #'TeX-revert-document-buffer)

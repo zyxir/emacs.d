@@ -8,7 +8,7 @@
 (use-package pdf-tools
   :straight t
   :config
-  (pdf-loader-install))
+  (pdf-tools-install))
 
 ;; End of config.
 
