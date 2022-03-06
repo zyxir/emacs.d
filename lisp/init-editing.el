@@ -40,16 +40,6 @@
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 
-;; Distraction-free Mode.
-
-(use-package olivetti
-  :straight t
-  :commands olivetti-mode)
-
-(use-package writeroom-mode
-  :straight t
-  :commands writeroom-mode)
-
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
