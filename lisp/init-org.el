@@ -35,12 +35,12 @@
 ;;;; 中文行內格式化
 ;; See: https://emacs-china.org/t/org-mode/597/5
 
-;; 使用 C-c SPC 來插入零寬空格。
+;; 使用 C-x 8 s 來插入零寬空格。
 
 (defun zy/insert-zero-width-space ()
   (interactive)
   (insert-char ?\u200B))
-(general-define-key "C-c SPC" #'zy/insert-zero-width-space)
+(general-define-key "C-x 8 s" #'zy/insert-zero-width-space)
 
 ;;;; Export to HTML
 
