@@ -15,15 +15,6 @@
   :init
   ;; Doom themes improvements.
   (doom-themes-org-config)
-  ;; Allow Chinese around markups, maybe unstable, from
-  ;; https://emacs-china.org/t/org-mode/597/4
-  (setq org-emphasis-regexp-components
-	;; markup 记号前后允许中文
-	(list (concat " \t('\"{"            "[:nonascii:]")
-	      (concat "- \t.,:!?;'\")}\\["  "[:nonascii:]")
-	      " \t\r\n,\"'"
-	      "."
-	      1))
   ;; Put attachments in an obvious directory.
   (setq org-attach-id-dir "org-attachments/"))
 
@@ -34,14 +25,22 @@
   (org-mode . org-bullets-mode))
 
 ;; Hide markers, and show them on cursor over.
-;; org-appear doesn't work with org-fold now.
-;; Waiting for its fix.
-;; (use-package org-appear
-;;   :straight t
-;;   :hook
-;;   (org-mode . org-appear-mode)
-;;   :init
-;;   (setq-default org-hide-emphasis-markers t))
+(use-package org-appear
+  :straight t
+  :hook
+  (org-mode . org-appear-mode)
+  :init
+  (setq-default org-hide-emphasis-markers t))
+
+;;;; 中文行內格式化
+;; See: https://emacs-china.org/t/org-mode/597/5
+
+;; 使用 C-c SPC 來插入零寬空格。
+
+(defun zy/insert-zero-width-space ()
+  (interactive)
+  (insert-char ?\u200B))
+(general-define-key "C-c SPC" #'zy/insert-zero-width-space)
 
 ;;;; Export to HTML
 

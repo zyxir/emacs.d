@@ -46,13 +46,15 @@
   :straight t
   :commands olivetti-mode)
 
+(use-package writeroom-mode
+  :straight t
+  :commands writeroom-mode)
+
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
 
 (use-package emacs
-  :general
-  ("C-c SPC" 'delete-trailing-whitespace)
   :config
   (defun zy/show-trailing-whitespace ()
     "Show trailing whitespace for the current buffer."
