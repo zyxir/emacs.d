@@ -42,10 +42,9 @@
 (defconst zy/default-vpfonts
   '("Times New Roman"
     "Source Serif"
+    "DejaVu Serif"
     "Noto Serif"
-    "Verdana"
-    "Noto Sans"
-    "Ubuntu")
+    "Verdana")
   "Default fallback variable-pitch font list.
 
 Fonts are selected according to recommendations from Bureau of

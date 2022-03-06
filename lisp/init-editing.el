@@ -40,19 +40,18 @@
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 
-;; Distraction-free Mode.
+;; Insert some special characters.
 
-(use-package olivetti
-  :straight t
-  :commands olivetti-mode)
+(defun zy/insert-zero-width-space ()
+  (interactive)
+  (insert-char ?\u200B))
+(general-define-key "C-x 8 s" #'zy/insert-zero-width-space)
 
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
 
 (use-package emacs
-  :general
-  ("C-c SPC" 'delete-trailing-whitespace)
   :config
   (defun zy/show-trailing-whitespace ()
     "Show trailing whitespace for the current buffer."
@@ -72,6 +71,14 @@
 (use-package yasnippet-snippets
   :straight t
   :after yasnippet)
+
+;; Quick jump with avy.
+
+(use-package avy
+  :straight t
+  :general
+  ("M-r" 'avy-goto-char
+   "M-t" 'avy-goto-char-timer))
 
 ;;;; For `prog-mode' Only
 

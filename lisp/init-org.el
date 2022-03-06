@@ -15,15 +15,6 @@
   :init
   ;; Doom themes improvements.
   (doom-themes-org-config)
-  ;; Allow Chinese around markups, maybe unstable, from
-  ;; https://emacs-china.org/t/org-mode/597/4
-  (setq org-emphasis-regexp-components
-	;; markup 记号前后允许中文
-	(list (concat " \t('\"{"            "[:nonascii:]")
-	      (concat "- \t.,:!?;'\")}\\["  "[:nonascii:]")
-	      " \t\r\n,\"'"
-	      "."
-	      1))
   ;; Put attachments in an obvious directory.
   (setq org-attach-id-dir "org-attachments/"))
 
@@ -34,14 +25,43 @@
   (org-mode . org-bullets-mode))
 
 ;; Hide markers, and show them on cursor over.
-;; org-appear doesn't work with org-fold now.
-;; Waiting for its fix.
-;; (use-package org-appear
-;;   :straight t
-;;   :hook
-;;   (org-mode . org-appear-mode)
-;;   :init
-;;   (setq-default org-hide-emphasis-markers t))
+(use-package org-appear
+  :straight t
+  :hook
+  (org-mode . org-appear-mode)
+  :init
+  (setq-default org-hide-emphasis-markers t))
+
+;;;; 中文行內格式化
+;; See: https://emacs-china.org/t/org-mode/597/5
+
+(defmacro zy/org-surround-markup (&rest keys)
+  "Define and bind interactive commands for each of KEYS that surround the
+region or insert text.  Commands are bound in `org-mode-map' to each of KEYS.
+If the region is active, commands surround it with the key character, otherwise
+call `org-self-insert-command'."
+  `(progn
+     ,@(cl-loop for key in keys
+		for name = (intern (concat "zy/org-maybe-surround-" key))
+		for docstring = (format "If region is active, surround it with \"%s\", otherwise call `org-self-insert-command'." key)
+		collect `(defun ,name ()
+			   ,docstring
+			   (interactive)
+			   (if (region-active-p)
+			       (let ((beg (region-beginning))
+				     (end (region-end)))
+				 (save-excursion
+				   (goto-char end)
+				   (insert ,key)
+				   (insert-char #x200b)
+				   (goto-char beg)
+				   (insert-char #x200b)
+				   (insert ,key)))
+			     (call-interactively #'org-self-insert-command)))
+		collect `(define-key org-mode-map (kbd ,key) #',name))))
+
+(with-eval-after-load "org"
+  (zy/org-surround-markup "~" "=" "*" "/" "_" "+" "$"))
 
 ;;;; Export to HTML
 
