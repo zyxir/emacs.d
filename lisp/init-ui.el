@@ -11,6 +11,20 @@
 (setq frame-title-format
       '("" "emacs" " [%b]"))
 
+;; Default frame size.
+(defvar zy/default-frame-width 86
+  "Default width of frames, in characters.")
+(defvar zy/default-frame-height 40
+  "Default height of frames, in characters.")
+
+;; Set frame to default size.
+(defun zy/frame-resize-to-default ()
+  "Set frame to default size."
+  (interactive)
+  (set-frame-width (selected-frame) zy/default-frame-width)
+  (set-frame-height (selected-frame) zy/default-frame-height))
+(general-define-key "C-c f" #'zy/frame-resize-to-default)
+
 ;; Default frame parameters.
 (defun zy/frame-func (frame)
   "Function to run after a frame is created."
@@ -19,13 +33,13 @@
   (zy/set-font)
   ;; Set frame parameters.
   (scroll-bar-mode -1)
-  (set-frame-height frame 40)
+  (set-frame-height frame zy/default-frame-height)
   ;; Load theme again.
   (load-theme zy/default-theme t))
 (add-hook 'after-make-frame-functions #'zy/frame-func)
 (setq default-frame-alist
-      '((height . 40)
-	(width . 80)))
+      `((height . ,zy/default-frame-height)
+	(width . ,zy/default-frame-width)))
 
 ;;;; Modeline
 
