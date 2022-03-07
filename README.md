@@ -6,7 +6,7 @@ Personal Emacs configuration for everyday use, mainly on WSL.
 
 [Install] • [Documents] • [Screenshots] • [Changelog]
 
-[Install]: #install
+[Install]: ./INSTALL.md
 [Documents]: #documents
 [Screenshots]: screenshots.md
 [Changelog]: #changelog
@@ -68,33 +68,6 @@ This is like my dev blog on this repository.
 | `2021-06-28` | [在 Windows 下使用 opencc.el](documents/20210628-opencc-windows-conf.org) |
 | `2021-09-30` | [Next Iteration Plan](documents/20210930-next-iteration-plan.org) |
 | `2022-03-03` | [使用左 Shift 切换 emacs-rime 的状态](documents/20220303-switch-state-with-lshift-for-emacs-rime.org) |
-
-## Install
-
-> This configuration is **tailored for my personal workflow**. Therefore it is not suggested for you to use it directly. However, you can make it a start point of your own configuration.
-
-1. Install [git], and clone the repo as `.emacs.d`. Configure `core.crlf` of git to false on Windows.
-1. Write `custom.el` based on `example-custom.el`.
-1. Install librime, or emacs-rime won't compile.
-1. For WSL:
-   - Read [this article](documents/20220303-switch-state-with-lshift-for-emacs-rime.org).
-   - Make use of the bat scripts in `scripts` dir.
-1. For Microsoft Windows:
-   - Turn on "Beta: Use Unicode UTF-8 for worldwide language support". Otherwise compatibility issues may be encountered.
-   - Make sure [msys2] or [mingw] is installed on Windows, as a C compiler is required to compile some packages.
-1. Run `M-x all-the-icons-install-fonts` for icon support, `pdf-tools-install` for PDF support.
-1. Other optional modules:
-   - Install [ripgrep] for advanced search support.
-   - Install [opencc] for Chinese conversion support.
-   - Install [pandoc] for document conversion support, which is needed by many features, such as org-mode PDF export.
-
-[msys2]: https://www.msys2.org/
-[mingw]: https://www.mingw-w64.org/
-[smart-input-source]: https://github.com/laishulu/emacs-smart-input-source/
-[ripgrep]: https://github.com/BurntSushi/ripgrep/
-[opencc]: https://github.com/BYVoid/OpenCC/
-[pandoc]: https://pandoc.org/
-[git]: https://git-scm.com/
 
 ## Changelog
 
