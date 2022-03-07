@@ -67,6 +67,7 @@
 
 (use-package treemacs-projectile
   :straight t
+  :commands treemacs-projectile
   :after (treemacs projectile))
 
 ;;;; Window numbering
