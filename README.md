@@ -73,6 +73,11 @@ This is like my dev blog on this repository.
 
 ### Version 2.X
 
+#### [2.2.1] - UNRELEASED
+
+- Enhanced Chinese support for org-mode.
+- Other minor modifications.
+
 #### [2.2.0] - 2022-03-04
 
 - Target platform moved to WSL.

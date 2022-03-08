@@ -35,12 +35,33 @@
 ;;;; 中文行內格式化
 ;; See: https://emacs-china.org/t/org-mode/597/5
 
-;; 使用 C-x 8 s 來插入零寬空格。
+(defmacro zy/org-surround-markup (&rest keys)
+  "Define and bind interactive commands for each of KEYS that surround the
+region or insert text.  Commands are bound in `org-mode-map' to each of KEYS.
+If the region is active, commands surround it with the key character, otherwise
+call `org-self-insert-command'."
+  `(progn
+     ,@(cl-loop for key in keys
+		for name = (intern (concat "zy/org-maybe-surround-" key))
+		for docstring = (format "If region is active, surround it with \"%s\", otherwise call `org-self-insert-command'." key)
+		collect `(defun ,name ()
+			   ,docstring
+			   (interactive)
+			   (if (region-active-p)
+			       (let ((beg (region-beginning))
+				     (end (region-end)))
+				 (save-excursion
+				   (goto-char end)
+				   (insert ,key)
+				   (insert-char #x200b)
+				   (goto-char beg)
+				   (insert-char #x200b)
+				   (insert ,key)))
+			     (call-interactively #'org-self-insert-command)))
+		collect `(define-key org-mode-map (kbd ,key) #',name))))
 
-(defun zy/insert-zero-width-space ()
-  (interactive)
-  (insert-char ?\u200B))
-(general-define-key "C-x 8 s" #'zy/insert-zero-width-space)
+(with-eval-after-load "org"
+  (zy/org-surround-markup "~" "=" "*" "/" "_" "+" "$"))
 
 ;;;; Export to HTML
 

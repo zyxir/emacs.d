@@ -40,6 +40,13 @@
   (let ((fill-column (point-max)))
     (fill-paragraph nil)))
 
+;; Insert some special characters.
+
+(defun zy/insert-zero-width-space ()
+  (interactive)
+  (insert-char ?\u200B))
+(general-define-key "C-x 8 s" #'zy/insert-zero-width-space)
+
 ;;;; For `prog-mode' and `text-mode'
 
 ;; Show and delete trailing whitespace.
