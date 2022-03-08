@@ -1,3 +1,0 @@
-[submodule "site-lisp/eaf"]
-	path = site-lisp/eaf
-	url = git@github.com:emacs-eaf/emacs-application-framework.git

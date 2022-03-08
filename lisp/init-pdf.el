@@ -5,9 +5,11 @@
 
 ;;; Code:
 
-(use-package eaf
-  :load-path "site-lisp/eaf")
+;; (use-package pdf-tools
+;;   :straight t
+;;   :config
+;;   (pdf-tools-install))
 
 ;; End of config.
 
-(provide 'init-eaf)
+(provide 'init-pdf)
