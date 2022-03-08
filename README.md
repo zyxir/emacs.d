@@ -20,10 +20,6 @@ Personal Emacs configuration for everyday use, mainly on WSL.
 
 <hr>
 
-Bugs to fix:
-
-1. Very long load time on init-org.el.
-
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
