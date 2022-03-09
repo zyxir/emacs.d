@@ -72,6 +72,14 @@
   :straight t
   :after yasnippet)
 
+;; Quick jump with avy.
+
+(use-package avy
+  :straight t
+  :general
+  ("M-r" 'avy-goto-char
+   "M-t" 'avy-goto-char-timer))
+
 ;;;; For `prog-mode' Only
 
 ;; Show line numbers.
