@@ -1,0 +1,3 @@
+[submodule "site-lisp/emacs-rime"]
+	path = site-lisp/emacs-rime
+	url = https://github.com/DogLooksGood/emacs-rime.git
