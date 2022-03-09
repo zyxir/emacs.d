@@ -27,9 +27,9 @@ Personal Emacs configuration for everyday use, mainly on WSL.
     - [Introduction](#introduction)
     - [Features](#features)
     - [Documents](#documents)
-    - [Install](#install)
     - [Changelog](#changelog)
         - [Version 2.X](#version-2x)
+            - [[2.2.1] - 2022-03-09](#221---2022-03-09)
             - [[2.2.0] - 2022-03-04](#220---2022-03-04)
             - [[2.1.1] - 2022-02-25](#211---2022-02-25)
             - [[2.1.0] - 2021-11-01](#210---2021-11-01)
@@ -69,7 +69,7 @@ This is like my dev blog on this repository.
 
 ### Version 2.X
 
-#### [2.2.1] - UNRELEASED
+#### [2.2.1] - 2022-03-09
 
 - Enhanced Chinese support for org-mode.
 - Other minor modifications.
