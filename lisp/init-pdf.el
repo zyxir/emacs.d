@@ -5,10 +5,10 @@
 
 ;;; Code:
 
-;; (use-package pdf-tools
-;;   :straight t
-;;   :config
-;;   (pdf-tools-install))
+(use-package pdf-tools
+  :straight t
+  :config
+  (pdf-tools-install))
 
 ;; End of config.
 
