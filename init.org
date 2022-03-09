@@ -1,0 +1,43 @@
+#+title: init.org
+#+property: header-args:elisp :tangle ~/.emacs.d/init.el
+
+* Startup
+
+#+begin_src elisp :tangle ~/.emacs.d/early-init.el
+  ;; -*- lexical-binding: t; -*-
+  (setq default-frame-alist
+	'((width . 86)
+	  (height . 40)))
+  (setq
+   frame-inhibit-implied-resize t
+   package-enable-at-startup nil
+   inhibit-startup-message t)
+#+end_src
+
+** Adjust GC
+
+Prohibit GC at startup, and adjust the threshold thereafter.
+
+#+begin_src elisp
+  (setq gc-cons-threshold most-positive-fixnum
+	gc-cons-percentage 0.5)
+  (add-hook 'emacs-startup-hook
+	    (lambda ()
+	      (setq gc-cons-threshold (* 32 1024 1024)
+		    gc-cons-percentage 0.1)))
+#+end_src
+
+* UI
+
+** Toggle UI Elements
+
+#+begin_src elisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (column-number-mode +1)
+#+end_src
+
+* Lingua
+
+** Setup Rime IM
