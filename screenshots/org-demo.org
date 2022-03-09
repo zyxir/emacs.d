@@ -1,0 +1,23 @@
+#+title: Org Demo
+
+This file is for demostration only. 此文件僅用於展示。
+
+* Emacs is Awesome | Emacs 超讚
+
+標題字體是 "Roboto Slab" 與「源樣黑體」。爲本文件截圖時，開啟了 ~darkroom-mode~​（一個無干擾編輯模式）。
+
+** Org 正文默認開啟 variable-pitch-mode
+
+*** Org 模式的正文字體爲 "IBM Plex Serif" 和「源樣明體」
+
+這兩種字體的​*粗細*​和​/風格/​較爲統一，搭配起來不會奇怪。
+
+*** 普通文件與代碼塊採用的字體是「等距更紗黑體」和「源漾黑體」
+
+其中「等距更紗黑體」用於顯示除中文以外的所有字符集，如拉丁字母、西里爾字母、諺文等，而「源樣黑體」用於顯示中文內容。這兩種字體正好是既等寬又等高的。
+
+#+begin_src emacs-lisp
+  (if (display-graphic-p)
+      (message "多種字體搭配出滿意 UI。")
+    (message "終端下無法顯示自定義字體哦！"))
+#+end_src

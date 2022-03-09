@@ -1,25 +1,28 @@
-*.temp
-.cache
-.org-id-locations
-.lsp*
+# Generated files
+*.elc
+early-init.el
+init.el
+loaddefs.el
+straight
+org-roam.db
+
+# Local files
+.lsp-session-*
 .mc-lists.el
-amx-items
+.org-id-locations
 auto-save-list
-backups
 bookmarks
 custom.el
-elpa
-emojis
+eln-cache
 eshell
-multisession
-network-security.data
-org-roam.db
+history
+org-persist
 places
-projectile*
+projects
 recentf
 server
-smex-items
-srecode-map.el
-straight
 transient
 url
+
+# ZyEmacs files
+zylatex.sty

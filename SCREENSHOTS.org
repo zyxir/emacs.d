@@ -1,0 +1,3 @@
+#+title: Screenshots of ZyEmacs
+
+[[file:screenshots/org-demo.png]]
