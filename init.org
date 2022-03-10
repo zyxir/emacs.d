@@ -3,6 +3,10 @@
 
 * Startup
 
+** Early Init
+
+See [[https://www.gnu.org/software/emacs/manual/html_node/emacs/Early-Init-File.html][The Early Init File]].
+
 #+begin_src elisp :tangle ~/.emacs.d/early-init.el
   ;; -*- lexical-binding: t; -*-
   (setq default-frame-alist
@@ -27,6 +31,95 @@ Prohibit GC at startup, and adjust the threshold thereafter.
 		    gc-cons-percentage 0.1)))
 #+end_src
 
+** Constants
+
+#+begin_src elisp
+  (defconst *win64* (eq system-type 'windows-nt)
+    "If Emacs is run on Windows.")
+  (defconst *linux* (or (eq system-type 'gnu/linux)
+		      (eq system-type 'linux))
+    "If Emacs is run on Linux.")
+#+end_src
+
+** Custom Settings
+
+#+begin_src elisp
+  (setq frame-title-format '("" "emacs" " [%b]")
+	system-time-locale "C"
+	disabled-command-function nil)
+#+end_src
+
+** Load ~custom.el~
+
+#+begin_src elisp
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+#+end_src
+
+** Path
+
+*** Lisp Path
+
+#+begin_src elisp
+  (let ((lisp-directories
+	 '("lisp" "site-lisp")))
+    (dolist (dir lisp-directories)
+      (setq dir (expand-file-name dir user-emacs-directory))
+      (when (file-directory-p dir)
+	(let ((default-directory dir))
+	  (normal-top-level-add-subdirs-to-load-path)))))
+#+end_src
+
+*** Zybox Path
+
+Zybox is the collection of my personal files.
+
+#+begin_src elisp
+  (defvar zy/zybox-path nil
+    "The path of Zybox, the collection of all my files.
+
+  This value should be manually set in custom.el, as it is
+  different on different machines.")
+
+  (defun zy:file-directory-ret (path)
+    (when (file-directory-p path)
+      path))
+
+  (unless zy/zybox-path
+    (require 'cl-extra)
+    (let* ((zybox-possible-locs-win64
+	    '("C:\\Zybox"
+	      "C:\\Users\\zyxir\\Zybox"
+	      "C:\\Users\\zyxir\\Documents\\Zybox"))
+	   (zybox-possible-locs-linux
+	    '("~/Zybox"
+	      "~/Documents/Zybox"
+	      "/mnt/c/Zybox"
+	      "/mnt/c/Users/zyxir/Zybox"
+	      "/mnt/c/Users/Documents/Zybox")))
+	   (guessed-zybox-path
+	    (cl-some
+	     #'zy:file-directory-ret
+	     (cond
+	      (*win64* zybox-possible-locs-win64)
+	      (*linux* zybox-possible-locs-linux)))))
+      (if guessed-zybox-path
+	  (progn
+	    (setq zy/zybox-path guessed-zybox-path)
+	    (warn
+	     "Zybox should be manually set instead of auto detected!"))
+	(warn "No Zybox path detected, some features will be unavailable!"))))
+#+end_src
+
+* Utilities
+
+** Emacs Server
+
+#+begin_src elisp
+  (server-start)
+#+end_src
+
 * UI
 
 ** Toggle UI Elements
@@ -39,5 +132,3 @@ Prohibit GC at startup, and adjust the threshold thereafter.
 #+end_src
 
 * Lingua
-
-** Setup Rime IM
