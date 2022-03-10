@@ -34,7 +34,7 @@ Prohibit GC at startup, and adjust the threshold thereafter.
 ** Constants
 
 #+begin_src elisp
-  (defconst *win64* (eq system-type 'windows-nt)
+p  (defconst *win64* (eq system-type 'windows-nt)
     "If Emacs is run on Windows.")
   (defconst *linux* (or (eq system-type 'gnu/linux)
 		      (eq system-type 'linux))
@@ -44,9 +44,11 @@ Prohibit GC at startup, and adjust the threshold thereafter.
 ** Custom Settings
 
 #+begin_src elisp
-  (setq frame-title-format '("" "emacs" " [%b]")
-	system-time-locale "C"
-	disabled-command-function nil)
+  (setq
+   disabled-command-function nil
+   fill-column 80
+   frame-title-format '("" "emacs" " [%b]")
+   system-time-locale "C")
 #+end_src
 
 ** Load ~custom.el~
@@ -57,9 +59,14 @@ Prohibit GC at startup, and adjust the threshold thereafter.
     (load custom-file))
 #+end_src
 
-** Path
+** Load libraries
 
-*** Lisp Path
+#+begin_src elisp
+  (require 'cl-lib)
+  (require 'cl-extra)
+#+end_src
+
+** Lisp Path
 
 #+begin_src elisp
   (let ((lisp-directories
@@ -71,7 +78,7 @@ Prohibit GC at startup, and adjust the threshold thereafter.
 	  (normal-top-level-add-subdirs-to-load-path)))))
 #+end_src
 
-*** Zybox Path
+** User Paths
 
 Zybox is the collection of my personal files.
 
@@ -87,7 +94,6 @@ Zybox is the collection of my personal files.
       path))
 
   (unless zy/zybox-path
-    (require 'cl-extra)
     (let* ((zybox-possible-locs-win64
 	    '("C:\\Zybox"
 	      "C:\\Users\\zyxir\\Zybox"
@@ -97,7 +103,7 @@ Zybox is the collection of my personal files.
 	      "~/Documents/Zybox"
 	      "/mnt/c/Zybox"
 	      "/mnt/c/Users/zyxir/Zybox"
-	      "/mnt/c/Users/Documents/Zybox")))
+	      "/mnt/c/Users/Documents/Zybox"))
 	   (guessed-zybox-path
 	    (cl-some
 	     #'zy:file-directory-ret
@@ -107,12 +113,89 @@ Zybox is the collection of my personal files.
       (if guessed-zybox-path
 	  (progn
 	    (setq zy/zybox-path guessed-zybox-path)
-	    (warn
-	     "Zybox should be manually set instead of auto detected!"))
-	(warn "No Zybox path detected, some features will be unavailable!"))))
+	    (lwarn 'zyemacs :warning "Zybox is auto-detected at %s." zy/zybox-path)
+	    (customize-save-variable 'zy/zybox-path zy/zybox-path))
+	(lwarn 'zyemacs :warning "Could not auto-detect Zybox."))))
 #+end_src
 
 * Utilities
+
+** Straight
+
+Install package with straight.
+
+#+begin_src elisp
+  (unless (featurep 'straight)
+    ;; Bootstrap straight.el
+    (defvar bootstrap-version)
+    (let ((bootstrap-file
+	   (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	  (bootstrap-version 5))
+      (unless (file-exists-p bootstrap-file)
+	(with-current-buffer
+	    (url-retrieve-synchronously
+	     "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	     'silent 'inhibit-cookies)
+	  (goto-char (point-max))
+	  (eval-print-last-sexp)))
+      (load bootstrap-file nil 'nomessage)))
+  (setq straight-vc-git-default-clone-depth 1)
+#+end_src
+
+** Setup.el
+
+#+begin_src elisp
+  (straight-use-package '(setup :type git :host github :repo "phikal/setup.el"))
+  (require 'setup)
+  (setup-define :pkg
+    (lambda (recipe)
+      `(unless (straight-use-package ',recipe)
+	 ,(setup-quit)))
+    :documentation
+    "Install RECIPE with `straight-use-package'.
+  This macro can be used as HEAD, and will replace itself with the
+  first RECIPE's package."
+    :repeatable t
+    :shorthand (lambda (sexp)
+		 (let ((recipe (cadr sexp)))
+		   (if (consp recipe)
+		       (car recipe)
+		     recipe))))
+  (setup-define :pkg-when
+    (lambda (recipe condition)
+      `(if ,condition
+	   (straight-use-package ',recipe)
+	 ,(setup-quit)))
+    :documentation
+    "Install RECIPE with `straight-use-package' when CONDITION is met.
+  If CONDITION is false, stop evaluating the body.  This macro can
+  be used as HEAD, and will replace itself with the RECIPE's
+  package.  This macro is not repeatable."
+    :repeatable nil
+    :indent 1
+    :shorthand (lambda (sexp)
+		 (let ((recipe (cadr sexp)))
+		   (if (consp recipe) (car recipe) recipe))))
+#+end_src
+
+** Which-Key
+
+#+begin_src elisp
+  (setup (:pkg which-key)
+    (which-key-mode +1))
+#+end_src
+
+** General
+
+Manage keybinding with general.el, and rebind some default keys. Additionally,
+define ~M-m~ as my leader-key.
+
+#+begin_src elisp
+  (setup (:pkg general)
+    (define-prefix-command 'zy/leader-map)
+    (general-define-key "M-m" 'zy/leader-map
+			"M-z" 'back-to-indentation))
+#+end_src
 
 ** Emacs Server
 
@@ -132,3 +215,25 @@ Zybox is the collection of my personal files.
 #+end_src
 
 * Lingua
+
+** Rime Input Method
+
+#+begin_src elisp
+  (setup (:pkg rime)
+    (setq rime-user-data-dir (expand-file-name "rime" user-emacs-directory)
+	  default-input-method "rime"
+	  rime-show-candidate 'posframe))
+
+  ;; Make the cursor orange when IM is active
+  (defvar zy/im-cursor-color "Orange"
+      "Default cursor color if an input method is active.")
+  (defvar zy/default-cursor-color (frame-parameter nil 'cursor-color)
+    "Default text cursor color.")
+  (defun zy/change-cursor-color-on-im ()
+    "Set cursor color depending IM state."
+    (interactive)
+    (set-cursor-color (if current-input-method
+			  zy/im-cursor-color
+			zy/default-cursor-color)))
+  (add-hook 'post-command-hook 'zy/change-cursor-color-on-im)
+#+end_src

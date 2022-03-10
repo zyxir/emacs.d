@@ -1,0 +1,9 @@
+# Generated files
+early-init.el
+init.el
+straight
+
+# Local files
+auto-save-list
+bookmarks
+custom.el
