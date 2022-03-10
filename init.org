@@ -34,7 +34,7 @@ Prohibit GC at startup, and adjust the threshold thereafter.
 ** Constants
 
 #+begin_src elisp
-p  (defconst *win64* (eq system-type 'windows-nt)
+  (defconst *win64* (eq system-type 'windows-nt)
     "If Emacs is run on Windows.")
   (defconst *linux* (or (eq system-type 'gnu/linux)
 		      (eq system-type 'linux))
@@ -147,6 +147,11 @@ Install package with straight.
 #+begin_src elisp
   (straight-use-package '(setup :type git :host github :repo "phikal/setup.el"))
   (require 'setup)
+#+end_src
+
+*** :pkg and :pkg-when
+
+#+begin_src elisp
   (setup-define :pkg
     (lambda (recipe)
       `(unless (straight-use-package ',recipe)
@@ -175,7 +180,42 @@ Install package with straight.
     :indent 1
     :shorthand (lambda (sexp)
 		 (let ((recipe (cadr sexp)))
-		   (if (consp recipe) (car recipe) recipe))))
+		   (if (consp recipe)
+		       (car recipe)
+		     recipe))))
+#+end_src
+
+*** :delay
+
+#+begin_src elisp
+  (setup-define :delay
+    (lambda (&optional time)
+      `(run-with-idle-timer ,(or time 1) nil
+			    (lambda () (require ',(setup-get 'feature)))))
+    :documentation "Delay loading the feature until a certain amount of idle time has passed.")
+#+end_src
+
+*** :load-after
+
+#+begin_src elisp
+  (setup-define :load-after
+      (lambda (&rest features)
+	(let ((body `(require ',(setup-get 'feature))))
+	  (dolist (feature (nreverse features))
+	    (setq body `(with-eval-after-load ',feature ,body)))
+	  body))
+    :documentation "Load the current feature after FEATURES.")
+#+end_src
+
+*** :needs
+
+#+begin_src elisp
+  (setup-define :needs
+      (lambda (executable)
+	`(unless (executable-find ,executable)
+	   ,(setup-quit)))
+    :documentation "If EXECUTABLE is not in the path, stop here."
+    :repeatable 1)
 #+end_src
 
 ** Which-Key
@@ -197,6 +237,46 @@ define ~M-m~ as my leader-key.
 			"M-z" 'back-to-indentation))
 #+end_src
 
+** Zyemacs Keymaps
+
+Define several leader keymaps.
+
+#+begin_src elisp
+  (define-prefix-command 'zy/leader-config-map)
+  (general-define-key
+   :keymaps 'zy/leader-map
+   "," 'zy/leader-config-map)
+#+end_src
+
+** Vertico and Minibuffer
+
+#+begin_src elisp
+  (setup (:pkg vertico)
+    (vertico-mode +1))
+
+  (setup (:pkg orderless)
+    (setq completion-style '(orderless)
+	  completion-category-defaults nil
+	  completion-category-overrides '((file (styles partial-completion)))))
+
+  (setup (:pkg savehist)
+    (savehist-mode +1))
+
+  (setup (:pkg marginalia)
+    (marginalia-mode +1))
+
+  (setup (:pkg consult)
+    (setq completion-in-region-function
+	  #'consult-completion-in-region)
+    (advice-add #'completing-read-multiple
+	      :override #'consult-completing-read-multiple))
+
+  (setq minibuffer-prompt-properties
+	'(read-only t cursor-intangible t face minibuffer-prompt)
+	enable-recursive-minibuffers t)
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+#+end_src
+
 ** Emacs Server
 
 #+begin_src elisp
@@ -212,6 +292,20 @@ define ~M-m~ as my leader-key.
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (column-number-mode +1)
+#+end_src
+
+* Features
+
+** Restart-Emacs
+
+Restart Emacs within Emacs, or open a new instance of Emacs.
+
+#+begin_src elisp
+  (setup (:pkg restart-emacs)
+    (general-define-key
+     :keymaps 'zy/leader-config-map
+     "R" 'restart-emacs
+     "N" 'restart-emacs-start-new-emacs))
 #+end_src
 
 * Lingua
