@@ -1,23 +1,20 @@
-#+TITLE: Zyxir's Emacs Configuration
+#+title: ZyEmacs
 
-My GNU Emacs configuration, which is:
+My Emacs configuration focused on being
 
-- *Minimal*. I practise [[https://en.wikipedia.org/wiki/Minimalism][minimalism]] in my daily life, as well as in
-  Emacs.
-- *Manageable*. Advanced approaches are used to minimize the cost of
-  managing the configuration.
-- *Functional*. This configuration satisfies most of my needs. See
-  [[*Usage]].
+- *Minimal*. I practise [[https://en.wikipedia.org/wiki/Minimalism][minimalism]] in my daily life, as well as in Emacs.
+- *Manageable*. Advanced approaches are used to minimize the cost of managing the configuration.
+- *Functional*. This configuration satisfies most of my daily needs. See [[*Usage]].
 
-The whole config is inside [[./init.org][init.org]].
+The whole config is inside [[./init.org][init.org]]. You can also read the [[file:CHANGELOG.org][changelog]].
 
 * Usage
 
-I use Emacs in WSL (Windows Subsystem for Linux), to:
+I use Emacs in WSL (Windows Subsystem for Linux) for
 
-- Use [[https://orgmode.org/][org-mode]], [[https://www.orgroam.com/][org-roam]], [[https://github.com/bastibe/org-journal][org-journal]], and other org utilities.
-- Write documents in: LaTeX, markdown, org.
-- Write codes in: Python.
+- Using [[https://orgmode.org/][org-mode]], [[https://www.orgroam.com/][org-roam]], [[https://github.com/bastibe/org-journal][org-journal]], and other org utilities.
+- Writing documents in: LaTeX, markdown, org.
+- Coding in: Python.
 
 * Install
 

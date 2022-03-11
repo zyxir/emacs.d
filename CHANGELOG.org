@@ -1,0 +1,57 @@
+#+title: Changelog of ZyEmacs
+
+* Version 3.x
+
+** =3.0.0= - Unreleased
+
+- Fully rewritten in the style of literate programming.
+- Many unnecessary packages removed in persuit of minimalism.
+
+* Version 2.x
+
+** =2.2.1= - 2022-03-09
+
+- Enhanced Chinese support for org-mode.
+- Other minor modifications.
+
+** =2.2.0= - 2022-03-04
+
+- Target platform moved to WSL.
+- Built-in Rime input method.
+- Built-in PDF viewer.
+- Multi-frames enhancements.
+- AucTeX enhancements.
+- Minor improvements.
+
+** =2.1.1= - 2022-02-25
+
+- Use AucTeX instead of LaTeX LSP.
+- Org-mode markup improvements.
+- Org-roam fixed and optimized.
+- Other minor changes.
+
+** =2.1.0= - 2021-11-01
+
+- Remap `C-x C--/C-+/C-=/C-0` to a self implemented font size adjuster.
+- Rewrite encoding settings, everything for UTF-8 now.
+- Python with LSP integrated.
+- LaTeX with LSP integrated.
+- Other minor modifications.
+- Add tweakering functions triggered by the `C-c \` prefix.
+- Modeline updated.
+- Snippet support finally added.
+- Other minor changes.
+
+** =2.0.1= - 2021-10-09
+
+The README is polished, as the "changelog" and "screenshots" sections are added.
+
+** =2.0.0= - 2021-10-09
+
+The whole thing has been reworked, from a org-based literate configuration, to a complex collection of emacs-lisp scripts. Most of the original functionalities is kept or improved.
+
+* Version 1.X
+
+** =1.0.0= - 2021-09-30
+
+The configuration is almost stable for everyday usage, but a rewrite is planned.
