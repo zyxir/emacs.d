@@ -41,16 +41,6 @@ Prohibit GC at startup, and adjust the threshold thereafter.
     "If Emacs is run on Linux.")
 #+end_src
 
-** Custom Settings
-
-#+begin_src elisp
-  (setq
-   disabled-command-function nil
-   fill-column 80
-   frame-title-format '("" "emacs" " [%b]")
-   system-time-locale "C")
-#+end_src
-
 ** Load ~custom.el~
 
 #+begin_src elisp
@@ -144,6 +134,8 @@ Install package with straight.
 
 ** Setup.el
 
+*** Install It
+
 #+begin_src elisp
   (straight-use-package '(setup :type git :host github :repo "phikal/setup.el"))
   (require 'setup)
@@ -225,7 +217,7 @@ Install package with straight.
     (which-key-mode +1))
 #+end_src
 
-** General
+** General.el
 
 Manage keybinding with general.el, and rebind some default keys. Additionally,
 define ~M-m~ as my leader-key.
@@ -255,7 +247,7 @@ Define several leader keymaps.
     (vertico-mode +1))
 
   (setup (:pkg orderless)
-    (setq completion-style '(orderless)
+    (setq completion-styles '(orderless partial-completion)
 	  completion-category-defaults nil
 	  completion-category-overrides '((file (styles partial-completion)))))
 
@@ -265,16 +257,87 @@ Define several leader keymaps.
   (setup (:pkg marginalia)
     (marginalia-mode +1))
 
-  (setup (:pkg consult)
-    (setq completion-in-region-function
-	  #'consult-completion-in-region)
-    (advice-add #'completing-read-multiple
-	      :override #'consult-completing-read-multiple))
-
   (setq minibuffer-prompt-properties
 	'(read-only t cursor-intangible t face minibuffer-prompt)
 	enable-recursive-minibuffers t)
   (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+#+end_src
+
+** Consult
+
+Register utilities have not been configured.
+
+#+begin_src elisp
+  (setup (:pkg consult)
+    (setq completion-in-region-function
+	  #'consult-completion-in-region)
+    (advice-add #'completing-read-multiple
+		:override #'consult-completing-read-multiple)
+    (general-define-key
+     "M-y" 'consult-yank-pop
+     "<help> a" 'consult-apropos)
+    (general-define-key
+     :keymaps 'mode-specific-map
+     "h" 'consult-history
+     "m" 'consult-mode-command
+     "k" 'consult-kmacro)
+    (general-define-key
+     :keymaps 'ctl-x-map
+     "M-:" 'consult-complex-command
+     "b" 'consult-buffer
+     "4 b" 'consult-buffer-other-window
+     "5 b" 'consult-buffer-other-frame
+     "r b" 'consult-bookmark
+     "p b" 'consult-project-buffer)
+    (general-define-key
+     :keymaps 'goto-map
+     "e" 'consult-compile-error
+     "f" 'consult-flymake
+     "g" 'consult-goto-line
+     "M-g" 'consult-goto-line
+     "o" 'consult-outline
+     "m" 'consult-mark
+     "k" 'consult-global-mark
+     "i" 'consult-imenu
+     "I" 'consult-imenu-multi)
+    (general-define-key
+     :keymaps 'search-map
+     "d" 'consult-find
+     "D" 'consult-locate
+     "g" 'consult-grep
+     "G" 'consult-git-grep
+     "r" 'consult-ripgrep
+     "l" 'consult-line
+     "L" 'consult-line-multi
+     "m" 'consult-multi-occur
+     "k" 'consult-keep-lines
+     "u" 'consult-focus-lines)
+    (general-define-key
+     "e" 'consult-isearch-history
+     :keymaps 'isearch-mode-map
+     "M-e" 'consult-isearch-history
+     "M-s e" 'consult-isearch-history
+     "M-s l" 'consult-line
+     "M-s L" 'consult-line-multi)
+    (general-define-key
+     :keymaps 'minibuffer-local-map
+     "M-s" 'consult-history
+     "M-r" 'consult-history))
+#+end_src
+
+** Embark
+
+#+begin_src elisp
+  (setup (:pkg embark)
+    (general-define-key
+     "C-," 'embark-act
+     "C-." 'embark-dwim
+     "<help> B" 'embark-bindings)
+    (:when-loaded
+      (add-to-list 'display-buffer-alist
+		   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		     nil
+		     (window-parameters (mode-line-format . none))))))
 #+end_src
 
 ** Emacs Server
@@ -283,18 +346,38 @@ Define several leader keymaps.
   (server-start)
 #+end_src
 
-* UI
+* General Configuration
 
-** Toggle UI Elements
+** Native Setqs
 
 #+begin_src elisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (column-number-mode +1)
+  (setq
+   disabled-command-function nil
+   fill-column 80
+   frame-title-format '("" "emacs" " [%b]")
+   make-backup-files nil
+   auto-save-default nil
+   system-time-locale "C")
 #+end_src
 
-* Features
+** Native Modes
+
+#+begin_src elisp
+  (delete-selection-mode +1)
+  (global-hl-line-mode +1)
+  (global-display-line-numbers-mode +1)
+  (recentf-mode +1)
+  (setup save-place
+    (:hook-into after-init-hook))
+#+end_src
+
+** Super Save
+
+#+begin_src elisp
+  (setup (:pkg super-save)
+    (setq super-save-auto-save-when-idle t)
+    (super-save-mode +1))
+#+end_src
 
 ** Restart-Emacs
 
@@ -308,8 +391,43 @@ Restart Emacs within Emacs, or open a new instance of Emacs.
      "N" 'restart-emacs-start-new-emacs))
 #+end_src
 
-* Lingua
+* UI
 
+** Toggle UI Elements
+
+#+begin_src elisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (column-number-mode +1)
+#+end_src
+
+** Theme
+
+#+begin_src elisp
+  (defvar zy/default-theme 'doom-one-light
+    "Theme to enable at startup")
+  (when zy/default-theme
+    (setup (:pkg doom-themes)
+      (load-theme zy/default-theme t)
+      (doom-themes-org-config))
+    (setup (:pkg solaire-mode)
+      (solaire-global-mode +1)))
+#+end_src
+
+** Font
+
+These are temporary settings.
+
+#+begin_src elisp
+  (set-face-attribute
+   'default nil
+   :font (font-spec :family "Sarasa Mono TC"
+		    :weight 'normal
+		    :size 16))
+#+end_src
+
+* Lingua
 ** Rime Input Method
 
 #+begin_src elisp
@@ -319,7 +437,7 @@ Restart Emacs within Emacs, or open a new instance of Emacs.
 	  rime-show-candidate 'posframe))
 
   ;; Make the cursor orange when IM is active
-  (defvar zy/im-cursor-color "Orange"
+  (defvar zy/im-cursor-color "#008000"
       "Default cursor color if an input method is active.")
   (defvar zy/default-cursor-color (frame-parameter nil 'cursor-color)
     "Default text cursor color.")
@@ -330,4 +448,117 @@ Restart Emacs within Emacs, or open a new instance of Emacs.
 			  zy/im-cursor-color
 			zy/default-cursor-color)))
   (add-hook 'post-command-hook 'zy/change-cursor-color-on-im)
+#+end_src
+
+* Major Modes
+
+** Org
+
+*** Basic Org
+
+#+begin_src elisp
+  (setup org
+    (setq org-attach-id-dir "_org-att"
+	  org-log-done 'time
+	  org-src-window-setup 'current-window)
+    (add-hook 'org-mode-hook
+	      (lambda ()
+		(display-line-numbers-mode -1)
+		(org-indent-mode +1)
+		(visual-line-mode +1))))
+#+end_src
+
+*** GTD System
+
+#+begin_src elisp
+  (defvar zy/gtd-path (expand-file-name "org/org-gtd" zy/zybox-path)
+    "The path of my GTD system root.")
+  (defvar zy/gtd-inbox-path (expand-file-name "inbox.org" zy/gtd-path)
+    "The path of `inbox.org' of my GTD system.")
+  (defvar zy/gtd-gtd-path (expand-file-name "gtd.org" zy/gtd-path)
+    "The path of `gtd.org' of my GTD system.")
+  (defvar zy/gtd-someday-path (expand-file-name "someday.org" zy/gtd-path)
+    "The path of `someday.org' of my GTD system.")
+
+  (setq
+   org-agenda-files `(,zy/gtd-inbox-path
+		      ,zy/gtd-gtd-path
+		      ,zy/gtd-someday-path)
+   org-capture-templates `(("i" "inbox" entry
+			    (file+headline ,zy/gtd-inbox-path "inbox")
+			    "* TODO [#B] %U %i%?"
+			    :empty-lines 1)
+			   ("s" "someday" entry
+			    (file+headline ,zy/gtd-someday-path "someday")
+			    "* TODO [#C] %U %i%?"
+			    :empty-lines 1)
+			   ("t" "GTD" entry
+			    (file+olp+datetree ,zy/gtd-gtd-path)
+			    "* TODO [#B] %U %i%?"
+			    :empty-lines 1))
+   org-refile-targets `((,zy/gtd-gtd-path :maxlevel . 3)
+			(,zy/gtd-someday-path :level . 1))
+   org-todo-keywords '((sequence "TODO(t)"
+				 "IN PROCESS(i)"
+				 "POSTPONED(p)"
+				 "|"
+				 "DONE(d)")
+		       (sequence "|"
+				 "CANCELED(c)"))
+   org-todo-keywords-faces '(("TODO" . (:foreground "#B71C1C" :weight bold))
+			     ("IN PROCESS" . (:foreground "#8BC34A" :weight bold))
+			     ("POSTPONED" . (:foreground "#F57C00" :weight bold))
+			     ("DONE" . (:foreground "#33691E" :weight bold))
+			     ("CANCELED" . (:foreground "#757575" :weight bold))))
+
+  (general-define-key
+   :keymaps 'zy/leader-map
+   "a" 'org-agenda
+   "c" 'org-capture)
+#+end_src
+
+*** Org-Appear
+
+#+begin_src elisp
+  (setup (:pkg org-appear)
+    (add-hook 'org-mode-hook 'org-appear-mode)
+    (setq-default org-hide-emphasis-markers t))
+#+end_src
+
+*** Org-Superstar
+
+#+begin_src elisp
+  (setup (:pkg org-superstar)
+    (add-hook 'org-mode-hook 'org-superstar-mode)
+    (setq org-superstar-headline-bullets-list '(#x25c9
+                                                #x25cb
+                                                #x25c8
+                                                #x25c7
+                                                #x2666)
+          org-superstar-cycle-headline-bullets nil
+          org-hide-leading-stars nil
+          org-superstar-leading-bullet #x200b
+          org-indent-mode-turns-on-hiding-stars nil
+          org-superstar-item-bullet-alist '((42 . #x2605)
+                                            (43 . #x2666)
+                                            (45 . #x27a4))))
+#+end_src
+
+*** Org-Journal
+
+#+begin_src elisp
+  (setup (:pkg org-journal)
+    (general-define-key
+     :keymaps 'zy/leader-map
+     "g" 'calendar
+     "j" 'org-journal-new-entry)
+    (when zy/zybox-path
+      (setq org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path)
+	    org-journal-file-format "%F"
+	    org-journal-date-format "%F %a W%V\n"
+	    org-journal-date-prefix "#+TITLE: "
+	    org-journal-time-format "%R "
+	    org-journal-time-format-post-midnight "%R (midnight) "
+	    org-journal-time-prefix "\n* "
+	    org-journal-file-header "")))
 #+end_src
