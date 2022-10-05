@@ -1,6 +1,5 @@
 #+html: <div align="center">
 * ZyEmacs
-[[file:init.org][Config]] · [[file:SCREENSHOTS.org][Screenshots]] · [[file:CHANGELOG.org][Changelog]]
 #+html: </div>
 
 This is my Emacs configuration focuses on being
@@ -9,8 +8,6 @@ This is my Emacs configuration focuses on being
 - *Manageable*. Advanced approaches are used to minimize the cost of managing the configuration.
 - *Functional*. This configuration satisfies most of my daily needs.
 
-For information like installation instructions, see [[./init.org][init.org]].
-
 ** Links
 
 This configuration is inspired by:
@@ -18,4 +15,3 @@ This configuration is inspired by:
 - [[https://github.com/nowislewis/nowisemacs][Nowisemacs]]
 - [[https://config.daviwil.com/emacs][David Wilson's Emacs Configuration]]
 - [[https://github.com/redguardtoo/emacs.d][redguardtoo/emacs.d]]
-- [[https://leanpub.com/lit-config/read][Literate Configuration]] by Diego Zamboni

@@ -1,7 +1,6 @@
 # Generated files
 *.elc
-early-init.el
-init.el
+epkgs
 loaddefs.el
 straight
 org-roam.db
