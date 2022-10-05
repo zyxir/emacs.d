@@ -2076,20 +2076,19 @@ Install Dirvish, an improved version of Dired.
     (dirvish-override-dired-mode)
     :after-load 'dirvish
     (setq delete-by-moving-to-trash t
-          dired-listing-switches
-          "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group"
-          dirvish-attributes '(vc-state
-                               subtree-state
-                               collapse
-                               all-the-icons
-                               file-time
-                               file-size))
+	  dired-listing-switches
+	  "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group"
+	  dirvish-attributes '(vc-state
+			       subtree-state
+			       collapse
+			       all-the-icons
+			       file-time
+			       file-size))
     (custom-set-variables
      `(dirvish-quick-access-entries
        `(("h" "~/" "Home")
-         ("e" "~/.emacs.d/" "Emacs user directory")
-         ("p" ,(car zy$-projects-path) "Zyproject"))
-       nil 'dirvish-quick-access))
+	 ("e" "~/.emacs.d/" "Emacs user directory")
+	 ("p" ,(car zy$-projects-path) "Zyproject"))))
     (when (version< "29" emacs-version)
       (setq dired-mouse-drag-files t)))
 #+end_src
