@@ -1,11 +1,11 @@
-# Generated files
-*.elc
-epkgs
-loaddefs.el
-straight
-org-roam.db
+# ZyEmacs files
 
-# Local files
+loaddefs-*.el
+zylatex.sty
+
+# Other files
+
+*.elc
 .lsp-session-*
 .mc-lists.el
 .org-id-locations
@@ -13,15 +13,16 @@ auto-save-list
 bookmarks
 custom.el
 eln-cache
+epkgs
 eshell
 history
+straight
 org-persist
+org-roam.db
 places
 projects
 recentf
 server
+tramp
 transient
 url
-
-# ZyEmacs files
-zylatex.sty

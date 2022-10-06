@@ -1,39 +1,60 @@
-;;; early-init.el --- Pre-initialization config
+;;; early-init.el --- Pre-initialization config -*- lexical-binding: t -*-
 
 ;;; Commentary:
+
+;; This file is read before the GUI is initialized.
+
 ;;; Code:
 
-(setq default-frame-alist '(;; Disable menu bar.
+
+;; Speed up startup
+
+(let ((normal-gc-cons-threshold (* 16 1024 1024))
+      (normal-gc-cons-percentage gc-cons-percentage)
+      (normal-file-name-handler-alist file-name-handler-alist)
+      (init-gc-cons-threshold (* 128 1024 1024))
+      (init-gc-cons-percentage 0.6)
+      (init-file-name-handler-alist nil))
+  (setq gc-cons-threshold init-gc-cons-threshold
+	gc-cons-percentage init-gc-cons-percentage
+	file-name-handler-alist init-file-name-handler-alist)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+	      (setq gc-cons-threshold normal-gc-cons-threshold
+		    gc-cons-percentage normal-gc-cons-percentage
+		    file-name-handler-alist normal-file-name-handler-alist))))
+
+
+;; Early settings
+
+(setq default-frame-alist '(;; Maximize Emacs by default
+			    (fullscreen . maximized)
+			    ;; Default font for GUI
+			    (font . "Fira Code-12")
+			    ;; Disable menu bar.
                             (menu-bar-lines . nil)
-                            ;; Disable scroll bars.
+                            ;; Disable scroll bars
                             (horizontal-scroll-bars . nil)
                             (vertical-scroll-bars . nil)
-                            ;; Disable tool bar.
+                            ;; Disable tool bar
                             (tool-bar-lines . 0))
       menu-bar-mode nil
       scroll-bar-mode nil
       tool-bar-mode nil
       frame-inhibit-implied-resize t
+      frame-resize-pixelwise t
       inhibit-startup-message t
-      native-comp-async-report-warnings-errors nil
-      pacakge-enable-at-startup nil)
+      load-prefer-newer t
+      package-enable-at-startup nil)
 
-
-;; Automatically compile Emacs Lisp libraries
+(require 'cl-lib)
 
-(setq load-prefer-newer t)
-(dolist (pkg-name '("auto-compile" "compat" "packed"))
-  (add-to-list 'load-path
-	       (expand-file-name (format "lib/%s" pkg-name)
-				 user-emacs-directory)))
-(require 'auto-compile)
-(auto-compile-on-load-mode)
-(auto-compile-on-save-mode)
+(when (native-comp-available-p)
+  (cl-eval-when 'compile
+    (require 'comp))
+  (setq native-comp-async-report-warnings-errors nil))
 
 
 (provide 'early-init)
 
-;; Local Variables:
-;; no-byte-compile: t
-;; End:
 ;;; early-init.el ends here

@@ -11,19 +11,10 @@
     (error "Your Emacs is too old --- this config requires v%s or higher" minver)))
 
 
-;; Benchmark startup
+;; Startup benchmarking
 
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(push (expand-file-name "lisp" user-emacs-directory) load-path)
 (require 'init-bench)
-
-
-;; Speed up startup
-
-(let ((normal-gc-cons-threshold (* 16 1024 1024))
-      (init-gc-cons-threshold (* 128 1024 1024)))
-  (setq gc-cons-threshold init-gc-cons-threshold)
-  (add-hook 'emacs-startup-hook
-            (lambda () (setq gc-cons-threshold normal-gc-cons-threshold))))
 
 
 ;; Bootstrap config
@@ -31,7 +22,21 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file) (load custom-file))
 
-(require 'init-load)
+;; Core
+(zy/require 'init-load)
+(zy/require 'init-common)
+(zy/require 'init-keybinding)
+
+;; Features
+(zy/require 'init-file)
+(zy/require 'init-completion)
+(zy/require 'init-programming)
+(zy/require 'init-project)
+(zy/require 'init-search)
+(zy/require 'init-ui)
+
+;; Major modes
+(zy/require 'init-elisp)
 
 
 (provide 'init)
