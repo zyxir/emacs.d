@@ -4,18 +4,18 @@
 [submodule "avy"]
 	path = lib/avy
 	url = git@github.com:abo-abo/avy.git
-[submodule "blackout"]
-	path = lib/blackout
-	url = git@github.com:radian-software/blackout.git
+[submodule "beacon"]
+	path = lib/beacon
+	url = git@github.com:Malabarba/beacon.git
 [submodule "borg"]
 	path = lib/borg
 	url = https://github.com/emacscollective/borg.git
-[submodule "borg-doc-terminal"]
-	path = lib/borg-doc-terminal
-	url = https://codeberg.org/akib/emacs-corfu-doc-terminal
 [submodule "cape"]
 	path = lib/cape
 	url = git@github.com:minad/cape.git
+[submodule "clipetty"]
+	path = lib/clipetty
+	url = git@github.com:spudlyo/clipetty.git
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql.git
@@ -36,15 +36,24 @@
 [submodule "corfu-doc"]
 	path = lib/corfu-doc
 	url = git@github.com:galeo/corfu-doc.git
+[submodule "corfu-doc-terminal"]
+	path = lib/corfu-doc-terminal
+	url = https://codeberg.org/akib/emacs-corfu-doc-terminal
 [submodule "corfu-terminal"]
 	path = lib/corfu-terminal
 	url = https://codeberg.org/akib/emacs-corfu-terminal
 [submodule "crux"]
 	path = lib/crux
 	url = git@github.com:bbatsov/crux.git
+[submodule "darkroom"]
+	path = lib/darkroom
+	url = git@github.com:joaotavora/darkroom.git
 [submodule "dash"]
 	path = lib/dash
 	url = git@github.com:magnars/dash.el.git
+[submodule "dim"]
+	path = lib/dim
+	url = git@github.com:alezost/dim.el.git
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql.git
@@ -61,9 +70,6 @@
 [submodule "flycheck"]
 	path = lib/flycheck
 	url = git@github.com:flycheck/flycheck.git
-[submodule "general"]
-	path = lib/general
-	url = git@github.com:noctuid/general.el.git
 [submodule "ido-completing-read+"]
 	path = lib/ido-completing-read+
 	url = git@github.com:DarwinAwardWinner/ido-completing-read-plus.git
@@ -85,18 +91,33 @@
 [submodule "memoize"]
 	path = lib/memoize
 	url = git@github.com:skeeto/emacs-memoize.git
+[submodule "mwim"]
+	path = lib/mwim
+	url = git@github.com:alezost/mwim.el.git
+[submodule "opencc"]
+	path = lib/opencc
+	url = git@github.com:xuchunyang/emacs-opencc.git
 [submodule "orderless"]
 	path = lib/orderless
 	url = git@github.com:oantolin/orderless.git
+[submodule "org"]
+	path = lib/org
+	url = git@github.com:emacsmirror/org.git
+[submodule "org-appear"]
+	path = lib/org-appear
+	url = git@github.com:awth13/org-appear.git
+[submodule "org-journal"]
+	path = lib/org-journal
+	url = git@github.com:bastibe/org-journal.git
 [submodule "packed"]
 	path = lib/packed
 	url = git@github.com:emacscollective/packed.git
-[submodule "page-break-lines"]
-	path = lib/page-break-lines
-	url = git@github.com:purcell/page-break-lines.git
 [submodule "popon"]
 	path = lib/popon
 	url = https://codeberg.org/akib/emacs-popon
+[submodule "popup"]
+	path = lib/popup
+	url = git@github.com:auto-complete/popup-el.git
 [submodule "posframe"]
 	path = lib/posframe
 	url = git@github.com:tumashu/posframe.git
@@ -106,12 +127,18 @@
 [submodule "rg"]
 	path = lib/rg
 	url = git@github.com:dajva/rg.el.git
+[submodule "rime"]
+	path = lib/rime
+	url = git@github.com:DogLooksGood/emacs-rime.git
 [submodule "s"]
 	path = lib/s
 	url = git@github.com:magnars/s.el.git
 [submodule "scratch"]
 	path = lib/scratch
 	url = git@github.com:emacsmirror/scratch.git
+[submodule "smartparens"]
+	path = lib/smartparens
+	url = git@github.com:Fuco1/smartparens.git
 [submodule "vertico"]
 	path = lib/vertico
 	url = git@github.com:minad/vertico.git

@@ -1,6 +1,6 @@
 # ZyEmacs files
 
-loaddefs-*.el
+lisp/init-loaddefs.el
 zylatex.sty
 
 # Other files

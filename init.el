@@ -11,6 +11,24 @@
     (error "Your Emacs is too old --- this config requires v%s or higher" minver)))
 
 
+;; Speed up startup
+
+(let ((normal-gc-cons-threshold (* 16 1024 1024))
+      (normal-gc-cons-percentage gc-cons-percentage)
+      (normal-file-name-handler-alist file-name-handler-alist)
+      (init-gc-cons-threshold (* 128 1024 1024))
+      (init-gc-cons-percentage 0.6)
+      (init-file-name-handler-alist nil))
+  (setq gc-cons-threshold init-gc-cons-threshold
+	gc-cons-percentage init-gc-cons-percentage
+	file-name-handler-alist init-file-name-handler-alist)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+	      (setq gc-cons-threshold normal-gc-cons-threshold
+		    gc-cons-percentage normal-gc-cons-percentage
+		    file-name-handler-alist normal-file-name-handler-alist))))
+
+
 ;; Startup benchmarking
 
 (push (expand-file-name "lisp" user-emacs-directory) load-path)
@@ -22,21 +40,28 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file) (load custom-file))
 
+;; Loading
+(require 'init-load)
+(require 'init-loaddefs)
+
 ;; Core
-(zy/require 'init-load)
-(zy/require 'init-common)
-(zy/require 'init-keybinding)
+(require 'init-common)
+(require 'init-keybinding)
 
 ;; Features
-(zy/require 'init-file)
-(zy/require 'init-completion)
-(zy/require 'init-programming)
-(zy/require 'init-project)
-(zy/require 'init-search)
-(zy/require 'init-ui)
+(require 'init-completion)
+(require 'init-editing)
+(require 'init-file)
+(require 'init-lingual)
+(require 'init-programming)
+(require 'init-project)
+(require 'init-search)
+(require 'init-tex)
+(require 'init-ui)
 
 ;; Major modes
-(zy/require 'init-elisp)
+(require 'init-elisp)
+(require 'init-org)
 
 
 (provide 'init)

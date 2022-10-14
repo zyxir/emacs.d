@@ -21,33 +21,16 @@
 
 ;;; Code:
 
+(require 'init-editing)
 (require 'init-keybinding)
 
 
-;; Hide eldoc-mode
+;; Handy commands
 
-(blackout 'eldoc-mode)
-
-
-;; Function to launch a new instance of Emacs
-
-(defun zy/test-config (&optional recompile)
-  "Test the updated config.
-
-Start a new instance of Emacs with \"--debug-init\" argument to
-test it.
-
-If RECOMPILE is non-nil, or with prefix argument when called
-interactively, recompile the whole config before starting the new
-instance."
-  (interactive "P")
-  (save-some-buffers)
-  (when recompile
-    (zy/recompile-config))
-  (restart-emacs-start-new-emacs '("--debug-init")))
-
-(general-def zy/manage-map
-  "t" #'zy/test-config)
+(zy/define-key
+  :keymap 'zy/leader-edit-map
+  "x" '("Expand macro" . emacs-lisp-macroexpand)
+  "R" '("Eval and replace" . crux-eval-and-replace))
 
 
 (provide 'init-elisp)
