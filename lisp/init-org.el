@@ -26,7 +26,6 @@
 (require 'init-common)
 (require 'init-keybinding)
 (require 'init-load)
-(require 'init-loaddefs)
 
 
 ;; Customized Org paths when Zybox is available
@@ -38,6 +37,7 @@
 
 
 ;; Org
+(straight-use-package 'org-appear)
 
 (zy/snip-from-feature 'org :weight 0
   :dependencies '(calendar ol org-table org-list org-src ob org-agenda))
@@ -73,6 +73,8 @@
 
 
 ;; Org-journal
+
+(straight-use-package 'org-journal)
 
 (zy/snip-from-feature 'org-journal :weight 0
   :dependencies 'org)

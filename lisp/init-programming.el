@@ -24,10 +24,11 @@
 
 (require 'init-keybinding)
 (require 'init-load)
-(require 'init-loaddefs)
 
 
 ;; Setup Flycheck for syntax checking
+
+(straight-use-package 'flycheck)
 
 (zy/defsnip snip-flycheck
     (:events 'find-file :weight 0)

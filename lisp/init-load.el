@@ -26,48 +26,27 @@
 (require 'cl-lib)
 
 
-;; Autoload Borg functions
+;; Bootstrap Straight
 
-(autoload 'borg-assimilate "borg" nil 'interactive)
-(autoload 'borg-build "borg" nil 'interactive)
-(autoload 'borg-clone "borg" nil 'interactive)
-(autoload 'borg-remove "borg" nil 'interactive)
-(with-eval-after-load 'magit (require 'borg))
+(setq-default
+ ;; Cache autoloads into a single file to speed up startup
+ straight-cache-autoloads t
+ ;; Do not check for modifications at startup, as I don't modify 3rd-party
+ ;; packages very often
+ straight-check-for-modifications '(find-when-checking))
 
-
-;; Ensure the loaddefs file
-
-(defvar zy/loaddefs-file
-  (expand-file-name "lisp/init-loaddefs.el" user-emacs-directory)
-  "The loaddefs file of ZyEmacs.")
-
-(add-to-list 'load-path (expand-file-name "lib/zyutils" user-emacs-directory))
-(autoload 'zy-mngt/collect-loaddefs "zy-mngt")
-
-(defun zy/ensure-loaddefs-file (&optional must-regen)
-  "Return the up-to-date loaddefs file.
-
-The loaddefs file is considered up-to-date if it is not older
-than the .gitmodules file.  Normally this function only
-re-generate the loaddefs file if it is not up-to-date or does not
-exist.  If optional argument MUST-REGEN is non-nil, however, it
-always re-generate the loaddefs file."
-  (let* ((gitmodules-file
-	  (expand-file-name ".gitmodules" user-emacs-directory)))
-    ;; Re-generate the loaddefs file if necessary
-    (when (or must-regen
-	      (not (file-exists-p zy/loaddefs-file))
-	      (file-newer-than-file-p gitmodules-file zy/loaddefs-file))
-      (zy-mngt/collect-loaddefs zy/loaddefs-file))
-    ;; Return the path of the loaddefs file
-    zy/loaddefs-file))
-
-(defun zy/regen-loaddefs ()
-  "Regenerate and load the loaddefs file."
-  (interactive)
-  (load (zy/ensure-loaddefs-file 'must-regen)))
-
-(zy/ensure-loaddefs-file)
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
 
 
 ;; Snippet management
@@ -335,8 +314,12 @@ the queue, until the total elapsed time exceeds
       (setq snip (pop zy/incload--queue))
       ;; Skip it if it is already loaded
       (unless (featurep snip)
-	;; Run the snippet
-	(zy/run-snip snip)
+	;; Run the snippet, and report any error occurred
+	(condition-case-unless-debug err
+	    (zy/run-snip snip)
+	  (error
+	   (message "Error running snippet: %s" snip)
+	   (pp err)))
 	;; Determine if we have to run more snippet, based on time elapsed
 	(setq continue-p
 	      (< (float-time (time-since start-time))

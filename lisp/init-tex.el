@@ -25,6 +25,11 @@
 
 (require 'init-load)
 
+
+;; TeX and LaTeX with AUCTeX
+
+(straight-use-package 'auctex)
+
 (zy/defsnip snip-tex
     (:lazyload 'tex)
   (setq-default TeX-auto-save t

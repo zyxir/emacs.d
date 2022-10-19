@@ -24,7 +24,6 @@
 ;;; Code:
 
 (require 'init-keybinding)
-(require 'init-loaddefs)
 
 
 ;; Leader edit map
@@ -36,6 +35,8 @@
 
 ;; Clipboard integration in TTY
 
+(straight-use-package 'clipetty)
+
 (unless (display-graphic-p)
   (zy/defsnip snip-tty-clipboard
       (:weight 77)
@@ -45,6 +46,8 @@
 
 
 ;; Setup Mwim
+
+(straight-use-package 'mwim)
 
 (zy/defsnip snip-mwim
     (:weight 70)
@@ -56,6 +59,8 @@
 
 
 ;; Enhance scroll experience.
+
+(straight-use-package 'beacon)
 
 (zy/defsnip snip-scroll
     (:weight 75)
@@ -84,6 +89,8 @@ ARG is the arguments passed to OLDFUN."
 
 ;; Setup Smartparens
 
+(straight-use-package 'smartparens)
+
 (zy/defsnip snip-smartparens
     (:events 'find-file :weight 0 :dependencies 'dash)
   (require 'smartparens-config)
@@ -91,6 +98,8 @@ ARG is the arguments passed to OLDFUN."
 
 
 ;; Setup Yasnippet
+
+(straight-use-package 'yasnippet)
 
 (zy/defsnip snip-yasnippet
     (:events 'find-file :weight 0)

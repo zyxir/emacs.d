@@ -22,12 +22,6 @@
 ;;; Code:
 
 (require 'init-load)
-(require 'init-loaddefs)
-
-;; Supress a compilation warning
-
-(unless (fboundp 'evil-set-command-property)
-  (defun evil-set-command-property (&rest ignored)))
 
 
 ;; Key-binding utility
@@ -175,6 +169,8 @@ KEYMAP."
 
 
 ;; Use Which-key to provide hints
+
+(straight-use-package 'which-key)
 
 (zy/defsnip snip-which-key
     (:weight 90)

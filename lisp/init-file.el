@@ -22,10 +22,11 @@
 ;;; Code:
 
 (require 'init-keybinding)
-(require 'init-loaddefs)
 
 
 ;; Advanced scratch buffers with Scratch.el
+
+(straight-use-package 'scratch)
 
 (with-eval-after-load 'scratch
   (defvar scratch-mode-alist)

@@ -24,13 +24,20 @@
 (require 'init-keybinding)
 
 
-;; Native navigation commands and extensions
+;; Consult navigation commands
 
 (zy/define-key
   '("M-g g" "M-g M-g") 'consult-goto-line
   "M-g m" 'consult-mark
   "M-g M" 'consult-global-mark
   "M-g o" 'consult-outline)
+
+
+;; Rg for advanced Ripgrep usage
+
+(straight-use-package 'rg)
+
+(zy/snip-from-feature 'rg :weight 0)
 
 
 ;; Leader search commands

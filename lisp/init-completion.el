@@ -23,10 +23,12 @@
 
 (require 'init-common)
 (require 'init-keybinding)
-(require 'init-loaddefs)
 
 
 ;; Setup minibuffer completion with Vertico
+
+(straight-use-package 'vertico)
+(straight-use-package 'marginalia)
 
 (zy/defsnip snip-vertico
     (:events 'pre-command :weight 80)
@@ -59,12 +61,16 @@ ARGS are the arguments passed."
 
 ;; Setup Orderless
 
+(straight-use-package 'orderless)
+
 (setq completion-styles '(substring orderless basic)
       completion-category-defaults nil
       completion-category-overrides '((file (styles partial-completion))))
 
 
 ;; Setup Consult
+
+(straight-use-package 'consult)
 
 (setq completion-in-region-function 'consult-completion-in-region)
 (with-eval-after-load 'consult
@@ -75,11 +81,20 @@ ARGS are the arguments passed."
 
 ;; Setup Embark
 
+(straight-use-package 'embark)
+
 (zy/define-key
   [remap tmm-menubar] 'embark-act)
 
 
 ;; Setup Corfu and its accesories for in-point completion
+
+(straight-use-package 'corfu)
+(straight-use-package 'corfu-doc)
+(straight-use-package '(corfu-terminal
+			:repo "https://codeberg.org/akib/emacs-corfu-terminal.git"))
+(straight-use-package '(corfu-doc-terminal
+			:repo "https://codeberg.org/akib/emacs-corfu-doc-terminal.git"))
 
 (zy/defsnip snip-corfu
     (:events 'after-command :weight 20)
@@ -110,9 +125,9 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
 
 (with-eval-after-load 'corfu
   ;; Enable Corfu extensions
-  (require 'corfu-indexed)
+  (require 'corfu-indexed "extensions/corfu-indexed")
   (add-hook 'corfu-mode-hook #'corfu-indexed-mode)
-  (require 'corfu-info)
+  (require 'corfu-info "extensions/corfu-info")
   ;; Enable Corfu-terminal if in terminal or WSL
   (when (or (not (display-graphic-p))
 	    (zy/wsl-p))
@@ -132,6 +147,8 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
 
 
 ;; Setup Cape for more completion-at-point functions
+
+(straight-use-package 'cape)
 
 (mapc (lambda (hook)
 	(add-hook hook

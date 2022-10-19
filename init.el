@@ -26,7 +26,9 @@
             (lambda ()
 	      (setq gc-cons-threshold normal-gc-cons-threshold
 		    gc-cons-percentage normal-gc-cons-percentage
-		    file-name-handler-alist normal-file-name-handler-alist))))
+		    file-name-handler-alist (nconc
+					     file-name-handler-alist
+					     normal-file-name-handler-alist)))))
 
 
 ;; Startup benchmarking
@@ -42,7 +44,7 @@
 
 ;; Loading
 (require 'init-load)
-(require 'init-loaddefs)
+;; (require 'init-loaddefs)
 
 ;; Core
 (require 'init-common)

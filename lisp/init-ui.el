@@ -51,6 +51,8 @@
 
 ;; Major and minor mode lighters
 
+(straight-use-package 'dim)
+
 (zy/defsnip snip-dim
     (:events 'find-file :weight 10)
   (dim-minor-names
@@ -164,6 +166,8 @@ optional argument FORCE is non-nil."
 
 
 ;; Distraction-free mode
+
+(straight-use-package 'darkroom)
 
 (zy/snip-from-feature 'darkroom :weight 0)
 

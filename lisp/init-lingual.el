@@ -53,6 +53,8 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
 
 ;; Input method
 
+(straight-use-package 'rime)
+
 (zy/snip-from-feature 'rime :weight 0 :dependencies 'dash)
 
 (setq-default
