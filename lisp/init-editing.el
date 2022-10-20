@@ -102,7 +102,8 @@ ARG is the arguments passed to OLDFUN."
 (zy/defsnip snip-smartparens
     (:events 'find-file :weight 0 :dependencies 'dash)
   (require 'smartparens-config)
-  (setq-default sp-highlight-pair-overlay nil)
+  (setq-default sp-highlight-pair-overlay nil
+		sp-autoinsert-pair nil)
   (add-hook 'prog-mode-hook 'smartparens-mode))
 
 

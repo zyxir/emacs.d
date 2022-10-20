@@ -24,8 +24,8 @@
 (require 'cl-lib)
 (require 'init-load)
 
-
-;; Set flags
+
+;;;; Set Flags
 
 (setq auto-save-default nil
       disabled-command-function nil
@@ -43,13 +43,12 @@
 
 (setq-default native-comp-async-report-warnings-errors nil)
 
-
 ;; Set everything to UTF-8.
 
 (set-language-environment "UTF-8")
 
-
-;; Inbuilt modes
+
+;;;; Inbuilt Modes
 
 (mapc (lambda (hook)
 	(add-hook hook
@@ -76,8 +75,8 @@
   (global-auto-revert-mode +1)
   (save-place-mode +1))
 
-
-;; WSL detection
+
+;;;; WSL detection
 
 (defun zy/wsl-p ()
   "Return t if ZyEmacs is running on WSL."
@@ -90,8 +89,8 @@
 				"-q" "[Mm]icrosoft"))))
     zy/wsl-p))
 
-
-;; Personalization
+
+;;;; Personalization
 
 (setq user-full-name "Eric Zhuo Chen"
       user-mail-address "zyxirchen@outlook.com")
@@ -100,7 +99,6 @@
   "ZyEmacs customization options."
   :group 'emacs)
 
-
 ;; My personal directories
 
 (defcustom zy/zybox-path nil
@@ -147,7 +145,17 @@
       (customize-save-variable 'zy/zyprojects-path
 			       maybe-zyprojects))))
 
-
+
+;;;; Install Packages
+;; This section is for package declarations that I cannot find appropriate
+;; places to put at.
+
+;; Zyutils contains utilities built upon ZyEmacs.  It is built as an package, so
+;; that autoloads can be managed by the package manager.
+(straight-use-package '(zyutils :type git
+				:repo "https://github.com/zyxir/Zyutils.el"))
+
+
 (provide 'init-common)
 
 ;;; init-common.el ends here.

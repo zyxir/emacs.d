@@ -25,8 +25,7 @@
 
 (require 'cl-lib)
 
-
-;; Bootstrap Straight
+;;;; Bootstrap Straight
 
 (setq-default
  ;; Cache autoloads into a single file to speed up startup
@@ -48,8 +47,8 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-
-;; Snippet management
+
+;;;; Snippet Management
 
 ;; In ZyEmacs, a snippet is a special type of function that takes no arguments,
 ;; and provide itself as a feature if executed.  A snippet stores its additional
@@ -160,8 +159,8 @@ of `funcall' or `require'."
 	(funcall snip)
       (require snip))))
 
-
-;; Classic lazy loader (lazyload)
+
+;;;; Classic Lazy Loader (lazyload)
 
 ;; This is the classic lazy loader based on `eval-after-load', but tweaked so
 ;; that it works better with snippets.
@@ -181,8 +180,8 @@ of `funcall' or `require'."
 	  prerequisites)
     result-sexp))
 
-
-;; Event-driven loader (edload)
+
+;;;; Event-Driven Loader (edload)
 
 ;; In ZyEmacs, the loading of any snip could be postponed till a set of specific
 ;; events.  This is called the event-driven loader.
@@ -252,8 +251,8 @@ Return EVENTS if success, or nil otherwise."
      (zy/edload--register ,snip ,events)
      ,events))
 
-
-;; Incremental loader (incload)
+
+;;;; Incremental Loader (incload)
 
 ;; In ZyEmacs, the incremental loader loads a queue of snippets incrementally.
 ;; Each time Emacs is idle for a certain time, the loader loads the next snippet
@@ -357,7 +356,7 @@ not be pushed again."
 
 (add-hook 'after-init-hook 'zy/incload-init)
 
-
+
 (provide 'init-load)
 
 ;;; init-load.el ends here

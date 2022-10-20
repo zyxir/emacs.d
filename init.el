@@ -34,7 +34,7 @@
 ;; Startup benchmarking
 
 (push (expand-file-name "lisp" user-emacs-directory) load-path)
-(require 'init-bench)
+(require 'init-benchmark)
 
 
 ;; Bootstrap config
@@ -65,7 +65,11 @@
 (require 'init-elisp)
 (require 'init-org)
 
-
+;; Provide the `zyemacs' feature so that my Zyutils package can load, as my
+;; configuration is a dependency of it.
+(require 'zyemacs)
+
+
 (provide 'init)
 
 ;;; init.el ends here
