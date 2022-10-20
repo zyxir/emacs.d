@@ -136,8 +136,6 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
   ;; Enable Corfu-doc
   (require 'corfu-doc)
   (zy/define-key :keymap 'corfu-map
-    "M-j" #'corfu-doc-scroll-up
-    "M-k" #'corfu-doc-scroll-down
     "M-d" #'corfu-doc-toggle)
   ;; Enable Corfu-doc-terminal if in terminal
   (when (or (not (display-graphic-p))

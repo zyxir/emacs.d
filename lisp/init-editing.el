@@ -58,6 +58,14 @@
     [remap move-end-of-line] 'mwim-end-of-line-or-code))
 
 
+;; Outline minor mode and its faces
+
+(straight-use-package 'outline-minor-faces)
+
+(add-hook 'prog-mode-hook 'outline-minor-mode)
+(add-hook 'outline-minor-mode-hook 'outline-minor-faces-mode)
+
+
 ;; Enhance scroll experience.
 
 (straight-use-package 'beacon)
@@ -94,6 +102,7 @@ ARG is the arguments passed to OLDFUN."
 (zy/defsnip snip-smartparens
     (:events 'find-file :weight 0 :dependencies 'dash)
   (require 'smartparens-config)
+  (setq-default sp-highlight-pair-overlay nil)
   (add-hook 'prog-mode-hook 'smartparens-mode))
 
 
