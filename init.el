@@ -6,12 +6,14 @@
 
 ;;; Code:
 
-(let ((minver "29.0"))
+;;;; Minimum Version
+
+(let ((minver "28.0"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old --- this config requires v%s or higher" minver)))
 
-
-;; Speed up startup
+
+;;;; Speed Up Startup
 
 (let ((normal-gc-cons-threshold (* 16 1024 1024))
       (normal-gc-cons-percentage gc-cons-percentage)
@@ -30,14 +32,14 @@
 					     file-name-handler-alist
 					     normal-file-name-handler-alist)))))
 
-
-;; Startup benchmarking
+
+;;;; Startup Benchmarking
 
 (push (expand-file-name "lisp" user-emacs-directory) load-path)
 (require 'init-benchmark)
 
-
-;; Bootstrap config
+
+;;;; Bootstrap Config
 
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file) (load custom-file))

@@ -40,9 +40,7 @@
  modus-themes-mixed-fonts t
  modus-themes-region '(accented no-extend)
  modus-themes-org-blocks '(gray-background)
- modus-themes-prompts '(background)
- modus-themes-syntax '(alt-syntax)
- )
+ modus-themes-prompts '(background))
 (load-theme 'modus-vivendi 'no-confirm)
 
 (zy/define-key :keymap 'zy/leader-toggle-map
