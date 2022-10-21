@@ -66,6 +66,7 @@
 
 ;; Major modes
 (require 'init-elisp)
+(require 'init-misc)
 (require 'init-org)
 
 ;; Provide the `zyemacs' feature so that my Zyutils package can load, as my

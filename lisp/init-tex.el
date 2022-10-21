@@ -51,6 +51,14 @@
 		  reftex-save-parse-info t
 		  reftex-use-multiple-selection-buffers t)))
 
+;; PDF preview with PDF-tools
+
+(zy/defsnip snip-tex-preview
+    (:lazyload 'tex)
+  (setq-default TeX-view-program-selection '((output-pdf "PDF Tools"))
+		TeX-source-correlate-method 'synctex
+		TeX-source-correlate-start-server t))
+
 
 (provide 'init-tex)
 
