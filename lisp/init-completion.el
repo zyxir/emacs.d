@@ -118,6 +118,12 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
     (corfu-mode +1)))
 (add-hook 'minibuffer-setup-hook #'zy/corfu-enable-always-in-minibuffer 1)
 
+;; Corfu in Eshell
+
+(add-hook 'eshell-mode-hook
+	  (lambda ()
+	    (setq-local corfu-auto nil)))
+
 ;; Corfu accesories
 
 (with-eval-after-load 'corfu
