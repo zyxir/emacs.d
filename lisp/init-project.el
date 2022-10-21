@@ -23,8 +23,10 @@
 
 (require 'init-common)
 (require 'init-keybinding)
+(require 'init-load)
 
-
+
+;;;; Project Detection
 ;; Detect projects in Zyprojects
 
 (when (and (boundp 'zy/zyprojects-path) zy/zyprojects-path)
@@ -34,8 +36,8 @@
     (when (fboundp 'project-remember-projects-under)
       (project-remember-projects-under zy/zyprojects-path))))
 
-
-;; Command on a switched project
+
+;;;; Inbuilt Project Features
 
 (setq-default
  project-switch-commands '((project-find-file "Find file" "f")
@@ -44,34 +46,35 @@
 			   (project-find-dir "Find directory" "d")
 			   (project-eshell "Eshell" "s")))
 
-
-;; Leader project commands
+
+;;;; Leader Project Commands
 
 (zy/define-leader-submap
     zy/leader-project-map "p" "project"
   "Keymap for project management.")
 (zy/define-key
-  :keymap 'ctl-x-map
-  "p" 'zy/leader-project-map
   :keymap 'zy/leader-project-map
-  ;; Standard project commands
+  ;; Shell command
   "!" '("Run command" . project-shell-command)
   "&" '("Run command async" . project-async-shell-command)
-  "D" '("Dired" . project-dired)
-  "F" '("Find file or ext" . project-or-external-find-file)
-  "G" '("Advanced grep" . rg-project)
-  "b" '("Switch to buffer" . consult-project-buffer)
-  "c" '("Compile" . project-compile)
-  "d" '("Find dir" . project-find-dir)
-  "e" '("Eshell" . project-eshell)
-  "f" '("Find file" . project-find-file)
-  "g" '("Consult grep" . consult-ripgrep)
-  "k" '("Kill buffers" . project-kill-buffers)
-  "m" '("Git status" . magit-project-status)
-  "p" '("Switch project" . project-switch-project)
-  "r" '("Replace regexp" . project-query-replace-regexp)
   "s" '("Shell" . project-shell)
-  "v" '("Version control" . project-vc-dir)
+  "e" '("Eshell" . project-eshell)
+  ;; Find file, buffer or directory
+  "D" '("Dired" . project-dired)
+  "d" '("Find dir" . project-find-dir)
+  "f" '("Find file" . project-find-file)
+  "F" '("Find file or ext" . project-or-external-find-file)
+  "b" '("Switch to buffer" . consult-project-buffer)
+  "k" '("Kill buffers" . project-kill-buffers)
+  ;; Grep
+  "G" '("Advanced grep" . rg-project)
+  "g" '("Consult grep" . consult-ripgrep)
+  ;; Version control
+  "v" '("Git status" . magit-project-status)
+  "V" '("Git dispatch" . magit-dispatch)
+  ;; Others
+  "p" '("Switch project" . project-switch-project)
+  "c" '("Compile" . project-compile)
   "x" '("M-x on project" . project-execute-extended-command))
 
 

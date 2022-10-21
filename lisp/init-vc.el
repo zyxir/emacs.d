@@ -1,4 +1,5 @@
-;;; init-search.el --- Searching features -*- lexical-binding: t -*-
+;;; init-vc.el --- Version control -*- lexical-binding: t -*-
+
 
 ;; This file is not part of GNU Emacs
 
@@ -15,39 +16,37 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 ;;; Commentary:
 
-;; Setup powerful searching tools.
+;; Version control settings (currently I only use Git).
 
 ;;; Code:
 
+(require 'init-load)
 (require 'init-keybinding)
 
-
-;; Navigation commands
 
-(zy/define-key :prefix "M-g"
-  '("g" "M-g") 'consult-goto-line
-  "m" 'consult-mark
-  "M" 'consult-global-mark
-  "o" 'consult-outline)
+;;;; Setup Magit
 
-
-;; Rg for advanced Ripgrep usage
+(straight-use-package 'magit)
 
-(straight-use-package 'rg)
+(zy/snip-from-feature 'magit :weight 0
+  :dependencies '(dash with-editor transient git-commit magit-section))
 
-(zy/snip-from-feature 'rg :weight 0)
+(with-eval-after-load 'magit
+  ;; Disable default Magit keys
+  (zy/define-key
+    "C-x g" nil
+    "C-x M-g" nil
+    "C-c M-g" nil))
 
-
-;; Search commands
+(zy/define-key
+  "C-c v" 'magit
+  "C-c V" 'magit-dispatch
+  "C-c M-v" 'magit-file-dispatch)
 
-(zy/define-key :prefix "M-s"
-  "l" 'consult-line
-  "g" 'consult-ripgrep
-  "G" 'rg-menu)
 
-
-(provide 'init-search)
+(provide 'init-vc)
 
-;;; init-search.el ends here.
+;;; init-vc.el ends here

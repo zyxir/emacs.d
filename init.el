@@ -60,6 +60,7 @@
 (require 'init-search)
 (require 'init-tex)
 (require 'init-ui)
+(require 'init-vc)
 
 ;; Major modes
 (require 'init-elisp)

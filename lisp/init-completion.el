@@ -103,11 +103,7 @@ ARGS are the arguments passed."
 		   corfu-auto-prefix 2
 		   corfu-echo-documentation nil)
   (zy/define-key :keymap 'corfu-map
-    "M-p" 'corfu-previous
-    "M-n" 'corfu-next
-    "M-i" 'corfu-quit
-    "C-g" 'corfu-quit
-    '("M-SPC" "M-\\") 'corfu-insert-separator))
+    "SPC" 'corfu-insert-separator))
 
 ;; Enable Corfu in the minibuffer
 

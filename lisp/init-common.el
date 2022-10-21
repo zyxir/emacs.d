@@ -152,8 +152,17 @@
 
 ;; Zyutils contains utilities built upon ZyEmacs.  It is built as an package, so
 ;; that autoloads can be managed by the package manager.
+
 (straight-use-package '(zyutils :type git
 				:repo "https://github.com/zyxir/Zyutils.el"))
+
+(zy/snip-from-feature 'zyutils :weight 0)
+
+;; Crux contains a lot of useful commands.
+
+(straight-use-package 'crux)
+
+(zy/snip-from-feature 'crux :weight 0)
 
 
 (provide 'init-common)

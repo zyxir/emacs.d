@@ -131,8 +131,8 @@ KEYMAP via `define-key'.  If KEYMAP is a list of keymaps, call
     (keymap key &optional desc docstring)
   "Define KEYMAP as a sub-keymap of the leader keys.
 
-KEYMAP is a symbol name.  A new sparse keymap is stored as
-KEYMAP's function definition and its value.
+KEYMAP is a unquoted symbol name.  A new sparse keymap is stored
+as KEYMAP's function definition and its value.
 
 KEYMAP is bound to KEY with any of the leader key prefix.  KEY
 can be a key, or a list of keys.

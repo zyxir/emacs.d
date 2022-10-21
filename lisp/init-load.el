@@ -265,7 +265,7 @@ Return EVENTS if success, or nil otherwise."
 (defconst zy/incload--idle 1.0
   "Load next snippet after Emacs is idle for this many time.")
 
-(defconst zy/incload--lag 0.2
+(defconst zy/incload--lag 0.1
   "Each load action takes at least this amount of time.")
 
 (defvar zy/incload--queue nil
