@@ -31,7 +31,7 @@
 (setq-default
  project-switch-commands '((project-find-file "Find file" "f")
 			   (consult-ripgrep "Ripgrep" "g")
-			   (magit-project-status "Magit" "m")
+			   (magit-project-status "Magit" "v")
 			   (project-find-dir "Find directory" "d")
 			   (project-eshell "Eshell" "s")))
 
