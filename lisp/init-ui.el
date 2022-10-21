@@ -68,7 +68,7 @@
      (yas-minor-mode "" yasnippet))))
 
 
-;;; Setup Fonts
+;;;; Setup Fonts
 
 ;; Font setter for other character sets
 
