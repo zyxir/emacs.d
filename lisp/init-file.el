@@ -24,22 +24,6 @@
 (require 'init-keybinding)
 
 
-;;;; Scratch Buffer
-
-;; Scratch.el provides scratch buffers for every modes
-
-(straight-use-package 'scratch)
-
-(with-eval-after-load 'scratch
-  (defvar scratch-mode-alist)
-  (dolist (pair '((fundamental-mode . lisp-interaction-mode)
-		  (emacs-lisp-mode . lisp-interaction-mode)))
-    (add-to-list 'scratch-mode-alist pair)))
-
-(zy/define-key :prefix zy/leader-keys
-  ";" 'scratch)
-
-
 ;;;; Switching Buffer
 
 (zy/define-key
@@ -65,6 +49,26 @@
   "s" '("save file" . save-buffer)
   "S" '("save multiple files" . save-some-buffers)
   "w" '("save as" . write-file))
+
+
+;;;; Scratch Buffer
+
+;; Omni-scratch provides advanced scratch buffers
+
+(straight-use-package 'omni-scratch)
+
+(zy/define-leader-submap
+    zy/leader-scratch-map ";" "scratch"
+  "Keymap for scratch-related commands.")
+
+(setq-default omni-scratch-default-mode 'lisp-interaction-mode)
+
+(zy/define-key :keymap 'zy/leader-scratch-map
+  ";" 'omni-scratch
+  "m" 'omni-scratch-major
+  "b" 'omni-scratch-buffer
+  "j" 'omni-scratch-goto-latest
+  "q" 'omni-scratch-quit)
 
 
 (provide 'init-file)

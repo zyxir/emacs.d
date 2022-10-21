@@ -12,7 +12,7 @@
 (setq default-frame-alist '(;; Maximize Emacs by default
 			    (fullscreen . maximized)
 			    ;; Default font for GUI
-			    (font . "Fira Code-14")
+			    (font . "Fira Code-13")
 			    ;; Disable menu bar.
                             (menu-bar-lines . nil)
                             ;; Disable scroll bars
