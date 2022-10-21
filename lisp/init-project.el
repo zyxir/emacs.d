@@ -37,10 +37,16 @@
 
 
 ;;;; Leader Project Commands
+;; Tweaks around the original project commands
 
-(zy/define-leader-submap
-    zy/leader-project-map "p" "project"
-  "Keymap for project management.")
+(defvar zy/leader-project-map project-prefix-map "Keymap for project management.")
+(fset 'zy/leader-project-map project-prefix-map)
+(zy/define-key
+  :prefix zy/leader-keys
+  "p" 'project-prefix-map
+  "4 p" 'project-other-window-command
+  "5 p" 'project-other-frame-command)
+
 (zy/define-key
   :keymap 'zy/leader-project-map
   ;; Shell command
