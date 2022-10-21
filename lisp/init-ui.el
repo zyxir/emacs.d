@@ -31,8 +31,8 @@
  modus-themes-italic-constructs nil
  modus-themes-lang-checkers '(background)
  modus-themes-bold-constructs t
- modus-themes-headings '((0 . (background rainbow 1.3))
-			 (1 . (overline rainbow 1.3))
+ modus-themes-headings '((0 . (background rainbow 1.1))
+			 (1 . (overline rainbow 1.2))
 			 (2 . (overline rainbow 1.2))
 			 (3 . (overline 1.1))
 			 (t . (monochrome)))
@@ -57,6 +57,8 @@
    '((beacon-mode "" beacon)
      (clipetty-mode "" clipetty)
      (eldoc-mode "" eldoc)
+     (org-num-mode "" org-num)
+     (outline-minor-mode "" outline)
      (page-break-lines-mode "" page-break-lines)
      (smartparens-mode "" smartparens)
      (subword-mode "" subword)
@@ -147,6 +149,10 @@ optional argument FORCE is non-nil."
 			      (zy/pick-font "Sarasa Mono CL"
 					    "Microsoft YaHei"
 					    "monospace"))
+    ;; Fixed-pitch face
+    (set-face-attribute 'fixed-pitch nil
+			:font "Fira Code"
+			:height 'unspecified)
     ;; ZyEmacs sans-serif face
     (defface zy-sans nil "Sans-serif font face."
       :group 'basic-faces)

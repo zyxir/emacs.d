@@ -26,17 +26,6 @@
 (require 'init-load)
 
 
-;;;; Project Detection
-;; Detect projects in Zyprojects
-
-(when (and (boundp 'zy/zyprojects-path) zy/zyprojects-path)
-  (zy/defsnip snip-zyprojects
-      (:weight 10)
-    (require 'project)
-    (when (fboundp 'project-remember-projects-under)
-      (project-remember-projects-under zy/zyprojects-path))))
-
-
 ;;;; Inbuilt Project Features
 
 (setq-default
