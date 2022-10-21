@@ -23,8 +23,10 @@
 
 (require 'init-keybinding)
 
-
-;; Advanced scratch buffers with Scratch.el
+
+;;;; Scratch Buffer
+
+;; Scratch.el provides scratch buffers for every modes
 
 (straight-use-package 'scratch)
 
@@ -34,35 +36,37 @@
 		  (emacs-lisp-mode . lisp-interaction-mode)))
     (add-to-list 'scratch-mode-alist pair)))
 
-
-;; Advanced buffer switching
+(zy/define-key :prefix zy/leader-keys
+  ";" 'scratch)
+
+
+;;;; Switching Buffer
 
 (zy/define-key
   "C-x b" 'consult-buffer
   :prefix zy/leader-keys
-  "b" '("Switch buffer" . consult-buffer))
+  "b" 'consult-buffer)
 
-
-;; Leader file commands
+
+;;;; Leader File Commands
 
 (zy/define-leader-submap
     zy/leader-file-map "f" "file"
   "Keymap for file and buffer management.")
+
 (zy/define-key :keymap 'zy/leader-file-map
   ;; Jump across files
-  "b" '("Bookmarks" . consult-bookmark)
-  "f" '("Find file" . find-file)
-  "r" '("Recent file" . consult-recent-file)
+  "b" '("bookmarks" . consult-bookmark)
+  "f" '("find file" . find-file)
+  "r" '("recent file" . consult-recent-file)
   ;; File operations
-  "d" '("Delete current file" . crux-delete-file-and-buffer)
-  "R" '("Rename current file" . crux-rename-file-and-buffer)
-  "s" '("Save current file" . save-buffer)
-  "S" '("Save multiple files" . save-some-buffers)
-  "w" '("Save as" . write-file)
-  ;; Special buffers
-  ";" '("Scratch" . scratch))
+  "d" '("delete current file" . crux-delete-file-and-buffer)
+  "R" '("rename current file" . crux-rename-file-and-buffer)
+  "s" '("save file" . save-buffer)
+  "S" '("save multiple files" . save-some-buffers)
+  "w" '("save as" . write-file))
 
-
+
 (provide 'init-file)
 
 ;;; init-file.el ends here.

@@ -24,15 +24,15 @@
 (require 'init-editing)
 (require 'init-keybinding)
 
-
-;; Handy commands
+
+;;;; Global Emacs Lisp Commands
 
 (zy/define-key
   :keymap 'zy/leader-edit-map
   "x" '("Expand macro" . emacs-lisp-macroexpand)
   "R" '("Eval and replace" . crux-eval-and-replace))
 
-
+
 (provide 'init-elisp)
 
 ;;; init-elisp.el ends here

@@ -23,8 +23,7 @@
 
 (require 'init-keybinding)
 
-
-;; Navigation commands
+;;;; Navigation Commands
 
 (zy/define-key :prefix "M-g"
   '("g" "M-g") 'consult-goto-line
@@ -32,22 +31,20 @@
   "M" 'consult-global-mark
   "o" 'consult-outline)
 
-
+
+;;;; Search Commands
 ;; Rg for advanced Ripgrep usage
 
 (straight-use-package 'rg)
 
 (zy/snip-from-feature 'rg :weight 0)
 
-
-;; Search commands
-
 (zy/define-key :prefix "M-s"
   "l" 'consult-line
   "g" 'consult-ripgrep
   "G" 'rg-menu)
 
-
+
 (provide 'init-search)
 
 ;;; init-search.el ends here.

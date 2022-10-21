@@ -24,8 +24,8 @@
 (require 'init-keybinding)
 (require 'init-load)
 
-
-;; Setup theme
+
+;;;; Setup Modus Themes
 
 (setq-default
  modus-themes-italic-constructs nil
@@ -48,8 +48,8 @@
 (zy/define-key :keymap 'zy/leader-toggle-map
   "t" '("Toggle light/dark" . modus-themes-toggle))
 
-
-;; Major and minor mode lighters
+
+;;;; Mode Lighters
 
 (straight-use-package 'dim)
 
@@ -65,7 +65,9 @@
      (which-key-mode "" which-key)
      (yas-minor-mode "" yasnippet))))
 
-
+
+;;; Setup Fonts
+
 ;; Font setter for other character sets
 
 (defvar zy/-fontset-cnt 0
@@ -127,7 +129,6 @@ Each element of FONTS is a string representing a frame."
 	  fonts)
     (reverse or-sexp)))
 
-
 ;; Font faces setup
 
 (defvar zy/setup-font-faces nil
@@ -164,8 +165,8 @@ optional argument FORCE is non-nil."
   (add-to-list 'after-make-frame-functions
 	       #'zy/setup-font-faces))
 
-
-;; Distraction-free mode
+
+;;;; Distraction-Free Mode
 
 (straight-use-package 'darkroom)
 
@@ -181,7 +182,7 @@ optional argument FORCE is non-nil."
 	      (display-line-numbers-mode 'toggle)
 	      (hl-line-mode 'toggle))))
 
-
+
 (provide 'init-ui)
 
 ;;; init-ui.el ends here.

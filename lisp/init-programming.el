@@ -25,8 +25,8 @@
 (require 'init-keybinding)
 (require 'init-load)
 
-
-;; Setup Flycheck for syntax checking
+
+;;;; Flycheck
 
 (straight-use-package 'flycheck)
 
@@ -38,7 +38,7 @@
     "M-p" 'flycheck-previous-error
     "M-n" 'flycheck-next-error))
 
-
+
 (provide 'init-programming)
 
 ;;; init-programming.el ends here

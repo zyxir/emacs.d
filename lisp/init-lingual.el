@@ -25,8 +25,8 @@
 
 (require 'init-keybinding)
 
-
-;; Insersion of special symbols
+
+;;;; Insersion of Special Symbols
 
 (defmacro zy/define-inserters (&rest args)
   "Define multiple character inserters.
@@ -50,8 +50,8 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
   ;; Zero width space
   "s" #x200b)
 
-
-;; Input method
+
+;;;; Input Method
 
 (straight-use-package 'rime)
 
@@ -78,7 +78,7 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
 
     (add-hook 'post-command-hook 'zy/set-cursor-color-on-im)))
 
-
+
 (provide 'init-lingual)
 
 ;;; init-lingual.el ends here

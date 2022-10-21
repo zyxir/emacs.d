@@ -25,8 +25,8 @@
 
 (require 'init-load)
 
-
-;; TeX and LaTeX with AUCTeX
+
+;;;; TeX and LaTeX with AUCTeX
 
 (straight-use-package 'auctex)
 
@@ -51,7 +51,7 @@
 		  reftex-save-parse-info t
 		  reftex-use-multiple-selection-buffers t)))
 
-
+
 (provide 'init-tex)
 
 ;;; init-tex.el ends here

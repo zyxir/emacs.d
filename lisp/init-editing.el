@@ -25,14 +25,15 @@
 
 (require 'init-keybinding)
 
-
-;; Leader edit map
+
+;;;; Leader Edit Map
 
 (zy/define-leader-submap
     zy/leader-edit-map "e" "edit"
   "Keymap for a set of editing utilities.")
 
-
+
+;;;; Clipboard
 ;; Clipboard integration in TTY
 
 (straight-use-package 'clipetty)
@@ -44,8 +45,8 @@
     (require 'clipetty)
     (clipetty-mode 1)))
 
-
-;; Setup Mwim
+
+;;;; Mwim
 
 (straight-use-package 'mwim)
 
@@ -57,16 +58,16 @@
     [remap move-beginning-of-line] 'mwim-beginning-of-code-or-line
     [remap move-end-of-line] 'mwim-end-of-line-or-code))
 
-
-;; Outline minor mode and its faces
+
+;;;; Outline
 
 (straight-use-package 'outline-minor-faces)
 
 (add-hook 'prog-mode-hook 'outline-minor-mode)
 (add-hook 'outline-minor-mode-hook 'outline-minor-faces-mode)
 
-
-;; Enhance scroll experience.
+
+;;;; Scrolling
 
 (straight-use-package 'beacon)
 
@@ -94,8 +95,8 @@ ARG is the arguments passed to OLDFUN."
   (require 'beacon)
   (beacon-mode 1))
 
-
-;; Setup Smartparens
+
+;;;; Parentheses
 
 (straight-use-package 'smartparens)
 
@@ -106,8 +107,8 @@ ARG is the arguments passed to OLDFUN."
 		sp-autoinsert-pair nil)
   (add-hook 'prog-mode-hook 'smartparens-mode))
 
-
-;; Setup Yasnippet
+
+;;;; Yasnippet
 
 (straight-use-package 'yasnippet)
 (straight-use-package 'yasnippet-snippets)
@@ -132,7 +133,7 @@ ARG is the arguments passed to OLDFUN."
     "s" '("Insert snippet" . consult-yasnippet)
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
 
-
+
 (provide 'init-editing)
 
 ;;; init-editing.el ends here

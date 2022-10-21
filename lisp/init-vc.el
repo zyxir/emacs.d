@@ -34,13 +34,6 @@
 (zy/snip-from-feature 'magit :weight 0
   :dependencies '(dash with-editor transient git-commit magit-section))
 
-(with-eval-after-load 'magit
-  ;; Disable default Magit keys
-  (zy/define-key
-    "C-x g" nil
-    "C-x M-g" nil
-    "C-c M-g" nil))
-
 (zy/define-key
   "C-c v" 'magit
   "C-c V" 'magit-dispatch

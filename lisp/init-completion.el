@@ -24,7 +24,8 @@
 (require 'init-common)
 (require 'init-keybinding)
 
-
+
+;;;; Vertico
 ;; Setup minibuffer completion with Vertico
 
 (straight-use-package 'vertico)
@@ -58,7 +59,9 @@ ARGS are the arguments passed."
         (cdr args)))
 (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-
+
+;;;; Orderless, Consult, Embark
+
 ;; Setup Orderless
 
 (straight-use-package 'orderless)
@@ -67,7 +70,6 @@ ARGS are the arguments passed."
       completion-category-defaults nil
       completion-category-overrides '((file (styles partial-completion))))
 
-
 ;; Setup Consult
 
 (straight-use-package 'consult)
@@ -78,7 +80,6 @@ ARGS are the arguments passed."
     (consult-customize consult-recent-file
 		       :preview-key (kbd "M-."))))
 
-
 ;; Setup Embark
 
 (straight-use-package 'embark)
@@ -86,8 +87,8 @@ ARGS are the arguments passed."
 (zy/define-key
   [remap tmm-menubar] 'embark-act)
 
-
-;; Setup Corfu and its accesories for in-point completion
+
+;;;; Corfu
 
 (straight-use-package 'corfu)
 (straight-use-package 'corfu-doc)
@@ -103,7 +104,7 @@ ARGS are the arguments passed."
 		   corfu-auto-prefix 2
 		   corfu-echo-documentation nil)
   (zy/define-key :keymap 'corfu-map
-    "SPC" 'corfu-insert-separator))
+    "M-SPC" 'corfu-insert-separator))
 
 ;; Enable Corfu in the minibuffer
 
@@ -139,7 +140,7 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
     (require 'corfu-doc-terminal)
     (corfu-doc-terminal-mode +1)))
 
-
+
 ;; Setup Cape for more completion-at-point functions
 
 (straight-use-package 'cape)
@@ -166,7 +167,7 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
 	    (add-to-list 'completion-at-point-functions
 			 #'cape-tex)))
 
-
+
 (provide 'init-completion)
 
 ;;; init-completion.el ends here.

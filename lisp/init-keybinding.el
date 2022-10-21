@@ -23,8 +23,8 @@
 
 (require 'init-load)
 
-
-;; Key-binding utility
+
+;;;; Key-Binding Utility
 
 (defun zy/-normalize-key (prefix key)
   "Normalize KEY and PREFIX to vectors and combine them.
@@ -108,15 +108,15 @@ KEYMAP via `define-key'.  If KEYMAP is a list of keymaps, call
 	 current-keymap))))
     t))
 
-
-;; Default key tweaks
+
+;;;; Default Key Tweaks
 
 (zy/define-key
   [remap just-one-space] 'cycle-spacing
   [remap delete-horizontal-space] 'cycle-spacing)
 
-
-;; Leader key setup
+
+;;;; Leader Key Setup
 
 (defconst zy/leader-keys '("C-c" "C-z" "M-m")
   "Leader keys of ZyEmacs.")
@@ -147,8 +147,8 @@ KEYMAP."
      (defvar ,keymap map ,docstring)
      (zy/define-key :prefix zy/leader-keys ,key ',(cons desc keymap))))
 
-
-;; Leader manage map
+
+;;;; Leader Manage Map
 
 (zy/define-leader-submap
     zy/leader-manage-map "m" "manage"
@@ -160,15 +160,17 @@ KEYMAP."
   "t" '("Test config" . zy-mngt/test-config)
   "l" '("Regen loaddefs" . zy/regen-loaddefs))
 
-
-;; leader toggle map
+
+;;;; Leader Toggle Map
 
 (zy/define-leader-submap
     zy/leader-toggle-map "t" "toggle"
   "Keymap for all kinds of toggles.")
 
-
-;; Use Which-key to provide hints
+
+;;; Which-Key
+
+;; Provide key hints via Which-key
 
 (straight-use-package 'which-key)
 
@@ -177,7 +179,7 @@ KEYMAP."
   (require 'which-key)
   (which-key-mode))
 
-
+
 (provide 'init-keybinding)
 
 ;;; init-keybinding.el ends here.

@@ -27,27 +27,25 @@
 (require 'init-keybinding)
 (require 'init-load)
 
-
+
+;;;; Basic Org
+
 ;; Customized Org paths when Zybox is available
-
-(when zy/zybox-path
-  (setq-default
-   org-directory (expand-file-name "org" zy/zybox-path)
-   org-journal-dir (expand-file-name "org-journal" org-directory)))
-
-
-;; Org
-(straight-use-package 'org-appear)
 
 (zy/snip-from-feature 'org :weight 0
   :dependencies '(calendar ol org-table org-list org-src ob org-agenda))
 
+(when zy/zybox-path
+  (setq-default
+   org-directory (expand-file-name "org" zy/zybox-path)
+   org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path)))
+
 (setq-default org-startup-truncated nil
-		 org-startup-numerated t)
+	      org-startup-numerated t)
 
 (zy/define-key :prefix zy/leader-keys
-  "a" '("Agenda" . org-agenda)
-  "c" '("Capture" . org-capture))
+  "a" 'org-agenda
+  "c" 'org-capture)
 
 (with-eval-after-load 'org
   (setq-default
@@ -59,20 +57,21 @@
   (zy/define-key :keymap 'org-mode-map
     "M-g h" 'consult-org-heading))
 
+(straight-use-package 'org-appear)
+
 (add-hook 'org-mode-hook
 	  (lambda ()
 	    (org-appear-mode +1)
 	    (visual-line-mode +1)))
 
-
 ;; Org-attach
 
 (with-eval-after-load 'org-attach
   (setq-default
    org-attach-id-dir "_org-att"))
 
-
-;; Org-journal
+
+;;;; Org-Journal
 
 (straight-use-package 'org-journal)
 
@@ -84,8 +83,8 @@
 
 (zy/define-key
   :prefix zy/leader-keys
-  "J" '("Calendar" . calendar)
-  "j" '("Journal" . org-journal-new-entry))
+  "J" 'calendar
+  "j" '("journal" . org-journal-new-entry))
 
 (with-eval-after-load 'org-journal
   (setq-default
@@ -98,8 +97,8 @@
    org-journal-time-prefix "\n* "
    org-journal-file-header ""))
 
-
-;; GTD: getting things done
+
+;;;; GTD: Getting Things Done
 
 (zy/defsnip snip-gtd
     (:weight 0 :dependencies 'org)
@@ -206,7 +205,7 @@
      project--list)
     (delete-dups org-agenda-files)))
 
-
+
 (provide 'init-org)
 
 ;;; init-org.el ends here
