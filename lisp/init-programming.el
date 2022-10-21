@@ -39,6 +39,11 @@
     "M-n" 'flycheck-next-error))
 
 
+;;;; Eglot
+
+(straight-use-package 'eglot)
+
+
 (provide 'init-programming)
 
 ;;; init-programming.el ends here
