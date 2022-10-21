@@ -148,19 +148,6 @@ KEYMAP."
      (zy/define-key :prefix zy/leader-keys ,key ',(cons desc keymap))))
 
 
-;;;; Leader Manage Map
-
-(zy/define-leader-submap
-    zy/leader-manage-map "m" "manage"
-  "Keymap for manage the configuration.")
-(zy/define-key
- :keymap 'zy/leader-manage-map
-  "b" '("Show benchmark result" . zy-mngt/show-benchmark-result)
-  "r" '("Recompile config" . zy-mngt/recompile-config)
-  "t" '("Test config" . zy-mngt/test-config)
-  "l" '("Regen loaddefs" . zy/regen-loaddefs))
-
-
 ;;;; Leader Toggle Map
 
 (zy/define-leader-submap
