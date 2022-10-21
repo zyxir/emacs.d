@@ -40,8 +40,7 @@
    org-directory (expand-file-name "org" zy/zybox-path)
    org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path)))
 
-(setq-default org-startup-truncated nil
-	      org-startup-numerated t)
+(setq-default org-startup-truncated nil)
 
 (zy/define-key :prefix zy/leader-keys
   "a" 'org-agenda

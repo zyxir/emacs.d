@@ -59,7 +59,6 @@
    '((beacon-mode "" beacon)
      (clipetty-mode "" clipetty)
      (eldoc-mode "" eldoc)
-     (org-num-mode "" org-num)
      (outline-minor-mode "" outline)
      (page-break-lines-mode "" page-break-lines)
      (smartparens-mode "" smartparens)
