@@ -37,10 +37,12 @@
 			 (3 . (overline 1.1))
 			 (t . (monochrome)))
  modus-themes-hl-line '(intense)
+ modus-themes-markup '(background intense)
  modus-themes-mixed-fonts t
  modus-themes-region '(accented no-extend)
  modus-themes-org-blocks '(gray-background)
  modus-themes-prompts '(background))
+
 (load-theme 'modus-vivendi 'no-confirm)
 
 (zy/define-key :keymap 'zy/leader-toggle-map

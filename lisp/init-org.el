@@ -61,7 +61,8 @@
 
 (add-hook 'org-mode-hook
 	  (lambda ()
-	    (org-appear-mode +1)
+	    (when (fboundp 'org-appear-mode)
+	      (org-appear-mode +1))
 	    (visual-line-mode +1)))
 
 ;; Org-attach
@@ -69,6 +70,145 @@
 (with-eval-after-load 'org-attach
   (setq-default
    org-attach-id-dir "_org-att"))
+
+
+;;;; Org-Export to LaTeX
+
+(zy/defsnip snip-ox-latex
+    (:dependencies 'org :lazyload 'ox-latex :weight 0)
+  (require 'ox)
+
+  ;; Try to obtain Zyxir's LaTeX style file
+
+  (defvar zy/zylatex-file
+    (file-truename
+     (expand-file-name "etc/zylatex.sty" user-emacs-directory))
+    "Default LaTeX style file to use.")
+
+  (defvar zy/zylatex-available-p nil
+    "If `zy/zylatex-file' is available.")
+
+  (defun zy/update-zylatex-file ()
+    "Update the `zy/zylatex-file' from GitHub or Zybox."
+    (interactive)
+    (let (ego-found
+          std-latex-found
+          possible-paths
+          path-to-examine
+	  project-name)
+      ;; Try to find my 'ego' or 'std-latex' repo via project.el.
+      (require 'project)
+      (defvar project--list)
+      (when (and (equal project--list 'unset)
+		 (fboundp 'project--read-project-list))
+        (project--read-project-list))
+      (setq possible-paths project--list)
+      (while possible-paths
+        (setq path-to-examine (caar possible-paths)
+              project-name (file-name-nondirectory
+                            (directory-file-name path-to-examine)))
+        (cond
+         ((equal project-name "std-latex")
+          (setq std-latex-found path-to-examine
+                possible-paths nil))
+         ((equal project-name "ego")
+          (setq ego-found path-to-examine
+                possible-paths nil))
+         (t (setq possible-paths (cdr possible-paths)))))
+      ;; When something is found, copy zylatex.sty from it, otherwise
+      ;; download zylatex.sty from GitHub.
+      (cond
+       (ego-found
+        (copy-file (expand-file-name
+                    "std/std-latex/zylatex.sty" ego-found)
+                   zy/zylatex-file 'ok-if-already-exists 'keep-time
+                   'preserve-uid-gid 'preserve-permissions)
+        (message "\"zylatex.sty\" copied from project \"ego\""))
+       (std-latex-found
+        (copy-file (expand-file-name
+                    "zylatex.sty" std-latex-found)
+                   zy/zylatex-file 'ok-if-already-exists 'keep-time
+                   'preserve-uid-gid 'preserve-permissions)
+        (message "\"zylatex.sty\" copied from project \"std-latex\""))
+       (t
+        (url-copy-file
+         "https://raw.githubusercontent.com/zyxir/std-latex/main/zylatex.sty"
+         zy/zylatex-file 'ok-if-already-exists)
+        (message "\"zylatex.sty\" downloaded.")))))
+
+  (if (file-exists-p zy/zylatex-file)
+      (setq zy/zylatex-available-p t)
+    (condition-case nil
+	(zy/update-zylatex-file)
+      (error (message "Error fetching \"zylatex.sty\"")))
+    (setq zy/zylatex-available-p (file-exists-p zy/zylatex-file)))
+
+  ;; Configure Org to LaTeX export
+
+  (setq-default org-latex-compiler "xelatex"
+		org-latex-default-class "article"
+		;; Delete ".tex" file as well.
+		org-latex-logfiles-extensions
+		'("aux" "bcf" "blg" "fdb_latexmk" "fls" "figlist" "idx" "log"
+		  "nav" "out" "ptc" "run.xml" "snm" "tex" "toc" "vrb" "xdv"))
+
+  (when zy/zylatex-available-p
+    (setq-default org-latex-classes
+		  `(;; 自用導出配置，用於個人日誌、散文等。
+		    ("article"
+		     ,(format "\
+\\documentclass[12pt]{article}
+\\usepackage[]{%s}
+[PACKAGES]
+[EXTRA]" (file-name-sans-extension zy/zylatex-file))
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+		    (;; 適合手機屏幕閱讀的配置。
+		     "article-phone"
+		     ,(format "\
+\\documentclass[12pt]{article}
+\\usepackage[layout=phone]{%s}
+[PACKAGES]
+[EXTRA]" (file-name-sans-extension zy/zylatex-file))
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		     ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+		    (;; 適用於簡體中文的配置。
+		     "article-sc"
+		     ,(format "\
+\\documentclass[12pt]{article}
+\\usepackage[style=tc, fontset=ctex]{%s}
+[PACKAGES]
+[EXTRA]" (file-name-sans-extension zy/zylatex-file))
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		     ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))))
+
+  ;; Export smartphone-friendly PDF
+
+  (defun zy/org-export-to-pdf-phone
+      (&optional async subtreep visible-only body-only ext-plist)
+    "Export current buffer to smartphone-friendly PDF.
+
+The function works like `org-latex-export-to-pdf', except that
+`org-latex-default-class' is set to \"article-phone\"."
+    (dlet ((org-latex-default-class "article-phone"))
+      (org-latex-export-to-pdf async subtreep visible-only
+                               body-only ext-plist)))
+
+  (org-export-define-derived-backend
+      'latex-pdf-phone 'latex
+    :menu-entry '(?l
+		  "Export to LaTeX"
+		  ((?j "As PDF file (phone-friendly)"
+		       zy/org-export-to-pdf-phone)))))
 
 
 ;;;; Org-Journal
