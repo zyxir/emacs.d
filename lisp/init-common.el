@@ -72,6 +72,7 @@
 
 (zy/defsnip snip-file-inbuilt-modes
     (:events 'find-file :weight 0)
+  (setq-default global-auto-revert-ignore-modes '(pdf-view-mode))
   (global-auto-revert-mode +1)
   (save-place-mode +1))
 

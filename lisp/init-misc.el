@@ -25,6 +25,11 @@
 
 (require 'init-load)
 
+;;;; Markdown
+
+(straight-use-package 'markdown-mode)
+
+
 ;;;; PDF
 
 (straight-use-package 'pdf-tools)
@@ -33,8 +38,7 @@
 
 (add-hook 'pdf-view-mode-hook
 	  (lambda ()
-	    (display-line-numbers-mode -1)
-	    (auto-revert-mode -1)))
+	    (display-line-numbers-mode -1)))
 
 
 (provide 'init-misc)
