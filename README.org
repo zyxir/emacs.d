@@ -2,16 +2,16 @@
 * ZyEmacs
 #+html: </div>
 
-This is my Emacs configuration focuses on being
+Lightweight Emacs configuration for my daily need.
 
-- *Minimal*. I practise [[https://en.wikipedia.org/wiki/Minimalism][minimalism]] in my daily life, as well as in Emacs.
-- *Manageable*. Advanced approaches are used to minimize the cost of managing the configuration.
-- *Functional*. This configuration satisfies most of my daily needs.
+- *Supported Emacs version*: Emacs 28 or higher.
+- *Supported operation systems*:
+  - Windows (with MSYS2).
+  - WSL (Windows subsystem for Linux), Ubuntu in my case.
+  - Linux, Arch Linux in my case.
 
-** Links
+** Installation
 
-This configuration is inspired by:
-
-- [[https://github.com/nowislewis/nowisemacs][Nowisemacs]]
-- [[https://config.daviwil.com/emacs][David Wilson's Emacs Configuration]]
-- [[https://github.com/redguardtoo/emacs.d][redguardtoo/emacs.d]]
+Clone this repository to ~~/.emacs.d~, and install the font ~Fira Code~.  Upon
+starting up Emacs for the first time, third-party packages will be automatically
+installed.
