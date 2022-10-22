@@ -30,10 +30,15 @@
 
 (straight-use-package 'flycheck)
 
+;; Only enable Flycheck for prog-modes and tex-mode
+(mapc (lambda (hook)
+	(add-hook hook 'flycheck-mode))
+      '(prog-mode-hook tex-mode-hook))
+
 (zy/defsnip snip-flycheck
-    (:events 'find-file :weight 0)
+    (:lazyload 'flycheck :events 'find-file :weight 0)
   (setq-default flycheck-emacs-lisp-load-path 'inherit)
-  (global-flycheck-mode +1)
+  (require 'flycheck)
   (zy/define-key :keymap 'flycheck-mode-map
     "M-p" 'flycheck-previous-error
     "M-n" 'flycheck-next-error))

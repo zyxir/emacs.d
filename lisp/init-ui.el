@@ -32,7 +32,7 @@
  modus-themes-lang-checkers '(background)
  modus-themes-bold-constructs t
  modus-themes-headings '((0 . (background rainbow 1.1))
-			 (1 . (overline rainbow 1.2))
+			 (1 . (overline rainbow 1.3))
 			 (2 . (overline rainbow 1.2))
 			 (3 . (overline 1.1))
 			 (t . (monochrome)))
