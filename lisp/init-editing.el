@@ -39,24 +39,22 @@
 (straight-use-package 'clipetty)
 
 (unless (display-graphic-p)
-  (zy/defsnip snip-tty-clipboard
-      (:weight 77)
-    "Enable clipboard in TTY."
+  (zy/defsnip 'snip-tty-clipboard
     (require 'clipetty)
-    (clipetty-mode 1)))
+    (clipetty-mode 1))
+  (zy/incload-register '(snip-tty-clipboard nil 77)))
 
 
 ;;;; Mwim
 
 (straight-use-package 'mwim)
 
-(zy/defsnip snip-mwim
-    (:weight 70)
-  "Mwim is for move what I mean."
+(zy/defsnip 'snip-mwim
   (require 'mwim)
   (zy/define-key
-    [remap move-beginning-of-line] 'mwim-beginning-of-code-or-line
-    [remap move-end-of-line] 'mwim-end-of-line-or-code))
+    [remap move-beginning-of-line] 'mwim-beginning-of-code-or-line))
+
+(zy/incload-register '(snip-mwim nil 70))
 
 
 ;;;; Outline
@@ -73,12 +71,7 @@
 
 (straight-use-package 'beacon)
 
-(zy/defsnip snip-scroll
-    (:weight 75)
-  "Enhance scroll experience.
-
-Scroll only 0.618 page with C-v and M-v, and highlight the cursor
-with a beam after each scroll, via the package Beacon."
+(zy/defsnip 'snip-scroll
   ;; Redefine "near full screen" for scroll commands
 
   (setq scroll-error-top-bottom t)
@@ -95,19 +88,27 @@ ARG is the arguments passed to OLDFUN."
   ;; Highlight the cursor with Beacon after each scroll
 
   (require 'beacon)
-  (beacon-mode 1))
+  (beacon-mode 1)
+
+  ;; Enable pixel scroll if available
+  (when (fboundp 'pixel-scroll-precision-mode)
+    (pixel-scroll-precision-mode)))
+
+(zy/incload-register '(snip-scroll nil 75))
 
 
 ;;;; Parentheses
 
 (straight-use-package 'smartparens)
 
-(zy/defsnip snip-smartparens
-    (:events 'find-file :weight 0 :dependencies 'dash)
+(zy/defsnip 'snip-smartparens
   (require 'smartparens-config)
   (setq-default sp-highlight-pair-overlay nil
-		sp-autoinsert-pair nil)
+		sp-autoinsert-pair t)
   (add-hook 'prog-mode-hook 'smartparens-mode))
+
+(zy/edload-register 'snip-smartparens 'find-file)
+(zy/incload-register 'dash 'snip-smartparens)
 
 
 ;;;; Yasnippet
@@ -116,8 +117,7 @@ ARG is the arguments passed to OLDFUN."
 (straight-use-package 'yasnippet-snippets)
 (straight-use-package 'consult-yasnippet)
 
-(zy/defsnip snip-yasnippet
-    (:events 'find-file :weight 0)
+(zy/defsnip 'snip-yasnippet
   (require 'yasnippet)
   (require 'yasnippet-snippets)
   (setq-default yas-snippet-dirs
@@ -134,6 +134,9 @@ ARG is the arguments passed to OLDFUN."
   (zy/define-key :keymap 'zy/leader-edit-map
     "s" '("Insert snippet" . consult-yasnippet)
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
+
+(zy/edload-register 'snip-yasnippet 'find-file)
+(zy/incload-register 'snip-yasnippet)
 
 
 (provide 'init-editing)

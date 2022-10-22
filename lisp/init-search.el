@@ -22,6 +22,7 @@
 ;;; Code:
 
 (require 'init-keybinding)
+(require 'init-load)
 
 ;;;; Navigation Commands
 
@@ -37,7 +38,7 @@
 
 (straight-use-package 'rg)
 
-(zy/snip-from-feature 'rg :weight 0)
+(zy/incload-register 'rg)
 
 (zy/define-key :prefix "M-s"
   "l" 'consult-line

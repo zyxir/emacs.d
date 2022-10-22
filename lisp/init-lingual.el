@@ -55,16 +55,14 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
 
 (straight-use-package 'rime)
 
-(zy/snip-from-feature 'rime :weight 0 :dependencies 'dash)
+(zy/incload-register 'dash 'rime)
 
 (setq-default
  default-input-method "rime"
  rime-user-data-dir (expand-file-name "etc/rime" user-emacs-directory)
  rime-show-candidate 'minibuffer)
 
-(zy/defsnip snip-im-color
-    (:lazyload '(init-ui rime))
-  "Change cursor color based on the current IM."
+(zy/defsnip 'snip-im-color
   (when (fboundp 'modus-themes-color)
     (defun zy/set-cursor-color-on-im ()
       "Set cursor color based on the current input method."
@@ -75,8 +73,9 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
 	(set-frame-parameter nil
 			     'cursor-color
 			     (modus-themes-color 'fg-main))))
-
     (add-hook 'post-command-hook 'zy/set-cursor-color-on-im)))
+
+(zy/lload-register 'snip-im-color 'rime 'modus-themes)
 
 
 (provide 'init-lingual)

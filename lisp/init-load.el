@@ -1,4 +1,5 @@
-;;; init-load.el --- Configuration code loading -*- lexical-binding: t -*-
+;;; init-load.el --- Code loading -*- lexical-binding: t -*-
+
 
 ;; This file is not part of GNU Emacs
 
@@ -15,15 +16,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 ;;; Commentary:
 
-;; 1. Manage the loading (autoloading) of packages (as Borg drones).
-;; 2. Provide snippet management, event-driven loader and incremental loader.
-;; 3. Provide several useful macros for configuration writting.
+;; This file bootstraps Straight as the package manager, and introduces and
+;; advanced loading system to ZyEmacs.
 
 ;;; Code:
-
-(require 'cl-lib)
 
 ;;;; Bootstrap Straight
 
@@ -48,313 +47,305 @@
   (load bootstrap-file nil 'nomessage))
 
 
-;;;; Snippet Management
+;;;; Snippet Features
 
-;; In ZyEmacs, a snippet is a special type of function that takes no arguments,
-;; and provide itself as a feature if executed.  A snippet stores its additional
-;; information in ints property list.
+;; In ZyEmacs, a snippet feature is a special type of feature.  Usually, a
+;; feature is provided by a file with the same name, but in ZyEmacs, a snippet
+;; is not provided by any file, instead it has its function definition as its
+;; actual content, and has a `snipp' property to indicate that it is a snippet
+;; feature.
 
-;; A feature snippet is just a feature symbol, with additonal information stored
-;; in its property list as well, so that it can be treated just like a snippet.
+;; With this mechanism introduced, you could require a feature with
+;; `zy/require', which loads its function definition if it is a snippet feature,
+;; or loads the file if it is not.
 
-;; A snippet is like a short Emacs Lisp file, except that it cannot be load with
-;; `require' or `load'.  However, this provides opportunity for applying
-;; advanced loading techniques to manage them.
+(defmacro zy/defsnip (feature &rest body)
+  "Define FEATURE as a snippet feature.
 
-(cl-defmacro zy/defsnip (name (&key (dependencies nil)
-				    (lazyload nil)
-				    (events nil)
-				    (weight nil))
-			      &optional docstring &rest body)
-  "Define NAME as a snippet.
-
-NAME is the name of the snippet, and should not be quoted.
-
-Keyword argument DEPENDENCIES is a list of dependent features or
-snippets that should be loaded before NAME is load.  Make sure to
-put lower-level dependencies in the former place of the list.
-
-If keyword argument LAZYLOAD is a symbol or a list of symbols,
-lazy load the snippet untill all the symbols (features) are
-loaded.
-
-Keyword argument EVENTS is a list of events at which the ZyEmacs
-event-driven loader should load the snippet.
-
-If keyword argument WEIGHT is a number, the ZyEmacs incremental
-loader will register it with priority INCLOAD.
-
-Optional argument DOCSTRING is the docstring used to describe
-NAME as a variable.
-
-BODY is the function body of the snippet.
-
-Return the snippet as a symbol."
-  (declare (doc-string 3) (indent 2))
-  (when (and docstring (not (stringp docstring)))
-    (push docstring body)
-    (setq docstring nil))
+FEATURE should be a symbol, and BODY is the content of its
+function definition.  A `provide' statement is always appended to
+BODY so that it will not be run twice."
+  (declare (indent 1))
   `(prog1
-       ;; Wrap BODY in a feature management block
-       (defun ,name ()
-	 ,docstring
-	 ,@body
-	 (provide ',name))
-     (function-put ',name 'snip 'function)
-     (function-put ',name 'snip-dependencies ,dependencies)
-     ,(when lazyload
-	`(zy/lazyload--register ',name ,lazyload))
-     ,(when events
-	`(zy/edload--register ',name ,events))
-     ,(when (numberp weight)
-	`(push (cons ',name ,weight) zy/incload--weight-alist))))
+       (defalias ,feature
+	 (lambda nil ,@body (provide ,feature)))
+     (put ,feature 'snipp t)))
 
-(cl-defun zy/snip-from-feature (feature &key
-					(dependencies nil)
-					(events nil)
-					(weight nil))
-  "Define a feature snippet from FEATURE.
+(defun zy/require (feature &optional force)
+  "Like `require' but works on snippet features.
 
-FEATURE is a quoted feature name.  The created snippet use
-FEATURE as its name, but has no function difinition.
+If FEATURE is already loaded, return FEATURE itself.
 
-Optional keyword arguments DEPENDENCIES, EVENTS and WEIGHT are
-the same as in `zy/defsnip'.
+Otherwise, if FEATURE is a snippet feature (if it has a `snipp'
+property), call its function definition, otherwise call `require'
+on the feature.
 
-Return FEATURE."
-  (declare (indent defun))
-  (when (symbolp feature)
-    (function-put feature 'snip 'feature)
-    (function-put feature 'snip-dependencies dependencies)
-    (when events
-      (zy/edload--register feature events))
-    (when (and (numberp weight) (boundp 'zy/incload--weight-alist))
-      (push (cons feature weight) zy/incload--weight-alist))
-    feature))
+If optional argument FORCE is non-nil, load FEATURE regardless of
+whether it is already loaded.
 
-(defmacro zy/snipp (symbol)
-  "Return t if SYMBOL is a snip."
-  `(function-get ,symbol 'snip))
-
-(defun zy/ensure-snip (feature)
-  "Ensure that FEATURE is a feature snippet.
-
-If it is already a feature snippet, return FEATURE.  Otherwise
-use `zy/snip-from-feature' on it and return the result."
-  (if (zy/snipp feature)
+If an error is encountered during calling a function definition
+or requiring a feature, this function regains control and report
+the error."
+  (if (and (not force) (featurep feature))
       feature
-    (zy/snip-from-feature feature)))
+    (condition-case-unless-debug err
+	(let ((start-time (current-time)))
+	  (prog1
+	      (if (get feature 'snipp)
+		  (funcall feature)
+		(require feature))
+	    (message "Requiring %s took %.1f milliseconds."
+		     feature
+		     (* 1000 (float-time (time-since start-time))))))
+      (error
+       (message "Error encountered while requiring %s:" feature)
+       (pp err)
+       nil)
+      (t nil))))
 
-(defun zy/run-snip (snip)
-  "Run snippet SNIP.
 
-If SNIP is already loaded (determined via `featurep'), do nothing
-and return nil.
+;;;; Lazy Loader (lload)
 
-Otherwise, call `funcall' on SNIP if it is a ordinary snippet,
-and `require' it if it is a feature snippet.  Return the result
-of `funcall' or `require'."
-  (unless (featurep snip)
-    (if (eq (function-get snip 'snip) 'function)
-	(funcall snip)
-      (require snip))))
+;; Lazy loader extends the classic lazy loader based on `eval-after-load'.
 
+(defmacro zy/lload-register (feature &rest features)
+  "Load FEATURE once all of FEATURES are loaded.
 
-;;;; Classic Lazy Loader (lazyload)
-
-;; This is the classic lazy loader based on `eval-after-load', but tweaked so
-;; that it works better with snippets.
-
-(defmacro zy/lazyload--register (snip prerequisites)
-  "Load snippet SNIP after all PREREQUISITES are loaded."
-  (let ((result-sexp `(zy/run-snip ,snip)))
-    ;; Normalize PREREQUISITES
-    (when (equal (car prerequisites) 'quote)
-      (setq prerequisites (cadr prerequisites)))
-    (unless (listp prerequisites)
-      (setq prerequisites `(,prerequisites)))
-    (mapc (lambda (pre)
+FEATURE and FEATURES are feature symbols."
+  (let ((result-sexp `(zy/require ,feature)))
+    (mapc (lambda (feat)
 	    (setq result-sexp
-		  `(with-eval-after-load ',pre
-		     ,result-sexp)))
-	  prerequisites)
+		  `(with-eval-after-load ,feat ,result-sexp)))
+	  features)
     result-sexp))
 
 
 ;;;; Event-Driven Loader (edload)
 
-;; In ZyEmacs, the loading of any snip could be postponed till a set of specific
-;; events.  This is called the event-driven loader.
+;; Event-driven loader delay the loading of a feature till a set of events.
 
-;; Event 'pre-command': when `pre-command-hook' is triggered
+;; Event `pre-command': triggered by `pre-command-hook'
 
-(defvar zy/edload--pre-command-snips nil
-  "Snippets bound to the 'pre-command' event.")
+(defvar zy/edload-pre-command-queue nil
+  "Features bound to the `pre-command' event.")
 
-(defun zy/edload--pre-command-run ()
-  "Run all snippets in `zy/edload-pre-command-snips'."
-  (mapc #'zy/run-snip zy/edload--pre-command-snips)
-  (setq zy/edload--pre-command-snips nil))
+(add-hook 'pre-command-hook
+	  (lambda ()
+	    (mapc #'zy/require zy/edload-pre-command-queue)
+	    (setq zy/edload-pre-command-queue nil)))
 
-(add-hook 'pre-command-hook 'zy/edload--pre-command-run)
+;; Event `post-command': triggered by `post-command-hook'
 
-;; Event 'after-command': when `after-command-hook' is triggered
+(defvar zy/edload-post-command-queue nil
+  "Features bound to the `post-command' event.")
 
-(defvar zy/edload--after-command-snips nil
-  "Snippets bound to the 'after-command' event.")
+(add-hook 'post-command-hook
+	  (lambda ()
+	    (mapc #'zy/require zy/edload-post-command-queue)
+	    (setq zy/edload-post-command-queue nil)))
 
-(defun zy/edload--after-command-run ()
-  "Run all snippets in `zy/edload--after-command-snips'."
-  (mapc #'zy/run-snip zy/edload--after-command-snips)
-  (setq zy/edload--after-command-snips nil))
+;; Event `find-file': triggered before `after-find-file' executes
 
-(add-hook 'after-command-hook 'zy/edload--after-command-run)
+(defvar zy/edload-find-file-queue nil
+  "Features bound to the `pre-command' event.")
 
-;; Event 'find-file': before `after-find-file' is executed
+(advice-add 'after-find-file :before
+	    (lambda (&rest _)
+	      (mapc #'zy/require zy/edload-find-file-queue)
+	      (setq zy/edload-find-file-queue nil)))
 
-(defvar zy/edload--find-file-snips nil
-  "Snippets bound to the 'find-file' event.")
+;; Event `prog-mode': triggered by `prog-mode-hook'
 
-(defun zy/edload--find-file-run (&rest ignored)
-  "Run all snippets in `zy/edload--find-file-snips'.
+(defvar zy/edload-prog-mode-queue nil
+  "Features bound to the `prog-mode' event.")
 
-All other arguments IGNORED are ignored."
-  (mapc #'zy/run-snip zy/edload--find-file-snips)
-  (setq zy/edload--find-file-snips nil))
+(add-hook 'prog-mode-hook
+	  (lambda ()
+	    (mapc #'zy/require zy/edload-prog-mode-queue)
+	    (setq zy/edload-prog-mode-queue nil)))
 
-(advice-add 'after-find-file :before 'zy/edload--find-file-run)
+;; Event registering
 
-;; Register a snip to a set of events
+(defmacro zy/edload-register (feature &rest events)
+  "When one of EVENTS occur, load FEATURE.
 
-(defun zy/edload--register (snip events)
-  "Register snippet SNIP to events EVENTS.
-
-EVENTS is a list of event symbols.  Even if EVENTS is a single
-event symbol, it will be converted to a list containing the event
-symbol.
-
-This function should only be used internally."
-  (unless (listp events)
-    (setq events `(,events)))
-  ;; Event 'pre-command'
-  (when (memq 'pre-command events)
-    (add-to-list 'zy/edload--pre-command-snips snip))
-  ;; Event 'find-file'
-  (when (memq 'find-file events)
-    (add-to-list 'zy/edload--find-file-snips snip)))
-
-(defmacro zy/edload-register (snip &rest events)
-  "Register snippet SNIP to events EVENTS.
-
-Return EVENTS if success, or nil otherwise."
-  `(when (zy/snipp ,snip)
-     (zy/edload--register ,snip ,events)
-     ,events))
+FEATURE is a feature symbol, and all of EVENTS are event symbols."
+  (let ((result-sexp '()))
+    (mapc (lambda (event)
+	    (when (equal event '(quote pre-command))
+	      (push `(push ,feature zy/edload-pre-command-queue) result-sexp))
+	    (when (equal event '(quote post-command))
+	      (push `(push ,feature zy/edload-post-command-queue) result-sexp))
+	    (when (equal event '(quote find-file))
+	      (push `(push ,feature zy/edload-find-file-queue) result-sexp))
+	    (when (equal event '(quote prog-mode))
+	      (push `(push ,feature zy/edload-prog-mode-queue) result-sexp)))
+	  events)
+    (if (cdr result-sexp)
+	(cons 'progn result-sexp)
+      (car result-sexp))))
 
 
 ;;;; Incremental Loader (incload)
 
-;; In ZyEmacs, the incremental loader loads a queue of snippets incrementally.
-;; Each time Emacs is idle for a certain time, the loader loads the next snippet
-;; in the queue, until everything is fully loaded.
+;; Incremental loader loads a queue of features incrementally with a
+;; configurable interval.
 
-;; The incremental loader can work together with the classic lazy loader (via
-;; `autoload' and `eval-after-load'), as well as the ZyEmacs event-driven
-;; loader.
+;;;;; Constants and Variables
 
-(defconst zy/incload--idle 1.0
-  "Load next snippet after Emacs is idle for this many time.")
+(defconst zy/incload-idle 2.0
+  "Normal load interval for the incremental loader.")
 
-(defconst zy/incload--lag 0.1
-  "Each load action takes at least this amount of time.")
+(defconst zy/incload-lag 0.3
+  "Lag threshold for the incremental loader.")
 
-(defvar zy/incload--queue nil
-  "The queue of snippets waiting to be loaded.
+(defvar zy/incload-rescheduled-timer nil
+  "The rescheduled idle timer.")
 
-This queue gets shorter as snippets get loaded.  See
-`zy/incload-queue' for its initial state.")
+(defvar zy/incload-rescheduled-idle zy/incload-idle
+  "The idle time for the rescheduled timer.")
 
 (defvar zy/incload-queue nil
-  "The queue of snippets that are incrementally loaded.
+  "The queue of loading unit for the incremental loader.
 
-This queue is copied from `zy/incload--queue' after it is
-initialized.")
+Each loading unit in the queue is a list of the form:
 
-(defvar zy/incload--weight-alist nil
-  "Alist of (SNIP . WEIGHT) values.
+  (FEATURE HEAVYP WEIGHT)
 
-SNIP is a snippet, and WEIGHT is its weight.  This alist is for
-priotizing the loading of each SNIP, and is used to construct
-`zy/incload--queue' during the initialization of the incremental
-loader.")
+FEATURE is the feature to be loaded, be it a snippet
+feature or not.
 
-(defun zy/incload--weight< (item1 item2)
-  "Return t if ITEM1 has a smaller weight than ITEM2.
+HEAVYP indicates if feature takes a lot of time to load.  This
+will affect of loading strategy in runtime.
 
-Both ITEM1 and ITEM2 are (SNIP . WEIGHT) cons cells."
-  (< (cdr item1) (cdr item2)))
+WEIGHT is the weight of this loading unit.  It affects loading
+priority.")
 
-(defun zy/incload--load ()
-  "Load some snippets from the queue.
+(defvar zy/incload-queue-initial nil
+  "Initial value of `zy/incload-queue'.")
 
-Pop one snippet out of `zy/incload--queue'.  Load the snippet if
-it is not loaded yet; if already loaded, pop one more out of the
-queue and try to load it again.
+(defvar zy/incload-feature-queue nil
+  "A queue of FEATUREs of each element in `zy/incload-queue'.")
 
-If the snippet is so short, that loading it took less than
-`zy/incload--lag' seconds, then try to load more snippets from
-the queue, until the total elapsed time exceeds
-`zy/incload--lag'."
-  (let ((start-time (current-time))
-	(continue-p t)
-	snip)
-    (while (and zy/incload--queue continue-p)
-      ;; Pop one snippet out
-      (setq snip (pop zy/incload--queue))
-      ;; Skip it if it is already loaded
-      (unless (featurep snip)
-	;; Run the snippet, and report any error occurred
-	(condition-case-unless-debug err
-	    (zy/run-snip snip)
-	  (error
-	   (message "Error running snippet: %s" snip)
-	   (pp err)))
-	;; Determine if we have to run more snippet, based on time elapsed
-	(setq continue-p
-	      (< (float-time (time-since start-time))
-		 zy/incload--lag)))))
-  ;; Start the next timer if the queue is not empty yet
-  (when zy/incload--queue
-    (run-with-idle-timer zy/incload--idle nil 'zy/incload--load)))
+;;;;; Queue Management
+
+(defun zy/incload-normalize-unit (unit)
+  "Return the normalized version of loading unit UNIT.
+
+UNIT is normalized as required by `zy/incload-register'."
+  (if (symbolp unit)
+      `(,unit nil 0)
+    (list (car unit)
+	  (cadr unit)
+	  (if (caddr unit) (caddr unit) 0))))
+
+(defun zy/incload-unit-in-queue-p (unit)
+  "Return t if loading unit UNIT is already in queue."
+  (if (symbolp unit)
+      (memq unit zy/incload-feature-queue)
+    (memq (car unit) zy/incload-feature-queue)))
+
+(defun zy/incload-register-unit (unit)
+  "Add loading unit UNIT to the queue if it is not already there."
+  (unless (zy/incload-unit-in-queue-p unit)
+    (setq unit (zy/incload-normalize-unit unit))
+    (push unit zy/incload-queue)
+    (push (car unit) zy/incload-feature-queue)))
+
+;;;;; Loading Mechanism
+
+(defun zy/incload-load (&optional rescheduled)
+  "Load some units from `zy/incload-queue'.
+
+If optional argument RESCHEDULED is nil or omitted, which means
+this is not a rescheduled run, then the rescheduled timer and
+rescheduled idle time will be cleared.
+
+Pop loading units out of `zy/incload-queue' and load them.  At
+least load one loading unit, and stop loading when:
+
+- There is nothing in `zy/incload-queue' to load.
+
+- The current elapsed time exceeds `zy/incload-lag-normal'.
+
+- The next loading unit has a non-nil value of HEAVYP.
+
+After loading stoppes, reschedule a new timer for the next load."
+  ;; Clear rescheduled timer and idle time if necessary
+  (unless rescheduled
+    (when zy/incload-rescheduled-timer
+      (cancel-timer zy/incload-rescheduled-timer))
+    (setq zy/incload-rescheduled-idle zy/incload-idle))
+  (when zy/incload-queue
+    ;; Load only if there is something in the queue
+    (message "---- Loading units ----")
+    (let ((start-time (current-time))
+	  (elapsed-time 0)
+	  next-heavyp)
+      ;; Load untill any of the three conditionals returns nil
+      (while (and zy/incload-queue
+		  (< elapsed-time zy/incload-lag)
+		  (not next-heavyp))
+	(zy/require (car (pop zy/incload-queue)))
+	(setq elapsed-time (float-time (time-since start-time))
+	      next-heavyp (cadr (car zy/incload-queue))))))
+  ;; Prepare the next load
+  (setq zy/incload-rescheduled-idle (+ zy/incload-idle
+				       zy/incload-rescheduled-idle)
+	zy/incload-rescheduled-timer
+	(run-with-idle-timer zy/incload-rescheduled-idle nil
+			     'zy/incload-load 'rescheduled)))
+
+(defun zy/incload-weight< (unit1 unit2)
+  "Return t if UNIT1 has a greater WEIGHT than UNIT2."
+  (< (caddr unit1) (caddr unit2)))
 
 (defun zy/incload-init ()
   "Initialize the incremental loader.
 
-This function first sorts `zy/incload--weight-alist' by its
-WEIGHT value, then pushes each SNIPPET, as well as its
-dependencies, into `zy/incload--queue'.  Existing snippet will
-not be pushed again."
-  (when zy/incload--weight-alist
-    (setq zy/incload--weight-alist
-	  (sort zy/incload--weight-alist 'zy/incload--weight<))
-    ;; Initialize `zy/incload--queue' via `zy/incload--weight-alist'
-    (mapc
-     (lambda (snip-weight-cons)
-       (let* ((snip (car snip-weight-cons))
-	      (snip-deps (function-get snip 'snip-dependencies))
-	      (snip-deps (if (listp snip-deps) snip-deps `(,snip-deps)))
-	      (snip-deps-ensured (mapcar 'zy/ensure-snip snip-deps))
-	      (snips (cons snip snip-deps-ensured)))
-	 (mapc (lambda (snip)
-		 (unless (memq snip zy/incload--queue)
-		   (push snip zy/incload--queue)))
-	       snips)))
-     zy/incload--weight-alist)
-    (setq zy/incload-queue zy/incload--queue)
-    ;; Start the first timer for `zy/incload--load'
-    (run-with-idle-timer zy/incload--idle nil 'zy/incload--load)))
+Sort `zy/incload-queue' according to WEIGHT of each loading unit,
+copying its value to `zy/incload-queue-initial', and create the
+first idle timer for `zy/incload-load'."
+  (setq zy/incload-queue-initial
+	(reverse (sort zy/incload-queue 'zy/incload-weight<))
+	zy/incload-queue zy/incload-queue-initial)
+  (run-with-idle-timer zy/incload-idle 'repeat 'zy/incload-load))
 
-(add-hook 'after-init-hook 'zy/incload-init)
+(add-hook 'emacs-startup-hook 'zy/incload-init)
+
+;;;;; The Interface Macro
+
+(defmacro zy/incload-register (&rest units)
+  "Register loading units UNITS for incremental loading.
+
+The incremental loader loads units in the front first.  So a
+former unit should possibly be the dependency of a later unit, to
+maintain the incrementality of the loading process.
+
+Each loading unit in UNITS is a list of the form:
+
+  (FEATURE [HEAVYP [WEIGHT]])
+
+FEATURE is the feature to be loaded, be it a snippet
+feature or not.
+
+HEAVYP indicates if feature takes a lot of time to load.  This
+will affect of loading strategy in runtime.  HEAVYP is nil by
+default.
+
+WEIGHT is the weight of the loading unit.  It indicates the
+priority of the unit in the loading queue.  WEIGHT is 0 by
+default.
+
+You can also use a single FEATURE symbol as a loading unit, and
+it will be converted to a proper list."
+  (let ((result-sexp '()))
+    (mapc (lambda (unit)
+	    (push `(zy/incload-register-unit ,unit) result-sexp))
+	  units)
+    (if (cdr result-sexp)
+	(cons 'progn (reverse result-sexp))
+      (car result-sexp))))
 
 
 (provide 'init-load)

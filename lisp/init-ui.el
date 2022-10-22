@@ -53,8 +53,7 @@
 
 (straight-use-package 'dim)
 
-(zy/defsnip snip-dim
-    (:events 'find-file :weight 10)
+(zy/defsnip 'snip-dim
   (dim-minor-names
    '((beacon-mode "" beacon)
      (clipetty-mode "" clipetty)
@@ -65,6 +64,8 @@
      (subword-mode "" subword)
      (which-key-mode "" which-key)
      (yas-minor-mode "" yasnippet))))
+
+(zy/incload-register '(snip-dim nil 10))
 
 
 ;;;; Setup Fonts
@@ -175,7 +176,7 @@ optional argument FORCE is non-nil."
 
 (straight-use-package 'darkroom)
 
-(zy/snip-from-feature 'darkroom :weight 0)
+(zy/incload-register 'darkroom)
 
 (zy/define-key
   :keymap 'zy/leader-toggle-map

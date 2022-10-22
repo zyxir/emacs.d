@@ -32,8 +32,7 @@
 
 ;; Customized Org paths when Zybox is available
 
-(zy/snip-from-feature 'org :weight 0
-  :dependencies '(calendar ol org-table org-list org-src ob org-agenda))
+(zy/incload-register 'calendar 'ol 'org-table 'org-list 'org-src 'ob 'org-agenda '(org t))
 
 (when zy/zybox-path
   (setq-default
@@ -73,8 +72,7 @@
 
 ;;;; Org-Export to LaTeX
 
-(zy/defsnip snip-ox-latex
-    (:dependencies 'org :lazyload 'ox-latex :weight 0)
+(zy/defsnip 'snip-ox-latex
   (require 'ox)
 
   ;; Try to obtain Zyxir's LaTeX style file
@@ -209,13 +207,15 @@ The function works like `org-latex-export-to-pdf', except that
 		  ((?j "As PDF file (phone-friendly)"
 		       zy/org-export-to-pdf-phone)))))
 
+(zy/lload-register 'snip-ox-latex 'ox-latex)
+(zy/incload-register 'org 'snip-ox-latex)
+
 
 ;;;; Org-Journal
 
 (straight-use-package 'org-journal)
 
-(zy/snip-from-feature 'org-journal :weight 0
-  :dependencies 'org)
+(zy/incload-register 'org 'org-journal)
 
 (setq-default
  org-journal-prefix-key "C-c j")
@@ -239,8 +239,7 @@ The function works like `org-latex-export-to-pdf', except that
 
 ;;;; GTD: Getting Things Done
 
-(zy/defsnip snip-gtd
-    (:weight 0 :dependencies 'org)
+(zy/defsnip 'snip-gtd
   ;; Setup GTD paths
 
   (when zy/zybox-path
@@ -343,6 +342,8 @@ The function works like `org-latex-export-to-pdf', except that
 			proj-todos)))))
      project--list)
     (delete-dups org-agenda-files)))
+
+(zy/incload-register 'org 'snip-gtd)
 
 
 (provide 'init-org)

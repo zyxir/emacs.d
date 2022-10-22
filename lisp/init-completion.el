@@ -31,11 +31,13 @@
 (straight-use-package 'vertico)
 (straight-use-package 'marginalia)
 
-(zy/defsnip snip-vertico
-    (:events 'pre-command :weight 80)
+(zy/defsnip 'snip-vertico
   (vertico-mode +1)
   (savehist-mode +1)
   (marginalia-mode +1))
+
+(zy/edload-register 'snip-vertico 'pre-command)
+(zy/incload-register '(snip-vertico nil 80))
 
 ;; Intangible minibuffer
 
@@ -80,12 +82,16 @@ ARGS are the arguments passed."
     (consult-customize consult-recent-file
 		       :preview-key (kbd "M-."))))
 
+(zy/incload-register '(consult nil 0))
+
 ;; Setup Embark
 
 (straight-use-package 'embark)
 
 (zy/define-key
   [remap tmm-menubar] 'embark-act)
+
+(zy/incload-register '(embark nil 0))
 
 
 ;;;; Corfu
@@ -97,14 +103,16 @@ ARGS are the arguments passed."
 (straight-use-package '(corfu-doc-terminal
 			:repo "https://codeberg.org/akib/emacs-corfu-doc-terminal.git"))
 
-(zy/defsnip snip-corfu
-    (:events 'after-command :weight 20)
+(zy/defsnip 'snip-corfu
   (global-corfu-mode +1)
   (setq-default corfu-auto t
 		   corfu-auto-prefix 2
 		   corfu-echo-documentation nil)
   (zy/define-key :keymap 'corfu-map
     "M-SPC" 'corfu-insert-separator))
+
+(zy/edload-register 'snip-corfu 'after-command)
+(zy/incload-register '(snip-corfu t 20))
 
 ;; Enable Corfu in the minibuffer
 

@@ -161,10 +161,11 @@ KEYMAP."
 
 (straight-use-package 'which-key)
 
-(zy/defsnip snip-which-key
-    (:weight 90)
+(zy/defsnip 'snip-which-key
   (require 'which-key)
   (which-key-mode))
+
+(zy/incload-register '(snip-which-key nil 90))
 
 
 (provide 'init-keybinding)

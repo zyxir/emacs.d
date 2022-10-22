@@ -31,8 +31,7 @@
 
 (straight-use-package 'magit)
 
-(zy/snip-from-feature 'magit :weight 0
-  :dependencies '(dash with-editor transient git-commit magit-section))
+(zy/incload-register 'dash 'with-editor 'transient 'git-commit 'magit-section '(magit t))
 
 (zy/define-key
   "C-c v" 'magit

@@ -30,8 +30,7 @@
 
 (straight-use-package 'auctex)
 
-(zy/defsnip snip-tex
-    (:lazyload 'tex)
+(zy/defsnip 'snip-tex
   (setq-default TeX-auto-save t
 		TeX-parse-self t
 		TeX-save-query nil
@@ -51,13 +50,16 @@
 		  reftex-save-parse-info t
 		  reftex-use-multiple-selection-buffers t)))
 
+(zy/lload-register 'snip-tex 'tex)
+
 ;; PDF preview with PDF-tools
 
-(zy/defsnip snip-tex-preview
-    (:lazyload 'tex)
+(zy/defsnip 'snip-tex-preview
   (setq-default TeX-view-program-selection '((output-pdf "PDF Tools"))
 		TeX-source-correlate-method 'synctex
 		TeX-source-correlate-start-server t))
+
+(zy/lload-register 'snip-tex-preview 'tex)
 
 
 (provide 'init-tex)

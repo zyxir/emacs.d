@@ -35,13 +35,15 @@
 	(add-hook hook 'flycheck-mode))
       '(prog-mode-hook tex-mode-hook))
 
-(zy/defsnip snip-flycheck
-    (:lazyload 'flycheck :events 'find-file :weight 0)
+(zy/defsnip 'snip-flycheck
   (setq-default flycheck-emacs-lisp-load-path 'inherit)
   (require 'flycheck)
   (zy/define-key :keymap 'flycheck-mode-map
     "M-p" 'flycheck-previous-error
     "M-n" 'flycheck-next-error))
+
+(zy/lload-register 'snip-flycheck 'flycheck)
+(zy/incload-register 'snip-flycheck)
 
 
 ;;;; Eglot
