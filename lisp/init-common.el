@@ -76,7 +76,7 @@
   (global-auto-revert-mode +1)
   (save-place-mode +1))
 
-(zy/edload-register 'snip-file-inbuilt-modes 'find-file)
+(zy/edload-register 'snip-file-inbuilt-modes 'prog-mode 'text-mode)
 (zy/incload-register '(snip-file-inbuilt-modes nil 0))
 
 

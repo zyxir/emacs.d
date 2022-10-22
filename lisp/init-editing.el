@@ -101,14 +101,12 @@ ARG is the arguments passed to OLDFUN."
 
 (straight-use-package 'smartparens)
 
-(zy/defsnip 'snip-smartparens
-  (require 'smartparens-config)
-  (setq-default sp-highlight-pair-overlay nil
-		sp-autoinsert-pair t)
-  (add-hook 'prog-mode-hook 'smartparens-mode))
+(zy/incload-register 'dash 'smartparens)
 
-(zy/edload-register 'snip-smartparens 'find-file)
-(zy/incload-register 'dash 'snip-smartparens)
+(setq-default sp-highlight-pair-overlay nil
+	      sp-autoinsert-pair t)
+
+(add-hook 'prog-mode-hook 'smartparens-mode)
 
 
 ;;;; Yasnippet
@@ -135,7 +133,7 @@ ARG is the arguments passed to OLDFUN."
     "s" '("Insert snippet" . consult-yasnippet)
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
 
-(zy/edload-register 'snip-yasnippet 'find-file)
+(zy/edload-register 'snip-yasnippet 'prog-mode text-mode)
 (zy/incload-register 'snip-yasnippet)
 
 

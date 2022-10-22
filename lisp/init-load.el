@@ -106,9 +106,6 @@ BODY so that it will not be run twice."
 	 (lambda nil ,@body (provide ,feature)))
      (put ,feature 'snipp t)))
 
-(defvar zy/feature-loading nil
-  "Non-nil while loading a feature.")
-
 (defun zy/load-feature (feature)
   "Load feature FEATURE in a proper way.
 
@@ -117,10 +114,9 @@ call its function definition, otherwise call `require' on the
 feature.
 
 `zy/load-feature' is set to t while loading FEATURE."
-  (dlet ((zy/feature-loading t))
-    (if (get feature 'snipp)
+  (if (get feature 'snipp)
       (funcall feature)
-    (require feature))))
+    (require feature)))
 
 (when init-file-debug
   (defun zy/time-around-load-feature (oldfun feature)
@@ -181,11 +177,10 @@ FEATURE and FEATURES are feature symbols."
 
 (add-hook 'pre-command-hook
 	  (lambda ()
-	    (unless zy/feature-loading
-	      (when zy/edload-pre-command-queue
-		(zy/log 'edload "`pre-command' triggered"))
-	      (mapc #'zy/require zy/edload-pre-command-queue)
-	      (setq zy/edload-pre-command-queue nil))))
+	    (when zy/edload-pre-command-queue
+	      (zy/log 'edload "`pre-command' triggered"))
+	    (mapc #'zy/require zy/edload-pre-command-queue)
+	    (setq zy/edload-pre-command-queue nil)))
 
 ;; Event `post-command': triggered by `post-command-hook'
 
@@ -194,24 +189,22 @@ FEATURE and FEATURES are feature symbols."
 
 (add-hook 'post-command-hook
 	  (lambda ()
-	    (unless zy/feature-loading
-	      (when zy/edload-pre-command-queue
-		(zy/log 'edload "`post-command' triggered"))
-	      (mapc #'zy/require zy/edload-post-command-queue)
-	      (setq zy/edload-post-command-queue nil))))
+	    (when zy/edload-post-command-queue
+	      (zy/log 'edload "`post-command' triggered"))
+	    (mapc #'zy/require zy/edload-post-command-queue)
+	    (setq zy/edload-post-command-queue nil)))
 
-;; Event `find-file': triggered before `after-find-file' executes
+;; Event `text-mode': triggered by `text-mode-hook'
 
-(defvar zy/edload-find-file-queue nil
-  "Features bound to the `pre-command' event.")
+(defvar zy/edload-text-mode-queue nil
+  "Features bound to the `text-mode' event.")
 
-(advice-add 'after-find-file :before
-	    (lambda (&rest _)
-	      (unless zy/feature-loading
-		(when zy/edload-pre-command-queue
-		  (zy/log 'edload "`find-file' triggered"))
-		(mapc #'zy/require zy/edload-find-file-queue)
-		(setq zy/edload-find-file-queue nil))))
+(add-hook 'text-mode-hook
+	  (lambda ()
+	    (when zy/edload-text-mode-queue
+	      (zy/log 'edload "`text-mode' triggered"))
+	    (mapc #'zy/require zy/edload-text-mode-queue)
+	    (setq zy/edload-text-mode-queue nil)))
 
 ;; Event `prog-mode': triggered by `prog-mode-hook'
 
@@ -220,11 +213,10 @@ FEATURE and FEATURES are feature symbols."
 
 (add-hook 'prog-mode-hook
 	  (lambda ()
-	    (unless zy/feature-loading
-	      (when zy/edload-pre-command-queue
-		(zy/log 'edload "`prog-mode' triggered"))
-	      (mapc #'zy/require zy/edload-prog-mode-queue)
-	      (setq zy/edload-prog-mode-queue nil))))
+	    (when zy/edload-prog-mode-queue
+	      (zy/log 'edload "`prog-mode' triggered"))
+	    (mapc #'zy/require zy/edload-prog-mode-queue)
+	    (setq zy/edload-prog-mode-queue nil)))
 
 ;; Event registering
 
