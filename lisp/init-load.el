@@ -71,32 +71,41 @@ BODY so that it will not be run twice."
 	 (lambda nil ,@body (provide ,feature)))
      (put ,feature 'snipp t)))
 
-(defun zy/require (feature &optional force)
-  "Like `require' but works on snippet features.
+(defun zy/load-feature (feature)
+  "Load feature FEATURE in a proper way.
 
-If FEATURE is already loaded, return FEATURE itself.
+if FEATURE is a snippet feature (if it has a `snipp' property),
+call its function definition, otherwise call `require' on the
+feature."
+  (if (get feature 'snipp)
+      (funcall feature)
+    (require feature)))
 
-Otherwise, if FEATURE is a snippet feature (if it has a `snipp'
-property), call its function definition, otherwise call `require'
-on the feature.
+(when init-file-debug
+  (defun zy/time-around-load-feature (oldfun feature)
+    "Wrapper of `zy/load-feature'.
 
-If optional argument FORCE is non-nil, load FEATURE regardless of
-whether it is already loaded.
+Run OLDFUN on FEATURE, but time the run, and print time taken."
+    (let ((start-time (current-time)))
+      (prog1 (funcall oldfun feature)
+	(message "[Debug] Requiring %s took %.1f milliseconds"
+		 feature
+		 (* 1000 (float-time (time-since start-time)))))))
+  (advice-add 'zy/load-feature :around 'zy/time-around-load-feature))
+
+(defun zy/require (feature)
+  "Try to require feature FEATURE.
+
+If FEATURE is already loaded, return itself.  Otherwise call
+`zy/load-feature' on it.
 
 If an error is encountered during calling a function definition
 or requiring a feature, this function regains control and report
 the error."
-  (if (and (not force) (featurep feature))
+  (if (featurep feature)
       feature
     (condition-case-unless-debug err
-	(let ((start-time (current-time)))
-	  (prog1
-	      (if (get feature 'snipp)
-		  (funcall feature)
-		(require feature))
-	    (message "Requiring %s took %.1f milliseconds."
-		     feature
-		     (* 1000 (float-time (time-since start-time))))))
+	(zy/load-feature feature)
       (error
        (message "Error encountered while requiring %s:" feature)
        (pp err)
@@ -278,7 +287,8 @@ After loading stoppes, reschedule a new timer for the next load."
     (setq zy/incload-rescheduled-idle zy/incload-idle))
   (when zy/incload-queue
     ;; Load only if there is something in the queue
-    (message "---- Loading units ----")
+    (when init-file-debug
+      (message "[Debug] ---- Incload starts loading units ----"))
     (let ((start-time (current-time))
 	  (elapsed-time 0)
 	  next-heavyp)
