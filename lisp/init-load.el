@@ -47,6 +47,41 @@
   (load bootstrap-file nil 'nomessage))
 
 
+;;;; Debug Logger
+
+;; The debug logger only works when Emacs is launched with "--debug-init"
+
+(defalias 'zy/log
+  (if (and (boundp 'init-file-debug) init-file-debug)
+      (lambda (module format-string &rest args)
+	"Display a ZyEmacs log message.
+
+MODULE is the module name to show.  FORMAT-STRING is the format
+control string, and ARGS are data to be formatted under control
+of the string."
+	(let* ((content
+		(format "[%s %s] - %s - %s\n"
+			(propertize "ZyEmacs"
+				    'face 'font-lock-variable-name-face)
+			(propertize (if (stringp module)
+					module
+				      (symbol-name module))
+				    'face 'font-lock-keyword-face)
+			(propertize (format-time-string "%FT%T")
+				    'face 'font-lock-constant-face)
+			(propertize (apply 'format format-string args)
+				    'face 'font-lock-doc-face)))
+	       (buffer (get-buffer-create "*ZyEmacs Log*"
+					  'inihibit-buffer-hooks))
+	       (inhibit-read-only t))
+	  (with-current-buffer buffer
+	    (unless buffer-read-only
+	      (read-only-mode 1))
+	    (goto-char (point-max))
+	    (insert content))))
+    (lambda (&rest _))))
+
+
 ;;;; Snippet Features
 
 ;; In ZyEmacs, a snippet feature is a special type of feature.  Usually, a
@@ -71,15 +106,21 @@ BODY so that it will not be run twice."
 	 (lambda nil ,@body (provide ,feature)))
      (put ,feature 'snipp t)))
 
+(defvar zy/feature-loading nil
+  "Non-nil while loading a feature.")
+
 (defun zy/load-feature (feature)
   "Load feature FEATURE in a proper way.
 
 if FEATURE is a snippet feature (if it has a `snipp' property),
 call its function definition, otherwise call `require' on the
-feature."
-  (if (get feature 'snipp)
+feature.
+
+`zy/load-feature' is set to t while loading FEATURE."
+  (dlet ((zy/feature-loading t))
+    (if (get feature 'snipp)
       (funcall feature)
-    (require feature)))
+    (require feature))))
 
 (when init-file-debug
   (defun zy/time-around-load-feature (oldfun feature)
@@ -88,9 +129,9 @@ feature."
 Run OLDFUN on FEATURE, but time the run, and print time taken."
     (let ((start-time (current-time)))
       (prog1 (funcall oldfun feature)
-	(message "[Debug] Requiring %s took %.1f milliseconds"
-		 feature
-		 (* 1000 (float-time (time-since start-time)))))))
+	(zy/log 'snip "Requiring %s took %.1f milliseconds"
+		feature
+		(* 1000 (float-time (time-since start-time)))))))
   (advice-add 'zy/load-feature :around 'zy/time-around-load-feature))
 
 (defun zy/require (feature)
@@ -140,8 +181,11 @@ FEATURE and FEATURES are feature symbols."
 
 (add-hook 'pre-command-hook
 	  (lambda ()
-	    (mapc #'zy/require zy/edload-pre-command-queue)
-	    (setq zy/edload-pre-command-queue nil)))
+	    (unless zy/feature-loading
+	      (when zy/edload-pre-command-queue
+		(zy/log 'edload "`pre-command' triggered"))
+	      (mapc #'zy/require zy/edload-pre-command-queue)
+	      (setq zy/edload-pre-command-queue nil))))
 
 ;; Event `post-command': triggered by `post-command-hook'
 
@@ -150,8 +194,11 @@ FEATURE and FEATURES are feature symbols."
 
 (add-hook 'post-command-hook
 	  (lambda ()
-	    (mapc #'zy/require zy/edload-post-command-queue)
-	    (setq zy/edload-post-command-queue nil)))
+	    (unless zy/feature-loading
+	      (when zy/edload-pre-command-queue
+		(zy/log 'edload "`post-command' triggered"))
+	      (mapc #'zy/require zy/edload-post-command-queue)
+	      (setq zy/edload-post-command-queue nil))))
 
 ;; Event `find-file': triggered before `after-find-file' executes
 
@@ -160,8 +207,11 @@ FEATURE and FEATURES are feature symbols."
 
 (advice-add 'after-find-file :before
 	    (lambda (&rest _)
-	      (mapc #'zy/require zy/edload-find-file-queue)
-	      (setq zy/edload-find-file-queue nil)))
+	      (unless zy/feature-loading
+		(when zy/edload-pre-command-queue
+		  (zy/log 'edload "`find-file' triggered"))
+		(mapc #'zy/require zy/edload-find-file-queue)
+		(setq zy/edload-find-file-queue nil))))
 
 ;; Event `prog-mode': triggered by `prog-mode-hook'
 
@@ -170,8 +220,11 @@ FEATURE and FEATURES are feature symbols."
 
 (add-hook 'prog-mode-hook
 	  (lambda ()
-	    (mapc #'zy/require zy/edload-prog-mode-queue)
-	    (setq zy/edload-prog-mode-queue nil)))
+	    (unless zy/feature-loading
+	      (when zy/edload-pre-command-queue
+		(zy/log 'edload "`prog-mode' triggered"))
+	      (mapc #'zy/require zy/edload-prog-mode-queue)
+	      (setq zy/edload-prog-mode-queue nil))))
 
 ;; Event registering
 
@@ -287,8 +340,7 @@ After loading stoppes, reschedule a new timer for the next load."
     (setq zy/incload-rescheduled-idle zy/incload-idle))
   (when zy/incload-queue
     ;; Load only if there is something in the queue
-    (when init-file-debug
-      (message "[Debug] ---- Incload starts loading units ----"))
+    (zy/log 'incload "---- Incload starts loading units ----")
     (let ((start-time (current-time))
 	  (elapsed-time 0)
 	  next-heavyp)
@@ -298,7 +350,8 @@ After loading stoppes, reschedule a new timer for the next load."
 		  (not next-heavyp))
 	(zy/require (car (pop zy/incload-queue)))
 	(setq elapsed-time (float-time (time-since start-time))
-	      next-heavyp (cadr (car zy/incload-queue))))))
+	      next-heavyp (cadr (car zy/incload-queue)))))
+    (zy/log 'incload "---- Incload stops loading units ----"))
   ;; Prepare the next load
   (setq zy/incload-rescheduled-idle (+ zy/incload-idle
 				       zy/incload-rescheduled-idle)
