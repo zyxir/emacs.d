@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(require 'init-benchmark)
+
 ;;;; Bootstrap Straight
 
 (setq-default
@@ -45,41 +47,6 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-
-
-;;;; Debug Logger
-
-;; The debug logger only works when Emacs is launched with "--debug-init"
-
-(defalias 'zy/log
-  (if (and (boundp 'init-file-debug) init-file-debug)
-      (lambda (module format-string &rest args)
-	"Display a ZyEmacs log message.
-
-MODULE is the module name to show.  FORMAT-STRING is the format
-control string, and ARGS are data to be formatted under control
-of the string."
-	(let* ((content
-		(format "[%s %s] - %s - %s\n"
-			(propertize "ZyEmacs"
-				    'face 'font-lock-variable-name-face)
-			(propertize (if (stringp module)
-					module
-				      (symbol-name module))
-				    'face 'font-lock-keyword-face)
-			(propertize (format-time-string "%FT%T")
-				    'face 'font-lock-constant-face)
-			(propertize (apply 'format format-string args)
-				    'face 'font-lock-doc-face)))
-	       (buffer (get-buffer-create "*ZyEmacs Log*"
-					  'inihibit-buffer-hooks))
-	       (inhibit-read-only t))
-	  (with-current-buffer buffer
-	    (unless buffer-read-only
-	      (read-only-mode 1))
-	    (goto-char (point-max))
-	    (insert content))))
-    (lambda (&rest _))))
 
 
 ;;;; Snippet Features
@@ -145,7 +112,8 @@ the error."
 	(zy/load-feature feature)
       (error
        (message "Error encountered while requiring %s:" feature)
-       (pp err)
+       (zy/log 'snip "Error encountered while requiring %s:" feature)
+       (zy/log 'snip (pp err))
        nil)
       (t nil))))
 
@@ -245,162 +213,188 @@ FEATURE is a feature symbol, and all of EVENTS are event symbols."
 ;; Incremental loader loads a queue of features incrementally with a
 ;; configurable interval.
 
-;;;;; Constants and Variables
+;;;;; The Interface
 
-(defconst zy/incload-idle 2.0
-  "Normal load interval for the incremental loader.")
+;; The incremental loader manages a queue of features to be loaded
+;; incrementally.  Loading of a feature happens when Emacs is idle for a
+;; specific period of time.  If Emacs is idle for longer times, the timer is
+;; rescheduled to load even more features.
 
-(defconst zy/incload-lag 0.3
+;; The incremental loader also manages the loading sequence of features by some
+;; additional properties.  These properties are stored in the property list of
+;; the feature symbol.
+
+(defconst zy/incload-idle 1.0
+  "Load interval for the incremental loader.")
+
+(defconst zy/incload-lag 0.2
   "Lag threshold for the incremental loader.")
+
+(defvar zy/incload-timer nil
+  "The repeated idle timer.")
 
 (defvar zy/incload-rescheduled-timer nil
   "The rescheduled idle timer.")
 
-(defvar zy/incload-rescheduled-idle zy/incload-idle
-  "The idle time for the rescheduled timer.")
+(defvar zy/incload-reschedule-level 1
+  "The current idle time multiplier.")
 
 (defvar zy/incload-queue nil
-  "The queue of loading unit for the incremental loader.
-
-Each loading unit in the queue is a list of the form:
-
-  (FEATURE HEAVYP WEIGHT)
-
-FEATURE is the feature to be loaded, be it a snippet
-feature or not.
-
-HEAVYP indicates if feature takes a lot of time to load.  This
-will affect of loading strategy in runtime.
-
-WEIGHT is the weight of this loading unit.  It affects loading
-priority.")
+  "The queue of features for the incremental loader.")
 
 (defvar zy/incload-queue-initial nil
   "Initial value of `zy/incload-queue'.")
 
-(defvar zy/incload-feature-queue nil
-  "A queue of FEATUREs of each element in `zy/incload-queue'.")
+(defmacro zy/incload-register (feature &rest args)
+  "Add FEATURE into the incremental loading queue.
 
-;;;;; Queue Management
+ARGS specifies additional information to tune the loading of FEATURE.
 
-(defun zy/incload-normalize-unit (unit)
-  "Return the normalized version of loading unit UNIT.
+ARGS could come in pairs with `:priority' and PRIORITY, which
+sets the `incload-priority' property of FEATURE to PRIORITY.  The
+`incload-priority' property stores the priority of the feature.
+Feature with a higher priority loads earlier.  `incload-priority'
+is treated as 0 if not specified.
 
-UNIT is normalized as required by `zy/incload-register'."
-  (if (symbolp unit)
-      `(,unit nil 0)
-    (list (car unit)
-	  (cadr unit)
-	  (if (caddr unit) (caddr unit) 0))))
+ARGS could come in pairs with `:level' and LEVEL, which sets the
+`incload-level' property of FEATURE to LEVEL.  The
+`incload-level' property stores approximately the heavyness of
+the feature.  A feature with a higher level is more heavy, thus
+consumes much more time to load.  A feature with level LEVEL will
+only load after Emacs being idle for LEVEL times of
+`zy/incload-idle' seconds.  `incload-level' is treated as 1 if
+not specified.
 
-(defun zy/incload-unit-in-queue-p (unit)
-  "Return t if loading unit UNIT is already in queue."
-  (if (symbolp unit)
-      (memq unit zy/incload-feature-queue)
-    (memq (car unit) zy/incload-feature-queue)))
+If an `:after' argument is parsed, all remaining arguments is
+considered dependencies that should be loaded before FEATURE.
+Each dependency is either a feature symbol (quoted or unquoted)
+like FEATURE, or an argument list (unquoted) that can be directly
+passed to `zy/incload-register', so that dependent feature will
+be registered by `zy/incload-register' as well."
+  (let ((result-sexp `((unless (memq ,feature zy/incload-queue)
+			 (push ,feature zy/incload-queue))))
+	(after-sexp '())
+	arg)
+    ;; Parse ARGS in a loop
+    (while (and args)
+      (setq arg (pop args))
+      (cond
+       ((eq arg ':priority)
+	(push `(put ,feature 'incload-priority ,(pop args)) result-sexp))
+       ((eq arg ':level)
+	(push `(put ,feature 'incload-level ,(pop args)) result-sexp))
+       ((eq arg ':after)
+	(mapc (lambda (arg)
+		(when (eq (car arg) 'quote)
+		  (setq arg (cadr arg)))
+		(push (if (symbolp arg)
+			  `(zy/incload-register ',arg)
+		        `(zy/incload-register ,@arg))
+		      after-sexp))
+	      args)
+	(setq args nil
+	      after-sexp (reverse after-sexp)
+	      result-sexp (nconc after-sexp result-sexp)))
+       (t nil)))
+    ;; Format the final sexp
+    (if (cdr result-sexp)
+	(cons 'progn result-sexp)
+      (car result-sexp))))
 
-(defun zy/incload-register-unit (unit)
-  "Add loading unit UNIT to the queue if it is not already there."
-  (unless (zy/incload-unit-in-queue-p unit)
-    (setq unit (zy/incload-normalize-unit unit))
-    (push unit zy/incload-queue)
-    (push (car unit) zy/incload-feature-queue)))
 
 ;;;;; Loading Mechanism
 
+(defun zy/incload-get-level (feature)
+  "Get the `incload-level' property of FEATURE.
+
+If FEATURE has no `incload-level' property, return 1."
+  (let ((level (get feature 'incload-level)))
+    (if level level 1)))
+
 (defun zy/incload-load (&optional rescheduled)
-  "Load some units from `zy/incload-queue'.
+  "Load some features from `zy/incload-queue'.
 
 If optional argument RESCHEDULED is nil or omitted, which means
 this is not a rescheduled run, then the rescheduled timer and
 rescheduled idle time will be cleared.
 
-Pop loading units out of `zy/incload-queue' and load them.  At
-least load one loading unit, and stop loading when:
+Get the next loadable feature from `zy/incload-queue'.  A feature
+is loadable if `current-idle-time' is greater than its
+`incload-level' property multiplying `zy/incload-idle'.  Continue
+loading more loadable features until:
 
-- There is nothing in `zy/incload-queue' to load.
+- There is no more loadable features in `zy/incload-queue'.
 
-- The current elapsed time exceeds `zy/incload-lag-normal'.
-
-- The next loading unit has a non-nil value of HEAVYP.
+- The current elapsed time exceeds `zy/incload-lag'.
 
 After loading stoppes, reschedule a new timer for the next load."
   ;; Clear rescheduled timer and idle time if necessary
   (unless rescheduled
     (when zy/incload-rescheduled-timer
       (cancel-timer zy/incload-rescheduled-timer))
-    (setq zy/incload-rescheduled-idle zy/incload-idle))
+    (setq zy/incload-reschedule-level 1))
+  ;; Load only if there is something in the queue
   (when zy/incload-queue
-    ;; Load only if there is something in the queue
-    (zy/log 'incload "---- Incload starts loading units ----")
+    (zy/log 'incload "\\\\ Loading starts with reschedule level %d"
+	    zy/incload-reschedule-level)
     (let ((start-time (current-time))
 	  (elapsed-time 0)
-	  next-heavyp)
-      ;; Load untill any of the three conditionals returns nil
-      (while (and zy/incload-queue
-		  (< elapsed-time zy/incload-lag)
-		  (not next-heavyp))
-	(zy/require (car (pop zy/incload-queue)))
-	(setq elapsed-time (float-time (time-since start-time))
-	      next-heavyp (cadr (car zy/incload-queue)))))
-    (zy/log 'incload "---- Incload stops loading units ----"))
-  ;; Prepare the next load
-  (setq zy/incload-rescheduled-idle (+ zy/incload-idle
-				       zy/incload-rescheduled-idle)
+	  (curpos zy/incload-queue)
+	  (curind 0))
+      ;; Find and load loadable features in a loop
+      (while (and curpos (< elapsed-time zy/incload-lag))
+	(if (<= (zy/incload-get-level (car curpos))
+		zy/incload-reschedule-level)
+	    (progn
+	      ;; Load the feature
+	      (zy/require (car curpos))
+	      ;; Exclude the feature from the queue
+	      (setf elapsed-time (float-time (time-since start-time))
+		    curpos (cdr curpos)
+		    (nthcdr curind zy/incload-queue) curpos))
+	  ;; Go to the next position of the queue
+	  (setq curpos (cdr curpos)
+		curind (1+ curind)))))
+    (zy/log 'incload "// Loading stops with reschedule level %d"
+	    zy/incload-reschedule-level))
+  ;; Prepare the rescheduled timer
+  (setq zy/incload-reschedule-level (1+ zy/incload-reschedule-level)
 	zy/incload-rescheduled-timer
-	(run-with-idle-timer zy/incload-rescheduled-idle nil
+	(run-with-idle-timer (* zy/incload-reschedule-level
+				zy/incload-idle)
+			     nil
 			     'zy/incload-load 'rescheduled)))
 
-(defun zy/incload-weight< (unit1 unit2)
-  "Return t if UNIT1 has a greater WEIGHT than UNIT2."
-  (< (caddr unit1) (caddr unit2)))
+(defun zy/incload-setup-timer ()
+  "Setup the repeated timer for incload."
+  (setq zy/incload-timer
+	(run-with-idle-timer zy/incload-idle 'repeat 'zy/incload-load)))
+
+(defun zy/incload-priority< (feature1 feature2)
+  "Return t if FEATURE1 has a greater PRIORITY than FEATURE2."
+  (let ((priority1 (get feature1 'incload-priority))
+	(priority2 (get feature2 'incload-priority)))
+    (< (if priority1 priority1 0) (if priority2 priority2 0))))
 
 (defun zy/incload-init ()
   "Initialize the incremental loader.
 
-Sort `zy/incload-queue' according to WEIGHT of each loading unit,
-copying its value to `zy/incload-queue-initial', and create the
-first idle timer for `zy/incload-load'."
+Sort `zy/incload-queue' according to the `incload-priority'
+property of each feature, copying its value to
+`zy/incload-queue-initial', and create the first idle timer for
+`zy/incload-load'."
   (setq zy/incload-queue-initial
-	(reverse (sort zy/incload-queue 'zy/incload-weight<))
+	(reverse (sort zy/incload-queue 'zy/incload-priority<))
 	zy/incload-queue zy/incload-queue-initial)
-  (run-with-idle-timer zy/incload-idle 'repeat 'zy/incload-load))
+  ;; Setup the first timer with a longer idle time, as Emacs is idle during
+  ;; startup
+  (run-with-idle-timer (+ zy/incload-idle
+			  (float-time
+			   (time-subtract after-init-time
+					  before-init-time)))
+		       'repeat 'zy/incload-setup-timer))
 
 (add-hook 'emacs-startup-hook 'zy/incload-init)
-
-;;;;; The Interface Macro
-
-(defmacro zy/incload-register (&rest units)
-  "Register loading units UNITS for incremental loading.
-
-The incremental loader loads units in the front first.  So a
-former unit should possibly be the dependency of a later unit, to
-maintain the incrementality of the loading process.
-
-Each loading unit in UNITS is a list of the form:
-
-  (FEATURE [HEAVYP [WEIGHT]])
-
-FEATURE is the feature to be loaded, be it a snippet
-feature or not.
-
-HEAVYP indicates if feature takes a lot of time to load.  This
-will affect of loading strategy in runtime.  HEAVYP is nil by
-default.
-
-WEIGHT is the weight of the loading unit.  It indicates the
-priority of the unit in the loading queue.  WEIGHT is 0 by
-default.
-
-You can also use a single FEATURE symbol as a loading unit, and
-it will be converted to a proper list."
-  (let ((result-sexp '()))
-    (mapc (lambda (unit)
-	    (push `(zy/incload-register-unit ,unit) result-sexp))
-	  units)
-    (if (cdr result-sexp)
-	(cons 'progn (reverse result-sexp))
-      (car result-sexp))))
 
 
 (provide 'init-load)

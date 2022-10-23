@@ -65,7 +65,7 @@
      (which-key-mode "" which-key)
      (yas-minor-mode "" yasnippet))))
 
-(zy/incload-register '(snip-dim nil 10))
+(zy/incload-register 'snip-dim :priority 10)
 
 
 ;;;; Setup Fonts

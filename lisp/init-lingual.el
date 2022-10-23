@@ -55,7 +55,7 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
 
 (straight-use-package 'rime)
 
-(zy/incload-register 'dash 'rime)
+(zy/incload-register 'rime :after 'dash)
 
 (setq-default
  default-input-method "rime"

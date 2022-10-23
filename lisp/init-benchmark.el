@@ -23,14 +23,75 @@
 
 ;;; Code:
 
+
+;;;; Debug Logger
+
+;; The debug logger only works when Emacs is launched with "--debug-init"
+
+(defun zy/log (&rest _)
+  "Display a ZyEmacs log message.
+
+This function is not loaded, because this Emacs session is not
+launched with thet \"--debug-init\" argument.")
+
+(when init-file-debug
+  ;; The ZyEmacs log mode
+
+  (defun zy/log-mode ()
+    "Major mode for viewing ZyEmacs log."
+    (kill-all-local-variables)
+    (setq buffer-read-only t
+	  truncate-lines t
+	  major-mode 'zy/log-mode))
+
+  (put 'zy/log-mode 'mode-class 'special)
+
+  ;; The logging function
+
+  (defun zy/log (module format-string &rest args)
+      "Display a ZyEmacs log message.
+
+MODULE is the module name to show.  FORMAT-STRING is the format
+control string, and ARGS are data to be formatted under control
+of the string."
+      (let* ((zyemacs (propertize "ZyEmacs"
+				  'face 'font-lock-variable-name-face))
+	     (module (when module
+		       (propertize (if (stringp module)
+				       module
+				     (symbol-name module))
+				   'face 'font-lock-keyword-face)))
+	     (category (if module
+			   (format "[%s %s]" zyemacs module)
+			 (format "[%s]" zyemacs)))
+	     (timestamp (propertize (format-time-string "%FT%T")
+				    'face 'font-lock-constant-face))
+	     (header (format "%s - %s - " timestamp category))
+	     (content-list (split-string
+			    (apply 'format format-string args)
+			    "\n"))
+	     (content-list (remove "" content-list))
+	     (inhibit-read-only t))
+	(with-current-buffer
+	    (get-buffer-create "*ZyEmacs Log*")
+	  (unless (eq major-mode 'zy/log-mode)
+	    (zy/log-mode))
+	  (goto-char (point-max))
+	  (mapc (lambda (content)
+		  (insert (format "%s%s\n" header content)))
+		content-list)))))
+
+
 ;;;; Startup Message
 
 (defun display-startup-echo-area-message ()
   "Display startup time after init."
-  (message
-   (format "ZyEmacs ready in %.2f seconds."
-           (float-time
-            (time-subtract (current-time) before-init-time)))))
+  (let ((content
+	 (format "ZyEmacs ready in %.2f seconds."
+		 (float-time
+		  (time-subtract (current-time) before-init-time)))))
+    (message content)
+    (zy/log nil content)))
 
 
 ;;;; The Benchmark Tree

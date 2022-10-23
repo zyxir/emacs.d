@@ -32,7 +32,9 @@
 
 ;; Customized Org paths when Zybox is available
 
-(zy/incload-register 'calendar 'ol 'org-table 'org-list 'org-src 'ob 'org-agenda '(org t))
+(zy/incload-register 'org :level 3 :after
+		     'calendar 'ol 'org-table 'org-list 'org-src 'ob
+		     ('org-agenda :level 2))
 
 (when zy/zybox-path
   (setq-default
@@ -208,14 +210,14 @@ The function works like `org-latex-export-to-pdf', except that
 		       zy/org-export-to-pdf-phone)))))
 
 (zy/lload-register 'snip-ox-latex 'ox-latex)
-(zy/incload-register 'org 'snip-ox-latex)
+(zy/incload-register 'snip-ox-latex :level 2 :after 'org)
 
 
 ;;;; Org-Journal
 
 (straight-use-package 'org-journal)
 
-(zy/incload-register 'org 'org-journal)
+(zy/incload-register 'org-journal :after 'org)
 
 (setq-default
  org-journal-prefix-key "C-c j")
@@ -343,7 +345,7 @@ The function works like `org-latex-export-to-pdf', except that
      project--list)
     (delete-dups org-agenda-files)))
 
-(zy/incload-register 'org 'snip-gtd)
+(zy/incload-register 'snip-gtd :after 'org)
 
 
 (provide 'init-org)

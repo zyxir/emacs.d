@@ -42,7 +42,7 @@
   (zy/defsnip 'snip-tty-clipboard
     (require 'clipetty)
     (clipetty-mode 1))
-  (zy/incload-register '(snip-tty-clipboard nil 77)))
+  (zy/incload-register 'snip-tty-clipboard :priority 77))
 
 
 ;;;; Mwim
@@ -54,7 +54,7 @@
   (zy/define-key
     [remap move-beginning-of-line] 'mwim-beginning-of-code-or-line))
 
-(zy/incload-register '(snip-mwim nil 70))
+(zy/incload-register 'snip-mwim :priority 70)
 
 
 ;;;; Outline
@@ -94,19 +94,22 @@ ARG is the arguments passed to OLDFUN."
   (when (fboundp 'pixel-scroll-precision-mode)
     (pixel-scroll-precision-mode)))
 
-(zy/incload-register '(snip-scroll nil 75))
+(zy/incload-register 'snip-scroll :priority 75)
 
 
 ;;;; Parentheses
 
 (straight-use-package 'smartparens)
 
-(zy/incload-register 'dash 'smartparens)
-
-(setq-default sp-highlight-pair-overlay nil
-	      sp-autoinsert-pair t)
+(zy/defsnip 'snip-smartparens
+  (require 'smartparens-config)
+  (setq-default sp-highlight-pair-overlay nil
+		sp-autoinsert-pair t))
 
 (add-hook 'prog-mode-hook 'smartparens-mode)
+
+(zy/lload-register 'snip-smartparens 'smartparens)
+(zy/incload-register 'snip-smartparens :after 'dash)
 
 
 ;;;; Yasnippet
@@ -134,7 +137,7 @@ ARG is the arguments passed to OLDFUN."
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
 
 (zy/edload-register 'snip-yasnippet 'prog-mode text-mode)
-(zy/incload-register 'snip-yasnippet)
+(zy/incload-register 'snip-yasnippet :level 3)
 
 
 (provide 'init-editing)

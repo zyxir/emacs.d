@@ -37,7 +37,7 @@
   (marginalia-mode +1))
 
 (zy/edload-register 'snip-vertico 'pre-command)
-(zy/incload-register '(snip-vertico nil 80))
+(zy/incload-register 'snip-vertico :priority 80)
 
 ;; Intangible minibuffer
 
@@ -82,7 +82,7 @@ ARGS are the arguments passed."
     (consult-customize consult-recent-file
 		       :preview-key (kbd "M-."))))
 
-(zy/incload-register '(consult nil 0))
+(zy/incload-register 'consult)
 
 ;; Setup Embark
 
@@ -91,7 +91,7 @@ ARGS are the arguments passed."
 (zy/define-key
   [remap tmm-menubar] 'embark-act)
 
-(zy/incload-register '(embark nil 0))
+(zy/incload-register 'embark :level 2)
 
 
 ;;;; Corfu
@@ -112,7 +112,7 @@ ARGS are the arguments passed."
     "M-SPC" 'corfu-insert-separator))
 
 (zy/edload-register 'snip-corfu 'after-command)
-(zy/incload-register '(snip-corfu t 20))
+(zy/incload-register 'snip-corfu :priority 20)
 
 ;; Enable Corfu in the minibuffer
 

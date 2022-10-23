@@ -165,7 +165,7 @@ KEYMAP."
   (require 'which-key)
   (which-key-mode))
 
-(zy/incload-register '(snip-which-key nil 90))
+(zy/incload-register 'snip-which-key :priority 90)
 
 
 (provide 'init-keybinding)

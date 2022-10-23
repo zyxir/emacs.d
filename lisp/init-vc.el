@@ -31,7 +31,9 @@
 
 (straight-use-package 'magit)
 
-(zy/incload-register 'dash 'with-editor 'transient 'git-commit 'magit-section '(magit t))
+(zy/incload-register 'magit :level 3
+		     :after 'dash 'with-editor 'transient
+		     ('git-commit :level 3) 'magit-section)
 
 (zy/define-key
   "C-c v" 'magit

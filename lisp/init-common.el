@@ -69,7 +69,7 @@
   (require 'kinsoku))
 
 (zy/edload-register 'snip-inbuilt-modes 'pre-command)
-(zy/incload-register '(snip-inbuilt-modes nil 100))
+(zy/incload-register 'snip-inbuilt-modes :priority 100)
 
 (zy/defsnip 'snip-file-inbuilt-modes
   (setq-default global-auto-revert-ignore-modes '(pdf-view-mode))
@@ -77,7 +77,7 @@
   (save-place-mode +1))
 
 (zy/edload-register 'snip-file-inbuilt-modes 'prog-mode 'text-mode)
-(zy/incload-register '(snip-file-inbuilt-modes nil 0))
+(zy/incload-register 'snip-file-inbuilt-modes)
 
 
 ;;;; WSL detection
@@ -160,13 +160,13 @@
 (straight-use-package '(zyutils :type git
 				:repo "https://github.com/zyxir/Zyutils.el"))
 
-(zy/incload-register '(zyutils 40 0))
+(zy/incload-register 'zyutils)
 
 ;; Crux contains a lot of useful commands.
 
 (straight-use-package 'crux)
 
-(zy/incload-register '(crux 40 0))
+(zy/incload-register 'crux :level 3)
 
 
 (provide 'init-common)
