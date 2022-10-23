@@ -57,17 +57,6 @@
 (zy/incload-register 'snip-mwim :priority 70)
 
 
-;;;; Outline
-
-(straight-use-package 'outline-minor-faces)
-
-(mapc (lambda (hook)
-	(add-hook hook 'outline-minor-mode))
-      '(emacs-lisp-mode-hook))
-
-(add-hook 'outline-minor-mode-hook 'outline-minor-faces-mode)
-
-
 ;;;; Scrolling
 
 (straight-use-package 'beacon)

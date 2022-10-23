@@ -29,14 +29,15 @@
 ;;;; Setup Modus Themes
 
 (setq-default
- modus-themes-italic-constructs nil
+ modus-themes-italic-constructs t
  modus-themes-lang-checkers '(background)
  modus-themes-bold-constructs t
- modus-themes-headings '((0 . (background rainbow 1.1))
-			 (1 . (overline rainbow 1.3))
-			 (2 . (overline rainbow 1.2))
-			 (3 . (overline 1.1))
-			 (t . (monochrome)))
+ modus-themes-headings '((0 . (background 1.2))
+			 (1 . (background overline 1.3))
+			 (2 . (background overline 1.2))
+			 (3 . (background overline 1.1))
+			 (4 . (background 1.1))
+			 (t . (background 1.0)))
  modus-themes-hl-line '(intense)
  modus-themes-markup '(background intense)
  modus-themes-mixed-fonts t
@@ -125,20 +126,27 @@ does the job."
 (defconst zy/cjk-charsets '(han cjk-misc bopomofo kana hangul)
   "CJK character sets.")
 
-(defun zy/pick-font (&rest fonts)
-  "Get the first available font in FONTS.
-
-Returns the first font if `display-graphic-p' returns nil."
-  (if (display-graphic-p)
-      (cl-find-if (lambda (font)
-		    (x-list-fonts font))
-		  fonts)
-    (car fonts)))
-
 ;; Font faces setup
+
+(defcustom zy/font-size 18
+  "The pixel size of font in `default' face."
+  :type 'integer
+  :group 'zyemacs)
+
+(defface zy-sans nil
+  "Sans-serif font face."
+  :group 'zyemacs)
 
 (defvar zy/setup-font-faces nil
   "If `zy/setup-font-faces' has executed.")
+
+;; I used to write very flexible font configuration codes that defines a tons of
+;; faces and automatically picks the first available font from a list, but that
+;; turned out to be too complicated and heavy.  Now I just hard-coded the font
+;; names and rely on the default font fallback mechanism.
+
+;; Anyway this is just my personal configuration, I can change the code at any
+;; time.
 
 (defun zy/setup-font-faces (&optional ignored force)
   "Setup font faces.
@@ -148,27 +156,24 @@ ignores the FRAME argument given by `after-make-frame-functions'.
 
 This function does not execute if its symbol value is t, unless
 optional argument FORCE is non-nil."
-  (when (or force (not zy/setup-font-faces))
+  (interactive)
+  (when (display-graphic-p)
     ;; Default face
-    (set-face-attribute 'default nil :font "Fira Code")
-    (zy/set-face-charset-font 'default nil zy/cjk-charsets
-			      (zy/pick-font "Sarasa Mono CL"
-					    "Microsoft YaHei"
-					    "monospace"))
+    (set-face-attribute 'default nil
+			:font (font-spec :family "Sarasa Mono CL"
+					 :size zy/font-size))
+    (zy/set-face-charset-font 'default nil zy/cjk-charsets "Sarasa Mono CL")
     ;; Fixed-pitch face
-    (set-face-attribute 'fixed-pitch nil
-			:font "Fira Code"
-			:height 'unspecified)
+    (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL")
+    (zy/set-face-charset-font 'fixed-pitch nil zy/cjk-charsets "Sarasa Mono CL")
     ;; ZyEmacs sans-serif face
-    (defface zy-sans nil "Sans-serif font face."
-      :group 'basic-faces)
-    (set-face-attribute 'zy-sans nil
-      :font (zy/pick-font "Roboto" "Calibri" "sans-serif"))
-    (zy/set-face-charset-font 'zy-sans nil zy/cjk-charsets
-			      (zy/pick-font "Sarasa Mono CL"
-					    "Microsoft YaHei"
-					    "monospace"))
+    (set-face-attribute 'zy-sans nil :font "Roboto")
+    (zy/set-face-charset-font 'zy-sans nil zy/cjk-charsets "Sarasa Mono CL")
     (setq zy/setup-font-faces t)))
+
+;; Setup font now.  Do not set it up after init to fake init time.  In daemon
+;; mode this will not work, and requires the user to run `zy/setup-font-faces'
+;; manually, but I do not use daemon mode, thus I don't care.
 
 (zy/setup-font-faces)
 
