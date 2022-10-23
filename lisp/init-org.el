@@ -26,22 +26,80 @@
 (require 'init-common)
 (require 'init-keybinding)
 (require 'init-load)
+(require 'init-ui)
+
+;;;; Path Setup
+
+;; Customized Org paths when Zybox is available
+
+(when zy/zybox-path
+  (defvar org-directory)
+  (setq-default
+   org-directory (expand-file-name "org" zy/zybox-path)
+   org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path))
+
+  (defvar zy/gtd-path (expand-file-name "org-gtd" org-directory)
+    "Where my GTD files are located.")
+  (defvar zy/gtd-inbox-file (expand-file-name "inbox.org" zy/gtd-path)
+    "The path of \"inbox.org\" of the GTD system.")
+  (defvar zy/gtd-gtd-file (expand-file-name "gtd.org" zy/gtd-path)
+    "The path of \"gtd.org\" of the GTD system.")
+  (defvar zy/gtd-someday-file (expand-file-name "someday.org" zy/gtd-path)
+    "The path of \"someday.org\" of the GTD system.")
+  (defvar zy/gtd-files `(,zy/gtd-inbox-file
+			 ,zy/gtd-gtd-file
+			 ,zy/gtd-someday-file)
+    "List of all files of the GTD system.")
+
+  ;; Make sure that all the files exist
+
+  (mapc (lambda (file)
+	  (unless (file-exists-p file)
+	    (write-region "" nil file)))
+	zy/gtd-files)
+
+  ;; Setup agenda, capture and refile
+
+  (setq-default
+   org-agenda-files `(,zy/gtd-inbox-file
+		      ,zy/gtd-gtd-file
+		      ,zy/gtd-someday-file)
+   org-capture-templates `(("i" "inbox" entry
+                            (file+headline ,zy/gtd-inbox-file "inbox")
+                            "* TODO [#B] %u %i%?"
+                            :empty-lines 1)
+                           ("s" "someday" entry
+                            (file+headline ,zy/gtd-someday-file "someday")
+                            "* TODO [#C] %u %i%?"
+                            :empty-lines 1)
+                           ("t" "GTD" entry
+                            (file+olp+datetree ,zy/gtd-gtd-file)
+                            "* TODO [#B] %u %i%?"
+                            :empty-lines 1))
+   org-refile-targets `((,zy/gtd-gtd-file :maxlevel . 3)
+                        (,zy/gtd-someday-file :level . 1))))
 
 
 ;;;; Basic Org
-
-;; Customized Org paths when Zybox is available
 
 (zy/incload-register 'org :level 3 :after
 		     'calendar 'ol 'org-table 'org-list 'org-src 'ob
 		     ('org-agenda :level 2))
 
-(when zy/zybox-path
-  (setq-default
-   org-directory (expand-file-name "org" zy/zybox-path)
-   org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path)))
-
-(setq-default org-startup-truncated nil)
+(setq-default
+ org-log-done 'time
+ org-log-refile 'time
+ org-startup-truncated nil
+ org-todo-keywords '((sequence "TODO(t)"
+			       "DOING(i)"
+			       "|"
+			       "DONE(d)")
+		     (sequence "|"
+			       "CANCELED(c)"))
+ org-todo-keyword-faces '(("TODO" . modus-themes-intense-red)
+			  ("DOING" . modus-themes-active-cyan)
+			  ("DONE" . modus-themes-intense-green)
+			  ("CANCELED" . modus-themes-tab-inactive)))
 
 (zy/define-key :prefix zy/leader-keys
   "a" 'org-agenda
@@ -239,101 +297,40 @@ The function works like `org-latex-export-to-pdf', except that
    org-journal-file-header ""))
 
 
-;;;; GTD: Getting Things Done
+;;;; Per Project Todos
 
-(zy/defsnip 'snip-gtd
-  ;; Setup GTD paths
+(zy/defsnip 'snip-project-todo
+  (require 'project)
+  (defvar project--list)
+  (defvar org-agenda-files)
 
-  (when zy/zybox-path
-    (defvar zy/gtd-path (expand-file-name "org-gtd" org-directory)
-      "Where my GTD files are located.")
-    (defvar zy/gtd-inbox-file (expand-file-name "inbox.org" zy/gtd-path)
-      "The path of \"inbox.org\" of the GTD system.")
-    (defvar zy/gtd-gtd-file (expand-file-name "gtd.org" zy/gtd-path)
-      "The path of \"gtd.org\" of the GTD system.")
-    (defvar zy/gtd-someday-file (expand-file-name "someday.org" zy/gtd-path)
-      "The path of \"someday.org\" of the GTD system.")
-    (defvar zy/gtd-files `(,zy/gtd-inbox-file
-			   ,zy/gtd-gtd-file
-			   ,zy/gtd-someday-file)
-      "List of all files of the GTD system.")
+  ;; Get project list
 
-    ;; Make sure that all the files exist
+  (when (and (equal project--list 'unset)
+	     (fboundp 'project--read-project-list))
+    (project--read-project-list))
 
-    (mapc (lambda (file)
-	    (unless (file-exists-p file)
-	      (write-region "" nil file)))
-	  zy/gtd-files)
+  ;; Add per-project TODO files to `org-agenda-files'
 
-    ;; Setup agenda, capture and refile
+  (defvar zy/project-todo-regexp "^.*TODO\\.org$"
+    "Possible TODO filenames for projects.")
+  (mapc
+   (lambda (proj)
+     (let* ((proj-path (car proj))
+            proj-todos)
+       (setq proj-todos (directory-files proj-path
+					 'full
+					 zy/project-todo-regexp
+					 'nosort))
+       (when proj-todos
+	 (setq org-agenda-files
+	       (nconc org-agenda-files
+		      proj-todos)))))
+   project--list)
+  (delete-dups org-agenda-files))
 
-    (setq-default
-     org-agenda-files `(,zy/gtd-inbox-file
-			,zy/gtd-gtd-file
-			,zy/gtd-someday-file)
-     org-capture-templates `(("i" "inbox" entry
-                              (file+headline ,zy/gtd-inbox-file "inbox")
-                              "* TODO [#B] %u %i%?"
-                              :empty-lines 1)
-                             ("s" "someday" entry
-                              (file+headline ,zy/gtd-someday-file "someday")
-                              "* TODO [#C] %u %i%?"
-                              :empty-lines 1)
-                             ("t" "GTD" entry
-                              (file+olp+datetree ,zy/gtd-gtd-file)
-                              "* TODO [#B] %u %i%?"
-                              :empty-lines 1))
-     org-refile-targets `((,zy/gtd-gtd-file :maxlevel . 3)
-                          (,zy/gtd-someday-file :level . 1))))
-
-  ;; Tweak Org for GTD
-
-  (setq-default
-   org-log-done 'time
-   org-log-refile 'time
-   org-todo-keywords '((sequence "TODO(t)"
-                                 "DOING(i)"
-                                 "|"
-                                 "DONE(d)")
-                       (sequence "|"
-                                 "CANCELED(c)"))
-   org-todo-keyword-faces '(("TODO" . modus-themes-intense-red)
-			    ("DOING" . modus-themes-active-cyan)
-			    ("DONE" . modus-themes-intense-green)
-			    ("CANCELED" . modus-themes-tab-inactive)))
-
-  ;; Per-project TODO
-
-  (with-eval-after-load 'project
-    (defvar project--list)
-    (defvar org-agenda-files)
-
-    ;; Get project list
-
-    (when (and (equal project--list 'unset)
-	       (fboundp 'project--read-project-list))
-      (project--read-project-list))
-
-    ;; Add per-project TODO files to `org-agenda-files'
-
-    (defvar zy/project-todo-regexp "^.*TODO\\.org$"
-      "Possible TODO filenames for projects.")
-    (mapc
-     (lambda (proj)
-       (let* ((proj-path (car proj))
-              proj-todos)
-         (setq proj-todos (directory-files proj-path
-					   'full
-					   zy/project-todo-regexp
-					   'nosort))
-	 (when proj-todos
-	   (setq org-agenda-files
-		 (nconc org-agenda-files
-			proj-todos)))))
-     project--list)
-    (delete-dups org-agenda-files)))
-
-(zy/incload-register 'snip-gtd :after 'org)
+(zy/lload-register 'snip-project-todo 'org)
+(zy/incload-register 'snip-project-todo :after 'org 'project)
 
 
 (provide 'init-org)
