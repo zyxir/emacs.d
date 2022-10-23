@@ -21,6 +21,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'init-keybinding)
 (require 'init-load)
 
@@ -78,6 +79,8 @@
 (defun zy/set-face-charset-font (face frame charset font)
   "Set the font used for character set CHARSET in face FACE.
 
+This function has no effect if `display-graphic-p' returns nil.
+
 FRAME specifies the frame to set in.  When FRAME is nil or
 omitted, set it for all existing frames, as well as the default
 for new frames.
@@ -95,41 +98,42 @@ system of Emacs is complicated, and not very straightforward.
 Instead of playing with `font-spec', fontsets and frame
 attributes, this function provides a simpler interface that just
 does the job."
-  (let* (;; The fontset that we are going to manipulate
-	 (fontset (face-attribute face :fontset frame))
-	 ;; If the fontset is not specified
-	 (unspecified-p (equal fontset 'unspecified)))
-    ;; If the fontset is not specified, create a new one with a programmatically
-    ;; generated name
-    (when unspecified-p
-      (setq fontset
-	    (new-fontset
-	     (format "-*-*-*-*-*--*-*-*-*-*-*-fontset-zy%d"
-		     zy/-fontset-cnt)
-	     nil)
-	    zy/-fontset-cnt (+ 1 zy/-fontset-cnt)))
-    ;; Set font for the fontset
-    (if (listp charset)
-	(mapc (lambda (c)
-		(set-fontset-font fontset c font frame))
-	      charset)
-      (set-fontset-font fontset charset font frame))
-    ;; Assign the fontset to the face if necessary
-    (when unspecified-p
-      (set-face-attribute face frame :fontset fontset))))
+  (when (display-graphic-p)
+    (let* (;; The fontset that we are going to manipulate
+	   (fontset (face-attribute face :fontset frame))
+	   ;; If the fontset is not specified
+	   (unspecified-p (equal fontset 'unspecified)))
+      ;; If the fontset is not specified, create a new one with a
+      ;; programmatically generated name
+      (when unspecified-p
+	(setq fontset
+	      (new-fontset
+	       (format "-*-*-*-*-*--*-*-*-*-*-*-fontset-zy%d"
+		       zy/-fontset-cnt)
+	       nil)
+	      zy/-fontset-cnt (+ 1 zy/-fontset-cnt)))
+      ;; Set font for the fontset
+      (if (listp charset)
+	  (mapc (lambda (c)
+		  (set-fontset-font fontset c font frame))
+		charset)
+	(set-fontset-font fontset charset font frame))
+      ;; Assign the fontset to the face if necessary
+      (when unspecified-p
+	(set-face-attribute face frame :fontset fontset)))))
 
 (defconst zy/cjk-charsets '(han cjk-misc bopomofo kana hangul)
   "CJK character sets.")
 
-(defmacro zy/pick-font (&rest fonts)
+(defun zy/pick-font (&rest fonts)
   "Get the first available font in FONTS.
 
-Each element of FONTS is a string representing a frame."
-  (let ((or-sexp '(or)))
-    (mapc (lambda (font)
-	    (push `(when (x-list-fonts ,font) ,font) or-sexp))
-	  fonts)
-    (reverse or-sexp)))
+Returns the first font if `display-graphic-p' returns nil."
+  (if (display-graphic-p)
+      (cl-find-if (lambda (font)
+		    (x-list-fonts font))
+		  fonts)
+    (car fonts)))
 
 ;; Font faces setup
 
@@ -166,10 +170,7 @@ optional argument FORCE is non-nil."
 					    "monospace"))
     (setq zy/setup-font-faces t)))
 
-(if (display-graphic-p)
-    (zy/setup-font-faces)
-  (add-to-list 'after-make-frame-functions
-	       #'zy/setup-font-faces))
+(zy/setup-font-faces)
 
 
 ;;;; Distraction-Free Mode

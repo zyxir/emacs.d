@@ -83,6 +83,7 @@
 ;;;; Start Server
 
 (zy/defsnip 'snip-server
+  (require 'server)
   (unless (server-running-p)
     (server-start)))
 

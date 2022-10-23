@@ -296,23 +296,11 @@ The function works like `org-latex-export-to-pdf', except that
                                  "|"
                                  "DONE(d)")
                        (sequence "|"
-                                 "CANCELED(c)")))
-
-  (when (fboundp 'modus-themes-color)
-    (set-face-attribute 'org-todo nil
-			:weight 'bold
-			:foreground (modus-themes-color 'fg-active)
-			:background (modus-themes-color 'bg-active))
-    (setq-default
-     org-todo-keyword-faces
-     `(("TODO" .
-	(:inherit org-todo :background ,(modus-themes-color 'red-intense-bg)))
-       ("DOING" .
-	(:inherit org-todo :background ,(modus-themes-color 'blue-intense-bg)))
-       ("DONE" .
-	(:inherit org-todo :background ,(modus-themes-color 'green-intense-bg)))
-       ("CANCELED" .
-	(:inherit org-todo :background ,(modus-themes-color 'yellow-subtle-bg))))))
+                                 "CANCELED(c)"))
+   org-todo-keyword-faces '(("TODO" . modus-themes-intense-red)
+			    ("DOING" . modus-themes-active-cyan)
+			    ("DONE" . modus-themes-intense-green)
+			    ("CANCELED" . modus-themes-tab-inactive)))
 
   ;; Per-project TODO
 
