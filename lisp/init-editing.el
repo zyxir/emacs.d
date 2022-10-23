@@ -64,6 +64,7 @@
 (mapc (lambda (hook)
 	(add-hook hook 'outline-minor-mode))
       '(emacs-lisp-mode-hook))
+
 (add-hook 'outline-minor-mode-hook 'outline-minor-faces-mode)
 
 
@@ -106,6 +107,7 @@ ARG is the arguments passed to OLDFUN."
   (setq-default sp-highlight-pair-overlay nil
 		sp-autoinsert-pair t))
 
+(add-hook 'text-mode-hook 'smartparens-mode)
 (add-hook 'prog-mode-hook 'smartparens-mode)
 
 (zy/lload-register 'snip-smartparens 'smartparens)

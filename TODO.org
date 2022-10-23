@@ -1,0 +1,12 @@
+#+category: ZyEmacs
+
+Todos for the *ZyEmacs* project.
+
+** TODO [#B] Find alternatives for Fira Code
+
+Preferably with ligatures and italic support.  Ligatures should also be configured within ZyEmacs.  Candidates:
+
+- JetBrains Mono
+- Sarasa Gothic
+
+** TODO [#C] Figure out a better keybinding scheme
