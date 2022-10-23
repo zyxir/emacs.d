@@ -83,7 +83,8 @@
 ;;;; Start Server
 
 (zy/defsnip 'snip-server
-  (server-start))
+  (unless (server-running-p)
+    (server-start)))
 
 (zy/incload-register 'snip-server :priority 30)
 
