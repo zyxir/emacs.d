@@ -35,6 +35,8 @@
 		TeX-parse-self t
 		TeX-save-query nil
 		TeX-engine 'xetex
+		TeX-source-correlate-method 'synctex
+		TeX-source-correlate-start-server t
 		TeX-command-default "XeLaTeX")
   (defvar TeX-command-list)
   (add-to-list 'TeX-command-list
@@ -51,15 +53,6 @@
 		  reftex-use-multiple-selection-buffers t)))
 
 (zy/lload-register 'snip-tex 'tex)
-
-;; PDF preview with PDF-tools
-
-(zy/defsnip 'snip-tex-preview
-  (setq-default TeX-view-program-selection '((output-pdf "PDF Tools"))
-		TeX-source-correlate-method 'synctex
-		TeX-source-correlate-start-server t))
-
-(zy/lload-register 'snip-tex-preview 'tex)
 
 
 (provide 'init-tex)

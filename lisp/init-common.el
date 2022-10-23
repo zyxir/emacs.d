@@ -80,6 +80,14 @@
 (zy/incload-register 'snip-file-inbuilt-modes)
 
 
+;;;; Start Server
+
+(zy/defsnip 'snip-server
+  (server-start))
+
+(zy/incload-register 'snip-server :priority 30)
+
+
 ;;;; WSL detection
 
 (defun zy/wsl-p ()
