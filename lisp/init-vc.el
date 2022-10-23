@@ -35,10 +35,14 @@
 		     :after 'dash 'with-editor 'transient
 		     ('git-commit :level 3) 'magit-section)
 
+(setq magit-define-global-key-bindings nil)
+
+;; Overwrite default VC keys
+
 (zy/define-key
-  "C-c v" 'magit
-  "C-c V" 'magit-dispatch
-  "C-c M-v" 'magit-file-dispatch)
+  "C-x v" 'magit-status
+  "C-x C-v" 'magit-dispatch
+  "C-x M-v" 'magit-file-dispatch)
 
 
 (provide 'init-vc)
