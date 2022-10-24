@@ -123,13 +123,14 @@ ARG is the arguments passed to OLDFUN."
 (straight-use-package 'consult-yasnippet)
 
 (zy/defsnip 'snip-yasnippet
-  (require 'yasnippet)
-  (require 'yasnippet-snippets)
   (setq-default yas-snippet-dirs
 		(list
 		 (expand-file-name "etc/snippets"
-				   user-emacs-directory)
-		 yasnippet-snippets-dir))
+				   user-emacs-directory)))
+  (require 'yasnippet)
+  (require 'yasnippet-snippets)
+  (add-to-list 'yas-snippet-dirs
+	       yasnippet-snippets-dir)
   (yas-global-mode +1)
   ;; Do not auto expand snippet
   (zy/define-key :keymap 'yas-minor-mode-map
