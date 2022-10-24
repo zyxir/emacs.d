@@ -30,7 +30,6 @@
 
 (setq-default
  modus-themes-italic-constructs t
- modus-themes-lang-checkers '(background)
  modus-themes-bold-constructs t
  modus-themes-headings '((0 . (rainbow background 1.2))
 			 (1 . (rainbow background overline 1.3))

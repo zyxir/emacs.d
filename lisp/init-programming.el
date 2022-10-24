@@ -26,29 +26,43 @@
 (require 'init-load)
 
 
-;;;; Flycheck
+;;;; Flymake
 
-(straight-use-package 'flycheck)
-
-;; Only enable Flycheck for prog-modes and tex-mode
+;; Enable Flymake for certain modes
 (mapc (lambda (hook)
-	(add-hook hook 'flycheck-mode))
-      '(prog-mode-hook tex-mode-hook))
+	(add-hook hook 'flymake-mode))
+      '(emacs-lisp-mode))
 
-(zy/defsnip 'snip-flycheck
-  (setq-default flycheck-emacs-lisp-load-path 'inherit)
-  (require 'flycheck)
-  (zy/define-key :keymap 'flycheck-mode-map
-    "M-p" 'flycheck-previous-error
-    "M-n" 'flycheck-next-error))
+(zy/defsnip 'snip-flymake
+  (require 'flymake)
+  (setq-default elisp-flymake-byte-compile-load-path
+		`("./" ,load-path))
+  (zy/define-key :keymap 'flymake-mode-map
+    "M-p" 'flymake-goto-prev-error
+    "M-n" 'flymake-goto-next-error
+    "M-g f" 'consult-flymake))
 
-(zy/lload-register 'snip-flycheck 'flycheck)
-(zy/incload-register 'snip-flycheck)
+(zy/lload-register 'snip-flymake 'flymake)
+(zy/incload-register 'snip-flymake)
 
 
 ;;;; Eglot
 
 (straight-use-package 'eglot)
+
+;; Enable Eglot in certain modes
+
+(mapc (lambda (hook)
+	(add-hook hook 'eglot-ensure))
+      '(tex-mode-hook))
+
+;; My own LSP server preferences
+
+(with-eval-after-load 'eglot
+  ;; Use Texlab for LaTeX
+  (add-to-list 'eglot-server-programs
+	       '((tex-mode context-mode texinfo-mode bibtex-mode)
+		 "texlab")))
 
 
 (provide 'init-programming)
