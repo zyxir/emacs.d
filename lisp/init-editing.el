@@ -45,6 +45,19 @@
   (zy/incload-register 'snip-tty-clipboard :priority 77))
 
 
+;;;; Outline
+
+(setq-default outline-minor-mode-cycle t
+	      outline-minor-mode-highlight 'append
+	      outline-minor-mode-use-margins t)
+
+;; Toggle Outline minor mode with "leader t o"
+
+(zy/define-key
+  :keymap 'zy/leader-toggle-map
+  "o" 'outline-minor-mode)
+
+
 ;;;; Mwim
 
 (straight-use-package 'mwim)

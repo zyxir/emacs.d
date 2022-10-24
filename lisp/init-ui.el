@@ -32,12 +32,12 @@
  modus-themes-italic-constructs t
  modus-themes-lang-checkers '(background)
  modus-themes-bold-constructs t
- modus-themes-headings '((0 . (background 1.2))
-			 (1 . (background overline 1.3))
-			 (2 . (background overline 1.2))
-			 (3 . (background overline 1.1))
-			 (4 . (background 1.1))
-			 (t . (background 1.0)))
+ modus-themes-headings '((0 . (rainbow background 1.2))
+			 (1 . (rainbow background overline 1.3))
+			 (2 . (rainbow background overline 1.2))
+			 (3 . (rainbow background overline 1.1))
+			 (4 . (rainbow background 1.1))
+			 (t . (rainbow background regular 1.0)))
  modus-themes-hl-line '(intense)
  modus-themes-markup '(background intense)
  modus-themes-mixed-fonts t
@@ -137,9 +137,6 @@ does the job."
   "Sans-serif font face."
   :group 'zyemacs)
 
-(defvar zy/setup-font-faces nil
-  "If `zy/setup-font-faces' has executed.")
-
 ;; I used to write very flexible font configuration codes that defines a tons of
 ;; faces and automatically picks the first available font from a list, but that
 ;; turned out to be too complicated and heavy.  Now I just hard-coded the font
@@ -148,14 +145,8 @@ does the job."
 ;; Anyway this is just my personal configuration, I can change the code at any
 ;; time.
 
-(defun zy/setup-font-faces (&optional ignored force)
-  "Setup font faces.
-
-Optional argument IGNORED is ignored, so that the function
-ignores the FRAME argument given by `after-make-frame-functions'.
-
-This function does not execute if its symbol value is t, unless
-optional argument FORCE is non-nil."
+(defun zy/setup-font-faces ()
+  "Setup font for several faces."
   (interactive)
   (when (display-graphic-p)
     ;; Default face
@@ -168,8 +159,7 @@ optional argument FORCE is non-nil."
     (zy/set-face-charset-font 'fixed-pitch nil zy/cjk-charsets "Sarasa Mono CL")
     ;; ZyEmacs sans-serif face
     (set-face-attribute 'zy-sans nil :font "Roboto")
-    (zy/set-face-charset-font 'zy-sans nil zy/cjk-charsets "Sarasa Mono CL")
-    (setq zy/setup-font-faces t)))
+    (zy/set-face-charset-font 'zy-sans nil zy/cjk-charsets "Sarasa Mono CL")))
 
 ;; Setup font now.  Do not set it up after init to fake init time.  In daemon
 ;; mode this will not work, and requires the user to run `zy/setup-font-faces'
