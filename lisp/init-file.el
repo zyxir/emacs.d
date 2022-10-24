@@ -71,6 +71,32 @@
   "q" 'omni-scratch-quit)
 
 
+;;;; Treemacs
+
+(straight-use-package 'treemacs)
+(straight-use-package 'treemacs-magit)
+
+(zy/defsnip 'snip-treemacs
+  (require 'treemacs)
+  (with-eval-after-load 'magit
+    (require 'treemacs-magit))
+  (treemacs-filewatch-mode t)
+  (when treemacs-python-executable
+    (treemacs-git-commit-diff-mode t))
+  (pcase (cons (not (null (executable-find "git")))
+               (not (null treemacs-python-executable)))
+    (`(t . t)
+     (treemacs-git-mode 'deferred))
+    (`(t . _)
+     (treemacs-git-mode 'simple))))
+
+(zy/lload-register 'snip-treemacs 'treemacs)
+(zy/incload-register 'snip-treemacs :level 3)
+
+(zy/define-key
+  "C-x C-d" 'treemacs-select-window)
+
+
 (provide 'init-file)
 
 ;;; init-file.el ends here.

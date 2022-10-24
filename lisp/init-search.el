@@ -46,6 +46,18 @@
   "G" 'rg-menu)
 
 
+;;;; Isearch-mb
+
+;; Isearch-mb is an enhanced version of Isearch
+
+(straight-use-package 'isearch-mb)
+
+(zy/defsnip 'snip-isearch-mb
+  (isearch-mb-mode t))
+
+(zy/incload-register 'snip-isearch-mb)
+
+
 (provide 'init-search)
 
 ;;; init-search.el ends here.

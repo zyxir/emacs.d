@@ -33,9 +33,14 @@
       inhibit-compacting-font-caches t
       initial-scratch-message ""
       initial-major-mode 'fundamental-mode
+      isearch-lazy-count t
+      isearch-regexp-lax-whitespace t
       make-backup-files nil
       read-process-output-max (* 1024 1024)
+      regexp-search-ring-max 200
+      search-ring-max 200
       system-time-locale "C"
+      uniquify-buffer-name-style 'forward
       use-dialog-box nil
       word-wrap-by-category t)
 

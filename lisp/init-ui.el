@@ -184,6 +184,11 @@ does the job."
 	      (hl-line-mode 'toggle))))
 
 
+;;;; VS Code icons
+
+(straight-use-package 'vscode-icon)
+
+
 (provide 'init-ui)
 
 ;;; init-ui.el ends here.

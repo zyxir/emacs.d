@@ -45,6 +45,23 @@
   "C-x M-v" 'magit-file-dispatch)
 
 
+;;;; Setup Diff-hl
+
+;; Diff-hl show VC status at the fringe
+
+(straight-use-package 'diff-hl)
+
+(zy/defsnip 'snip-diff-hl
+  ;; Disable keybinds provided by Diff-hl
+  (setq-default diff-hl-command-prefix nil)
+  (global-diff-hl-mode 1)
+  (diff-hl-flydiff-mode 1)
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
+(zy/incload-register 'snip-diff-hl)
+
+
 (provide 'init-vc)
 
 ;;; init-vc.el ends here

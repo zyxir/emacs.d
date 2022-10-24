@@ -94,6 +94,7 @@ ARG is the arguments passed to OLDFUN."
   (beacon-mode 1)
 
   ;; Enable pixel scroll if available
+
   (when (fboundp 'pixel-scroll-precision-mode)
     (pixel-scroll-precision-mode)))
 
