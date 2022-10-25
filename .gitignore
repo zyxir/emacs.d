@@ -1,6 +1,7 @@
 # ZyEmacs specific files
 
 etc/zylatex.sty
+!eshell/alias
 
 # Other temporary files
 

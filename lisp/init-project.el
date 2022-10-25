@@ -72,7 +72,7 @@
   "c" '("Compile" . project-compile)
   "x" '("M-x on project" . project-execute-extended-command))
 
-
+
 (provide 'init-project)
 
 ;;; init-project.el ends here.

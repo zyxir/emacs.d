@@ -54,7 +54,7 @@
 
 (zy/defsnip 'snip-diff-hl
   ;; Disable keybinds provided by Diff-hl
-  (setq-default diff-hl-command-prefix nil)
+  (setq-default diff-hl-command-prefix (kbd "C-z v a b c d"))
   (global-diff-hl-mode 1)
   (diff-hl-flydiff-mode 1)
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)

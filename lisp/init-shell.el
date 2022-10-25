@@ -47,14 +47,7 @@
     "Clear the eshell buffer."
     (let ((inhibit-read-only t))
       (erase-buffer)
-      (eshell-send-input)))
-
-  ;; Aliases
-
-  (require 'em-alias)
-  (eshell/alias "ff" "find-file $1")
-  (eshell/alias "ffow" "find-file-other-window $1")
-  (eshell/alias "ffof" "find-file-other-frame $1"))
+      (eshell-send-input))))
 
 (zy/lload-register 'snip-eshell 'eshell)
 (zy/incload-register 'snip-eshell :level 2 :after 'eshell)

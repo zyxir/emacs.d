@@ -34,7 +34,10 @@
 
 (straight-use-package 'pdf-tools)
 
-(pdf-loader-install)
+(zy/defsnip 'snip-pdf
+  (pdf-loader-install))
+
+(zy/incload-register 'snip-pdf :level 3)
 
 (add-hook 'pdf-view-mode-hook
 	  (lambda ()

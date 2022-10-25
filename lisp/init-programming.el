@@ -24,17 +24,16 @@
 
 (require 'init-keybinding)
 (require 'init-load)
+(eval-when-compile (require 'init-macros))
 
 
 ;;;; Flymake
 
 ;; Enable Flymake for certain modes
-(mapc (lambda (hook)
-	(add-hook hook 'flymake-mode))
-      '(emacs-lisp-mode-hook))
 
-(zy/defsnip 'snip-flymake
-  (require 'flymake)
+(add-hook! '(emacs-lisp-mode-hook) 'flymake-mode)
+
+(with-eval-after-load 'flymake
   (setq-default elisp-flymake-byte-compile-load-path
 		`("./" ,load-path))
   (zy/define-key :keymap 'flymake-mode-map
@@ -42,8 +41,7 @@
     "M-n" 'flymake-goto-next-error
     "M-g f" 'consult-flymake))
 
-(zy/lload-register 'snip-flymake 'flymake)
-(zy/incload-register 'snip-flymake)
+(zy/incload-register 'flymake)
 
 
 ;;;; Eglot
@@ -52,9 +50,7 @@
 
 ;; Enable Eglot in certain modes
 
-(mapc (lambda (hook)
-	(add-hook hook 'eglot-ensure))
-      '(tex-mode-hook))
+(add-hook! '(TeX-mode-hook) 'eglot-ensure)
 
 ;; My own LSP server preferences
 

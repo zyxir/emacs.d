@@ -78,8 +78,6 @@
 
 ;;;; Scrolling
 
-(straight-use-package 'beacon)
-
 (zy/defsnip 'snip-scroll
   ;; Redefine "near full screen" for scroll commands
 
@@ -93,11 +91,6 @@ ARG is the arguments passed to OLDFUN."
       (apply oldfun arg)))
   (advice-add 'scroll-up-command :around 'zy/-around-scroll)
   (advice-add 'scroll-down-command :around 'zy/-around-scroll)
-
-  ;; Highlight the cursor with Beacon after each scroll
-
-  (require 'beacon)
-  (beacon-mode 1)
 
   ;; Enable pixel scroll if available
 
@@ -120,7 +113,7 @@ ARG is the arguments passed to OLDFUN."
 (add-hook 'prog-mode-hook 'smartparens-mode)
 
 (zy/lload-register 'snip-smartparens 'smartparens)
-(zy/incload-register 'snip-smartparens :after 'dash)
+(zy/incload-register 'snip-smartparens :after 'dash 'smartparens)
 
 
 ;;;; Yasnippet
@@ -148,7 +141,7 @@ ARG is the arguments passed to OLDFUN."
     "s" '("Insert snippet" . consult-yasnippet)
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
 
-(zy/edload-register 'snip-yasnippet 'prog-mode text-mode)
+(zy/edload-register 'snip-yasnippet 'prog-mode 'text-mode)
 (zy/incload-register 'snip-yasnippet :level 4)
 
 

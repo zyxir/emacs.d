@@ -34,6 +34,14 @@
   "b" 'consult-buffer)
 
 
+;;;; Recentf
+
+;; Lazy-load Recentf until usage
+
+(advice-add 'consult-recent-file :before
+	    (lambda () (recentf-mode 1)))
+
+
 ;;;; Leader File Commands
 
 (zy/define-leader-submap
@@ -61,42 +69,17 @@
 (straight-use-package 'omni-scratch)
 
 (zy/define-leader-submap
-    zy/leader-scratch-map ";" "scratch"
+    zy/leader-scratch-map "x" "scratch"
   "Keymap for scratch-related commands.")
 
 (setq-default omni-scratch-default-mode 'lisp-interaction-mode)
 
 (zy/define-key :keymap 'zy/leader-scratch-map
-  ";" 'omni-scratch
+  "x" 'omni-scratch
   "m" 'omni-scratch-major
   "b" 'omni-scratch-buffer
-  "j" 'omni-scratch-goto-latest
+  "l" 'omni-scratch-goto-latest
   "q" 'omni-scratch-quit)
-
-
-;;;; Treemacs
-
-(straight-use-package 'treemacs)
-(straight-use-package 'treemacs-magit)
-
-(zy/defsnip 'snip-treemacs
-  (require 'treemacs)
-  (with-eval-after-load 'magit
-    (require 'treemacs-magit))
-  (treemacs-fringe-indicator-mode t)
-  (treemacs-filewatch-mode t)
-  (pcase (cons (not (null (executable-find "git")))
-               (not (null treemacs-python-executable)))
-    (`(t . t)
-     (treemacs-git-mode 'deferred))
-    (`(t . _)
-     (treemacs-git-mode 'simple))))
-
-(zy/lload-register 'snip-treemacs 'treemacs)
-(zy/incload-register 'snip-treemacs :level 4)
-
-(zy/define-key
-  "C-x C-d" 'treemacs-select-window)
 
 
 (provide 'init-file)

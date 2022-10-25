@@ -80,22 +80,16 @@ if FEATURE is a snippet feature (if it has a `snipp' property),
 call its function definition, otherwise call `require' on the
 feature.
 
-`zy/load-feature' is set to t while loading FEATURE."
-  (if (get feature 'snipp)
-      (funcall feature)
-    (require feature)))
-
-(when init-file-debug
-  (defun zy/time-around-load-feature (oldfun feature)
-    "Wrapper of `zy/load-feature'.
-
-Run OLDFUN on FEATURE, but time the run, and print time taken."
-    (let ((start-time (current-time)))
-      (prog1 (funcall oldfun feature)
-	(zy/log 'snip "Requiring %s took %.1f milliseconds"
-		feature
-		(* 1000 (float-time (time-since start-time)))))))
-  (advice-add 'zy/load-feature :around 'zy/time-around-load-feature))
+`inhibit-message' is set to t while loading."
+  (let ((start-time (current-time))
+	(inhibit-message t))
+    (prog1
+	(if (get feature 'snipp)
+	    (funcall feature)
+	  (require feature))
+      (zy/log 'snip "Requiring %s took %.1f milliseconds"
+	      feature
+	      (* 1000 (float-time (time-since start-time)))))))
 
 (defun zy/require (feature)
   "Try to require feature FEATURE.
@@ -127,11 +121,9 @@ the error."
 
 FEATURE and FEATURES are feature symbols."
   (let ((result-sexp `(zy/require ,feature)))
-    (mapc (lambda (feat)
-	    (setq result-sexp
-		  `(with-eval-after-load ,feat ,result-sexp)))
-	  features)
-    result-sexp))
+    (dolist (feat features result-sexp)
+      (setq result-sexp
+	    `(with-eval-after-load ,feat ,result-sexp)))))
 
 
 ;;;; Event-Driven Loader (edload)
@@ -146,9 +138,9 @@ FEATURE and FEATURES are feature symbols."
 (add-hook 'pre-command-hook
 	  (lambda ()
 	    (when zy/edload-pre-command-queue
-	      (zy/log 'edload "`pre-command' triggered"))
-	    (mapc #'zy/require zy/edload-pre-command-queue)
-	    (setq zy/edload-pre-command-queue nil)))
+	      (zy/log 'edload "`pre-command' triggered")
+	      (mapc #'zy/require zy/edload-pre-command-queue)
+	      (setq zy/edload-pre-command-queue nil))))
 
 ;; Event `post-command': triggered by `post-command-hook'
 
@@ -158,9 +150,21 @@ FEATURE and FEATURES are feature symbols."
 (add-hook 'post-command-hook
 	  (lambda ()
 	    (when zy/edload-post-command-queue
-	      (zy/log 'edload "`post-command' triggered"))
-	    (mapc #'zy/require zy/edload-post-command-queue)
-	    (setq zy/edload-post-command-queue nil)))
+	      (zy/log 'edload "`post-command' triggered")
+	      (mapc #'zy/require zy/edload-post-command-queue)
+	      (setq zy/edload-post-command-queue nil))))
+
+;; Event `find-file': triggered before `after-find-file'
+
+(defvar zy/edload-find-file-queue nil
+  "Features bound to the `find-file' event.")
+
+(advice-add 'after-find-file :before
+	    (lambda (&rest _)
+	      (when zy/edload-find-file-queue
+		(zy/log 'edload "`find-file' triggered")
+		(mapc #'zy/require zy/edload-find-file-queue)
+		(setq zy/edload-find-file-queue nil))))
 
 ;; Event `text-mode': triggered by `text-mode-hook'
 
@@ -170,9 +174,9 @@ FEATURE and FEATURES are feature symbols."
 (add-hook 'text-mode-hook
 	  (lambda ()
 	    (when zy/edload-text-mode-queue
-	      (zy/log 'edload "`text-mode' triggered"))
-	    (mapc #'zy/require zy/edload-text-mode-queue)
-	    (setq zy/edload-text-mode-queue nil)))
+	      (zy/log 'edload "`text-mode' triggered")
+	      (mapc #'zy/require zy/edload-text-mode-queue)
+	      (setq zy/edload-text-mode-queue nil))))
 
 ;; Event `prog-mode': triggered by `prog-mode-hook'
 
@@ -182,9 +186,9 @@ FEATURE and FEATURES are feature symbols."
 (add-hook 'prog-mode-hook
 	  (lambda ()
 	    (when zy/edload-prog-mode-queue
-	      (zy/log 'edload "`prog-mode' triggered"))
-	    (mapc #'zy/require zy/edload-prog-mode-queue)
-	    (setq zy/edload-prog-mode-queue nil)))
+	      (zy/log 'edload "`prog-mode' triggered")
+	      (mapc #'zy/require zy/edload-prog-mode-queue)
+	      (setq zy/edload-prog-mode-queue nil))))
 
 ;; Event registering
 
@@ -224,10 +228,13 @@ FEATURE is a feature symbol, and all of EVENTS are event symbols."
 ;; additional properties.  These properties are stored in the property list of
 ;; the feature symbol.
 
-(defconst zy/incload-idle 1.0
-  "Load interval for the incremental loader.")
+(defconst zy/incload-idle 2.0
+  "Load something if Emacs is idle for so many seconds.")
 
-(defconst zy/incload-lag 0.2
+(defconst zy/incload-interval 1.0
+  "Interval between two incremental loads.")
+
+(defconst zy/incload-lag 0.3
   "Lag threshold for the incremental loader.")
 
 (defvar zy/incload-timer nil
@@ -284,14 +291,13 @@ be registered by `zy/incload-register' as well."
        ((eq arg ':level)
 	(push `(put ,feature 'incload-level ,(pop args)) result-sexp))
        ((eq arg ':after)
-	(mapc (lambda (arg)
-		(when (eq (car arg) 'quote)
-		  (setq arg (cadr arg)))
-		(push (if (symbolp arg)
-			  `(zy/incload-register ',arg)
-		        `(zy/incload-register ,@arg))
-		      after-sexp))
-	      args)
+	(dolist (arg args)
+	  (when (eq (car arg) 'quote)
+	    (setq arg (cadr arg)))
+	  (push (if (symbolp arg)
+		    `(zy/incload-register ',arg)
+		  `(zy/incload-register ,@arg))
+		after-sexp))
 	(setq args nil
 	      after-sexp (reverse after-sexp)
 	      result-sexp (nconc after-sexp result-sexp)))
@@ -358,12 +364,13 @@ After loading stoppes, reschedule a new timer for the next load."
     (zy/log 'incload "// Loading stops with reschedule level %d"
 	    zy/incload-reschedule-level))
   ;; Prepare the rescheduled timer
-  (setq zy/incload-reschedule-level (1+ zy/incload-reschedule-level)
-	zy/incload-rescheduled-timer
-	(run-with-idle-timer (* zy/incload-reschedule-level
-				zy/incload-idle)
+  (setq zy/incload-rescheduled-timer
+	(run-with-idle-timer (+ zy/incload-idle
+				(* zy/incload-reschedule-level
+				   zy/incload-interval))
 			     nil
-			     'zy/incload-load 'rescheduled)))
+			     'zy/incload-load 'rescheduled)
+	zy/incload-reschedule-level (1+ zy/incload-reschedule-level)))
 
 (defun zy/incload-setup-timer ()
   "Setup the repeated timer for incload."

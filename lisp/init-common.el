@@ -23,31 +23,31 @@
 
 (require 'cl-lib)
 (require 'init-load)
+(eval-when-compile (require 'init-macros))
 
 
 ;;;; Set Flags
 
-(setq auto-save-default nil
-      disabled-command-function nil
-      frame-title-format '("" "ZyEmacs" " [%b]")
-      global-hl-line-sticky-flag nil
-      inhibit-compacting-font-caches t
-      initial-scratch-message ""
-      initial-major-mode 'fundamental-mode
-      isearch-lazy-count t
-      isearch-regexp-lax-whitespace t
-      make-backup-files nil
-      read-process-output-max (* 1024 1024)
-      regexp-search-ring-max 200
-      search-ring-max 200
-      system-time-locale "C"
-      uniquify-buffer-name-style 'forward
-      use-dialog-box nil
-      word-wrap-by-category t)
-
-(setq-default fill-column 80)
-
-(setq-default native-comp-async-report-warnings-errors nil)
+(setq-default auto-save-default nil
+	      disabled-command-function nil
+	      fill-column 80
+	      frame-title-format '("" "ZyEmacs" " [%b]")
+	      global-hl-line-sticky-flag nil
+	      inhibit-compacting-font-caches t
+	      initial-scratch-message ""
+	      initial-major-mode 'fundamental-mode
+	      isearch-lazy-count t
+	      isearch-regexp-lax-whitespace t
+	      make-backup-files nil
+	      read-process-output-max (* 1024 1024)
+	      recentf-max-saved-items 100
+	      regexp-search-ring-max 200
+	      search-ring-max 200
+	      system-time-locale "C"
+	      uniquify-buffer-name-style 'forward
+	      use-dialog-box nil
+	      word-wrap-by-category t
+	      native-comp-async-report-warnings-errors nil)
 
 ;; Set everything to UTF-8.
 
@@ -56,33 +56,31 @@
 
 ;;;; Inbuilt Modes
 
-(mapc (lambda (hook)
-	(add-hook hook
-		  (lambda ()
-		    (setq-local show-trailing-whitespace t)
-		    (display-line-numbers-mode +1))))
-      '(prog-mode-hook text-mode-hook))
+
+(add-hook! '(prog-mode-hook text-mode-hook)
+  (setq-local show-trailing-whitespace t)
+  (display-line-numbers-mode 1))
+
+(add-hook! 'emacs-startup-hook
+  (unless (display-graphic-p)
+    (xterm-mouse-mode +1)))
 
 (zy/defsnip 'snip-inbuilt-modes
-  (unless (display-graphic-p)
-    (xterm-mouse-mode +1))
   (column-number-mode +1)
   (delete-selection-mode +1)
   (global-subword-mode +1)
   (global-hl-line-mode 1)
-  (setq-default recentf-max-saved-items 100)
-  (recentf-mode 1)
   (require 'kinsoku))
 
 (zy/edload-register 'snip-inbuilt-modes 'pre-command)
-(zy/incload-register 'snip-inbuilt-modes :priority 100)
+(zy/incload-register 'snip-inbuilt-modes)
 
 (zy/defsnip 'snip-file-inbuilt-modes
   (setq-default global-auto-revert-ignore-modes '(pdf-view-mode))
   (global-auto-revert-mode +1)
   (save-place-mode +1))
 
-(zy/edload-register 'snip-file-inbuilt-modes 'prog-mode 'text-mode)
+(zy/edload-register 'snip-file-inbuilt-modes 'find-file)
 (zy/incload-register 'snip-file-inbuilt-modes)
 
 
@@ -90,24 +88,11 @@
 
 (zy/defsnip 'snip-server
   (require 'server)
-  (unless (server-running-p)
-    (server-start)))
+  (when (fboundp 'server-running-p)
+    (unless (server-running-p)
+      (server-start))))
 
 (zy/incload-register 'snip-server :priority 30)
-
-
-;;;; WSL detection
-
-(defun zy/wsl-p ()
-  "Return t if ZyEmacs is running on WSL."
-  (if (boundp 'zy/wsl-p)
-      zy/wsl-p
-    (defvar zy/wsl-p
-      (and (memq system-type '(gnu/linux linux))
-	   (equal 0
-		  (call-process "grep" "/proc/version" t nil
-				"-q" "[Mm]icrosoft"))))
-    zy/wsl-p))
 
 
 ;;;; Personalization

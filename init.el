@@ -51,20 +51,21 @@
 					     normal-file-name-handler-alist)))))
 
 
-;;;; Startup Benchmarking
+;;;; Bootstrap Config
 
+;; Benchmarking
 (push (expand-file-name "lisp" user-emacs-directory) load-path)
 (require 'init-benchmark)
 
-
-;;;; Bootstrap Config
-
+;; The custom file
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file) (load custom-file))
 
-;; Loading
+;; Handy macros
+(require 'init-macros)
+
+;; Loading systems
 (require 'init-load)
-;; (require 'init-loaddefs)
 
 ;; Core
 (require 'init-common)

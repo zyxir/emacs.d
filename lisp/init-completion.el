@@ -82,7 +82,7 @@ ARGS are the arguments passed."
     (consult-customize consult-recent-file
 		       :preview-key (kbd "M-."))))
 
-(zy/incload-register 'consult)
+(zy/incload-register 'consult :level 3)
 
 ;; Setup Embark
 
@@ -107,8 +107,8 @@ ARGS are the arguments passed."
 (zy/defsnip 'snip-corfu
   (global-corfu-mode +1)
   (setq-default corfu-auto t
-		   corfu-auto-prefix 2
-		   corfu-echo-documentation nil)
+		corfu-auto-prefix 2
+		corfu-echo-documentation nil)
   (zy/define-key :keymap 'corfu-map
     "M-SPC" 'corfu-insert-separator))
 
@@ -141,8 +141,7 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
   (add-hook 'corfu-mode-hook #'corfu-indexed-mode)
   (require 'corfu-info "extensions/corfu-info")
   ;; Enable Corfu-terminal if in terminal or WSL
-  (when (or (not (display-graphic-p))
-	    (zy/wsl-p))
+  (unless (display-graphic-p)
     (require 'corfu-terminal)
     (corfu-terminal-mode +1))
   ;; Enable Corfu-doc
@@ -150,8 +149,7 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
   (zy/define-key :keymap 'corfu-map
     "M-d" #'corfu-doc-toggle)
   ;; Enable Corfu-doc-terminal if in terminal
-  (when (or (not (display-graphic-p))
-	    (zy/wsl-p))
+  (unless (display-graphic-p)
     (require 'corfu-doc-terminal)
     (corfu-doc-terminal-mode +1)))
 
@@ -160,27 +158,17 @@ From URL`https://kristofferbalintona.me/posts/202202270056/'."
 
 (straight-use-package 'cape)
 
-(mapc (lambda (hook)
-	(add-hook hook
-		  (lambda ()
-		    (add-to-list 'completion-at-point-functions
-				 #'cape-file))))
-      '(prog-mode-hook text-mode-hook))
+(add-hook! '(prog-mode-hook text-mode-hook)
+  (add-to-list 'completion-at-point-functions #'cape-file))
 
-(add-hook 'prog-mode-hook
-	  (lambda ()
-	    (add-to-list 'completion-at-point-functions
-			 #'cape-keyword)))
+(add-hook! 'prog-mode-hook
+  (add-to-list 'completion-at-point-functions #'cape-keyword))
 
-(add-hook 'emacs-lisp-mode-hook
-	  (lambda ()
-	    (add-to-list 'completion-at-point-functions
-			 #'cape-symbol)))
+(add-hook! 'emacs-lisp-mode-hook
+  (add-to-list 'completion-at-point-functions #'cape-symbol))
 
-(add-hook 'tex-mode-hook
-	  (lambda ()
-	    (add-to-list 'completion-at-point-functions
-			 #'cape-tex)))
+(add-hook! 'tex-mode-hook
+  (add-to-list 'completion-at-point-functions #'cape-tex))
 
 
 (provide 'init-completion)
