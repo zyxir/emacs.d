@@ -1,9 +1,10 @@
-# ZyEmacs files
+# ZyEmacs specific files
 
-zylatex.sty
+etc/zylatex.sty
 
-# Other files
+# Other temporary files
 
+.cache/
 *.elc
 .mc-lists.el
 .org-id-locations

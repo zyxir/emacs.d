@@ -30,6 +30,7 @@
 (setq auto-save-default nil
       disabled-command-function nil
       frame-title-format '("" "ZyEmacs" " [%b]")
+      global-hl-line-sticky-flag nil
       inhibit-compacting-font-caches t
       initial-scratch-message ""
       initial-major-mode 'fundamental-mode
@@ -59,8 +60,7 @@
 	(add-hook hook
 		  (lambda ()
 		    (setq-local show-trailing-whitespace t)
-		    (display-line-numbers-mode +1)
-		    (hl-line-mode +1))))
+		    (display-line-numbers-mode +1))))
       '(prog-mode-hook text-mode-hook))
 
 (zy/defsnip 'snip-inbuilt-modes
@@ -69,6 +69,7 @@
   (column-number-mode +1)
   (delete-selection-mode +1)
   (global-subword-mode +1)
+  (global-hl-line-mode 1)
   (setq-default recentf-max-saved-items 100)
   (recentf-mode 1)
   (require 'kinsoku))

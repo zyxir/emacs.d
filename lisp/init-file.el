@@ -80,9 +80,8 @@
   (require 'treemacs)
   (with-eval-after-load 'magit
     (require 'treemacs-magit))
+  (treemacs-fringe-indicator-mode t)
   (treemacs-filewatch-mode t)
-  (when treemacs-python-executable
-    (treemacs-git-commit-diff-mode t))
   (pcase (cons (not (null (executable-find "git")))
                (not (null treemacs-python-executable)))
     (`(t . t)
