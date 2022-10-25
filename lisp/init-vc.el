@@ -35,7 +35,8 @@
 		     :after 'dash 'with-editor 'transient
 		     ('git-commit :level 4) 'magit-section)
 
-(setq magit-define-global-key-bindings nil)
+(setq magit-define-global-key-bindings nil
+      magit-status-margin '(t age magit-log-margin-width nil 18))
 
 ;; Overwrite default VC keys
 
