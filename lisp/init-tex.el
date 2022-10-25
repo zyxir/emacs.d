@@ -31,11 +31,12 @@
 (straight-use-package 'auctex)
 
 (zy/defsnip 'snip-tex
+  ;; Switches
+
   (setq-default TeX-auto-save t
 		TeX-parse-self t
 		TeX-save-query nil
 		TeX-engine 'xetex
-		TeX-source-correlate-method 'synctex
 		TeX-source-correlate-start-server t
 		TeX-command-default "XeLaTeX")
   (defvar TeX-command-list)
@@ -45,6 +46,13 @@
                  TeX-run-TeX
                  nil
                  t))
+  (add-hook 'LaTeX-mode-hook
+	    (lambda ()
+	      (setq-local TeX-command-default "XeLaTeX")
+	      (TeX-source-correlate-mode 1)))
+
+  ;; RefTeX
+
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (with-eval-after-load 'reftex
     (setq-default reftex-plug-into-AUCTeX t
