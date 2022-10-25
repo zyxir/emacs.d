@@ -1,5 +1,6 @@
 ;;; init-file.el --- File and buffer utilities -*- lexical-binding: t -*-
 
+
 ;; This file is not part of GNU Emacs
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -14,6 +15,7 @@
 
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 ;;; Commentary:
 
@@ -48,7 +50,8 @@
   "R" '("rename current file" . crux-rename-file-and-buffer)
   "s" '("save file" . save-buffer)
   "S" '("save multiple files" . save-some-buffers)
-  "w" '("save as" . write-file))
+  "w" '("save as" . write-file)
+  "x" '("open in ext app" . zy-fb-open-in-external-app))
 
 
 ;;;; Scratch Buffer
@@ -90,7 +93,7 @@
      (treemacs-git-mode 'simple))))
 
 (zy/lload-register 'snip-treemacs 'treemacs)
-(zy/incload-register 'snip-treemacs :level 3)
+(zy/incload-register 'snip-treemacs :level 4)
 
 (zy/define-key
   "C-x C-d" 'treemacs-select-window)

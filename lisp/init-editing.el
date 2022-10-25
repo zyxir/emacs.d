@@ -143,7 +143,7 @@ ARG is the arguments passed to OLDFUN."
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
 
 (zy/edload-register 'snip-yasnippet 'prog-mode text-mode)
-(zy/incload-register 'snip-yasnippet :level 3)
+(zy/incload-register 'snip-yasnippet :level 4)
 
 
 (provide 'init-editing)

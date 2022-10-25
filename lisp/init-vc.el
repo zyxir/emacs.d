@@ -31,9 +31,9 @@
 
 (straight-use-package 'magit)
 
-(zy/incload-register 'magit :level 3
+(zy/incload-register 'magit :level 4
 		     :after 'dash 'with-editor 'transient
-		     ('git-commit :level 3) 'magit-section)
+		     ('git-commit :level 4) 'magit-section)
 
 (setq magit-define-global-key-bindings nil)
 

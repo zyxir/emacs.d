@@ -38,7 +38,7 @@
 
 (straight-use-package 'rg)
 
-(zy/incload-register 'rg :level 2)
+(zy/incload-register 'rg :level 3)
 
 (zy/define-key :prefix "M-s"
   "l" 'consult-line

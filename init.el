@@ -26,7 +26,7 @@
 
 ;;;; Minimum Version
 
-(let ((minver "28.0"))
+(let ((minver "28.1"))
   (when (version< emacs-version minver)
     (error "Your Emacs is too old --- this config requires v%s or higher" minver)))
 
@@ -78,6 +78,7 @@
 (require 'init-programming)
 (require 'init-project)
 (require 'init-search)
+(require 'init-shell)
 (require 'init-tex)
 (require 'init-ui)
 (require 'init-vc)

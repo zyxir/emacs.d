@@ -268,7 +268,7 @@ The function works like `org-latex-export-to-pdf', except that
 		       zy/org-export-to-pdf-phone)))))
 
 (zy/lload-register 'snip-ox-latex 'ox-latex)
-(zy/incload-register 'snip-ox-latex :level 2 :after 'org)
+(zy/incload-register 'snip-ox-latex :level 3 :after 'org)
 
 
 ;;;; Org-Journal

@@ -31,7 +31,7 @@
 ;; Enable Flymake for certain modes
 (mapc (lambda (hook)
 	(add-hook hook 'flymake-mode))
-      '(emacs-lisp-mode))
+      '(emacs-lisp-mode-hook))
 
 (zy/defsnip 'snip-flymake
   (require 'flymake)
@@ -63,6 +63,20 @@
   (add-to-list 'eglot-server-programs
 	       '((tex-mode context-mode texinfo-mode bibtex-mode)
 		 "texlab")))
+
+
+;;;; Tree-Sitter
+
+(straight-use-package 'tree-sitter)
+(straight-use-package 'tree-sitter-langs)
+
+(zy/defsnip 'snip-tree-sitter
+  (require 'tree-sitter)
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook 'tree-sitter-hl-mode))
+
+(zy/incload-register 'snip-tree-sitter :level 4)
 
 
 (provide 'init-programming)

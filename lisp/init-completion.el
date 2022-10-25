@@ -91,7 +91,7 @@ ARGS are the arguments passed."
 (zy/define-key
   [remap tmm-menubar] 'embark-act)
 
-(zy/incload-register 'embark :level 2)
+(zy/incload-register 'embark :level 3)
 
 
 ;;;; Corfu

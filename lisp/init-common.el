@@ -182,7 +182,7 @@
 
 (straight-use-package 'crux)
 
-(zy/incload-register 'crux :level 3)
+(zy/incload-register 'crux :level 4)
 
 
 (provide 'init-common)
