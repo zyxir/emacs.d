@@ -33,6 +33,12 @@
   "Keymap for a set of editing utilities.")
 
 
+;;;; Zyutils commands
+
+(zy/define-key
+  "M-Q" 'zy/unfill-paragraph)
+
+
 ;;;; Clipboard
 ;; Clipboard integration in TTY
 

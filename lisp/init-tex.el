@@ -51,6 +51,12 @@
 	      (setq-local TeX-command-default "XeLaTeX")
 	      (TeX-source-correlate-mode 1)))
 
+  ;; Easier key to set font
+
+  (zy/define-key
+    :keymap 'LaTeX-mode-map
+    "M-o" 'TeX-font)
+
   ;; RefTeX
 
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)

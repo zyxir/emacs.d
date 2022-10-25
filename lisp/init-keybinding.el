@@ -118,7 +118,7 @@ KEYMAP via `define-key'.  If KEYMAP is a list of keymaps, call
 
 ;;;; Leader Key Setup
 
-(defconst zy/leader-keys '("C-c" "C-z" "M-m")
+(defconst zy/leader-keys '("C-c" "C-z")
   "Leader keys of ZyEmacs.")
 
 (zy/define-key

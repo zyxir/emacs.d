@@ -89,7 +89,8 @@ ARGS are the arguments passed."
 (straight-use-package 'embark)
 
 (zy/define-key
-  [remap tmm-menubar] 'embark-act)
+  "M-m" 'embark-act
+  "M-z" 'embark-dwim)
 
 (zy/incload-register 'embark :level 3)
 
