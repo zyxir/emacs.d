@@ -154,7 +154,8 @@ does the job."
 					 :size zy/font-size))
     (zy/set-face-charset-font 'default nil zy/cjk-charsets "Sarasa Mono CL")
     ;; Fixed-pitch face
-    (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL")
+    (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
+			:height 'unspecified)
     (zy/set-face-charset-font 'fixed-pitch nil zy/cjk-charsets "Sarasa Mono CL")
     ;; ZyEmacs sans-serif face
     (set-face-attribute 'zy-sans nil :font "Roboto")
