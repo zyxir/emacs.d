@@ -1,21 +1,28 @@
 #+html: <div align="center">
 * ZyEmacs
-[[file:init.org][Config]] · [[file:SCREENSHOTS.org][Screenshots]] · [[file:CHANGELOG.org][Changelog]]
 #+html: </div>
 
-This is my Emacs configuration focuses on being
+Lightweight Emacs configuration for my daily need.
 
-- *Minimal*. I practise [[https://en.wikipedia.org/wiki/Minimalism][minimalism]] in my daily life, as well as in Emacs.
-- *Manageable*. Advanced approaches are used to minimize the cost of managing the configuration.
-- *Functional*. This configuration satisfies most of my daily needs.
+- *Supported Emacs version*: Emacs 28 or higher.
+- *Supported operation systems*:
+  - Windows (with MSYS2).
+  - WSL (Windows subsystem for Linux), Ubuntu in my case.
+  - Linux, Arch Linux in my case.
 
-For information like installation instructions, see [[./init.org][init.org]].
+![Screenshot](./etc/screenshots/zyemacs_20221026.png)
 
-** Links
+** Installation
 
-This configuration is inspired by:
+Clone this repository to ~~/.emacs.d~, and install the font ~Fira Code~.  Upon starting up Emacs for the first time, third-party packages will be automatically installed.
 
-- [[https://github.com/nowislewis/nowisemacs][Nowisemacs]]
-- [[https://config.daviwil.com/emacs][David Wilson's Emacs Configuration]]
-- [[https://github.com/redguardtoo/emacs.d][redguardtoo/emacs.d]]
-- [[https://leanpub.com/lit-config/read][Literate Configuration]] by Diego Zamboni
+It is recommended to install these third-party tools to enhance user experience:
+
+- Ripgrep :: Fast text search.  Used by various commands in ZyEmacs.
+
+** Customization
+
+Most behavior of this configuration is hard-coded.  That is because I am currently the only user of this configuration, and I can change any behavior by modifying the code.  However there are some machine-dependent settings that is not consistent in every computing environemnt of mine.  It is recommended to configure these settings via the ~customize~ UI:
+
+- ~zy/font-size~ :: This determines the default font size.  Customize this according to the screen size of the computing device.
+- ~TeX-view-program-selection~ :: This determines what program is used to preview TeX output.  Just choose one in the default list.  In fact it has pretty decent defaults and works out of the box.

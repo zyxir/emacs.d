@@ -1,13 +1,12 @@
-# Generated files
-*.elc
-early-init.el
-init.el
-loaddefs.el
-straight
-org-roam.db
+# ZyEmacs specific files
 
-# Local files
-.lsp-session-*
+etc/zylatex.sty
+!eshell/alias
+
+# Other temporary files
+
+.cache/
+*.elc
 .mc-lists.el
 .org-id-locations
 auto-save-list
@@ -16,13 +15,13 @@ custom.el
 eln-cache
 eshell
 history
+straight
 org-persist
+org-roam.db
 places
 projects
 recentf
 server
+tramp
 transient
 url
-
-# ZyEmacs files
-zylatex.sty
