@@ -27,11 +27,24 @@
 (eval-when-compile (require 'init-macros))
 
 
+;;;; Flycheck
+
+(straight-use-package 'flycheck)
+
+(add-hook! 'emacs-lisp-mode-hook 'flycheck-mode)
+
+(with-eval-after-load 'flycheck
+  (setq-default flycheck-emacs-lisp-load-path 'inherit)
+    (zy/define-key :keymap 'flycheck-mode-map
+    "M-p" 'flycheck-previous-error
+    "M-n" 'flycheck-next-error))
+
+(zy/incload-register 'flycheck)
+
+
 ;;;; Flymake
 
-;; Enable Flymake for certain modes
-
-(add-hook! '(emacs-lisp-mode-hook) 'flymake-mode)
+;; Currently I only use Flymake alongside Eglot
 
 (with-eval-after-load 'flymake
   (setq-default elisp-flymake-byte-compile-load-path
