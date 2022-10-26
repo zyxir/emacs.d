@@ -31,12 +31,14 @@
 (setq-default
  modus-themes-italic-constructs t
  modus-themes-bold-constructs t
- modus-themes-headings '((0 . (rainbow background 1.2))
-			 (1 . (rainbow background overline 1.3))
-			 (2 . (rainbow background overline 1.2))
-			 (3 . (rainbow background overline 1.1))
-			 (4 . (rainbow background 1.1))
-			 (t . (rainbow background regular 1.0)))
+ ;; Headings are not sized for Modus Themes shipped with Emacs 28
+ ;; Maybe I should use the non-built-in version instead
+ modus-themes-headings '((0 . (background 1.2))
+			 (1 . (background overline 1.3))
+			 (2 . (background overline 1.2))
+			 (3 . (background overline 1.1))
+			 (4 . (background 1.1))
+			 (t . (background regular 1.0)))
  modus-themes-hl-line '(intense)
  modus-themes-markup '(background intense)
  modus-themes-mixed-fonts t

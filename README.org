@@ -10,6 +10,8 @@ Lightweight Emacs configuration for my daily need.
   - WSL (Windows subsystem for Linux), Ubuntu in my case.
   - Linux, Arch Linux in my case.
 
+![Screenshot](./etc/screenshots/zyemacs_20221026.png)
+
 ** Installation
 
 Clone this repository to ~~/.emacs.d~, and install the font ~Fira Code~.  Upon starting up Emacs for the first time, third-party packages will be automatically installed.
