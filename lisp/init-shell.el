@@ -31,7 +31,7 @@
 ;; I want to make eshell as useful as possible, so that it can replace external
 ;; terminal emulators.
 
-(zy/defsnip 'snip-eshell
+(after! 'eshell
   ;; Switches
 
   (setq-default eshell-scroll-to-bottom-on-input 'all
@@ -49,8 +49,7 @@
       (erase-buffer)
       (eshell-send-input))))
 
-(zy/lload-register 'snip-eshell 'eshell)
-(zy/incload-register 'snip-eshell :level 2 :after 'eshell)
+(zy/incload-register 'eshell :level 2)
 
 
 (provide 'init-shell)

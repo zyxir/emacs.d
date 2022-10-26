@@ -24,13 +24,14 @@
 ;;; Code:
 
 (require 'init-load)
+(eval-when-compile (require 'init-macros))
 
 
 ;;;; TeX and LaTeX with AUCTeX
 
 (straight-use-package 'auctex)
 
-(zy/defsnip 'snip-tex
+(after! 'tex
   ;; Switches
 
   (setq-default TeX-auto-save t
@@ -65,8 +66,6 @@
 		  reftex-enable-partial-scans t
 		  reftex-save-parse-info t
 		  reftex-use-multiple-selection-buffers t)))
-
-(zy/lload-register 'snip-tex 'tex)
 
 
 (provide 'init-tex)

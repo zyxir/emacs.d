@@ -69,6 +69,7 @@
 
 (with-eval-after-load 'eglot
   ;; Use Texlab for LaTeX
+  (defvar eglot-server-programs)
   (add-to-list 'eglot-server-programs
 	       '((tex-mode context-mode texinfo-mode bibtex-mode)
 		 "texlab")))
@@ -82,6 +83,7 @@
 (zy/defsnip 'snip-tree-sitter
   (require 'tree-sitter)
   (require 'tree-sitter-langs)
+  (declare-function global-tree-sitter-mode "tree-sitter")
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook 'tree-sitter-hl-mode))
 

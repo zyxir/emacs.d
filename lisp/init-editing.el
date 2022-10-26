@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'init-keybinding)
+(eval-when-compile (require 'init-macros))
 
 
 ;;;; Leader Edit Map
@@ -104,16 +105,15 @@ ARG is the arguments passed to OLDFUN."
 
 (straight-use-package 'smartparens)
 
-(zy/defsnip 'snip-smartparens
+(add-hook 'text-mode-hook 'smartparens-mode)
+(add-hook 'prog-mode-hook 'smartparens-mode)
+
+(after! 'smartparens
   (require 'smartparens-config)
   (setq-default sp-highlight-pair-overlay nil
 		sp-autoinsert-pair t))
 
-(add-hook 'text-mode-hook 'smartparens-mode)
-(add-hook 'prog-mode-hook 'smartparens-mode)
-
-(zy/lload-register 'snip-smartparens 'smartparens)
-(zy/incload-register 'snip-smartparens :after 'dash 'smartparens)
+(zy/incload-register 'smartparens :after 'dash)
 
 
 ;;;; Yasnippet
@@ -122,12 +122,11 @@ ARG is the arguments passed to OLDFUN."
 (straight-use-package 'yasnippet-snippets)
 (straight-use-package 'consult-yasnippet)
 
-(zy/defsnip 'snip-yasnippet
-  (setq-default yas-snippet-dirs
-		(list
-		 (expand-file-name "etc/snippets"
-				   user-emacs-directory)))
-  (require 'yasnippet)
+(setq-default yas-snippet-dirs
+	      (list
+	       (expand-file-name "etc/snippets"
+				 user-emacs-directory)))
+(after! 'yasnippet
   (require 'yasnippet-snippets)
   (add-to-list 'yas-snippet-dirs
 	       yasnippet-snippets-dir)
@@ -141,8 +140,8 @@ ARG is the arguments passed to OLDFUN."
     "s" '("Insert snippet" . consult-yasnippet)
     "S" '("Visit snippet file" . consult-yasnippet-visit-snippet-file)))
 
-(zy/edload-register 'snip-yasnippet 'prog-mode 'text-mode)
-(zy/incload-register 'snip-yasnippet :level 4)
+(add-hook! '(prog-mode-hook text-mode-hook) 'yas-global-mode)
+(zy/incload-register 'yasnippet :level 4)
 
 
 (provide 'init-editing)

@@ -31,13 +31,9 @@
 (straight-use-package 'vertico)
 (straight-use-package 'marginalia)
 
-(zy/defsnip 'snip-vertico
-  (vertico-mode +1)
-  (savehist-mode +1)
-  (marginalia-mode +1))
-
-(zy/edload-register 'snip-vertico 'pre-command)
-(zy/incload-register 'snip-vertico :priority 80)
+(vertico-mode +1)
+(savehist-mode +1)
+(marginalia-mode +1)
 
 ;; Intangible minibuffer
 
@@ -104,16 +100,12 @@ ARGS are the arguments passed."
 (straight-use-package '(corfu-doc-terminal
 			:repo "https://codeberg.org/akib/emacs-corfu-doc-terminal.git"))
 
-(zy/defsnip 'snip-corfu
-  (global-corfu-mode +1)
-  (setq-default corfu-auto t
-		corfu-auto-prefix 2
-		corfu-echo-documentation nil)
-  (zy/define-key :keymap 'corfu-map
-    "M-SPC" 'corfu-insert-separator))
-
-(zy/edload-register 'snip-corfu 'after-command)
-(zy/incload-register 'snip-corfu :priority 20)
+(setq-default corfu-auto t
+	      corfu-auto-prefix 2
+	      corfu-echo-documentation nil)
+(global-corfu-mode +1)
+(zy/define-key :keymap 'corfu-map
+  "M-SPC" 'corfu-insert-separator)
 
 ;; Enable Corfu in the minibuffer
 

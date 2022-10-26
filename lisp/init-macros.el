@@ -25,7 +25,7 @@
 ;;; Code:
 
 (defmacro add-hook! (hook &rest body)
-  "A extended version of `add-hook'.
+  "An extended version of `add-hook'.
 
 HOOK is the hook or list of hooks you would like to add to.  It
 should be a quoted hook symbol, or a quoted list of hook symbols.
@@ -47,6 +47,22 @@ wrapped by a lambda function and added to HOOK."
 	  (dolist (h (cadr hook) (nreverse result))
 	    (push `(add-hook ',h ,func) result)))
       `(add-hook ,hook ,func))))
+
+(defmacro after! (file &rest body)
+  "An extended version of `with-eval-after-load'.
+
+FILE can be a quoted feature name or a file name, or a quoted
+list of either.  BODY will be evaluated after FILE, or each one
+of FILE is loaded."
+  (declare (indent 1))
+  (let* ((files-p (listp (cadr file)))
+	 (body-not-single (cdr body))
+	 (form (if body-not-single `(lambda nil ,@body) (car body))))
+    (if files-p
+	(let ((result form))
+	  (dolist (f (cadr file) result)
+	    (setq result `(eval-after-load ',f ,result))))
+      `(eval-after-load ,file ,form))))
 
 
 (provide 'init-macros)

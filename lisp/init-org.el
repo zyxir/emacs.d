@@ -27,6 +27,7 @@
 (require 'init-keybinding)
 (require 'init-load)
 (require 'init-ui)
+(eval-when-compile (require 'init-macros))
 
 ;;;; Path Setup
 
@@ -132,7 +133,7 @@
 
 ;;;; Org-Export to LaTeX
 
-(zy/defsnip 'snip-ox-latex
+(after! 'ox-latex
   (require 'ox)
 
   ;; Try to obtain Zyxir's LaTeX style file
@@ -267,8 +268,7 @@ The function works like `org-latex-export-to-pdf', except that
 		  ((?j "As PDF file (phone-friendly)"
 		       zy/org-export-to-pdf-phone)))))
 
-(zy/lload-register 'snip-ox-latex 'ox-latex)
-(zy/incload-register 'snip-ox-latex :level 3 :after 'org)
+(zy/incload-register 'ox-latex :level 3 :after 'org)
 
 
 ;;;; Org-Journal
@@ -299,7 +299,7 @@ The function works like `org-latex-export-to-pdf', except that
 
 ;;;; Per Project Todos
 
-(zy/defsnip 'snip-project-todo
+(after! 'org
   (require 'project)
   (defvar project--list)
   (defvar org-agenda-files)
@@ -328,9 +328,6 @@ The function works like `org-latex-export-to-pdf', except that
 		      proj-todos)))))
    project--list)
   (delete-dups org-agenda-files))
-
-(zy/lload-register 'snip-project-todo 'org)
-(zy/incload-register 'snip-project-todo :after 'org 'project)
 
 
 (provide 'init-org)

@@ -112,20 +112,6 @@ the error."
       (t nil))))
 
 
-;;;; Lazy Loader (lload)
-
-;; Lazy loader extends the classic lazy loader based on `eval-after-load'.
-
-(defmacro zy/lload-register (feature &rest features)
-  "Load FEATURE once all of FEATURES are loaded.
-
-FEATURE and FEATURES are feature symbols."
-  (let ((result-sexp `(zy/require ,feature)))
-    (dolist (feat features result-sexp)
-      (setq result-sexp
-	    `(with-eval-after-load ,feat ,result-sexp)))))
-
-
 ;;;; Event-Driven Loader (edload)
 
 ;; Event-driven loader delay the loading of a feature till a set of events.

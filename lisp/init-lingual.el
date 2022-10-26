@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'init-keybinding)
+(eval-when-compile (require 'init-macros))
 
 
 ;;;; Insersion of Special Symbols
@@ -62,7 +63,7 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
  rime-user-data-dir (expand-file-name "etc/rime" user-emacs-directory)
  rime-show-candidate 'minibuffer)
 
-(zy/defsnip 'snip-im-color
+(after! 'rime 'modus-themes
   (when (fboundp 'modus-themes-color)
     (defun zy/set-cursor-color-on-im ()
       "Set cursor color based on the current input method."
@@ -74,8 +75,6 @@ ARGS comes in pair with KEY and CHAR.  For each KEY and CHAR,
 			     'cursor-color
 			     (modus-themes-color 'fg-main))))
     (add-hook 'post-command-hook 'zy/set-cursor-color-on-im)))
-
-(zy/lload-register 'snip-im-color 'rime 'modus-themes)
 
 
 (provide 'init-lingual)

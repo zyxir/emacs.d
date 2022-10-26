@@ -65,15 +65,11 @@
   (unless (display-graphic-p)
     (xterm-mouse-mode +1)))
 
-(zy/defsnip 'snip-inbuilt-modes
-  (column-number-mode +1)
-  (delete-selection-mode +1)
-  (global-subword-mode +1)
-  (global-hl-line-mode 1)
-  (require 'kinsoku))
-
-(zy/edload-register 'snip-inbuilt-modes 'pre-command)
-(zy/incload-register 'snip-inbuilt-modes)
+(column-number-mode +1)
+(delete-selection-mode +1)
+(global-subword-mode +1)
+(global-hl-line-mode 1)
+(require 'kinsoku)
 
 (zy/defsnip 'snip-file-inbuilt-modes
   (setq-default global-auto-revert-ignore-modes '(pdf-view-mode))
