@@ -37,7 +37,8 @@
   (defvar org-directory)
   (setq-default
    org-directory (expand-file-name "org" zy/zybox-path)
-   org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path))
+   org-journal-dir (expand-file-name "org/org-journal" zy/zybox-path)
+   org-roam-directory (expand-file-name "org/org-roam" zy/zybox-path))
 
   (defvar zy/gtd-path (expand-file-name "org-gtd" org-directory)
     "Where my GTD files are located.")
@@ -108,6 +109,8 @@
 
 (with-eval-after-load 'org
   (setq-default
+   org-export-with-toc nil
+   org-export-with-tags nil
    org-hide-emphasis-markers t
    org-tag-column 0)
   (when (boundp 'org-format-latex-options)
@@ -271,6 +274,35 @@ The function works like `org-latex-export-to-pdf', except that
 (zy/incload-register 'ox-latex :level 3 :after 'org)
 
 
+;;;; Org-Export to HTML
+
+(after! 'ox-html
+  ;; MHTML exporter that embeds images.
+  ;; See https://niklasfasching.de/posts/org-html-export-inline-images/
+  (defun org-html-export-to-mthml (async subtree visible body)
+    (cl-letf (((symbol-function 'org-html--format-image)
+               'format-image-inline))
+      (org-html-export-to-html async subtree visible body)))
+  (defun format-image-inline (source attributes info)
+    (let* ((ext (file-name-extension source))
+           (prefix (if (string= "svg" ext)
+                       "data:image/svg+xml;base64,"
+                     "data:;base64,"))
+           (data (with-temp-buffer (url-insert-file-contents source)
+                                   (buffer-string)))
+           (data-url (concat prefix (base64-encode-string data)))
+           (attributes (org-combine-plists
+			`(:src ,data-url) attributes)))
+      (org-html-close-tag
+       "img"
+       (org-html--make-attribute-string attributes)
+       info)))
+  (org-export-define-derived-backend 'html-inline-images 'html
+    :menu-entry '(?h
+                  "Export to HTML"
+                  ((?m "As MHTML file" org-html-export-to-mhtml)))))
+
+
 ;;;; Org-Journal
 
 (straight-use-package 'org-journal)
@@ -328,6 +360,24 @@ The function works like `org-latex-export-to-pdf', except that
 		      proj-todos)))))
    project--list)
   (delete-dups org-agenda-files))
+
+
+;;;; Org-Roam
+
+(straight-use-package 'org-roam)
+
+(zy/define-leader-submap zy/leader-roam-map "r" "roam"
+  "Taking notes with Org-roam.")
+
+(zy/define-key :keymap 'zy/leader-roam-map
+  "f" 'org-roam-node-find)
+(after! 'org-roam
+  (zy/define-key :keymap 'zy/leader-roam-map
+    "i" 'org-roam-node-insert
+    "c" 'org-roam-capture
+    "a" 'org-roam-alias-add
+    "l" 'org-roam-buffer-toggle)
+  (org-roam-db-autosync-mode))
 
 
 (provide 'init-org)

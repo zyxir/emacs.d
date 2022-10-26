@@ -44,6 +44,21 @@
 	    (display-line-numbers-mode -1)))
 
 
+;;;; Verilog
+
+(straight-use-package 'verilog-mode)
+
+(with-eval-after-load 'verilog-mode
+  (setq-default verilog-auto-delete-trailing-whitespace t
+		verilog-auto-newline nil
+		verilog-case-level 4
+		verilog-indent-begin-after-if nil
+		verilog-indent-level 4
+		verilog-indent-level-behavioral 0
+		verilog-indent-level-declaration 0
+		verilog-indent-level-module 0))
+
+
 (provide 'init-misc)
 
 ;;; init-misc.el ends here
