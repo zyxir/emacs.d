@@ -55,7 +55,7 @@
   ;; Easier key to set font
 
   (zy/define-key
-    :keymap 'LaTeX-mode-map
+    :keymap 'TeX-mode-map
     "M-o" 'TeX-font)
 
   ;; RefTeX

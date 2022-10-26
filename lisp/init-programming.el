@@ -31,7 +31,9 @@
 
 (straight-use-package 'flycheck)
 
-(add-hook! 'emacs-lisp-mode-hook 'flycheck-mode)
+(add-hook! '(emacs-lisp-mode-hook
+	     LaTeX-mode)
+  'flycheck-mode)
 
 (with-eval-after-load 'flycheck
   (setq-default flycheck-emacs-lisp-load-path 'inherit)
@@ -63,16 +65,13 @@
 
 ;; Enable Eglot in certain modes
 
-(add-hook! '(TeX-mode-hook) 'eglot-ensure)
+(add-hook! '() 'eglot-ensure)
 
 ;; My own LSP server preferences
 
 (with-eval-after-load 'eglot
   ;; Use Texlab for LaTeX
-  (defvar eglot-server-programs)
-  (add-to-list 'eglot-server-programs
-	       '((tex-mode context-mode texinfo-mode bibtex-mode)
-		 "texlab")))
+  (defvar eglot-server-programs))
 
 
 ;;;; Tree-Sitter
