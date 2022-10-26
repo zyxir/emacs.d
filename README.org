@@ -10,7 +10,7 @@ Lightweight Emacs configuration for my daily need.
   - WSL (Windows subsystem for Linux), Ubuntu in my case.
   - Linux, Arch Linux in my case.
 
-![Screenshot](./etc/screenshots/zyemacs_20221026.png)
+[[file:etc/screenshots/zyemacs_20221026.png]]
 
 ** Installation
 
