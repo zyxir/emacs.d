@@ -49,6 +49,12 @@
   (load bootstrap-file nil 'nomessage))
 
 
+;;;; Use-Package
+
+(straight-use-package 'use-package)
+(require 'use-package)
+
+
 ;;;; Snippet Features
 
 ;; In ZyEmacs, a snippet feature is a special type of feature.  Usually, a

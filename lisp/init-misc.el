@@ -27,15 +27,18 @@
 
 ;;;; Markdown
 
-(straight-use-package 'markdown-mode)
+(use-package markdown-mode
+  :straight t)
 
 
 ;;;; PDF
 
-(straight-use-package 'pdf-tools)
-
-(zy/defsnip 'snip-pdf
-  (pdf-loader-install))
+(use-package pdf-tools
+  :straight t
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (declare-function pdf-tools-install "pdf-tools")
+  (pdf-tools-install))
 
 (zy/incload-register 'snip-pdf :level 3)
 
@@ -46,9 +49,9 @@
 
 ;;;; Verilog
 
-(straight-use-package 'verilog-mode)
-
-(with-eval-after-load 'verilog-mode
+(use-package verilog-mode
+  :straight t
+  :config
   (setq-default verilog-auto-delete-trailing-whitespace t
 		verilog-auto-newline nil
 		verilog-case-level 4

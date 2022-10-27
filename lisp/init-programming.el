@@ -36,7 +36,9 @@
   'flycheck-mode)
 
 (with-eval-after-load 'flycheck
-  (setq-default flycheck-emacs-lisp-load-path 'inherit)
+  (setq-default flycheck-emacs-lisp-load-path 'inherit
+		flycheck-check-syntax-automatically
+		'(save new-line mode-enabled))
     (zy/define-key :keymap 'flycheck-mode-map
     "M-p" 'flycheck-previous-error
     "M-n" 'flycheck-next-error))
