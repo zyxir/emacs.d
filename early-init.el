@@ -32,14 +32,19 @@
                             (vertical-scroll-bars . nil)
                             ;; Disable tool bar
                             (tool-bar-lines . 0))
+      ;; Configure GUI features early for faster startup
       menu-bar-mode nil
       scroll-bar-mode nil
       tool-bar-mode nil
       frame-inhibit-implied-resize t
       frame-resize-pixelwise t
       inhibit-startup-message t
-      load-prefer-newer t
       package-enable-at-startup nil)
+
+;; Things that I no longer use
+
+;; Don't waste time to check file modification time
+;; (setq load-prefer-newer t)
 
 
 (provide 'early-init)

@@ -1,7 +1,13 @@
-;;; init.el --- Load the full configuration -*- lexical-binding: t -*-
+;;; init.el --- the main config -*- lexical-binding: t -*-
+
+;; Copyright (C) 2022 Eric Zhuo Chen
+
+;; Author: Eric Zhuo Chen <zyxirchen@outlook.com>
+;; Maintainer: Eric Zhuo Chen <zyxirchen@outlook.com>
+;; Created: 2022-10-28
 
 
-;; This file is not part of GNU Emacs
+;; This file is not part of GNU Emacs.
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,81 +25,75 @@
 
 ;;; Commentary:
 
-;; This file bootstraps the configuration, which is divided into
-;; a number of other files.
+;; This file is the main part of my configuration.
+
+;; The load order of Emacs is as follows:
+
+;;   > early-init.el
+;;   > init.el
+;;   > hook: `after-init-hook'
+;;   > hook: `emacs-startup-hook'
+;;   > hook: `window-setup-hook'
 
 ;;; Code:
 
-;;;; Minimum Version
+(eval-when-compile (require 'subr-x))
 
-(let ((minver "28.1"))
-  (when (version< emacs-version minver)
-    (error "Your Emacs is too old --- this config requires v%s or higher" minver)))
+;;; Preparations
 
+;;;; Version Check
 
-;;;; Speed Up Startup
+;; Check version at both compile and runtime.
+(eval-and-compile
+  ;; The minimum version to run this configuration is 28.1.
+  (when (< emacs-major-version 28)
+    (user-error
+     "Emacs version is %s, but this config requires 28.1 or newer"
+     emacs-version)))
 
-(let ((normal-gc-cons-threshold (* 16 1024 1024))
-      (normal-gc-cons-percentage gc-cons-percentage)
-      (normal-file-name-handler-alist file-name-handler-alist)
-      (init-gc-cons-threshold (* 128 1024 1024))
-      (init-gc-cons-percentage 0.6)
-      (init-file-name-handler-alist nil))
-  (setq gc-cons-threshold init-gc-cons-threshold
-	gc-cons-percentage init-gc-cons-percentage
-	file-name-handler-alist init-file-name-handler-alist)
-  (add-hook 'emacs-startup-hook
-            (lambda ()
-	      (setq gc-cons-threshold normal-gc-cons-threshold
-		    gc-cons-percentage normal-gc-cons-percentage
-		    file-name-handler-alist (nconc
-					     file-name-handler-alist
-					     normal-file-name-handler-alist)))))
+;;;; Startup Hacks
 
+;; Some hacks that make startup faster.
 
-;;;; Bootstrap Config
+(let (;; Store these initial values for latter usage.
+      (file-name-handler-alist-initial file-name-handler-alist)
+      (mode-line-format-initial mode-line-format))
+  (setq
+   ;; Inhibit garbage collection at startup.
+   gc-cons-threshold most-positive-fixnum
+   gc-cons-percentage 0.6
+   ;; `file-name-handler-alist' is consulted on each call to `require', `load',
+   ;; or various file/io functions (like `expand-file-name' or `file-remote-p').
+   ;; Setting its value to nil can make startup time even shorter.
+   file-name-handler-alist nil
+   ;; Disable the mode line can save some time, too.
+   mode-line-format nil
+   ;; Disable redisplays and messages can also make things faster.
+   inhibit-redisplay t
+   inhibit-message t)
+  (add-hook
+   'emacs-startup-hook
+   (lambda ()
+     ;; Reconfigure these settings after startup.
+     (setq
+      ;; 20 MB is an appropriate value, used by Purcell.
+      gc-cons-threshold (* 20 1024 1024)
+      ;; 0.1 is the default value.
+      gc-cons-percentage 0.1
+      ;; Merge its initial value with its current value in case it is
+      ;; modified during startup.
+      file-name-handler-alist (delete-dups
+			       (append file-name-handler-alist
+				       file-name-handler-alist-initial))
+      mode-line-format mode-line-format-initial
+      inhibit-redisplay nil
+      inhibit-message nil))))
 
-;; Benchmarking
-(push (expand-file-name "lisp" user-emacs-directory) load-path)
-(require 'init-benchmark)
+;;;; Globals
 
-;; The custom file
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(when (file-exists-p custom-file) (load custom-file))
-
-;; Handy macros
-(require 'init-macros)
-
-;; Loading systems
-(require 'init-load)
-
-;; Core
-(require 'init-common)
-(require 'init-keybinding)
-
-;; Features
-(require 'init-completion)
-(require 'init-editing)
-(require 'init-file)
-(require 'init-lingual)
-(require 'init-programming)
-(require 'init-project)
-(require 'init-search)
-(require 'init-shell)
-(require 'init-tex)
-(require 'init-ui)
-(require 'init-vc)
-
-;; Major modes
-(require 'init-elisp)
-(require 'init-misc)
-(require 'init-org)
-
-;; Provide the `zyemacs' feature so that my Zyutils package can load, as my
-;; configuration is a dependency of it.
-(require 'zyemacs)
-
+(defgroup zyxir nil
+  "Zyxir's customization layer over Emacs."
+  :group 'emacs)
 
 (provide 'init)
-
 ;;; init.el ends here
