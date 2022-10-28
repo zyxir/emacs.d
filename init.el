@@ -40,9 +40,9 @@
 (eval-when-compile (require 'subr-x))
 (require 'cl-lib)
 
-;;; Preparations
+;;; Preparations before loading any code
 
-;;;; Version Check
+;;;; Check minimum version
 
 ;; Check version at both compile and runtime.
 (eval-and-compile
@@ -52,12 +52,12 @@
      "Emacs version is %s, but this config requires 28.1 or newer"
      emacs-version)))
 
-;;;; Startup Hacks
+;;;; Startup hacks
 
 ;; Some hacks that make startup faster.  Most of them are learnt from Doom
 ;; Emacs, so thank you Henrik Lissner!
 
-;;;;; Garbage Collection
+;;;;; Adjust garbage collection
 
 ;; Garbage collection can occur many times during startup, which slows things
 ;; down.  As is suggested by a lot of users (and by the official documentation
@@ -72,7 +72,7 @@
 	    (lambda ()
 	      (setq gc-cons-threshold normal-gc-cons-threshold))))
 
-;;;;; File Name Handlers
+;;;;; Unset file name handlers
 
 ;; This technique is borrowed from Doom Emacs.  `file-name-handler-alist' is
 ;; consulted on each call to `require', `load', or various file/io functions
@@ -107,7 +107,7 @@
 		     (append file-name-handler-alist old-value))))
 	    -99))
 
-;;;;; GUI Noises
+;;;;; Reduce GUI noises
 
 ;; Reduce some GUI noises can also reduce startup time.
 
@@ -116,8 +116,16 @@
   ;; dramatically.  Setting this value to t stops that from happening.
   (setq frame-inhibit-implied-resize t)
 
-  ;; Do not show any startup screen or message.
+  ;; Do not show the startup screen.
   (setq inhibit-startup-screen t)
+
+  ;; Show startup time instead of "For information about ...".
+
+  (defun display-startup-echo-area-message ()
+    "Display startup time."
+    (message "Emacs ready in %.2f seconds."
+	     (float-time
+	      (time-subtract (current-time) before-init-time))))
 
   ;; Even if `inhibit-startup-screen' is set to t, it would still initialize
   ;; anyway.  This involves some file IO and/or bitmap work.  It should be
@@ -175,7 +183,7 @@
 		  (tool-bar-setup)
 		  (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
 
-;;; Helper Functions
+;;; Enhancement systems
 
 ;; Sugar functions and macros.  Many of them are directly copied or adapted from
 ;; Doom Emacs.
@@ -189,7 +197,7 @@ The current time till `before-init-time' is prefixed to the
 output."
   (message "%s - %s"
 	   (float-time (time-subtract (current-time) before-init-time))
-	   (propertize (format text args) 'face 'font-lock-doc-face)))
+	   (propertize (apply 'format text args) 'face 'font-lock-doc-face)))
 
 (defmacro zy-log (message &rest args)
   "Log MESSAGE formatted with ARGS in *Messages*.
@@ -198,8 +206,9 @@ If `init-file-debug' is nil, do nothing."
   (declare (debug t))
   `(when init-file-debug (zy--log ,message ,@args)))
 
-;;;; Symbol Handling
+;;;; Symbol manipulation
 
+;; This is copied from Doom Emacs.
 (defun zy-unquote (exp)
   "Return EXP unquoted."
   (declare (pure t) (side-effect-free t))
@@ -207,19 +216,22 @@ If `init-file-debug' is nil, do nothing."
     (setq exp (cadr exp)))
   exp)
 
+;; This is copied from Doom Emacs.
 (defun zy-keyword-intern (str)
   "Convert STR (a string) into a keyword (`keywordp')."
   (declare (pure t) (side-effect-free t))
   (cl-check-type str string)
   (intern (concat ":" str)))
 
-;;;; Hook Functions
+;;;; Enhance the hook system
 
 (define-error 'hook-error "Error in a hook.")
 
+;; This is copied from Doom Emacs.
 (defvar zy--hook nil
   "Currently triggered hook.")
 
+;; This is copied from Doom Emacs.
 (defun zy-run-hook (hook)
   "Run HOOK (a hook function) with better error handling.
 
@@ -230,6 +242,7 @@ Should be used with `run-hook-wrapped'."
     (error
      (signal 'hook-error (list hook e)))))
 
+;; This is copied from Doom Emacs.
 (defun zy-run-hooks (&rest hooks)
   "Run HOOKS with better error handling.
 
@@ -250,6 +263,7 @@ advice to replace `run-hooks'."
 
 (advice-add #'run-hooks :override #'zy-run-hooks)
 
+;; This is copied from Doom Emacs.
 (defun zy-run-hook-on (hook-var trigger-hooks)
   "Configure HOOK-VAR to run on TRIGGER-HOOKS.
 
@@ -287,8 +301,9 @@ to nil."
 	    (t (add-hook hook fn -99)))
       fn)))
 
-;;;; Lisp Sugars
+;;;; Macros as syntactic sugars
 
+;; This is copied from Doom Emacs.
 (defmacro add-transient-hook! (hook-or-function &rest forms)
   "Attaches a self-removing function to HOOK-OR-FUNCTION.
 
@@ -315,6 +330,7 @@ function (which will be advised)."
               (put ',fn 'permanent-local-hook t)
               (add-hook sym #',fn ,append-p))))))
 
+;; This is copied from Doom Emacs.
 (defmacro setq! (&rest settings)
   "Setting variables according to SETTINGS.
 
@@ -326,25 +342,84 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
 				  #'set-default-toplevel-value)
                               ',var ,val))))
 
-;; TODO: Implement this like Doom Emacs does.
+;; This is based on `add-hook!' from Doom Emacs.
 (defmacro add-hook! (hooks &rest rest)
-  "A extended version of `add-hook'.")
+  "A convennient macro to add N functions to M hooks.
 
-;; TODO: Implement this like Doom Emacs does.
-(defmacro setq-hook! (hooks &rest rest)
-  "Set buffer-local variables on HOOKS.")
+HOOKS is either a quoted hook variable or a quoted list of hook
+variables.
 
-;;; Globals
+REST can contain optional properties :local, :append, and/or
+:depth [N], which will make the hook buffer-local or append to
+the list of hooks (respectively).
 
-;;;; Zyxir's Definitions
+The rest of REST are the function(s) to be added: this can be a
+quoted function, a quoted list thereof, a list of `defun' or
+`cl-defun' forms, or arbitrary forms (will implicitly be wrapped
+in a lambda)."
+  (declare (indent (lambda (indent-point state)
+                     (goto-char indent-point)
+                     (when (looking-at-p "\\s-*(")
+                       (lisp-indent-defform state indent-point))))
+           (debug t))
+  (let* ((hooks (if (and (eq (car-safe hooks) 'quote)
+			 (atom (cadr hooks)))
+		    (list (cadr hooks))
+		  (cadr hooks)))
+	 (func-forms ())
+	 (defn-forms ())
+	 append-p local-p remove-p depth)
+    (while (keywordp (car rest))
+      (pcase (pop rest)
+	(:append (setq append-p t))
+	(:depth  (setq depth (pop rest)))
+	(:local  (setq local-p t))
+	(:remove (setq remove-p t))))
+    (while rest
+      (let* ((next (pop rest))
+	     (first (car-safe next)))
+	(push (cond ((memq first '(function nil))
+		     next)
+		    ((eq first 'quote)
+		     (let ((quoted (cadr next)))
+		       (if (atom quoted)
+			   next
+			 (when (cdr quoted)
+			   (setq rest (cons (list first (cdr quoted)) rest)))
+			 (list first (car quoted)))))
+		    ((memq first '(defun cl-defun))
+		     (push next defn-forms)
+		     (list 'function (cadr next)))
+		    (t (prog1 `(lambda (&rest _) ,@(cons next rest))
+			 (setq rest nil))))
+	      func-forms)))
+    `(progn
+       ,@defn-forms
+       (dolist (hook ',hooks)
+	 (dolist (func (list ,@func-forms))
+	   ,(if remove-p
+		`(remove-hook hook func ,local-p)
+	      `(add-hook hook func ,(or depth append-p) ,local-p)))))))
+
+;; This is based on `remove-hook!' from Doom Emacs.
+(defmacro remove-hook! (hooks &rest rest)
+  "A convenient macro for removing N functions from M hooks.
+
+HOOKS and REST are the same as in `add-hook!'."
+  (declare (indent defun) (debug t))
+  `(add-hook! ,hooks :remove ,@rest))
+
+;;; Global definitions
+
+;;;; Global variables, customizables and customization groups
 
 (defgroup zyxir nil
   "Zyxir's customization layer over Emacs."
   :group 'emacs)
 
-;;;; Custom Hooks
+;;;; Custom hooks
 
-;;;;; Switch Buffer Hook
+;;;;; Switch buffer hook
 
 (defcustom zy-switch-buffer-hook nil
   "Hooks run after changing the current buffer."
@@ -359,7 +434,7 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
 
 (add-hook 'window-buffer-change-function #'zy-run-switch-buffer-hooks-h)
 
-;;;;; First Buffer Hook
+;;;;; First buffer hook
 
 (defcustom zy-first-buffer-hook nil
   "Hooks run before the first interactively opened buffer."
@@ -370,7 +445,7 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
 (zy-run-hook-on 'zy-first-buffer-hook
 		'(find-file-hook zy-switch-buffer-hook))
 
-;;;;; First File Hook
+;;;;; First file hook
 
 (defcustom zy-first-file-hook nil
   "Hooks run before the first interactively opened file."
@@ -380,6 +455,46 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
 
 (zy-run-hook-on 'zy-first-file-hook
 		'(find-file-hook dired-initial-position-hook))
+
+;;; Top level utilities
+
+;; Top levels stuffs that should be loaded before anything else.
+
+;;;; Manage packages with Straight
+
+(setq-default
+ ;; Cache autoloads into a single file to speed up startup.
+ straight-cache-autoloads t
+ ;; Use different build directories for different versions of Emacs to cope with
+ ;; byte code incompatibility.
+ straight-build-dir (format "build-%s" emacs-version)
+ ;; Do not check for modifications, until explicitly asked to.
+ straight-check-for-modifications '(find-when-checking))
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 6))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+(require 'straight)
+
+;;;; Use-package (isolate package configurations)
+
+;; Collect more information on debugging sessions.
+(setq-default use-package-compute-statistics init-file-debug
+	      use-package-verbose init-file-debug
+	      use-package-minimum-reported-time (if init-file-debug 0 0.1)
+	      use-package-expand-minimally (not noninteractive))
+
+(straight-use-package 'use-package)
+(require 'use-package)
 
 (provide 'init)
 ;;; init.el ends here
