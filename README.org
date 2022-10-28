@@ -14,7 +14,7 @@ Lightweight Emacs configuration for my daily need.
 
 ** Installation
 
-Clone this repository to ~\tilde{}/.emacs.d~.  Upon starting up Emacs for the first time, third-party packages will be automatically installed.
+Clone this repository to ~$HOME/.emacs.d~.  Upon starting up Emacs for the first time, third-party packages will be automatically installed.
 
 It is recommended to install these third-party tools to enhance user experience:
 
