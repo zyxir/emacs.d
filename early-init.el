@@ -36,9 +36,8 @@
       menu-bar-mode nil
       scroll-bar-mode nil
       tool-bar-mode nil
-      frame-inhibit-implied-resize t
       frame-resize-pixelwise t
-      inhibit-startup-message t
+      ;; This disables package.el once and for all
       package-enable-at-startup nil)
 
 ;; Things that I no longer use
