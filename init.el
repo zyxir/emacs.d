@@ -190,21 +190,65 @@
 
 ;;;; Logging
 
-(defun zy--log (text &rest args)
-  "Log a message TEXT formatted with ARGS.
+(defvar zy-log-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map (make-composed-keymap button-buffer-map
+						 special-mode-map))
+    map)
+  "Keymap for Zyxir's Log mode.")
 
-The current time till `before-init-time' is prefixed to the
-output."
-  (message "%s - %s"
-	   (float-time (time-subtract (current-time) before-init-time))
-	   (propertize (apply 'format text args) 'face 'font-lock-doc-face)))
+(define-derived-mode zy-log-mode special-mode "Log"
+  "Major mode for viewing logs.
+Commands:
+\\{zy-log-mode-map}")
 
-(defmacro zy-log (message &rest args)
+(defvar zy-log-buffer
+  (with-current-buffer (get-buffer-create "*Log*")
+    (zy-log-mode)
+    (current-buffer))
+  "Buffer for log messages.")
+
+(defun zy--log (module text &rest args)
+  "Log a message TEXT in the *Log* buffer.
+ARGS is arguments used to format TEXT.
+
+The message is prettified, and combined with additional
+information (including MODULE, the module that is logging the
+message), before being written to the *Log* buffer."
+  (let* (;; Time since initialization.
+	 (time (format "%.06f" (float-time (time-since before-init-time))))
+	 ;; The module indicator.
+	 (module (format ":%s:" (if (symbolp module)
+				    (symbol-name module)
+				  module)))
+	 ;; Padding between each printed line.
+	 (padding (make-string (+ (length time) (length module) 2) ?\s))
+	 ;; The formatted text.
+	 (text (apply 'format text args))
+	 ;; Split `text' into segments by newlines.
+	 (text-segs (delete "" (split-string text "\n"))))
+    ;; Print all text segments into the *Log* buffer.
+    (with-current-buffer zy-log-buffer
+      (goto-char (point-max))
+      (let ((inhibit-read-only t))
+	(insert (concat
+		 (propertize time 'face 'font-lock-doc-face)
+		 " "
+		 (propertize module 'face 'font-lock-keyword-face)
+		 " "
+		 (car-safe text-segs)
+		 "\n"))
+	(when (cdr-safe text-segs)
+	  (dolist (seg (cdr text-segs))
+	    (insert (concat padding seg "\n"))))))))
+
+(defmacro zy-log (module message &rest args)
   "Log MESSAGE formatted with ARGS in *Messages*.
+MODULE is the module that emits the message.
 
 If `init-file-debug' is nil, do nothing."
   (declare (debug t))
-  `(when init-file-debug (zy--log ,message ,@args)))
+  `(when init-file-debug (zy--log ,module ,message ,@args)))
 
 ;;;; Symbol manipulation
 
@@ -236,7 +280,7 @@ If `init-file-debug' is nil, do nothing."
   "Run HOOK (a hook function) with better error handling.
 
 Should be used with `run-hook-wrapped'."
-  (zy-log "hook:%s: run %s" (or zy--hook '*) hook)
+  (zy-log 'hook "Hook %s: run %s" (or zy--hook '*) hook)
   (condition-case-unless-debug e
       (funcall hook)
     (error
@@ -531,7 +575,7 @@ If NOW is non-nil, load PACKAGES incrementally now, in
 	(let ((req (pop packages))
 	      idle-time)
 	  (if (featurep req)
-	      (zy-log "start:iloader: Already loaded %s (%d left)"
+	      (zy-log 'iloader "Already loaded %s (%d left)"
 		      req (length packages))
 	    (condition-case-unless-debug e
 		(and
@@ -543,7 +587,7 @@ If NOW is non-nil, load PACKAGES incrementally now, in
 		  (not
 		   ;; Interrupt the load once the user inputs something.
 		   (while-no-input
-		     (zy-log "start:iloader: Loading %s (%d left)"
+		     (zy-log 'iloader "Loading %s (%d left)"
 			     req (length packages))
 		     (let ((inhibit-message t)
 			   (file-name-handler-alist
@@ -559,7 +603,7 @@ If NOW is non-nil, load PACKAGES incrementally now, in
 	       (setq packages nil)))
 	    (if (null packages)
 		;; If all queued packages are loaded, the job is finished.
-		(zy-log "start:iloader: Finished!")
+		(zy-log 'iloader "Finished!")
 	      ;; Otherwise, pend the next load action.
 	      (run-at-time (if idle-time
 			       zy-incremental-idle-timer
