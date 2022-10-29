@@ -40,7 +40,7 @@
 (eval-when-compile (require 'subr-x))
 (require 'cl-lib)
 
-;;; Preparations before loading any code
+;;; Preparations
 
 ;;;; Check minimum version
 
@@ -183,10 +183,10 @@
 		  (tool-bar-setup)
 		  (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
 
-;;; Enhancement systems
+;;; Emacs Lisp enhancements
 
-;; Sugar functions and macros.  Many of them are directly copied or adapted from
-;; Doom Emacs.
+;; These functions and macros make writting this configuration much easier.
+;; Many of them are copied or adapted from Doom Emacs.
 
 ;;;; Logging
 
@@ -240,7 +240,9 @@ Should be used with `run-hook-wrapped'."
   (condition-case-unless-debug e
       (funcall hook)
     (error
-     (signal 'hook-error (list hook e)))))
+     (signal 'hook-error (list hook e))))
+  ;; Return nil to keep `run-hook-wrapped' running.
+  nil)
 
 ;; This is copied from Doom Emacs.
 (defun zy-run-hooks (&rest hooks)
@@ -409,7 +411,13 @@ HOOKS and REST are the same as in `add-hook!'."
   (declare (indent defun) (debug t))
   `(add-hook! ,hooks :remove ,@rest))
 
-;;; Global definitions
+(defmacro setq-hook! (hooks &rest rest)
+  "Use `setq-local' on REST after HOOKS."
+  `(add-hook! ,hooks (setq-local ,@rest)))
+
+;;; Top level utilities
+
+;; Top levels stuffs that should be loaded before anything else.
 
 ;;;; Global variables, customizables and customization groups
 
@@ -419,20 +427,42 @@ HOOKS and REST are the same as in `add-hook!'."
 
 ;;;; Custom hooks
 
-;;;;; Switch buffer hook
+;;;;; Switch buffer/window/frame hook
 
-(defcustom zy-switch-buffer-hook nil
-  "Hooks run after changing the current buffer."
-  :type 'hook
-  :group 'zyxir)
+(defvar zy-switch-buffer-hook nil
+  "Hooks run after changing the current buffer.")
 
-(defun zy-run-switch-buffer-hooks-h (&rest _)
+(defvar zy-switch-window-hook nil
+  "Hooks run after changing the current window.")
+
+(defvar zy-switch-frame-hook nil
+  "Hooks run after changing the current frame.")
+
+(defun zy-run-switch-buffer-hooks-h (&optional _)
   "Run all hooks in `zy-switch-buffer-hook'."
   (let ((gc-cons-threshold most-positive-fixnum)
 	(inhibit-redisplay t))
     (run-hooks 'zy-switch-buffer-hook)))
 
-(add-hook 'window-buffer-change-function #'zy-run-switch-buffer-hooks-h)
+(defvar zy--last-frame nil)
+(defun zy-run-switch-window-or-frame-hooks-h (&optional _)
+  "Run the two hooks if needed."
+  (let ((gc-cons-threshold most-positive-fixnum)
+	(inhibit-redisplay t))
+    (unless (equal (old-selected-frame) (selected-frame))
+      (run-hooks 'zy-switch-frame-hook))
+    (unless (or (minibufferp)
+		(equal (old-selected-window) (minibuffer-window)))
+      (run-hooks 'zy-switch-window-hook))))
+
+;; Initialize these hooks after startup.
+(add-hook! 'window-setup-hook
+  (add-hook 'window-selection-change-functions
+	    #'zy-run-switch-window-or-frame-hooks-h)
+  (add-hook 'window-buffer-change-function
+	    #'zy-run-switch-buffer-hooks-h)
+  (add-hook 'server-visit-hook
+	    #'zy-run-switch-buffer-hooks-h))
 
 ;;;;; First buffer hook
 
@@ -456,11 +486,105 @@ HOOKS and REST are the same as in `add-hook!'."
 (zy-run-hook-on 'zy-first-file-hook
 		'(find-file-hook dired-initial-position-hook))
 
-;;; Top level utilities
+;;;; Incremental loading
 
-;; Top levels stuffs that should be loaded before anything else.
+;; I tried to design my own incremental loader at version 4.0, but it turned out
+;; to be too complicated.  Finally I decided to adopt Doom Emacs's code.
 
-;;;; Manage packages with Straight
+;; This is copied from Doom Emacs.
+(defvar zy-incremental-packages '(t)
+  "A list of packages to load incrementally after startup.
+
+Any large packages here may cause noticeable pauses, so it's
+recommended you break them up into sub-packages.  For example,
+`org' is comprised of many packages, and can be broken up into:
+
+  (zy-load-packages-incrementally
+   '(calendar find-func format-spec org-macs org-compat
+     org-faces org-entities org-list org-pcomplete org-src
+     org-footnote org-macro ob org org-clock org-agenda
+     org-capture))
+
+Incremental loading does not occur in daemon sessions (they are
+loaded immediately at startup).")
+
+;; This is copied from Doom Emacs.
+(defvar zy-incremental-first-idle-timer (if (daemonp) 0 2.0)
+  "Incremental loading starts after this many seconds.")
+
+;; This is adapted from Doom Emacs.
+(defvar zy-incremental-idle-timer 0.75
+  "Interval between two incremental loading processes.")
+
+;; This is adapted from Doom Emacs.
+(defun zy-load-packages-incrementally (packages &optional now)
+  "Register PACKAGE to be loaded incrementally.
+
+If NOW is non-nil, load PACKAGES incrementally now, in
+`zy-incremental-idle-timer' intervals."
+  (let ((gc-cons-threshold most-positive-fixnum))
+    (if (not now)
+	;; If `now' is nil, queue `packages' for loading.
+	(cl-callf append zy-incremental-packages packages)
+      ;; If `now' is non-nil, do the loading now.
+      (while packages
+	(let ((req (pop packages))
+	      idle-time)
+	  (if (featurep req)
+	      (zy-log "start:iloader: Already loaded %s (%d left)"
+		      req (length packages))
+	    (condition-case-unless-debug e
+		(and
+		 (or
+		  ;; Don't load if not idle.
+		  (null (setq idle-time (current-idle-time)))
+		  ;; Don't load if the idle time is not enough.
+		  (< (float-time idle-time) zy-incremental-first-idle-timer)
+		  (not
+		   ;; Interrupt the load once the user inputs something.
+		   (while-no-input
+		     (zy-log "start:iloader: Loading %s (%d left)"
+			     req (length packages))
+		     (let ((inhibit-message t)
+			   (file-name-handler-alist
+			    (list (rassq 'jka-compr-handler
+					 file-name-handler-alist))))
+		       ;; Ignore loading errors.
+		       (require req nil 'noerror)
+		       t))))
+		 (push req packages))
+	      (error
+	       (message "Error: failed to incrementally load %S because %s"
+			req e)
+	       (setq packages nil)))
+	    (if (null packages)
+		;; If all queued packages are loaded, the job is finished.
+		(zy-log "start:iloader: Finished!")
+	      ;; Otherwise, pend the next load action.
+	      (run-at-time (if idle-time
+			       zy-incremental-idle-timer
+			     zy-incremental-first-idle-timer)
+			   nil #'zy-load-packages-incrementally
+			   packages t)
+	      ;; `packages' has been passed to the callback function, so safely
+	      ;; setting it to nil.
+	      (setq packages nil))))))))
+
+(defun zy-load-packages-incrementally-h ()
+  "Start loading packages incrementally.
+
+Packages to be loaded are stored in `zy-incremental-packages'.
+If this is a daemon session, load them all immediately instead."
+  (when (numberp zy-incremental-first-idle-timer)
+    (if (zerop zy-incremental-first-idle-timer)
+	(mapc #'require (cdr zy-incremental-packages))
+      (run-with-idle-timer zy-incremental-first-idle-timer
+			   nil #'zy-load-packages-incrementally
+			   (cdr zy-incremental-packages) t))))
+
+(add-hook 'window-setup-hook #'zy-load-packages-incrementally-h)
+
+;;;; Straight as the package manager
 
 (setq-default
  ;; Cache autoloads into a single file to speed up startup.
@@ -487,14 +611,269 @@ HOOKS and REST are the same as in `add-hook!'."
 
 ;;;; Use-package (isolate package configurations)
 
-;; Collect more information on debugging sessions.
-(setq-default use-package-compute-statistics init-file-debug
-	      use-package-verbose init-file-debug
-	      use-package-minimum-reported-time (if init-file-debug 0 0.1)
-	      use-package-expand-minimally (not noninteractive))
-
 (straight-use-package 'use-package)
-(require 'use-package)
+
+;; On-demand loading of Use-package.
+(if init-file-debug
+    ;; Collect more information on debugging sessions.  This requires
+    ;; Use-package be loaded explicitly.
+    (progn
+      ;; Compute statistics concerned use-package declarations.
+      (setq-default use-package-compute-statistics t)
+      ;; Report more details.
+      (setq-default use-package-verbose t)
+      ;; Report any load time.
+      (setq-default use-package-minimum-reported-time 0)
+      (require 'use-package))
+  ;; On normal sessions (where I know my config works), make the expanded code
+  ;; as minimal as possible.
+  (setq-default use-package-expand-minimally t)
+  ;; Use Use-package only for macro expansion.
+  (eval-when-compile (require 'use-package)))
+
+;;;;; The :defer-incrementally keyword
+
+;; This is adapted from Doom Emacs.
+
+(with-eval-after-load 'use-package-core
+  ;; Functions provided by `use-package-core'.
+  (declare-function use-package-list-insert "use-package")
+  (declare-function use-package-normalize-symlist "use-package")
+  (declare-function use-package-process-keywords "use-package")
+
+  ;; Add the keyword to the list.
+  (push ':defer-incrementally use-package-deferring-keywords)
+  (setq use-package-keywords
+        (use-package-list-insert :defer-incrementally
+				 use-package-keywords :after))
+
+  ;; The normalizer and the handler.
+  (defalias 'use-package-normalize/:defer-incrementally
+    #'use-package-normalize-symlist)
+  (defun use-package-handler/:defer-incrementally
+      (name _keyword targets rest state)
+    (use-package-concat
+     `((zy-load-packages-incrementally
+	',(if (equal targets '(t))
+	      (list name)
+	    (append targets (list name)))))
+     (use-package-process-keywords name rest state))))
+
+;;;; General as the keybinding manager
+
+(use-package general
+  :straight t
+  :demand t)
+
+;;;; Load Path
+
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
+;;; Overall enhancements
+
+;; Enhance Emacs in various ways.  Many of these settings are hard to
+;; categorize, so I just put them here.
+
+;;;; A bunch of setqs
+
+(setq!
+ ;; There should be no disabled commands.
+ disabled-command-function nil
+ ;; 80 is a sane default.  Recommended by Google.
+ fill-column 80
+ ;; My AutoHotkey scripts recognize my Emacs window by this title.
+ frame-title-format '("" "ZyEmacs" " [%b]")
+ ;; See the documentation.
+ inhibit-compacting-font-caches t
+ ;; This makes inter-process communication faster
+ read-process-output-max (* 1024 1024)
+ ;; Uniquify buffer names in a sane way.
+ uniquify-buffer-name-style 'forward
+ ;; Never use dialog boxes.
+ use-dialog-box nil
+ ;; Allow breaking after CJK characters.
+ word-wrap-by-category t
+ ;; Do not report native compilation warnings and errors.
+ native-comp-async-report-warnings-errors nil)
+
+;;;; No auto save or backup files
+
+(use-package files
+  :init
+  ;; Make no auto save or backup files.
+  (setq! auto-save-default nil
+	 make-backup-files nil))
+
+;;;; Automatically reverting file-visiting buffers
+
+(use-package autorevert
+  :hook (zy-first-file . global-auto-revert-mode)
+  :config
+  ;; Do not auto revert some modes.
+  (setq! global-auto-revert-ignore-modes '(pdf-view-mode)))
+
+;;;; Record recently opened files
+
+(use-package recentf
+  :defer-incrementally easymenu tree-widget timer
+  :hook (zy-first-file . recentf-mode)
+  :commands recentf-open-files
+  :config
+  (setq!
+   ;; Do not do auto cleanups except its a daemon session.
+   recentf-auto-cleanup (if (daemonp) 300)
+   ;; Default is 20, which is far from enough.
+   recentf-max-saved-items 200)
+
+  (add-hook! '(zy-switch-window-hook write-file-functions)
+    (defun zy--recentf-touch-buffer-h ()
+      "Bump file in recent file list when it is switched to or written to."
+      (when buffer-file-name
+	(recentf-add-file buffer-file-name))
+      ;; Return nil for `write-file-functions'
+      nil))
+
+  ;; Clean up recent files when quitting Emacs.
+  (add-hook 'kill-emacs-hook #'recentf-cleanup))
+
+;;;; Highlight the current line
+
+(use-package hl-line
+  :hook (zy-first-buffer . global-hl-line-mode)
+  :config
+  ;; Only highlight line in the current window.
+  (setq! global-hl-line-sticky-flag nil))
+
+;;;; Persist variables across sessions
+
+;; This is adopted from Doom Emacs.
+(use-package savehist
+  ;; persist variables across sessions
+  :defer-incrementally custom
+  :init (savehist-mode 1)
+  :config
+  (setq! savehist-save-minibuffer-history t
+         savehist-autosave-interval nil     ; save on kill only
+         savehist-additional-variables
+         '(kill-ring                        ; persist clipboard
+           register-alist                   ; persist macros
+           mark-ring global-mark-ring       ; persist marks
+           search-ring regexp-search-ring)) ; persist searches
+  (add-hook! 'savehist-save-hook
+    (defun zy-savehist-unpropertize-variables-h ()
+      "Remove text properties from `kill-ring'.
+
+This reduces savehist cache size."
+      (setq kill-ring
+            (mapcar #'substring-no-properties
+                    (cl-remove-if-not #'stringp kill-ring))
+            register-alist
+            (cl-loop for (reg . item) in register-alist
+                     if (stringp item)
+                     collect (cons reg (substring-no-properties item))
+                     else collect (cons reg item))))
+    (defun zy-savehist-remove-unprintable-registers-h ()
+      "Remove unwriteable registers (e.g. containing window configurations).
+
+Otherwise, `savehist' would discard `register-alist' entirely if
+we don't omit the unwritable tidbits."
+      ;; Save new value in the temp buffer savehist is running
+      ;; `savehist-save-hook' in. We don't want to actually remove the
+      ;; unserializable registers in the current session!
+      (setq-local register-alist
+                  (cl-remove-if-not #'savehist-printable register-alist)))))
+
+;;;; Isearch (incremental searching)
+
+(use-package isearch
+  :config
+  (setq!
+   ;; Show match number in the search prompt.
+   isearch-lazy-count t
+   ;; Let one space match a sequence of whitespace chars.
+   isearch-regexp-lax-whitespace t
+   ;; Remember more regexp searches.
+   regexp-search-ring-max 200
+   ;; Remember more normal searches.
+   search-ring-max 200))
+
+;;;; Encoding
+
+;; Set everything to UTF-8.
+
+(set-language-environment "UTF-8")
+
+;;;; Line numbers
+
+;; Line numbers display.
+(use-package display-line-numbers
+  :init
+  ;; Explicitly define a width to reduce the cost of on-the-fly computation.
+  (setq-default display-line-numbers-width 3)
+
+  ;; Show absolute line numbers for narrowed regions to make it easier to tell
+  ;; the buffer is narrowed, and where you are, exactly.
+  (setq-default display-line-numbers-widen t)
+
+  ;; Enable line numbers for these modes only.
+  (add-hook! '(prog-mode-hook text-mode-hook conf-mode-hook)
+    #'display-line-numbers-mode))
+
+;;;; Theming
+
+;; Modus themes by Protesilaus Stavrou
+(use-package modus-themes
+  :straight t
+  :demand t
+  :config
+  (setq!
+   modus-themes-italic-constructs t
+   modus-themes-bold-constructs t
+   ;; Headings are not sized for Modus Themes shipped with Emacs 28
+   ;; Maybe I should use the non-built-in version instead
+   modus-themes-headings '((0 . (background 1.2))
+			   (1 . (background overline 1.3))
+			   (2 . (background overline 1.2))
+			   (3 . (background overline 1.1))
+			   (4 . (background 1.1))
+			   (t . (background regular 1.0)))
+   modus-themes-hl-line '(intense)
+   modus-themes-markup '(background intense)
+   modus-themes-mixed-fonts t
+   modus-themes-region '(accented no-extend)
+   modus-themes-org-blocks '(gray-background)
+   modus-themes-prompts '(background))
+  (load-theme 'modus-vivendi 'no-confirm))
+
+;;;; Other inbuilt modes
+
+;; Show column number on the mode line.
+(column-number-mode 1)
+
+;; Delete the active region on insersion.
+(delete-selection-mode 1)
+
+;; Toggle subword movement and editing.
+(global-subword-mode 1)
+
+;; Proper positioning of line breaks.
+(require 'kinsoku)
+
+;;; Programming languages
+
+;;;; Emacs Lisp
+
+(autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
+
+(use-package elisp-mode
+  :config
+  (setq-hook! 'emacs-lisp-mode-hook
+    ;; Don't treat autoloads or sexp openers as outline headers.  Use
+    ;; hideshow for that.
+    outline-regexp "[ \t]*;;;;*[^ \t\n]")
+
+  ;; Proper indent function.
+  (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
 
 (provide 'init)
 ;;; init.el ends here
