@@ -40,9 +40,9 @@
 (eval-when-compile (require 'subr-x))
 (require 'cl-lib)
 
-;;; Preparations
+;;;; Preparations
 
-;;;; Check minimum version
+;;;;; Check minimum version
 
 ;; Check version at both compile and runtime.
 (eval-and-compile
@@ -51,11 +51,6 @@
     (user-error
      "Emacs version is %s, but this config requires 28.1 or newer"
      emacs-version)))
-
-;;;; Startup hacks
-
-;; Some hacks that make startup faster.  Most of them are learnt from Doom
-;; Emacs, so thank you Henrik Lissner!
 
 ;;;;; Adjust garbage collection
 
@@ -183,12 +178,12 @@
 		  (tool-bar-setup)
 		  (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
 
-;;; Emacs Lisp enhancements
+;;;; Emacs Lisp enhancements
 
 ;; These functions and macros make writting this configuration much easier.
 ;; Many of them are copied or adapted from Doom Emacs.
 
-;;;; Logging
+;;;;; Logging
 
 (defvar zy-log-mode-map
   (let ((map (make-sparse-keymap)))
@@ -250,7 +245,7 @@ If `init-file-debug' is nil, do nothing."
   (declare (debug t))
   `(when init-file-debug (zy--log ,module ,message ,@args)))
 
-;;;; Symbol manipulation
+;;;;; Symbol manipulation
 
 ;; This is copied from Doom Emacs.
 (defun zy-unquote (exp)
@@ -267,7 +262,7 @@ If `init-file-debug' is nil, do nothing."
   (cl-check-type str string)
   (intern (concat ":" str)))
 
-;;;; Enhance the hook system
+;;;;; Enhanced hook system
 
 (define-error 'hook-error "Error in a hook.")
 
@@ -288,7 +283,8 @@ Should be used with `run-hook-wrapped'."
   ;; Return nil to keep `run-hook-wrapped' running.
   nil)
 
-;; This is copied from Doom Emacs.
+;; This is copied from Doom Emacs.  Use this on custom hooks only, otherwise
+;; *Log* will be filled with arbitrary hook messages.
 (defun zy-run-hooks (&rest hooks)
   "Run HOOKS with better error handling.
 
@@ -306,8 +302,6 @@ advice to replace `run-hooks'."
 		  (cadr e))
 		(caddr e)))
        (signal 'hook-error (cons hook (cdr e)))))))
-
-(advice-add #'run-hooks :override #'zy-run-hooks)
 
 ;; This is copied from Doom Emacs.
 (defun zy-run-hook-on (hook-var trigger-hooks)
@@ -347,7 +341,7 @@ to nil."
 	    (t (add-hook hook fn -99)))
       fn)))
 
-;;;; Macros as syntactic sugars
+;;;;; Macros as syntactic sugars
 
 ;; This is copied from Doom Emacs.
 (defmacro add-transient-hook! (hook-or-function &rest forms)
@@ -459,19 +453,19 @@ HOOKS and REST are the same as in `add-hook!'."
   "Use `setq-local' on REST after HOOKS."
   `(add-hook! ,hooks (setq-local ,@rest)))
 
-;;; Top level utilities
+;;;; Top level utilities
 
 ;; Top levels stuffs that should be loaded before anything else.
 
-;;;; Global variables, customizables and customization groups
+;;;;; Global variables, customizables and customization groups
 
 (defgroup zyxir nil
   "Zyxir's customization layer over Emacs."
   :group 'emacs)
 
-;;;; Custom hooks
+;;;;; Custom hooks
 
-;;;;; Switch buffer/window/frame hook
+;;;;;; Switch buffer/window/frame hook
 
 (defvar zy-switch-buffer-hook nil
   "Hooks run after changing the current buffer.")
@@ -508,7 +502,7 @@ HOOKS and REST are the same as in `add-hook!'."
   (add-hook 'server-visit-hook
 	    #'zy-run-switch-buffer-hooks-h))
 
-;;;;; First buffer hook
+;;;;;; First buffer hook
 
 (defcustom zy-first-buffer-hook nil
   "Hooks run before the first interactively opened buffer."
@@ -519,7 +513,7 @@ HOOKS and REST are the same as in `add-hook!'."
 (zy-run-hook-on 'zy-first-buffer-hook
 		'(find-file-hook zy-switch-buffer-hook))
 
-;;;;; First file hook
+;;;;;; First file hook
 
 (defcustom zy-first-file-hook nil
   "Hooks run before the first interactively opened file."
@@ -530,7 +524,7 @@ HOOKS and REST are the same as in `add-hook!'."
 (zy-run-hook-on 'zy-first-file-hook
 		'(find-file-hook dired-initial-position-hook))
 
-;;;; Incremental loading
+;;;;; Incremental loading
 
 ;; I tried to design my own incremental loader at version 4.0, but it turned out
 ;; to be too complicated.  Finally I decided to adopt Doom Emacs's code.
@@ -628,7 +622,7 @@ If this is a daemon session, load them all immediately instead."
 
 (add-hook 'window-setup-hook #'zy-load-packages-incrementally-h)
 
-;;;; Straight as the package manager
+;;;;; Straight as the package manager
 
 (setq-default
  ;; Cache autoloads into a single file to speed up startup.
@@ -653,7 +647,7 @@ If this is a daemon session, load them all immediately instead."
   (load bootstrap-file nil 'nomessage))
 (require 'straight)
 
-;;;; Use-package (isolate package configurations)
+;;;;; Use-package (isolate package configurations)
 
 (straight-use-package 'use-package)
 
@@ -675,7 +669,7 @@ If this is a daemon session, load them all immediately instead."
   ;; Use Use-package only for macro expansion.
   (eval-when-compile (require 'use-package)))
 
-;;;;; The :defer-incrementally keyword
+;;;;;; The :defer-incrementally keyword
 
 ;; This is adapted from Doom Emacs.
 
@@ -703,22 +697,22 @@ If this is a daemon session, load them all immediately instead."
 	    (append targets (list name)))))
      (use-package-process-keywords name rest state))))
 
-;;;; General as the keybinding manager
+;;;;; General as the keybinding manager
 
 (use-package general
   :straight t
   :demand t)
 
-;;;; Load Path
+;;;;; Load Path
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;;; Overall enhancements
+;;;; Overall enhancements
 
 ;; Enhance Emacs in various ways.  Many of these settings are hard to
 ;; categorize, so I just put them here.
 
-;;;; A bunch of setqs
+;;;;; A bunch of setqs
 
 (setq!
  ;; There should be no disabled commands.
@@ -740,7 +734,7 @@ If this is a daemon session, load them all immediately instead."
  ;; Do not report native compilation warnings and errors.
  native-comp-async-report-warnings-errors nil)
 
-;;;; No auto save or backup files
+;;;;; No auto save or backup files
 
 (use-package files
   :init
@@ -748,7 +742,7 @@ If this is a daemon session, load them all immediately instead."
   (setq! auto-save-default nil
 	 make-backup-files nil))
 
-;;;; Automatically reverting file-visiting buffers
+;;;;; Automatically reverting file-visiting buffers
 
 (use-package autorevert
   :hook (zy-first-file . global-auto-revert-mode)
@@ -756,7 +750,7 @@ If this is a daemon session, load them all immediately instead."
   ;; Do not auto revert some modes.
   (setq! global-auto-revert-ignore-modes '(pdf-view-mode)))
 
-;;;; Record recently opened files
+;;;;; Record recently opened files
 
 (use-package recentf
   :defer-incrementally easymenu tree-widget timer
@@ -780,7 +774,7 @@ If this is a daemon session, load them all immediately instead."
   ;; Clean up recent files when quitting Emacs.
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
 
-;;;; Highlight the current line
+;;;;; Highlight the current line
 
 (use-package hl-line
   :hook (zy-first-buffer . global-hl-line-mode)
@@ -788,7 +782,24 @@ If this is a daemon session, load them all immediately instead."
   ;; Only highlight line in the current window.
   (setq! global-hl-line-sticky-flag nil))
 
-;;;; Persist variables across sessions
+;;;;; Outline minor mode for text structuring
+
+(use-package outline
+  :commands (outline-minor-mode)
+  :config
+  (setq!
+   ;; Cycle outline visibility with TAB.
+   outline-minor-mode-cycle t
+   ;; Highlight outline headings.
+   outline-minor-mode-highlight 'append))
+
+;;;;; Display delimiters in rainbow colors
+
+(use-package rainbow-delimiters
+  :straight t
+  :commands (rainbow-delimiters-mode))
+
+;;;;; Persist variables across sessions
 
 ;; This is adopted from Doom Emacs.
 (use-package savehist
@@ -827,7 +838,7 @@ we don't omit the unwritable tidbits."
       (setq-local register-alist
                   (cl-remove-if-not #'savehist-printable register-alist)))))
 
-;;;; Isearch (incremental searching)
+;;;;; Isearch (incremental searching)
 
 (use-package isearch
   :config
@@ -841,13 +852,13 @@ we don't omit the unwritable tidbits."
    ;; Remember more normal searches.
    search-ring-max 200))
 
-;;;; Encoding
+;;;;; Encoding
 
 ;; Set everything to UTF-8.
 
 (set-language-environment "UTF-8")
 
-;;;; Line numbers
+;;;;; Line numbers
 
 ;; Line numbers display.
 (use-package display-line-numbers
@@ -863,7 +874,7 @@ we don't omit the unwritable tidbits."
   (add-hook! '(prog-mode-hook text-mode-hook conf-mode-hook)
     #'display-line-numbers-mode))
 
-;;;; Other inbuilt modes
+;;;;; Other inbuilt modes
 
 ;; Show column number on the mode line.
 (column-number-mode 1)
@@ -879,7 +890,7 @@ we don't omit the unwritable tidbits."
 
 ;;; User interface
 
-;;;; Use Modus themes by Protesilaus Stavrou
+;;;;; Use Modus themes by Protesilaus Stavrou
 
 ;; Protesilaus Stavrou is a really cool bro.
 
@@ -906,7 +917,7 @@ we don't omit the unwritable tidbits."
    modus-themes-prompts '(background))
   (load-theme 'modus-vivendi 'no-confirm))
 
-;;;; Set font for various faces
+;;;;; Set font for various faces
 
 ;; Font setter for other character sets
 
@@ -1017,13 +1028,17 @@ remove itself from `after-make-frame-functions' if it is there."
 
 (zy-maybe-setup-font-faces)
 
-;;; Programming languages
+;;;; Programming languages
 
-;;;; Emacs Lisp
+;;;;; Emacs Lisp
 
 (autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
 
 (use-package elisp-mode
+  :init
+  (add-hook! 'emacs-lisp-mode-hook
+    'outline-minor-mode
+    'rainbow-delimiters-mode)
   :config
   (setq-hook! 'emacs-lisp-mode-hook
     ;; Don't treat autoloads or sexp openers as outline headers.  Use
