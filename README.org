@@ -31,8 +31,9 @@ Most behavior of this configuration is hard-coded.  That is because I am current
 
 This configuration conforms to [[https://github.com/bbatsov/emacs-lisp-style-guide][The Emacs Lisp Style Guide]] by Bozhidar Bastov.  Symbol names in this configuration follow the following conventions (which is derived from the naming conventions of [[https://github.com/doomemacs/doomemacs][Doom Emacs]]):
 
-- ~zy-[-]NAME~ :: A non-interactive function or variable.
+- ~zy-[-]NAME~ :: A non-interactive function, macro or variable.
 - ~zy/NAME~ :: A public command to be used interactively, via =M-x= or a keybinding.
+- ~zy~NAME~ :: A customization option that is defined via ~defcustom~.
 - ~zy-[-]NAME-a~ :: Function meant to be used (exclusively) as an advice for other functions.
 - ~zy-[-]NAME-h~ :: Function meant to be used (exclusively) as a hook.
 - ~zy-[-]NAME-fn~ :: A strategy function.  A good rule of thumb for what makes a strategy function is: is it interchangeable? Can it be replaced with another function with a matching signature?

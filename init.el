@@ -42,6 +42,8 @@
 
 ;;;; Preparations
 
+;; Preparations that must be evaluated before all other things.
+
 ;;;;; Check minimum version
 
 ;; Check version at both compile and runtime.
@@ -178,7 +180,7 @@
 		  (tool-bar-setup)
 		  (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
 
-;;;; Emacs Lisp enhancements
+;;;; Additional functions & macros
 
 ;; These functions and macros make writting this configuration much easier.
 ;; Many of them are copied or adapted from Doom Emacs.
@@ -382,7 +384,22 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
 				  #'set-default-toplevel-value)
                               ',var ,val))))
 
-;; This is based on `add-hook!' from Doom Emacs.
+;; This is copied from Doom Emacs.
+(defun zy--resolve-hook-forms (hooks)
+  "Converts a list of modes into a list of hook symbols.
+
+HOOKS is either an unquoted mode, an unquoted list of modes, a
+quoted hook variable or a quoted list of hook variables."
+  (declare (pure t) (side-effect-free t))
+  (let ((hook-list (ensure-list (zy-unquote hooks))))
+    (if (eq (car-safe hooks) 'quote)
+        hook-list
+      (cl-loop for hook in hook-list
+               if (eq (car-safe hook) 'quote)
+               collect (cadr hook)
+               else collect (intern (format "%s-hook" (symbol-name hook)))))))
+
+;; This is adapted from Doom Emacs.
 (defmacro add-hook! (hooks &rest rest)
   "A convennient macro to add N functions to M hooks.
 
@@ -397,15 +414,8 @@ The rest of REST are the function(s) to be added: this can be a
 quoted function, a quoted list thereof, a list of `defun' or
 `cl-defun' forms, or arbitrary forms (will implicitly be wrapped
 in a lambda)."
-  (declare (indent (lambda (indent-point state)
-                     (goto-char indent-point)
-                     (when (looking-at-p "\\s-*(")
-                       (lisp-indent-defform state indent-point))))
-           (debug t))
-  (let* ((hooks (if (and (eq (car-safe hooks) 'quote)
-			 (atom (cadr hooks)))
-		    (list (cadr hooks))
-		  (cadr hooks)))
+  (declare (indent defun) (debug t))
+  (let* ((hook-forms (zy--resolve-hook-forms hooks))
 	 (func-forms ())
 	 (defn-forms ())
 	 append-p local-p remove-p depth)
@@ -435,7 +445,7 @@ in a lambda)."
 	      func-forms)))
     `(progn
        ,@defn-forms
-       (dolist (hook ',hooks)
+       (dolist (hook ',hook-forms)
 	 (dolist (func (list ,@func-forms))
 	   ,(if remove-p
 		`(remove-hook hook func ,local-p)
@@ -455,13 +465,53 @@ HOOKS and REST are the same as in `add-hook!'."
 
 ;;;; Top level utilities
 
-;; Top levels stuffs that should be loaded before anything else.
+;; Top levels utilities that should be loaded before other customizations.
 
-;;;;; Global variables, customizables and customization groups
+;;;;; Global variables and customizations
+
+;; My personal information.  They are useful in various occasions, such as
+;; snippet expansion.
+(setq user-full-name "Eric Zhuo Chen"
+      user-mail-address "zyxirchen@outlook.com")
 
 (defgroup zyxir nil
   "Zyxir's customization layer over Emacs."
   :group 'emacs)
+
+(defgroup zyxir-paths nil
+  "Collection of paths of Zyxir's personal directories."
+  :group 'zyxir)
+
+(defun zy--set-zybox-path (sym path)
+  "Set SYM to PATH, and set several other paths as well.
+
+SYM is a symbol whose variable difinition stores the path of
+Zybox, and PATH is the path of Zybox.  Once the location of Zybox
+is determined, several other directories, like `org-directory',
+`org-journal-directory', is decided by this function as well."
+  ;; Set the value of `sym' to `path'.
+  (set sym path)
+  ;; Set other directories only when `path' is a valid directory.
+  (when (file-directory-p path)
+    ;; The Org directory.
+    (setq-default org-directory (expand-file-name "org" path))
+    ;; My GTD directory.
+    (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory))
+    ;; My Org-journal directory.
+    (setq-default org-journal-dir
+		  (expand-file-name "org-journal" org-directory))
+    ;; My Org-roam directory.
+    (setq-default org-roam-directory
+		  (expand-file-name "org-roam" org-directory))))
+
+(defcustom zy~zybox-dir ""
+  "The Zybox directory, my personal file center."
+  :group 'zyxir-paths
+  :type 'directory
+  :set #'zy--set-zybox-path)
+
+(defvar zy-gtd-dir nil
+  "The GTD directory with my getting-things-done files.")
 
 ;;;;; Custom hooks
 
@@ -669,9 +719,7 @@ If this is a daemon session, load them all immediately instead."
   ;; Use Use-package only for macro expansion.
   (eval-when-compile (require 'use-package)))
 
-;;;;;; The :defer-incrementally keyword
-
-;; This is adapted from Doom Emacs.
+;;;;;; Custom keywords
 
 (with-eval-after-load 'use-package-core
   ;; Functions provided by `use-package-core'.
@@ -679,13 +727,15 @@ If this is a daemon session, load them all immediately instead."
   (declare-function use-package-normalize-symlist "use-package")
   (declare-function use-package-process-keywords "use-package")
 
-  ;; Add the keyword to the list.
-  (push ':defer-incrementally use-package-deferring-keywords)
-  (setq use-package-keywords
-        (use-package-list-insert :defer-incrementally
-				 use-package-keywords :after))
+  ;; Add keywords to the list.
+  (dolist (keyword '(:defer-incrementally
+		     :after-call))
+    (push keyword use-package-deferring-keywords)
+    (setq use-package-keywords
+	  (use-package-list-insert keyword use-package-keywords :after)))
 
-  ;; The normalizer and the handler.
+  ;; :defer-incrementally
+
   (defalias 'use-package-normalize/:defer-incrementally
     #'use-package-normalize-symlist)
   (defun use-package-handler/:defer-incrementally
@@ -695,7 +745,37 @@ If this is a daemon session, load them all immediately instead."
 	',(if (equal targets '(t))
 	      (list name)
 	    (append targets (list name)))))
-     (use-package-process-keywords name rest state))))
+     (use-package-process-keywords name rest state)))
+
+  ;; :after-call
+
+  (defalias 'use-package-normalize/:after-call
+    #'use-package-normalize-symlist)
+  (defun use-package-handler/:after-call
+      (name _keyword hooks rest state)
+    (if (plist-get state :demand)
+        (use-package-process-keywords name rest state)
+      (let ((fn (make-symbol (format "zy--after-call-%s-h" name))))
+        (use-package-concat
+         `((fset ',fn
+                 (lambda (&rest _)
+                   (zy-log 'lazy "Lazy loading %s from %s" ',name ',fn)
+                   (condition-case e
+                       ;; If `default-directory' is a directory that doesn't
+                       ;; exist or is unreadable, Emacs throws up file-missing
+                       ;; errors, so we set it to a directory we know exists and
+                       ;; is readable.
+                       (let ((default-directory doom-emacs-dir))
+                         (require ',name))
+                     ((debug error)
+                      (message "Failed to load deferred package %s: %s" ',name e))))))
+         (let (forms)
+           (dolist (hook hooks forms)
+             (push (if (string-match-p "-\\(?:functions\\|hook\\)$" (symbol-name hook))
+                       `(add-hook ',hook #',fn)
+                     `(advice-add #',hook :before #',fn))
+                   forms)))
+         (use-package-process-keywords name rest state))))))
 
 ;;;;; General as the keybinding manager
 
@@ -707,32 +787,37 @@ If this is a daemon session, load them all immediately instead."
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 
-;;;; Overall enhancements
+;;;; Base settings
 
-;; Enhance Emacs in various ways.  Many of these settings are hard to
-;; categorize, so I just put them here.
+;; This section contains bottom layer settings that control how Emacs works.
 
-;;;;; A bunch of setqs
+;;;;; Better defaults
 
 (setq!
- ;; There should be no disabled commands.
+ ;; Save customizations outside the init file.
+ custom-file (expand-file-name "custom.el" user-emacs-directory)
+ ;; As an experienced Emacs user, I don't want any command disabled.
  disabled-command-function nil
- ;; 80 is a sane default.  Recommended by Google.
- fill-column 80
- ;; My AutoHotkey scripts recognize my Emacs window by this title.
- frame-title-format '("" "ZyEmacs" " [%b]")
- ;; See the documentation.
+ ;; A informational frame title.  Besides, my AutoHotkey scripts recognize my
+ ;; Emacs window by the \"ZyEmacs\" prefix.
+ frame-title-format '("ZyEmacs@"
+		      (:eval (or
+			      (file-remote-p default-directory 'host)
+			      system-name))
+		      " [%b]")
+ ;; I usually use a Hybrid font like Sarasa Gothic, which contains tremendous
+ ;; amout of CJK glyphs.  Disable compacting of font makes redisplay faster.
  inhibit-compacting-font-caches t
- ;; This makes inter-process communication faster
+ ;; Do not report native compilation warnings and errors.  Those do not matter
+ ;; in most occasions.
+ native-comp-async-report-warnings-errors nil
+ ;; The default (4 kB) is too low considering some language server responses are
+ ;; in 800 kB to 3 MB.  So it is set to 1 MB as suggested by Lsp-mode.
  read-process-output-max (* 1024 1024)
- ;; Uniquify buffer names in a sane way.
+ ;; Uniquify buffer names in a saner way.
  uniquify-buffer-name-style 'forward
  ;; Never use dialog boxes.
- use-dialog-box nil
- ;; Allow breaking after CJK characters.
- word-wrap-by-category t
- ;; Do not report native compilation warnings and errors.
- native-comp-async-report-warnings-errors nil)
+ use-dialog-box nil)
 
 ;;;;; No auto save or backup files
 
@@ -742,47 +827,81 @@ If this is a daemon session, load them all immediately instead."
   (setq! auto-save-default nil
 	 make-backup-files nil))
 
-;;;;; Automatically reverting file-visiting buffers
+;;;;; Encoding
 
-(use-package autorevert
-  :hook (zy-first-file . global-auto-revert-mode)
+;; Set everything to UTF-8.
+
+(set-language-environment "UTF-8")
+
+;; Encoding hacks on Microsoft Windows in Chinese locale.
+
+(when (and
+       ;; The operating system is Microsoft Windows.
+       (eq system-type 'windows-nt)
+       ;; Code page 936, the character encoding for simplified Chinese.
+       (eq locale-coding-system 'cp936))
+  ;; Use GBK for cmdproxy.exe and plink.exe.
+  (set-default 'process-coding-system-alist
+     '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+       ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+
+;;;;; Emacs server
+
+(use-package server
+  :defer 1
   :config
-  ;; Do not auto revert some modes.
-  (setq! global-auto-revert-ignore-modes '(pdf-view-mode)))
+  ;; Start the server if possible.
+  (unless (and (fboundp 'server-running-p)
+	       (server-running-p))
+    (server-start)))
 
-;;;;; Record recently opened files
+;;;; Text-editing
 
-(use-package recentf
-  :defer-incrementally easymenu tree-widget timer
-  :hook (zy-first-file . recentf-mode)
-  :commands recentf-open-files
+;; This section enhances the basic text-editing capability of Emacs.
+
+;;;;; Isearch (incremental searching)
+
+(use-package isearch
   :config
   (setq!
-   ;; Do not do auto cleanups except its a daemon session.
-   recentf-auto-cleanup (if (daemonp) 300)
-   ;; Default is 20, which is far from enough.
-   recentf-max-saved-items 200)
+   ;; Show match number in the search prompt.
+   isearch-lazy-count t
+   ;; Let one space match a sequence of whitespace chars.
+   isearch-regexp-lax-whitespace t
+   ;; Remember more regexp searches.
+   regexp-search-ring-max 200
+   ;; Remember more normal searches.
+   search-ring-max 200))
 
-  (add-hook! '(zy-switch-window-hook write-file-functions)
-    (defun zy--recentf-touch-buffer-h ()
-      "Bump file in recent file list when it is switched to or written to."
-      (when buffer-file-name
-	(recentf-add-file buffer-file-name))
-      ;; Return nil for `write-file-functions'
-      nil))
+;; Isearch-mb is an enhanced version of Isearch.
 
-  ;; Clean up recent files when quitting Emacs.
-  (add-hook 'kill-emacs-hook #'recentf-cleanup))
-
-;;;;; Highlight the current line
-
-(use-package hl-line
-  :hook (zy-first-buffer . global-hl-line-mode)
+(use-package isearch-mb
+  :straight t
+  :after-call (isearch-forward isearch-backward)
   :config
-  ;; Only highlight line in the current window.
-  (setq! global-hl-line-sticky-flag nil))
+  (isearch-mb-mode t))
 
-;;;;; Outline minor mode for text structuring
+;;;;; Line filling
+
+;; This controls how texts (paragraphs or comments) should be wrapped to a given
+;; column count.
+
+(use-package line-filling
+  :defer t
+  :init
+  (setq!
+   ;; 80 is a sane default.  Recommended by Google.
+   fill-column 80
+   ;; These settings are adapted from Protesilaus Stavrou's configuration.
+   sentence-end-double-space t
+   sentence-end-without-period nil
+   colon-double-space nil
+   use-hard-newlines nil
+   adaptive-fill-mode t))
+
+;;;;; Outline minor mode for buffer structuring
+
+;; Hook `outline-minor-mode' to specific language modes.
 
 (use-package outline
   :commands (outline-minor-mode)
@@ -793,18 +912,52 @@ If this is a daemon session, load them all immediately instead."
    ;; Highlight outline headings.
    outline-minor-mode-highlight 'append))
 
-;;;;; Display delimiters in rainbow colors
+;;;;; Whitespaces
 
-(use-package rainbow-delimiters
-  :straight t
-  :commands (rainbow-delimiters-mode))
+(use-package whitespace
+  :defer t
+  :init
+  ;; Show trailing whitespace for all kinds of files.
+  (add-hook! '(prog-mode-hook text-mode-hook)
+    (setq-local show-trailing-whitespace t)))
+
+;;;;; Word wrapping and visual lines
+
+;; Word wrapping is often enabled by `toggle-word-wrap', so we defer loading of
+;; these configurations until it being run.
+
+(add-transient-hook! `toggle-word-wrap
+  (setq!
+   ;; Allow line breaking after CJK characters.  Setting this with `setq!' will
+   ;; load kinsoku.el automatically, which enhances line breaking.
+   word-wrap-by-category t))
+
+;;;;; Other inbuilt modes
+
+;; Delete the active region on insersion.
+(delete-selection-mode 1)
+
+;; Toggle subword movement and editing.
+(global-subword-mode 1)
+
+;;;; Workbench
+
+;; This section contains settings about files, directories, buffers, windows,
+;; frames, and other things about the "workbench".
+
+;;;;; Automatically reverting file-visiting buffers
+
+(use-package autorevert
+  :hook (zy-first-file . global-auto-revert-mode)
+  :config
+  ;; Do not auto revert some modes.
+  (setq! global-auto-revert-ignore-modes '(pdf-view-mode)))
 
 ;;;;; Persist variables across sessions
 
 ;; This is adopted from Doom Emacs.
 (use-package savehist
   ;; persist variables across sessions
-  :defer-incrementally custom
   :init (savehist-mode 1)
   :config
   (setq! savehist-save-minibuffer-history t
@@ -838,30 +991,100 @@ we don't omit the unwritable tidbits."
       (setq-local register-alist
                   (cl-remove-if-not #'savehist-printable register-alist)))))
 
-;;;;; Isearch (incremental searching)
+;;;;; Record recently opened files
 
-(use-package isearch
+(use-package recentf
+  :defer-incrementally easymenu tree-widget timer
+  :hook (zy-first-file . recentf-mode)
+  :commands recentf-open-files
   :config
   (setq!
-   ;; Show match number in the search prompt.
-   isearch-lazy-count t
-   ;; Let one space match a sequence of whitespace chars.
-   isearch-regexp-lax-whitespace t
-   ;; Remember more regexp searches.
-   regexp-search-ring-max 200
-   ;; Remember more normal searches.
-   search-ring-max 200))
+   ;; Do not do auto cleanups except its a daemon session.
+   recentf-auto-cleanup (if (daemonp) 300)
+   ;; Default is 20, which is far from enough.
+   recentf-max-saved-items 200)
 
-;;;;; Encoding
+  (add-hook! '(zy-switch-window-hook write-file-functions)
+    (defun zy--recentf-touch-buffer-h ()
+      "Bump file in recent file list when it is switched to or written to."
+      (when buffer-file-name
+	(recentf-add-file buffer-file-name))
+      ;; Return nil for `write-file-functions'
+      nil))
 
-;; Set everything to UTF-8.
+  ;; Clean up recent files when quitting Emacs.
+  (add-hook 'kill-emacs-hook #'recentf-cleanup))
 
-(set-language-environment "UTF-8")
+;;;; User interface
+
+;; This sections concentrates on improving the user interface of GNU Emacs,
+;; either graphical or terminal.
+
+;;;;; Use Modus themes by Protesilaus Stavrou
+
+;; Protesilaus Stavrou is a really cool bro.
+
+(use-package modus-themes
+  ;; Modus themes are built-in now, but I prefer using the latest version for a
+  ;; greater feature set.
+  :straight t
+  :demand t
+  :config
+  (setq!
+   modus-themes-italic-constructs t
+   modus-themes-bold-constructs t
+   ;; Headings are not sized for Modus Themes shipped with Emacs 28
+   ;; Maybe I should use the non-built-in version instead
+   modus-themes-headings '((0 . (rainbow background 1.3))
+			   (1 . (rainbow background overline 1.5))
+			   (2 . (rainbow background overline 1.4))
+			   (3 . (rainbow background overline 1.3))
+			   (4 . (rainbow background overline 1.2))
+			   (5 . (rainbow background overline 1.1))
+			   (t . (rainbow background overline 1.0)))
+   modus-themes-hl-line '(intense)
+   modus-themes-markup '(background intense)
+   modus-themes-mixed-fonts t
+   modus-themes-region '(accented no-extend)
+   modus-themes-org-blocks '(gray-background)
+   modus-themes-prompts '(background))
+  (load-theme 'modus-vivendi 'no-confirm))
+
+;;;;; Mode line tweaks
+
+;;;;;; Position in buffer
+
+(use-package position-in-buffer
+  :defer t
+  :init
+  ;; Let column number be based on one.
+  (setq! column-number-indicator-zero-based nil)
+  ;; Display column and line number like this.
+  (setq! mode-line-position-column-line-format '(" %l:%c"))
+  ;; Enable column number display in the mode line.
+  (column-number-mode 1))
+
+;;;;; Highlight the current line
+
+(use-package hl-line
+  :hook (zy-first-buffer . global-hl-line-mode)
+  :config
+  ;; Only highlight line in the current window.
+  (setq! global-hl-line-sticky-flag nil))
+
+;;;;; Display delimiters in rainbow colors
+
+;; Hook `rainbow-delimiters-mode' to specific language modes.
+
+(use-package rainbow-delimiters
+  :straight t
+  :commands (rainbow-delimiters-mode))
 
 ;;;;; Line numbers
 
 ;; Line numbers display.
 (use-package display-line-numbers
+  :defer t
   :init
   ;; Explicitly define a width to reduce the cost of on-the-fly computation.
   (setq-default display-line-numbers-width 3)
@@ -871,61 +1094,27 @@ we don't omit the unwritable tidbits."
   (setq-default display-line-numbers-widen t)
 
   ;; Enable line numbers for these modes only.
-  (add-hook! '(prog-mode-hook text-mode-hook conf-mode-hook)
-    #'display-line-numbers-mode))
-
-;;;;; Other inbuilt modes
-
-;; Show column number on the mode line.
-(column-number-mode 1)
-
-;; Delete the active region on insersion.
-(delete-selection-mode 1)
-
-;; Toggle subword movement and editing.
-(global-subword-mode 1)
-
-;; Proper positioning of line breaks.
-(require 'kinsoku)
-
-;;; User interface
-
-;;;;; Use Modus themes by Protesilaus Stavrou
-
-;; Protesilaus Stavrou is a really cool bro.
-
-(use-package modus-themes
-  :straight t
-  :demand t
-  :config
-  (setq!
-   modus-themes-italic-constructs t
-   modus-themes-bold-constructs t
-   ;; Headings are not sized for Modus Themes shipped with Emacs 28
-   ;; Maybe I should use the non-built-in version instead
-   modus-themes-headings '((0 . (background 1.2))
-			   (1 . (background overline 1.3))
-			   (2 . (background overline 1.2))
-			   (3 . (background overline 1.1))
-			   (4 . (background 1.1))
-			   (t . (background regular 1.0)))
-   modus-themes-hl-line '(intense)
-   modus-themes-markup '(background intense)
-   modus-themes-mixed-fonts t
-   modus-themes-region '(accented no-extend)
-   modus-themes-org-blocks '(gray-background)
-   modus-themes-prompts '(background))
-  (load-theme 'modus-vivendi 'no-confirm))
+  (progn
+    (dolist
+	(hook
+	 '(prog-mode-hook text-mode-hook conf-mode-hook))
+      (dolist
+	  (func
+	   (list #'display-line-numbers-mode))
+	(add-hook hook func nil nil)))))
 
 ;;;;; Set font for various faces
 
-;; Font setter for other character sets
+(use-package setup-font
+  :defer t
+  :init
+  ;; Font setter for other character sets
 
-(defvar zy--fontset-cnt 0
-  "Number of fontsets generated by `zy-set-face-charset-font'.")
+  (defvar zy--fontset-cnt 0
+    "Number of fontsets generated by `zy-set-face-charset-font'.")
 
-(defun zy-set-face-charset-font (face frame charset font)
-  "Set the font used for character set CHARSET in face FACE.
+  (defun zy-set-face-charset-font (face frame charset font)
+    "Set the font used for character set CHARSET in face FACE.
 
 This function has no effect if `display-graphic-p' returns nil,
 since fontset is not supported in console mode.
@@ -947,72 +1136,72 @@ system of Emacs is complicated, and not very straightforward.
 Instead of playing with `font-spec', fontsets and frame
 attributes, this function provides a simpler interface that just
 does the job."
-  (when (display-graphic-p)
-    (let* (;; The fontset that we are going to manipulate
-	   (fontset (face-attribute face :fontset frame))
-	   ;; If the fontset is not specified
-	   (unspecified-p (equal fontset 'unspecified)))
-      ;; If the fontset is not specified, create a new one with a
-      ;; programmatically generated name
-      (when unspecified-p
-	(setq fontset
-	      (new-fontset
-	       (format "-*-*-*-*-*--*-*-*-*-*-*-fontset-zy%d"
-		       zy--fontset-cnt)
-	       nil)
-	      zy--fontset-cnt (+ 1 zy--fontset-cnt)))
-      ;; Set font for the fontset
-      (if (listp charset)
-	  (mapc (lambda (c)
-		  (set-fontset-font fontset c font frame))
-		charset)
-	(set-fontset-font fontset charset font frame))
-      ;; Assign the fontset to the face if necessary
-      (when unspecified-p
-	(set-face-attribute face frame :fontset fontset)))))
+    (when (display-graphic-p)
+      (let* (;; The fontset that we are going to manipulate
+	     (fontset (face-attribute face :fontset frame))
+	     ;; If the fontset is not specified
+	     (unspecified-p (equal fontset 'unspecified)))
+	;; If the fontset is not specified, create a new one with a
+	;; programmatically generated name
+	(when unspecified-p
+	  (setq fontset
+		(new-fontset
+		 (format "-*-*-*-*-*--*-*-*-*-*-*-fontset-zy%d"
+			 zy--fontset-cnt)
+		 nil)
+		zy--fontset-cnt (+ 1 zy--fontset-cnt)))
+	;; Set font for the fontset
+	(if (listp charset)
+	    (mapc (lambda (c)
+		    (set-fontset-font fontset c font frame))
+		  charset)
+	  (set-fontset-font fontset charset font frame))
+	;; Assign the fontset to the face if necessary
+	(when unspecified-p
+	  (set-face-attribute face frame :fontset fontset)))))
 
-(defconst zy-cjk-charsets '(han cjk-misc bopomofo kana hangul)
-  "CJK character sets.")
+  (defconst zy-cjk-charsets '(han cjk-misc bopomofo kana hangul)
+    "CJK character sets.")
 
-;; Font faces setup
+  ;; Font faces setup
 
-(defcustom zy-font-size 18
-  "The pixel size of font in `default' face."
-  :type 'integer
-  :group 'zyemacs)
+  (defcustom zy-font-size 18
+    "The pixel size of font in `default' face."
+    :type 'integer
+    :group 'zyemacs)
 
-(defface zy-sans nil
-  "Sans-serif font face."
-  :group 'zyemacs)
+  (defface zy-sans nil
+    "Sans-serif font face."
+    :group 'zyemacs)
 
-;; I used to write very flexible font configuration codes that defines a tons of
-;; faces and automatically picks the first available font from a list, but that
-;; turned out to be too complicated and heavy.  Now I just hard-coded the font
-;; names and rely on the default font fallback mechanism.
+  ;; I used to write very flexible font configuration codes that defines a tons of
+  ;; faces and automatically picks the first available font from a list, but that
+  ;; turned out to be too complicated and heavy.  Now I just hard-coded the font
+  ;; names and rely on the default font fallback mechanism.
 
-;; Anyway this is just my personal configuration, I can change the code at any
-;; time.
+  ;; Anyway this is just my personal configuration, I can change the code at any
+  ;; time.
 
-(defun zy/setup-font-faces ()
-  "Setup font for several faces.
+  (defun zy/setup-font-faces ()
+    "Setup font for several faces.
 
 This function does not work correctly on Terminal Emacs."
-  (interactive)
-  ;; Default face
-  (set-face-attribute 'default nil
-		      :font (font-spec :family "Sarasa Mono CL"
-				       :size zy-font-size))
-  (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
-  ;; Fixed-pitch face
-  (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
-		      :height 'unspecified)
-  (zy-set-face-charset-font 'fixed-pitch nil zy-cjk-charsets "Sarasa Mono CL")
-  ;; ZyEmacs sans-serif face
-  (set-face-attribute 'zy-sans nil :font "Roboto")
-  (zy-set-face-charset-font 'zy-sans nil zy-cjk-charsets "Sarasa Mono CL"))
+    (interactive)
+    ;; Default face
+    (set-face-attribute 'default nil
+			:font (font-spec :family "Sarasa Mono CL"
+					 :size zy-font-size))
+    (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
+    ;; Fixed-pitch face
+    (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
+			:height 'unspecified)
+    (zy-set-face-charset-font 'fixed-pitch nil zy-cjk-charsets "Sarasa Mono CL")
+    ;; ZyEmacs sans-serif face
+    (set-face-attribute 'zy-sans nil :font "Roboto")
+    (zy-set-face-charset-font 'zy-sans nil zy-cjk-charsets "Sarasa Mono CL"))
 
-(defun zy-maybe-setup-font-faces (&rest _)
-  "Try to setup font faces.
+  (defun zy-maybe-setup-font-faces (&rest _)
+    "Try to setup font faces.
 
 If GUI is not available currently, add itself to
 `after-make-frame-functions', so that it can be run again the
@@ -1020,33 +1209,190 @@ next time a frame is created.
 
 If GUI is available, setup font with `zy/setup-font-faces', and
 remove itself from `after-make-frame-functions' if it is there."
-  (if (display-graphic-p)
-      (prog1
-	  (zy/setup-font-faces)
-	(remove-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces))
-    (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
+    (if (display-graphic-p)
+	(prog1
+	    (zy/setup-font-faces)
+	  (remove-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces))
+      (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
 
-(zy-maybe-setup-font-faces)
+  (zy-maybe-setup-font-faces))
 
-;;;; Programming languages
+;;;; Features
+
+;; This section is for settings that provide additional features for Emacs.
+
+;;;;; Orderless completion style
+
+(use-package orderless
+  :straight t
+  :config
+  ;; Custom Orderless dispatchers.  These are adapted from Protesilaus Stavrou's
+  ;; configuration.
+
+  ;; Literal matching.
+  (defun zy-orderless-literal-dispatcher (pattern _index _total)
+    "Literal dispatcher using the equal sing suffix."
+    (when (string-suffix-p "=" pattern)
+      `(orderless-literal . ,(substring pattern 0 -1))))
+
+  ;; No-literal matching.
+  (defun zy-orderless-no-literal-dispatcher (pattern _index _total)
+    "Exclusive literal dispatcher using the exclamation suffix."
+    (when (string-suffix-p "!" pattern)
+      `(orderless-without-literal . ,(substring pattern 0 -1))))
+
+  ;; Initialism matching.
+  (defun zy-orderless-initialism-dispatcher (pattern _index _total)
+    "Initialism dispatcher using the comma suffix."
+    (when (string-suffix-p "," pattern)
+      `(orderless-initialism . ,(substring pattern 0 -1))))
+
+  ;; Flex matching.
+  (defun zy-orderless-flex-dispatcher (pattern _index _total)
+    "Flex dispatcher using the tilde suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "~" pattern)
+      `(orderless-flex . ,(substring pattern 0 -1))))
+
+  ;; Apply matching styles and dispatchers.
+  (setq! orderless-matching-styles '(orderless-literal
+				     orderless-prefixes
+				     orderless-flex
+				     orderless-regexp)
+	 orderless-style-dispatchers '(zy-orderless-literal-dispatcher
+				       zy-orderless-no-literal-dispatcher
+				       zy-orderless-initialism-dispatcher
+				       zy-orderless-flex-dispatcher)))
+
+;;;;; Minibuffer completion enhanced by Vertico and Marginalia
+
+(use-package vertico
+  :straight t
+  :init
+  (setq!
+   ;; Use the orderless completion style.
+   completion-styles '(orderless basic)
+   ;; Make minibuffer intangible to cursor events.
+   minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt)
+   ;; Enable recursive minibuffer.
+   enable-recursive-minibuffers t)
+
+  ;; Make minibuffer intangible.
+  (add-hook! 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Indicator for completing-read-multiple.
+  (defun crm-indicator (args)
+    "Indicator for `completing-read-multiple'.
+
+ARGS are the arguments passed."
+    (defvar crm-separator)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Enable Vertico
+  (vertico-mode 1))
+
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode 1))
+
+;;;;; Consult (additional completing-read commands)
+
+(use-package consult
+  :straight t
+  :commands (consult-completion-in-region)
+  :general
+  ;; Goto map commands (default prefix is M-g).
+  (:keymaps 'goto-map
+   "g" 'consult-goto-line
+   "M-g" 'consult-goto-line
+   "m" 'consult-mark
+   "M" 'consult-global-mark
+   "o" 'consult-outline)
+  ;; Search map commands (default prefix is M-s).
+  (:keymaps 'search-map
+   "g" 'consult-ripgrep
+   "l" 'consult-line)
+  :config
+  (setq! completion-in-region-function 'consult-completion-in-region)
+  (with-no-warnings
+    (consult-customize consult-recent-file
+		       :preview-key (kbd "M-."))))
+
+
+;;;;; Embark, the universal at-point dispatcher
+
+(use-package embark
+  :straight t
+  :general
+  ("M-m" 'embark-act
+   "M-z" 'embark-dwim))
+
+;; Embark and Consult integration.
+(use-package embark-consult
+  :straight t
+  :after (embark consult))
+
+
+;;;;; Version control settings
+
+;; Currently I only use Git for version control, so the built-in `vc' feature is
+;; disabled.
+(use-package vc-hooks
+  :init
+  ;; Do not handle any backends.
+  (setq! vc-handled-backends nil))
+
+;; Use Magit as the Git interface.
+(use-package magit
+  :straight t
+  :defer-incrementally
+  (dash f s with-editor git-commit package eieio transient)
+  :general
+  (:keymaps 'ctl-x-map
+   "v" 'magit-status
+   "C-v" 'magit-dispatch
+   "M-v" 'magit-file-dispatch)
+  :init
+  (setq!
+   ;; Do not use default Magit key bindings.
+   magit-define-global-key-bindings nil
+   ;; Show commit time in the status buffer.
+   magit-status-margin '(t age magit-log-margin-width nil 18)))
+
+;;;; File type specific settings
+
+;; This section enhances Emacs on specific file types, mostly programming
+;; languages.
 
 ;;;;; Emacs Lisp
 
 (autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
 
 (use-package elisp-mode
+  :defer t
   :init
   (add-hook! 'emacs-lisp-mode-hook
     'outline-minor-mode
     'rainbow-delimiters-mode)
   :config
   (setq-hook! 'emacs-lisp-mode-hook
-    ;; Don't treat autoloads or sexp openers as outline headers.  Use
-    ;; hideshow for that.
-    outline-regexp "[ \t]*;;;;*[^ \t\n]")
+	      ;; Don't treat autoloads or sexp openers as outline headers.  Use
+	      ;; hideshow for that.
+	      outline-regexp "[ \t]*;;;;*[^ \t\n]")
 
   ;; Proper indent function.
   (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
+
+;;;; The end
 
 (provide 'init)
 ;;; init.el ends here
