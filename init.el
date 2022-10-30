@@ -1392,9 +1392,9 @@ itself to `consult-recent-file', can finally call
 ;;;;; Corfu (completion at point)
 
 (use-package corfu
-  :straight t
-  ;; Enable auto completion only for a limited set of modes.
-  :hook (prog-mode tex-mode conf-mode)
+  :straight '(corfu :files (:defaults "extensions"))
+  ;; Enable auto completion for almost every modes.
+  :hook (prog-mode text-mode conf-mode)
   :config
   (setq!
    ;; Make completion automatically.
@@ -1403,6 +1403,42 @@ itself to `consult-recent-file', can finally call
    corfu-auto-prefix 2
    ;; On-the-fly completion.
    corfu-auto-delay 0))
+
+;; Corfu extensions.
+
+;; Define the load path at compile time.
+(eval-and-compile
+  (defun zy--corfu-extensions-load-path ()
+    (file-name-concat straight-base-dir
+		      "straight"
+		      straight-build-dir
+		      "corfu/extensions")))
+
+(use-package corfu-indexed
+  :load-path (lambda () (zy--corfu-extensions-load-path))
+  :hook corfu-mode)
+
+(use-package corfu-info
+  :load-path (lambda () (zy--corfu-extensions-load-path)))
+
+;; Enable Corfu in Terminal via Corfu-terminal
+
+(use-package corfu-terminal
+  :straight t
+  :after corfu
+  :unless (display-graphic-p)
+  :config
+  (corfu-terminal-mode 1))
+
+;;;;; Cape provides more completion-at-point functions
+
+(use-package cape
+  :straight t
+  :commands (cape-file)
+  :init
+  ;; Complete file names where Corfu is enabled.
+  (add-hook! corfu-mode
+    (add-to-list 'completion-at-point-functions #'cape-file)))
 
 ;;;; File type specific settings
 
