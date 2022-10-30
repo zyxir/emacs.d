@@ -918,15 +918,15 @@ If this is a daemon session, load them all immediately instead."
   :defer t
   :init
   ;; Show trailing whitespace for all kinds of files.
-  (add-hook! '(prog-mode-hook text-mode-hook)
+  (add-hook! (prog-mode text-mode)
     (setq-local show-trailing-whitespace t)))
 
 ;;;;; Word wrapping and visual lines
 
-;; Word wrapping is often enabled by `toggle-word-wrap', so we defer loading of
+;; Word wrapping is often enabled by `visual-line-mode', so we defer loading of
 ;; these configurations until it being run.
 
-(add-transient-hook! `toggle-word-wrap
+(add-transient-hook! `visual-line-mode
   (setq!
    ;; Allow line breaking after CJK characters.  Setting this with `setq!' will
    ;; load kinsoku.el automatically, which enhances line breaking.
@@ -945,7 +945,7 @@ If this is a daemon session, load them all immediately instead."
 ;; This section contains settings about files, directories, buffers, windows,
 ;; frames, and other things about the "workbench".
 
-;;;;; Automatically reverting file-visiting buffers
+;;;;; Autorevert (automatically refresh file-visiting buffers)
 
 (use-package autorevert
   :hook (zy-first-file . global-auto-revert-mode)
@@ -953,7 +953,7 @@ If this is a daemon session, load them all immediately instead."
   ;; Do not auto revert some modes.
   (setq! global-auto-revert-ignore-modes '(pdf-view-mode)))
 
-;;;;; Persist variables across sessions
+;;;;; Savehist (persist variables across sessions)
 
 ;; This is adopted from Doom Emacs.
 (use-package savehist
@@ -991,12 +991,17 @@ we don't omit the unwritable tidbits."
       (setq-local register-alist
                   (cl-remove-if-not #'savehist-printable register-alist)))))
 
-;;;;; Record recently opened files
+;;;;; Recentf (record recently opened files)
 
 (use-package recentf
   :defer-incrementally easymenu tree-widget timer
-  :hook (zy-first-file . recentf-mode)
   :commands recentf-open-files
+  :init
+  ;; Enable `recentf-mode' before the first file visit or the first call to
+  ;; `recentf-open-files'.
+  (add-hook! zy-first-file (recentf-mode 1))
+  (add-transient-hook! `recentf-open-files (recentf-mode 1))
+
   :config
   (setq!
    ;; Do not do auto cleanups except its a daemon session.
@@ -1020,9 +1025,9 @@ we don't omit the unwritable tidbits."
 ;; This sections concentrates on improving the user interface of GNU Emacs,
 ;; either graphical or terminal.
 
-;;;;; Use Modus themes by Protesilaus Stavrou
+;;;;; Theme Emacs with Modus themes
 
-;; Protesilaus Stavrou is a really cool bro.
+;; Protesilaus Stavrou, the author of Modus themes, is a really cool bro.
 
 (use-package modus-themes
   ;; Modus themes are built-in now, but I prefer using the latest version for a
@@ -1050,9 +1055,9 @@ we don't omit the unwritable tidbits."
    modus-themes-prompts '(background))
   (load-theme 'modus-vivendi 'no-confirm))
 
-;;;;; Mode line tweaks
+;;;;; Mode line
 
-;;;;;; Position in buffer
+;;;;;; Column and line number
 
 (use-package position-in-buffer
   :defer t
@@ -1064,7 +1069,9 @@ we don't omit the unwritable tidbits."
   ;; Enable column number display in the mode line.
   (column-number-mode 1))
 
-;;;;; Highlight the current line
+;;;;; Current line highlight
+
+;; TODO: Replace this with Pulsar, a fantastic package by Protesilaus Stavrou
 
 (use-package hl-line
   :hook (zy-first-buffer . global-hl-line-mode)
@@ -1072,7 +1079,7 @@ we don't omit the unwritable tidbits."
   ;; Only highlight line in the current window.
   (setq! global-hl-line-sticky-flag nil))
 
-;;;;; Display delimiters in rainbow colors
+;;;;; Rainbow colored delimiters
 
 ;; Hook `rainbow-delimiters-mode' to specific language modes.
 
@@ -1094,16 +1101,9 @@ we don't omit the unwritable tidbits."
   (setq-default display-line-numbers-widen t)
 
   ;; Enable line numbers for these modes only.
-  (progn
-    (dolist
-	(hook
-	 '(prog-mode-hook text-mode-hook conf-mode-hook))
-      (dolist
-	  (func
-	   (list #'display-line-numbers-mode))
-	(add-hook hook func nil nil)))))
+  (add-hook! (prog-mode text-mode conf-mode) #'display-line-numbers-mode))
 
-;;;;; Set font for various faces
+;;;;; Fonts for various faces
 
 (use-package setup-font
   :defer t
@@ -1265,7 +1265,7 @@ parses its input."
 				       zy-orderless-initialism-dispatcher
 				       zy-orderless-flex-dispatcher)))
 
-;;;;; Minibuffer completion enhanced by Vertico and Marginalia
+;;;;; Vertico and Marginalia (minibuffer enhancements)
 
 (use-package vertico
   :straight t
@@ -1308,7 +1308,8 @@ ARGS are the arguments passed."
 
 (use-package consult
   :straight t
-  :commands (consult-completion-in-region)
+  :commands (consult-completion-in-region
+	     consult-recent-file)
   :general
   ;; Goto map commands (default prefix is M-g).
   (:keymaps 'goto-map
@@ -1316,19 +1317,39 @@ ARGS are the arguments passed."
    "M-g" 'consult-goto-line
    "m" 'consult-mark
    "M" 'consult-global-mark
-   "o" 'consult-outline)
+   "o" 'consult-outline
+   "i" 'consult-imenu)
   ;; Search map commands (default prefix is M-s).
   (:keymaps 'search-map
    "g" 'consult-ripgrep
    "l" 'consult-line)
-  :config
+  :init
+  ;; Perform `completion-in-region' with Consult.
   (setq! completion-in-region-function 'consult-completion-in-region)
-  (with-no-warnings
-    (consult-customize consult-recent-file
-		       :preview-key (kbd "M-."))))
+
+  ;; Little hack: Enable `recentf-mode' the first time `consult-recent-file' is
+  ;; called, without advising the function itself, as that would break
+  ;; `consult-customize'.
+  (defun zy--first-consult-recent-file ()
+    "Transient replacement for `consult-recent-file'.
+
+This function enables `recentf-mode', remaps the keybinding of
+itself to `consult-recent-file', can finally call
+`consult-recent-file'."
+    (interactive)
+    (recentf-mode 1)
+    (general-def [remap zy--first-consult-recent-file] 'consult-recent-file)
+    (consult-recent-file))
+  (general-def
+    :keymaps 'ctl-x-map
+    "R" #'zy--first-consult-recent-file)
+
+  :config
+  (consult-customize consult-recent-file
+		     :preview-key (kbd "M-.")))
 
 
-;;;;; Embark, the universal at-point dispatcher
+;;;;; Embark (at-point dispatcher)
 
 (use-package embark
   :straight t
@@ -1342,7 +1363,7 @@ ARGS are the arguments passed."
   :after (embark consult))
 
 
-;;;;; Version control settings
+;;;;; Version control (Magit)
 
 ;; Currently I only use Git for version control, so the built-in `vc' feature is
 ;; disabled.
@@ -1367,6 +1388,21 @@ ARGS are the arguments passed."
    magit-define-global-key-bindings nil
    ;; Show commit time in the status buffer.
    magit-status-margin '(t age magit-log-margin-width nil 18)))
+
+;;;;; Corfu (completion at point)
+
+(use-package corfu
+  :straight t
+  ;; Enable auto completion only for a limited set of modes.
+  :hook (prog-mode tex-mode conf-mode)
+  :config
+  (setq!
+   ;; Make completion automatically.
+   corfu-auto t
+   ;; Make completion a bit more aggresive.
+   corfu-auto-prefix 2
+   ;; On-the-fly completion.
+   corfu-auto-delay 0))
 
 ;;;; File type specific settings
 
