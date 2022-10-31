@@ -250,12 +250,13 @@ If `init-file-debug' is nil, do nothing."
 ;;;;; Symbol manipulation
 
 ;; This is copied from Doom Emacs.
-(defun zy-unquote (exp)
-  "Return EXP unquoted."
-  (declare (pure t) (side-effect-free t))
-  (while (memq (car-safe exp) '(quote function))
-    (setq exp (cadr exp)))
-  exp)
+(eval-and-compile
+  (defun zy-unquote (exp)
+    "Return EXP unquoted."
+    (declare (pure t) (side-effect-free t))
+    (while (memq (car-safe exp) '(quote function))
+      (setq exp (cadr exp)))
+    exp))
 
 ;; This is copied from Doom Emacs.
 (defun zy-keyword-intern (str)
@@ -362,15 +363,15 @@ function (which will be advised)."
          ,(format "Transient hook for %S." (zy-unquote hook-or-function))
          ,@forms
          (let ((sym ,hook-or-function))
-           (cond ((functionp sym) (advice-remove sym #',fn))
-                 ((symbolp sym)   (remove-hook sym #',fn))))
+           (cond ((functionp sym) (advice-remove sym ',fn))
+                 ((symbolp sym)   (remove-hook sym ',fn))))
          (unintern ',fn nil))
        (cond ((functionp sym)
               (advice-add ,hook-or-function
-			  ,(if append-p :after :before) #',fn))
+			  ,(if append-p :after :before) ',fn))
              ((symbolp sym)
               (put ',fn 'permanent-local-hook t)
-              (add-hook sym #',fn ,append-p))))))
+              (add-hook sym ',fn ,append-p))))))
 
 ;; This is copied from Doom Emacs.
 (defmacro setq! (&rest settings)
@@ -385,19 +386,20 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
                               ',var ,val))))
 
 ;; This is copied from Doom Emacs.
-(defun zy--resolve-hook-forms (hooks)
-  "Converts a list of modes into a list of hook symbols.
+(eval-and-compile
+  (defun zy--resolve-hook-forms (hooks)
+    "Convert a list of modes into a list of hook symbols.
 
 HOOKS is either an unquoted mode, an unquoted list of modes, a
 quoted hook variable or a quoted list of hook variables."
-  (declare (pure t) (side-effect-free t))
-  (let ((hook-list (ensure-list (zy-unquote hooks))))
-    (if (eq (car-safe hooks) 'quote)
-        hook-list
-      (cl-loop for hook in hook-list
-               if (eq (car-safe hook) 'quote)
-               collect (cadr hook)
-               else collect (intern (format "%s-hook" (symbol-name hook)))))))
+    (declare (pure t) (side-effect-free t))
+    (let ((hook-list (ensure-list (zy-unquote hooks))))
+      (if (eq (car-safe hooks) 'quote)
+          hook-list
+        (cl-loop for hook in hook-list
+                 if (eq (car-safe hook) 'quote)
+                 collect (cadr hook)
+                 else collect (intern (format "%s-hook" (symbol-name hook))))))))
 
 ;; This is adapted from Doom Emacs.
 (defmacro add-hook! (hooks &rest rest)
@@ -414,42 +416,42 @@ The rest of REST are the function(s) to be added: this can be a
 quoted function, a quoted list thereof, a list of `defun' or
 `cl-defun' forms, or arbitrary forms (will implicitly be wrapped
 in a lambda)."
-  (declare (indent defun) (debug t))
+  (declare (indent 1) (debug t))
   (let* ((hook-forms (zy--resolve-hook-forms hooks))
-	 (func-forms ())
-	 (defn-forms ())
-	 append-p local-p remove-p depth)
+	     (func-forms ())
+	     (defn-forms ())
+	     append-p local-p remove-p depth)
     (while (keywordp (car rest))
       (pcase (pop rest)
-	(:append (setq append-p t))
-	(:depth  (setq depth (pop rest)))
-	(:local  (setq local-p t))
-	(:remove (setq remove-p t))))
+	    (:append (setq append-p t))
+	    (:depth  (setq depth (pop rest)))
+	    (:local  (setq local-p t))
+	    (:remove (setq remove-p t))))
     (while rest
       (let* ((next (pop rest))
-	     (first (car-safe next)))
-	(push (cond ((memq first '(function nil))
-		     next)
-		    ((eq first 'quote)
-		     (let ((quoted (cadr next)))
-		       (if (atom quoted)
-			   next
-			 (when (cdr quoted)
-			   (setq rest (cons (list first (cdr quoted)) rest)))
-			 (list first (car quoted)))))
-		    ((memq first '(defun cl-defun))
-		     (push next defn-forms)
-		     (list 'function (cadr next)))
-		    (t (prog1 `(lambda (&rest _) ,@(cons next rest))
-			 (setq rest nil))))
-	      func-forms)))
+	         (first (car-safe next)))
+	    (push (cond ((memq first '(function nil))
+		             next)
+		            ((eq first 'quote)
+		             (let ((quoted (cadr next)))
+		               (if (atom quoted)
+			               next
+			             (when (cdr quoted)
+			               (setq rest (cons (list first (cdr quoted)) rest)))
+			             (list first (car quoted)))))
+		            ((memq first '(defun cl-defun))
+		             (push next defn-forms)
+		             (list 'quote (cadr next)))
+		            (t (prog1 `(lambda (&rest _) ,@(cons next rest))
+			             (setq rest nil))))
+	          func-forms)))
     `(progn
        ,@defn-forms
        (dolist (hook ',hook-forms)
-	 (dolist (func (list ,@func-forms))
-	   ,(if remove-p
-		`(remove-hook hook func ,local-p)
-	      `(add-hook hook func ,(or depth append-p) ,local-p)))))))
+	     (dolist (func (list ,@func-forms))
+	       ,(if remove-p
+		        `(remove-hook hook func ,local-p)
+	          `(add-hook hook func ,(or depth append-p) ,local-p)))))))
 
 ;; This is based on `remove-hook!' from Doom Emacs.
 (defmacro remove-hook! (hooks &rest rest)
@@ -461,6 +463,7 @@ HOOKS and REST are the same as in `add-hook!'."
 
 (defmacro setq-hook! (hooks &rest rest)
   "Use `setq-local' on REST after HOOKS."
+  (declare (indent 1) (debug t))
   `(add-hook! ,hooks (setq-local ,@rest)))
 
 ;; This is copied from Doom Emacs.
@@ -486,7 +489,7 @@ advice, like in `advice-add'.  DOCSTRING and BODY are as in
        (defun ,symbol ,arglist ,docstring ,@body)
        (dolist (targets (list ,@(nreverse where-alist)))
          (dolist (target (cdr targets))
-           (advice-add target (car targets) #',symbol))))))
+           (advice-add target (car targets) ',symbol))))))
 
 ;; This is copied from Doom Emacs.
 (defmacro undefadvice! (symbol _arglist &optional docstring &rest body)
@@ -539,6 +542,7 @@ is determined, several other directories, like `org-directory',
   ;; Set other directories only when `path' is a valid directory.
   (when (file-directory-p path)
     ;; The Org directory.
+    (defvar org-directory)
     (setq-default org-directory (expand-file-name "org" path))
     ;; My GTD directory.
     (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory))
@@ -629,14 +633,7 @@ is determined, several other directories, like `org-directory',
   "A list of packages to load incrementally after startup.
 
 Any large packages here may cause noticeable pauses, so it's
-recommended you break them up into sub-packages.  For example,
-`org' is comprised of many packages, and can be broken up into:
-
-  (zy-load-packages-incrementally
-   '(calendar find-func format-spec org-macs org-compat
-     org-faces org-entities org-list org-pcomplete org-src
-     org-footnote org-macro ob org org-clock org-agenda
-     org-capture))
+recommended you break them up into sub-packages.
 
 Incremental loading does not occur in daemon sessions (they are
 loaded immediately at startup).")
@@ -829,6 +826,7 @@ If this is a daemon session, load them all immediately instead."
 (use-package general
   :straight t
   :demand t)
+(declare-function general-def "general")
 
 ;;;;;; Hydra provides another key binding style
 
@@ -1069,6 +1067,7 @@ If this is a daemon session, load them all immediately instead."
            register-alist                   ; persist macros
            mark-ring global-mark-ring       ; persist marks
            search-ring regexp-search-ring)) ; persist searches
+
   (add-hook! 'savehist-save-hook
     (defun zy-savehist-unpropertize-variables-h ()
       "Remove text properties from `kill-ring'.
@@ -1082,6 +1081,8 @@ This reduces savehist cache size."
                      if (stringp item)
                      collect (cons reg (substring-no-properties item))
                      else collect (cons reg item))))
+
+    (declare-function savehist-printable "savehist")
     (defun zy-savehist-remove-unprintable-registers-h ()
       "Remove unwriteable registers (e.g. containing window configurations).
 
@@ -1103,7 +1104,7 @@ we don't omit the unwritable tidbits."
 `pp' can be expensive for longer lists, and there's no reason to
 prettify cache files, so this replace calls to `pp' with the much
 faster `prin1'."
-    :around #'save-place-alist-to-file
+    :around 'save-place-alist-to-file
     (cl-flet ((pp #'prin1)) (funcall fn))))
 
 ;;;;; Recentf (record recently opened files)
@@ -1169,7 +1170,6 @@ faster `prin1'."
   (setq! diff-hl-command-prefix (kbd "C-x M-d"))
   :config
   (diff-hl-margin-mode 1)
-  (diff-hl-flydiff-mode 1)
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
@@ -1269,16 +1269,27 @@ faster `prin1'."
 
 ;;;;; Fonts for various faces
 
-(use-package setup-font
-  :defer t
-  :init
-  ;; Font setter for other character sets
+;; Font setter for other character sets
 
-  (defvar zy--fontset-cnt 0
-    "Number of fontsets generated by `zy-set-face-charset-font'.")
+(defvar zy--fontset-cnt 0
+  "Number of fontsets generated by `zy-set-face-charset-font'.")
 
-  (defun zy-set-face-charset-font (face frame charset font)
-    "Set the font used for character set CHARSET in face FACE.
+(defconst zy-cjk-charsets '(han cjk-misc bopomofo kana hangul)
+  "CJK character sets.")
+
+;; Font faces setup
+
+(defcustom zy-font-size 18
+  "The pixel size of font in `default' face."
+  :type 'integer
+  :group 'zyemacs)
+
+(defface zy-sans nil
+  "Sans-serif font face."
+  :group 'zyemacs)
+
+(defun zy-set-face-charset-font (face frame charset font)
+  "Set the font used for character set CHARSET in face FACE.
 
 This function has no effect if `display-graphic-p' returns nil,
 since fontset is not supported in console mode.
@@ -1300,72 +1311,59 @@ system of Emacs is complicated, and not very straightforward.
 Instead of playing with `font-spec', fontsets and frame
 attributes, this function provides a simpler interface that just
 does the job."
-    (when (display-graphic-p)
-      (let* (;; The fontset that we are going to manipulate
-	     (fontset (face-attribute face :fontset frame))
-	     ;; If the fontset is not specified
-	     (unspecified-p (equal fontset 'unspecified)))
-	;; If the fontset is not specified, create a new one with a
-	;; programmatically generated name
-	(when unspecified-p
-	  (setq fontset
-		(new-fontset
-		 (format "-*-*-*-*-*--*-*-*-*-*-*-fontset-zy%d"
-			 zy--fontset-cnt)
-		 nil)
-		zy--fontset-cnt (+ 1 zy--fontset-cnt)))
-	;; Set font for the fontset
-	(if (listp charset)
-	    (mapc (lambda (c)
-		    (set-fontset-font fontset c font frame))
-		  charset)
-	  (set-fontset-font fontset charset font frame))
-	;; Assign the fontset to the face if necessary
-	(when unspecified-p
-	  (set-face-attribute face frame :fontset fontset)))))
+  (when (display-graphic-p)
+    (let* (;; The fontset that we are going to manipulate
+	       (fontset (face-attribute face :fontset frame))
+	       ;; If the fontset is not specified
+	       (unspecified-p (equal fontset 'unspecified)))
+	  ;; If the fontset is not specified, create a new one with a
+	  ;; programmatically generated name
+	  (when unspecified-p
+	    (setq fontset
+		      (new-fontset
+		       (format "-*-*-*-*-*--*-*-*-*-*-*-fontset-zy%d"
+			           zy--fontset-cnt)
+		       nil)
+		      zy--fontset-cnt (+ 1 zy--fontset-cnt)))
+	  ;; Set font for the fontset
+	  (if (listp charset)
+	      (mapc (lambda (c)
+		          (set-fontset-font fontset c font frame))
+		        charset)
+	    (set-fontset-font fontset charset font frame))
+	  ;; Assign the fontset to the face if necessary
+	  (when unspecified-p
+	    (set-face-attribute face frame :fontset fontset)))))
 
-  (defconst zy-cjk-charsets '(han cjk-misc bopomofo kana hangul)
-    "CJK character sets.")
+;; I used to write very flexible font configuration codes that defines a tons of
+;; faces and automatically picks the first available font from a list, but that
+;; turned out to be too complicated and heavy.  Now I just hard-coded the font
+;; names and rely on the default font fallback mechanism.
 
-  ;; Font faces setup
+;; Anyway this is just my personal configuration, I can change the code at any
+;; time.
 
-  (defcustom zy-font-size 18
-    "The pixel size of font in `default' face."
-    :type 'integer
-    :group 'zyemacs)
-
-  (defface zy-sans nil
-    "Sans-serif font face."
-    :group 'zyemacs)
-
-  ;; I used to write very flexible font configuration codes that defines a tons of
-  ;; faces and automatically picks the first available font from a list, but that
-  ;; turned out to be too complicated and heavy.  Now I just hard-coded the font
-  ;; names and rely on the default font fallback mechanism.
-
-  ;; Anyway this is just my personal configuration, I can change the code at any
-  ;; time.
-
-  (defun zy/setup-font-faces ()
-    "Setup font for several faces.
+(defun zy/setup-font-faces ()
+  "Setup font for several faces.
 
 This function does not work correctly on Terminal Emacs."
-    (interactive)
-    ;; Default face
-    (set-face-attribute 'default nil
-			:font (font-spec :family "Sarasa Mono CL"
-					 :size zy-font-size))
-    (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
-    ;; Fixed-pitch face
-    (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
-			:height 'unspecified)
-    (zy-set-face-charset-font 'fixed-pitch nil zy-cjk-charsets "Sarasa Mono CL")
-    ;; ZyEmacs sans-serif face
-    (set-face-attribute 'zy-sans nil :font "Roboto")
-    (zy-set-face-charset-font 'zy-sans nil zy-cjk-charsets "Sarasa Mono CL"))
+  (interactive)
+  (defvar zy-font-size)
+  ;; Default face
+  (set-face-attribute 'default nil
+			          :font (font-spec :family "Sarasa Mono CL"
+					                   :size zy-font-size))
+  (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
+  ;; Fixed-pitch face
+  (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
+			          :height 'unspecified)
+  (zy-set-face-charset-font 'fixed-pitch nil zy-cjk-charsets "Sarasa Mono CL")
+  ;; ZyEmacs sans-serif face
+  (set-face-attribute 'zy-sans nil :font "Roboto")
+  (zy-set-face-charset-font 'zy-sans nil zy-cjk-charsets "Sarasa Mono CL"))
 
-  (defun zy-maybe-setup-font-faces (&rest _)
-    "Try to setup font faces.
+(defun zy-maybe-setup-font-faces (&rest _)
+  "Try to setup font faces.
 
 If GUI is not available currently, add itself to
 `after-make-frame-functions', so that it can be run again the
@@ -1373,14 +1371,16 @@ next time a frame is created.
 
 If GUI is available, setup font with `zy/setup-font-faces', and
 remove itself from `after-make-frame-functions' if it is there."
-    (if (display-graphic-p)
-	(prog1
-	    (zy/setup-font-faces)
-	  (remove-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces))
-      (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
+  (if (display-graphic-p)
+	  (prog1
+	      (zy/setup-font-faces)
+	    (remove-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces))
+    (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
 
+(use-package zy-font
+  :defer t
+  :init
   (zy-maybe-setup-font-faces))
-
 
 ;;;;; No ringing the bell
 
@@ -1389,6 +1389,7 @@ remove itself from `after-make-frame-functions' if it is there."
 ;; ringing the bell, I make Emacs flash the mode line instead.
 
 (defun zy-flash-mode-line ()
+  "Flash the mode line."
   (invert-face 'mode-line)
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 (setq ring-bell-function #'zy-flash-mode-line)
@@ -1409,8 +1410,8 @@ remove itself from `after-make-frame-functions' if it is there."
 
 ;; Tweaked scrolling experience.
 
-(autoload #'zy/scroll-up-command "zyutils" nil 'interactive)
-(autoload #'zy/scroll-down-command "zyutils" nil 'interactive)
+(autoload 'zy/scroll-up-command "zyutils" nil 'interactive)
+(autoload 'zy/scroll-down-command "zyutils" nil 'interactive)
 
 (use-package zy-scrolling
   :defer t
@@ -1658,6 +1659,16 @@ based on the switched input method."
     :after #'toggle-input-method
     (funcall (cdr (assoc current-input-method zy-input-method-notifiers)))))
 
+;;;;; Flymake as the syntax checker
+
+(use-package flymake
+  :straight t
+  :commands flymake-mode
+  :general
+  (:keymaps 'flymake-mode-map
+   "M-p" 'flymake-goto-prev-error
+   "M-n" 'flymake-goto-next-error))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
@@ -1675,9 +1686,15 @@ based on the switched input method."
     'rainbow-delimiters-mode)
   :config
   (setq-hook! 'emacs-lisp-mode-hook
-	      ;; Don't treat autoloads or sexp openers as outline headers.  Use
-	      ;; hideshow for that.
-	      outline-regexp "[ \t]*;;;;*[^ \t\n]")
+	;; Don't treat autoloads or sexp openers as outline headers.  Use
+	;; hideshow for that.
+	outline-regexp "[ \t]*;;;;*[^ \t\n]")
+
+  (setq! elisp-flymake-byte-compile-load-path
+         (delete-dups
+          (append load-path
+                  (default-toplevel-value
+                    'elisp-flymake-byte-compile-load-path))))
 
   ;; Proper indent function.
   (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
