@@ -1349,21 +1349,6 @@ remove itself from `after-make-frame-functions' if it is there."
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 (setq ring-bell-function #'zy-flash-mode-line)
 
-;;;;; Scrolling
-
-;; Tweaked scrolling experience.
-
-(autoload #'zy/scroll-up-command "zyutils" nil 'interactive)
-(autoload #'zy/scroll-down-command "zyutils" nil 'interactive)
-
-(use-package zy-scrolling
-  :defer t
-  :init
-  ;; Replace scrolling commands with my own version, which scroll the screen by
-  ;; 0.618 of its height.
-  (advice-add #'scroll-up-command :override #'zy/scroll-up-command)
-  (advice-add #'scroll-down-command :override #'zy/scroll-down-command))
-
 ;;;;; Pulsar
 
 ;; Pulse the current ligh after some specific commands.
@@ -1375,6 +1360,27 @@ remove itself from `after-make-frame-functions' if it is there."
   (setq!
    ;; Use the cyan pulse.
    pulsar-face 'pulsar-cyan))
+
+;;;;; Scrolling
+
+;; Tweaked scrolling experience.
+
+(autoload #'zy/scroll-up-command "zyutils" nil 'interactive)
+(autoload #'zy/scroll-down-command "zyutils" nil 'interactive)
+
+(use-package zy-scrolling
+  :defer t
+  :general
+  ;; Replace scrolling commands with my own version, which scroll the screen by
+  ;; 0.618 of its height.
+  ([remap scroll-up-command] 'zy/scroll-up-command
+   [remap scroll-down-command] 'zy/scroll-down-command)
+  :init
+  ;; Add my own scrolling command to Pulsar's list.
+  (with-eval-after-load 'pulsar
+    (defvar pulsar-pulse-functions)
+    (add-to-list 'pulsar-pulse-functions 'zy/scroll-up-command)
+    (add-to-list 'pulsar-pulse-functions 'zy/scroll-down-command)))
 
 ;;;; Features
 
