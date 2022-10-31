@@ -1349,6 +1349,33 @@ remove itself from `after-make-frame-functions' if it is there."
   (run-with-timer 0.1 nil #'invert-face 'mode-line))
 (setq ring-bell-function #'zy-flash-mode-line)
 
+;;;;; Scrolling
+
+;; Tweaked scrolling experience.
+
+(autoload #'zy/scroll-up-command "zyutils" nil 'interactive)
+(autoload #'zy/scroll-down-command "zyutils" nil 'interactive)
+
+(use-package zy-scrolling
+  :defer t
+  :init
+  ;; Replace scrolling commands with my own version, which scroll the screen by
+  ;; 0.618 of its height.
+  (advice-add #'scroll-up-command :override #'zy/scroll-up-command)
+  (advice-add #'scroll-down-command :override #'zy/scroll-down-command))
+
+;;;;; Pulsar
+
+;; Pulse the current ligh after some specific commands.
+
+(use-package pulsar
+  :straight t
+  :hook (zy-first-buffer . pulsar-global-mode)
+  :config
+  (setq!
+   ;; Use the cyan pulse.
+   pulsar-face 'pulsar-cyan))
+
 ;;;; Features
 
 ;; This section is for settings that provide additional features for Emacs.
@@ -1573,10 +1600,32 @@ itself to `consult-recent-file', can finally call
 (use-package rime
   :straight t
   :defer t
+  :after pulsar
   :init
-  (setq! default-input-method "rime"
-	 rime-user-data-dir (expand-file-name "etc/rime" user-emacs-directory)
-	 rime-show-candidate 'minibuffer))
+  (setq!
+   ;; Use Rime as the default input method.
+   default-input-method "rime"
+   ;; I have my scheme data in my emacs directory.
+   rime-user-data-dir (expand-file-name "etc/rime" user-emacs-directory)
+   ;; Show candidates in the minibuffer.  For Chinese users: 作爲倉頡輸入法用戶，
+   ;; 我輸入漢字一般是逐字輸入，所以我沒有沒有「同步詞庫」的需求；而倉頡中每個漢
+   ;; 字的編碼幾乎是唯一的，我幾乎可以不看候選盲打，所以在 minibuffer 中展示候選
+   ;; 也不會影響我的打字。
+   rime-show-candidate 'minibuffer)
+
+  ;; Functions to run after an input method switch.
+  (defvar zy-input-method-notifiers
+    '((nil . pulsar-pulse-line-green)
+      ("rime" . pulsar-pulse-line-yellow))
+    "An association list of IM and FN.
+IM is an input method name, and FN is the function to run after
+switching to it.")
+  (defadvice! zy--pulse-on-im-switch-a (&rest _)
+    "Run a function after an input method switch.
+The function to run is searched in `zy-input-method-notifiers',
+based on the switched input method."
+    :after #'toggle-input-method
+    (funcall (cdr (assoc current-input-method zy-input-method-notifiers)))))
 
 ;;;; File type specific settings
 

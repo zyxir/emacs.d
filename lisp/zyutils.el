@@ -38,9 +38,27 @@
 
 ;;; Code:
 
-;;; Programming Languages
+;;;; Features
 
-;;;; Emacs Lisp
+;;;;; Scrolling
+
+;;;###autoload
+(defun zy/scroll-up-command (&optional arg)
+  "Like `scroll-up-command', but scroll 0.618 screen if no ARG."
+  (interactive)
+  (dlet ((next-screen-context-lines (round (* 0.382 (window-height)))))
+    (scroll-up-command arg)))
+
+;;;###autoload
+(defun zy/scroll-down-command (&optional arg)
+  "Like `scroll-down-command', but scroll 0.618 screen if no ARG."
+  (interactive)
+  (dlet ((next-screen-context-lines (round (* 0.382 (window-height)))))
+    (scroll-down-command arg)))
+
+;;;; File type specific settings
+
+;;;;; Emacs Lisp
 
 ;;;###autoload
 (defun zy-lisp-indent-function (indent-point state)
