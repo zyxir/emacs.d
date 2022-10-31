@@ -1480,13 +1480,6 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Version control (Magit)
 
-;; Currently I only use Git for version control, so the built-in `vc' feature is
-;; disabled.
-(use-package vc-hooks
-  :init
-  ;; Do not handle any backends.
-  (setq! vc-handled-backends nil))
-
 ;; Use Magit as the Git interface.
 (use-package magit
   :straight t
