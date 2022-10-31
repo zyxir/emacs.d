@@ -463,6 +463,51 @@ HOOKS and REST are the same as in `add-hook!'."
   "Use `setq-local' on REST after HOOKS."
   `(add-hook! ,hooks (setq-local ,@rest)))
 
+;; This is copied from Doom Emacs.
+(defmacro defadvice! (symbol arglist &optional docstring &rest body)
+  "Define an advice called SYMBOL and add it to PLACES.
+
+ARGLIST is as in `defun'.  WHERE is a keyword as passed to
+`advice-add', and PLACE is the function to which to add the
+advice, like in `advice-add'.  DOCSTRING and BODY are as in
+`defun'.
+
+\(fn SYMBOL ARGLIST &optional DOCSTRING \
+&rest [WHERE PLACES...] BODY)"
+  (declare (doc-string 3) (indent defun))
+  (unless (stringp docstring)
+    (push docstring body)
+    (setq docstring nil))
+  (let (where-alist)
+    (while (keywordp (car body))
+      (push `(cons ,(pop body) (ensure-list ,(pop body)))
+            where-alist))
+    `(progn
+       (defun ,symbol ,arglist ,docstring ,@body)
+       (dolist (targets (list ,@(nreverse where-alist)))
+         (dolist (target (cdr targets))
+           (advice-add target (car targets) #',symbol))))))
+
+;; This is copied from Doom Emacs.
+(defmacro undefadvice! (symbol _arglist &optional docstring &rest body)
+  "Undefine an advice called SYMBOL.
+
+This has the same signature as `defadvice!' an exists as an easy
+undefiner when testing advice (when combined with `rotate-text').
+
+\(fn SYMBOL ARGLIST &optional DOCSTRING \
+&rest [WHERE PLACES...] BODY)"
+  (declare (doc-string 3) (indent defun))
+  (let (where-alist)
+    (unless (stringp docstring)
+      (push docstring body))
+    (while (keywordp (car body))
+      (push `(cons ,(pop body) (ensure-list ,(pop body)))
+            where-alist))
+    `(dolist (targets (list ,@(nreverse where-alist)))
+       (dolist (target (cdr targets))
+         (advice-remove target #',symbol)))))
+
 ;;;; Top level utilities
 
 ;; Top levels utilities that should be loaded before other customizations.
@@ -777,11 +822,31 @@ If this is a daemon session, load them all immediately instead."
                    forms)))
          (use-package-process-keywords name rest state))))))
 
-;;;;; General as the keybinding manager
+;;;;; Key binding
+
+;;;;;; General as the key binding manager
 
 (use-package general
   :straight t
   :demand t)
+
+;;;;;; Hydra provides another key binding style
+
+;; A Hydra is something works like "C-x C-=": after the first key combination,
+;; you can only press single "+" or "-" to further adjusting the font size.
+
+(use-package hydra
+  :straight t
+  :demand t)
+
+;;;;;; Global keymaps
+
+;; The toggle map.
+
+(defvar zy-toggle-map (make-sparse-keymap)
+  "Keymap for toggling various options.")
+(fset 'zy-toggle-command zy-toggle-map)
+(general-def "C-c t" 'zy-toggle-command)
 
 ;;;;; Load Path
 
@@ -854,6 +919,13 @@ If this is a daemon session, load them all immediately instead."
   (unless (and (fboundp 'server-running-p)
 	       (server-running-p))
     (server-start)))
+
+;;;;; Terminal settings
+
+(add-hook! tty-setup
+  ;; Let Emacs handle mouse events by default.  However, normal xterm mouse
+  ;; functionality is still available by holding Shift key.
+  (xterm-mouse-mode 1))
 
 ;;;; Text-editing
 
@@ -932,10 +1004,23 @@ If this is a daemon session, load them all immediately instead."
    ;; load kinsoku.el automatically, which enhances line breaking.
    word-wrap-by-category t))
 
-;;;;; Other inbuilt modes
+;;;;; Clipboard and kill ring
 
-;; Delete the active region on insersion.
-(delete-selection-mode 1)
+(use-package select
+  :init
+  ;; Save existing clipboard text into kill ring before replacing it.  This
+  ;; saves me so many time!
+  (setq save-interprogram-paste-before-kill t))
+
+;; Clipetty provides clipboard access in Terminal.  It sends killed text to the
+;; system clipboard.  However, copying from clipboard can only be done by GUI
+;; commands (like "Ctrl+Shift+V" on most terminal emulators).
+(unless (display-graphic-p)
+  (use-package clipetty
+    :straight t
+    :hook tty-setup))
+
+;;;;; Other inbuilt modes
 
 ;; Toggle subword movement and editing.
 (global-subword-mode 1)
@@ -963,7 +1048,7 @@ If this is a daemon session, load them all immediately instead."
   (setq! savehist-save-minibuffer-history t
          savehist-autosave-interval nil     ; save on kill only
          savehist-additional-variables
-         '(kill-ring                        ; persist clipboard
+         '(kill-ring                        ; persist kill ring
            register-alist                   ; persist macros
            mark-ring global-mark-ring       ; persist marks
            search-ring regexp-search-ring)) ; persist searches
@@ -991,6 +1076,19 @@ we don't omit the unwritable tidbits."
       (setq-local register-alist
                   (cl-remove-if-not #'savehist-printable register-alist)))))
 
+;;;;; Saveplace (persist locations in buffer)
+
+(use-package saveplace
+  :hook (zy-first-file . save-place-mode)
+  :config
+  (defadvice! zy--dont-prettify-saveplace-cache-a (fn)
+    "`save-place-alist-to-file' uses `pp' to prettify the contents of its cache.
+`pp' can be expensive for longer lists, and there's no reason to
+prettify cache files, so this replace calls to `pp' with the much
+faster `prin1'."
+    :around #'save-place-alist-to-file
+    (letf! ((#'pp #'prin1)) (funcall fn))))
+
 ;;;;; Recentf (record recently opened files)
 
 (use-package recentf
@@ -1016,6 +1114,11 @@ we don't omit the unwritable tidbits."
 	(recentf-add-file buffer-file-name))
       ;; Return nil for `write-file-functions'
       nil))
+
+  (add-hook! 'dired-mode-hook
+    (defun zy--recentf-add-dired-directory-h ()
+      "Add dired directories to recentf file list."
+      (recentf-add-file default-directory)))
 
   ;; Clean up recent files when quitting Emacs.
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
@@ -1069,7 +1172,7 @@ we don't omit the unwritable tidbits."
   ;; Enable column number display in the mode line.
   (column-number-mode 1))
 
-;;;;; Current line highlight
+;;;;; Hl-line (highlight the current line)
 
 ;; TODO: Replace this with Pulsar, a fantastic package by Protesilaus Stavrou
 
@@ -1216,6 +1319,18 @@ remove itself from `after-make-frame-functions' if it is there."
       (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
 
   (zy-maybe-setup-font-faces))
+
+
+;;;;; No ringing the bell
+
+;; Everytime I type C-g to stop something, it rings the bell.  This is normally
+;; not a big deal, but I really hate the bell sound on Windows!  So instead of
+;; ringing the bell, I make Emacs flash the mode line instead.
+
+(defun zy-flash-mode-line ()
+  (invert-face 'mode-line)
+  (run-with-timer 0.1 nil #'invert-face 'mode-line))
+(setq ring-bell-function #'zy-flash-mode-line)
 
 ;;;; Features
 
@@ -1392,9 +1507,9 @@ itself to `consult-recent-file', can finally call
 ;;;;; Corfu (completion at point)
 
 (use-package corfu
-  :straight t
-  ;; Enable auto completion only for a limited set of modes.
-  :hook (prog-mode tex-mode conf-mode)
+  :straight '(corfu :files (:defaults "extensions"))
+  ;; Enable auto completion for almost every modes.
+  :hook (prog-mode text-mode conf-mode)
   :config
   (setq!
    ;; Make completion automatically.
@@ -1403,6 +1518,42 @@ itself to `consult-recent-file', can finally call
    corfu-auto-prefix 2
    ;; On-the-fly completion.
    corfu-auto-delay 0))
+
+;; Corfu extensions.
+
+;; Define the load path at compile time.
+(eval-and-compile
+  (defun zy--corfu-extensions-load-path ()
+    (file-name-concat straight-base-dir
+		      "straight"
+		      straight-build-dir
+		      "corfu/extensions")))
+
+(use-package corfu-indexed
+  :load-path (lambda () (zy--corfu-extensions-load-path))
+  :hook corfu-mode)
+
+(use-package corfu-info
+  :load-path (lambda () (zy--corfu-extensions-load-path)))
+
+;; Enable Corfu in Terminal via Corfu-terminal
+
+(use-package corfu-terminal
+  :straight t
+  :after corfu
+  :unless (display-graphic-p)
+  :config
+  (corfu-terminal-mode 1))
+
+;;;;; Cape provides more completion-at-point functions
+
+(use-package cape
+  :straight t
+  :commands (cape-file)
+  :init
+  ;; Complete file names where Corfu is enabled.
+  (add-hook! corfu-mode
+    (add-to-list 'completion-at-point-functions #'cape-file)))
 
 ;;;; File type specific settings
 
