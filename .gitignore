@@ -23,6 +23,7 @@ history
 org-persist
 org-roam.db
 places
+projectile-bookmarks.eld
 projects
 recentf
 server
