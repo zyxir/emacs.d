@@ -845,8 +845,8 @@ If this is a daemon session, load them all immediately instead."
 
 (defvar zy-toggle-map (make-sparse-keymap)
   "Keymap for toggling various options.")
-(fset 'zy-toggle-command zy-toggle-map)
-(general-def "C-c t" 'zy-toggle-command)
+(fset 'zy-toggle-map zy-toggle-map)
+(general-def "C-c t" 'zy-toggle-map)
 
 ;;;;; Load Path
 
@@ -987,7 +987,13 @@ If this is a daemon session, load them all immediately instead."
 ;;;;; Whitespaces
 
 (use-package whitespace
-  :defer t
+  :general
+  ;; Remap `just-one-space' to `cycle-spacing', which is the default in Emacs
+  ;; 29.1.
+  ([remap just-one-space] 'cycle-spacing)
+  (:keymaps 'zy-toggle-map
+  ;; Toggle whitespace visualization.
+   "SPC" 'whitespace-mode)
   :init
   ;; Show trailing whitespace for all kinds of files.
   (add-hook! (prog-mode text-mode conf-mode)
@@ -1554,6 +1560,19 @@ itself to `consult-recent-file', can finally call
   ;; Complete file names where Corfu is enabled.
   (add-hook! corfu-mode
     (add-to-list 'completion-at-point-functions #'cape-file)))
+
+;;;;; Rime input method
+
+;; Rime is my favorite input method for every platforms.  Fortunately it is
+;; integrated into Emacs as well.
+
+(use-package rime
+  :straight t
+  :defer t
+  :init
+  (setq! default-input-method "rime"
+	 rime-user-data-dir (expand-file-name "etc/rime" user-emacs-directory)
+	 rime-show-candidate 'minibuffer))
 
 ;;;; File type specific settings
 
