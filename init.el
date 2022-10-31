@@ -1044,8 +1044,8 @@ If this is a daemon session, load them all immediately instead."
 
 ;;;; Workbench
 
-;; This section contains settings about files, directories, buffers, windows,
-;; frames, and other things about the "workbench".
+;; This section contains settings about buffers, files, directories, projects,
+;; windows, frames, and other things about the "workbench".
 
 ;;;;; Autorevert (automatically refresh file-visiting buffers)
 
@@ -1139,6 +1139,50 @@ faster `prin1'."
 
   ;; Clean up recent files when quitting Emacs.
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
+
+;;;;; Version control (Magit and Diff-hl)
+
+;; Use Magit as the Git interface.
+(use-package magit
+  :straight t
+  :defer-incrementally
+  (dash f s with-editor git-commit package eieio transient)
+  :general
+  (:keymaps 'ctl-x-map
+   "v" 'magit-status
+   "C-v" 'magit-dispatch
+   "M-v" 'magit-file-dispatch)
+  :init
+  (setq!
+   ;; Do not use default Magit key bindings.
+   magit-define-global-key-bindings nil
+   ;; Show commit time in the status buffer.
+   magit-status-margin '(t age magit-log-margin-width nil 18)))
+
+;; Use Diff-hl to highlight file changes.
+(use-package diff-hl
+  :straight t
+  :hook (zy-first-file . global-diff-hl-mode)
+  :init
+  ;; I set a key binding here because I don't want its default key binding
+  ;; overriding my Magit keys.  I never use this though.
+  (setq! diff-hl-command-prefix (kbd "C-x M-d"))
+  :config
+  (diff-hl-margin-mode 1)
+  (diff-hl-flydiff-mode 1)
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
+;;;;; Projectile (project management)
+
+(use-package projectile
+  :straight t
+  :bind-keymap
+  ;; "C-x p" is the key for the built-in Project.el.  I just replace it with
+  ;; Projectile.
+  ("C-x p" . projectile-command-map)
+  :config
+  (projectile-mode 1))
 
 ;;;; User interface
 
@@ -1527,25 +1571,6 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after (embark consult))
 
-
-;;;;; Version control (Magit)
-
-;; Use Magit as the Git interface.
-(use-package magit
-  :straight t
-  :defer-incrementally
-  (dash f s with-editor git-commit package eieio transient)
-  :general
-  (:keymaps 'ctl-x-map
-   "v" 'magit-status
-   "C-v" 'magit-dispatch
-   "M-v" 'magit-file-dispatch)
-  :init
-  (setq!
-   ;; Do not use default Magit key bindings.
-   magit-define-global-key-bindings nil
-   ;; Show commit time in the status buffer.
-   magit-status-margin '(t age magit-log-margin-width nil 18)))
 
 ;;;;; Corfu (completion at point)
 
