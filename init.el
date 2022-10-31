@@ -931,6 +931,17 @@ If this is a daemon session, load them all immediately instead."
 
 ;; This section enhances the basic text-editing capability of Emacs.
 
+;;;;; Indentation
+
+(use-package indentation
+  :defer t
+  :init
+  (setq!
+   ;; Always use spaces.
+   indent-tabs-mode nil
+   ;; If tabs exist, show them as 4 spaces, which is used by all Modern editors.
+   tab-width 4))
+
 ;;;;; Isearch (incremental searching)
 
 (use-package isearch
@@ -1597,6 +1608,22 @@ itself to `consult-recent-file', can finally call
 
   ;; Proper indent function.
   (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
+
+;;;;; Verilog
+
+(use-package verilog-mode
+  ;; Verilog mode is built-in, but I want the latest version.
+  :straight t
+  :defer t
+  :config
+  (setq! verilog-auto-delete-trailing-whitespace t
+		 verilog-auto-newline nil
+		 verilog-case-level 4
+		 verilog-indent-begin-after-if nil
+		 verilog-indent-level 4
+		 verilog-indent-level-behavioral 0
+		 verilog-indent-level-declaration 0
+		 verilog-indent-level-module 0))
 
 ;;;; The end
 
