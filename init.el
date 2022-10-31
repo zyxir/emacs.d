@@ -810,7 +810,7 @@ If this is a daemon session, load them all immediately instead."
                        ;; exist or is unreadable, Emacs throws up file-missing
                        ;; errors, so we set it to a directory we know exists and
                        ;; is readable.
-                       (let ((default-directory doom-emacs-dir))
+                       (let ((default-directory user-emacs-directory))
                          (require ',name))
                      ((debug error)
                       (message "Failed to load deferred package %s: %s" ',name e))))))
@@ -990,7 +990,7 @@ If this is a daemon session, load them all immediately instead."
   :defer t
   :init
   ;; Show trailing whitespace for all kinds of files.
-  (add-hook! (prog-mode text-mode)
+  (add-hook! (prog-mode text-mode conf-mode)
     (setq-local show-trailing-whitespace t)))
 
 ;;;;; Word wrapping and visual lines
@@ -1018,7 +1018,7 @@ If this is a daemon session, load them all immediately instead."
 (unless (display-graphic-p)
   (use-package clipetty
     :straight t
-    :hook tty-setup))
+    :hook (tty-setup . global-clipetty-mode)))
 
 ;;;;; Other inbuilt modes
 
@@ -1087,7 +1087,7 @@ we don't omit the unwritable tidbits."
 prettify cache files, so this replace calls to `pp' with the much
 faster `prin1'."
     :around #'save-place-alist-to-file
-    (letf! ((#'pp #'prin1)) (funcall fn))))
+    (cl-flet ((pp #'prin1)) (funcall fn))))
 
 ;;;;; Recentf (record recently opened files)
 
