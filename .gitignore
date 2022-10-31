@@ -3,7 +3,12 @@
 etc/zylatex.sty
 !eshell/alias
 
-# Other temporary files
+# Ignore straight except for lockfiles
+
+straight/*
+!straight/versions
+
+# Ignore other temporary files
 
 .cache/
 *.elc
@@ -15,7 +20,6 @@ custom.el
 eln-cache
 eshell
 history
-straight
 org-persist
 org-roam.db
 places
