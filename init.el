@@ -925,6 +925,17 @@ If this is a daemon session, load them all immediately instead."
   ;; functionality is still available by holding Shift key.
   (xterm-mouse-mode 1))
 
+;;;;; Garbage collector magic hack
+
+;; This package enforces a sneaky garbage collection strategy to minimize GC
+;; interference with user activity.
+
+(use-package gcmh
+  :straight t
+  :defer 1
+  :config
+  (gcmh-mode 1))
+
 ;;;; Text-editing
 
 ;; This section enhances the basic text-editing capability of Emacs.
@@ -1173,16 +1184,30 @@ faster `prin1'."
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
-;;;;; Projectile (project management)
+;;;;; Rg (ripgrep integration)
 
-(use-package projectile
+;; Ripgrep is a super fast text searching program
+
+(use-package rg
   :straight t
-  :bind-keymap
-  ;; "C-x p" is the key for the built-in Project.el.  I just replace it with
-  ;; Projectile.
-  ("C-x p" . projectile-command-map)
+  ;; In fact, Rg commands are autoloaded by Straight.  The next line is just to
+  ;; make sure it is lazy loaded.
+  :commands (rg rg-menu rg-project))
+
+;;;;; Project (built-in project manager)
+
+(use-package project
+  :defer t
+  :general
+  (:keymaps 'project-prefix-map
+   "g" 'rg-project)
   :config
-  (projectile-mode 1))
+  (setq!
+   project-switch-commands '((project-find-file "Find file" "f")
+                             (rg-project "Grep" "g")
+			                 (magit-project-status "Magit" "v")
+			                 (project-find-dir "Find directory" "d")
+			                 (project-eshell "Eshell" "s"))))
 
 ;;;; User interface
 
@@ -1232,6 +1257,18 @@ faster `prin1'."
   (setq! mode-line-position-column-line-format '(" %l:%c"))
   ;; Enable column number display in the mode line.
   (column-number-mode 1))
+
+;;;;;; Dim minor mode lighters
+
+(use-package dim
+  :straight t
+  :init
+  (dim-minor-names
+   '((clipetty-mode nil clipetty)
+     (eldoc-mode nil eldoc)
+     (gcmh-mode nil gcmh)
+     (outline-minor-mode nil outline)
+     (subword-mode nil subword))))
 
 ;;;;; Hl-line (highlight the current line)
 
@@ -1667,7 +1704,10 @@ based on the switched input method."
   :general
   (:keymaps 'flymake-mode-map
    "M-p" 'flymake-goto-prev-error
-   "M-n" 'flymake-goto-next-error))
+   "M-n" 'flymake-goto-next-error)
+  :config
+  ;; Just show the error counter.
+  (setq! flymake-mode-line-lighter ""))
 
 ;;;; File type specific settings
 
@@ -1679,11 +1719,12 @@ based on the switched input method."
 (autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
 
 (use-package elisp-mode
-  :defer t
   :init
-  (add-hook! 'emacs-lisp-mode-hook
+  (add-hook! emacs-lisp-mode
     'outline-minor-mode
-    'rainbow-delimiters-mode)
+    'rainbow-delimiters-mode
+    ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
+    'flymake-mode)
   :config
   (setq-hook! 'emacs-lisp-mode-hook
 	;; Don't treat autoloads or sexp openers as outline headers.  Use
@@ -1702,9 +1743,13 @@ based on the switched input method."
 ;;;;; Verilog
 
 (use-package verilog-mode
-  ;; Verilog mode is built-in, but I want the latest version.
+  ;; Verilog mode is built-in, but I want to install the latest version, as
+  ;; suggested by the official repository.
   :straight t
-  :defer t
+  :magic ("\\.v" . verilog-mode)
+  :init
+  (add-hook! verilog-mode
+    'rainbow-delimiters-mode)
   :config
   (setq! verilog-auto-delete-trailing-whitespace t
 		 verilog-auto-newline nil
