@@ -1744,56 +1744,62 @@ based on the switched input method."
 
 ;;;; File type specific settings
 
-   ;; This section enhances Emacs on specific file types, mostly programming
-   ;; languages.
+;; This section enhances Emacs on specific file types, mostly programming
+;; languages.
 
 ;;;;; Emacs Lisp
 
-   (autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
+(autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
 
-   (use-package elisp-mode
-     :init
-     (add-hook! emacs-lisp-mode
-       'outline-minor-mode
-       'rainbow-delimiters-mode
-       ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
-       'flymake-mode)
-     :config
-     (setq-hook! 'emacs-lisp-mode-hook
-	   ;; Don't treat autoloads or sexp openers as outline headers.  Use
-	   ;; hideshow for that.
-	   outline-regexp "[ \t]*;;;;*[^ \t\n]")
+(use-package elisp-mode
+  :init
+  (add-hook! emacs-lisp-mode
+    'outline-minor-mode
+    'rainbow-delimiters-mode
+    ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
+    'flymake-mode)
+  :config
+  (setq-hook! 'emacs-lisp-mode-hook
+	;; Don't treat autoloads or sexp openers as outline headers.  Use
+	;; hideshow for that.
+	outline-regexp "[ \t]*;;;;*[^ \t\n]")
 
-     (setq! elisp-flymake-byte-compile-load-path
-            (delete-dups
-             (append load-path
-                     (default-toplevel-value
-                       'elisp-flymake-byte-compile-load-path))))
+  (setq! elisp-flymake-byte-compile-load-path
+         (delete-dups
+          (append load-path
+                  (default-toplevel-value
+                    'elisp-flymake-byte-compile-load-path))))
 
-     ;; Proper indent function.
-     (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
+  ;; Proper indent function.
+  (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
+
+;;;;; Markdown
+
+(use-package markdown-mode
+  :straight t
+  :magic ("\\.md\\|\\.markdown" . markdown-mode))
 
 ;;;;; Verilog
 
-   (use-package verilog-mode
-     ;; Verilog mode is built-in, but I want to install the latest version, as
-     ;; suggested by the official repository.
-     :straight t
-     :magic ("\\.v" . verilog-mode)
-     :init
-     (add-hook! verilog-mode
-       'rainbow-delimiters-mode)
-     :config
-     (setq! verilog-auto-delete-trailing-whitespace t
-		    verilog-auto-newline nil
-		    verilog-case-level 4
-		    verilog-indent-begin-after-if nil
-		    verilog-indent-level 4
-		    verilog-indent-level-behavioral 0
-		    verilog-indent-level-declaration 0
-		    verilog-indent-level-module 0))
+(use-package verilog-mode
+  ;; Verilog mode is built-in, but I want to install the latest version, as
+  ;; suggested by the official repository.
+  :straight t
+  :magic ("\\.v" . verilog-mode)
+  :init
+  (add-hook! verilog-mode
+    'rainbow-delimiters-mode)
+  :config
+  (setq! verilog-auto-delete-trailing-whitespace t
+		 verilog-auto-newline nil
+		 verilog-case-level 4
+		 verilog-indent-begin-after-if nil
+		 verilog-indent-level 4
+		 verilog-indent-level-behavioral 0
+		 verilog-indent-level-declaration 0
+		 verilog-indent-level-module 0))
 
 ;;;; The end
 
-   (provide 'init)
+(provide 'init)
 ;;; init.el ends here
