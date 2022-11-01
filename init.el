@@ -610,7 +610,7 @@ is determined, several other directories, like `org-directory',
   :group 'zyxir)
 
 (zy-run-hook-on 'zy-first-buffer-hook
-		        '(find-file-hook zy-switch-buffer-hook))
+		        '(dired-load-hook find-file-hook zy-switch-buffer-hook))
 
 ;;;;;; First file hook
 
@@ -1184,6 +1184,91 @@ faster `prin1'."
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
+;;;;; Dired (built-in directory manager)
+
+;; Dired is a handy file manager built-in to Emacs.
+
+(use-package dired
+  :defer t
+  :config
+  (setq!
+   ;; Move to trash when available.
+   delete-by-moving-to-trash t
+   ;; Revert Dired buffers if the directory has changed.
+   dired-auto-revert-buffer 'dired-directory-changed-p
+   ;; Guess the target directory.
+   dired-dwim-target t
+   ;; Command line switches used for ls.
+   dired-listing-switches (eval-when-compile
+                            (string-join
+                             '(;; No "." and "..".
+                               "--almost-all"
+                               ;; No group names.
+                               "--no-group"
+                               ;; Append indicator to entries.
+                               "--classify"
+                               ;; Natural sort of version numbers.
+                               "-v"
+                               ;; Group directories and show them first.
+                               "--group-directories-first"
+                               ;; Show human readable sizes.
+                               "--human-readable"
+                               ;; Show ISO 8601 timestamps.
+                               "--time-style=long-iso"
+                               ;; Must be included for dired.
+                               "-l")
+                             " "))
+   ;; Make directories at the title bar clickable.
+   dired-make-directory-clickable t
+   ;; Allow mouse to drag files.
+   dired-mouse-drag-files t
+   ;; Do not ask for recursive operations, just like any other modern file
+   ;; manager will do.
+   dired-recursive-copies 'always
+   dired-recursive-deletes 'always)
+
+  ;; Hooks
+  (add-hook! dired-mode
+    ;; Hide details like size, modification time, owner, ... by default.
+    'dired-hide-details-mode))
+
+;; Built-in auxilary functionalities for Dired.
+(use-package dired-aux
+  :defer t
+  :after dired
+  :config
+  (setq!
+   ;; Revert directory if it is not remote.
+   dired-do-revert-buffer (lambda (dir) (not (file-remote-p dir)))
+   ;; Better match filenames with Isearch.
+   dired-isearch-filenames 'dwim
+   ;; Ask me about directory creation.
+   dired-create-destination-dirs 'ask
+   ;; Rename file via version control program.
+   dired-vc-rename-file t))
+
+;; Tree style view for Dired.
+(use-package dired-subtree
+  :straight t
+  :defer t
+  :after dired
+  :general
+  (:keymaps 'dired-mode-map
+   "TAB" 'dired-subtree-toggle
+   [tab] 'dired-subtree-toggle
+   "S-TAB" 'dired-subtree-remove
+   [backtab] 'dired-subtree-remove))
+
+;; Editable Dired buffer.
+(use-package wdired
+  :defer t
+  :config
+  (setq!
+   ;; Allow to modify file permisions.
+   wdired-allow-to-change-permissions t
+   ;; Create parent directories smartly.
+   wdired-create-parent-directories t))
+
 ;;;;; Rg (ripgrep integration)
 
 ;; Ripgrep is a super fast text searching program
@@ -1204,9 +1289,9 @@ faster `prin1'."
   :config
   (setq!
    project-switch-commands '((project-find-file "Find file" "f")
+			                 (project-find-dir "Find directory" "d")
                              (rg-project "Grep" "g")
 			                 (magit-project-status "Magit" "v")
-			                 (project-find-dir "Find directory" "d")
 			                 (project-eshell "Eshell" "s"))))
 
 ;;;; User interface

@@ -17,9 +17,11 @@ straight/*
 auto-save-list
 bookmarks
 custom.el
+dirvish
 eln-cache
 eshell
 history
+image-dired
 org-persist
 org-roam.db
 places
