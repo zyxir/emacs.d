@@ -1447,22 +1447,21 @@ remove itself from `after-make-frame-functions' if it is there."
 
 ;; Tweaked scrolling experience.
 
-(autoload 'zy/scroll-up-command "zyutils" nil 'interactive)
-(autoload 'zy/scroll-down-command "zyutils" nil 'interactive)
-
 (use-package zy-scrolling
   :defer t
-  :general
-  ;; Replace scrolling commands with my own version, which scroll the screen by
-  ;; 0.618 of its height.
-  ([remap scroll-up-command] 'zy/scroll-up-command
-   [remap scroll-down-command] 'zy/scroll-down-command)
   :init
-  ;; Add my own scrolling command to Pulsar's list.
-  (with-eval-after-load 'pulsar
-    (defvar pulsar-pulse-functions)
-    (add-to-list 'pulsar-pulse-functions 'zy/scroll-up-command)
-    (add-to-list 'pulsar-pulse-functions 'zy/scroll-down-command)))
+  ;; Keep the cursor position relative to the scrren.
+  (setq! scroll-preserve-screen-position t)
+
+  (defun zy--golden-ratio-scroll-a (fn &rest arg)
+    "Make scroll commands scroll 0.618 of the screen.
+
+This is an :around advice, and FN is the adviced function."
+    (dlet ((next-screen-context-lines
+            (round (* 0.382 (window-height)))))
+      (apply fn arg)))
+  (advice-add #'scroll-up-command :around 'zy--golden-ratio-scroll-a)
+  (advice-add #'scroll-down-command :around 'zy--golden-ratio-scroll-a))
 
 ;;;; Features
 
@@ -1684,7 +1683,7 @@ itself to `consult-recent-file', can finally call
 
   ;; Functions to run after an input method switch.
   (defvar zy-input-method-notifiers
-    '((nil . pulsar-pulse-line-green)
+    '((nil . pulsar-pulse-line-cyan)
       ("rime" . pulsar-pulse-line-yellow))
     "An association list of IM and FN.
 IM is an input method name, and FN is the function to run after
