@@ -951,6 +951,18 @@ If this is a daemon session, load them all immediately instead."
 
 ;; This section enhances the basic text-editing capability of Emacs.
 
+;;;;; Cursor movement
+
+(autoload 'zy/move-beginning-of-line "zyutils" nil 'interactive)
+
+(use-package zy-curmov
+  :defer t
+  :general
+  ;; Let "C-a" move point between the indentation and real line beginning.  Does
+  ;; not work when `visual-line-mode' is on (C-a is remapped in
+  ;; `visual-line-mode' anyway).
+  ([remap move-beginning-of-line] 'zy/move-beginning-of-line))
+
 ;;;;; Indentation
 
 (use-package indentation

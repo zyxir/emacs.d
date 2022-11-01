@@ -40,6 +40,68 @@
 
 ;;;; Text-editing
 
+;;;;; Cursor movement
+
+;; This is adapted from Crux.
+(defvar zy-line-start-regexp-alist
+  '((term-mode . "^[^#$%>\n]*[#$%>] ")
+    (eshell-mode . "^[^$\n]*$ ")
+    (org-mode . "^\\(\*\\|[[:space:]]*\\)* ")
+    (default . "^[[:space:]]*"))
+  "Alist of major modes and line starts.
+The key is a major mode.  The value is a regular expression
+matching the characters to be skipped over.  If no major mode is
+found, use the regexp specified by the default key.
+
+Used by functions like `zy/move-beginning-of-line' to skip over
+whitespace, prompts, and markup at the beginning of the line.")
+
+;; This is adapted from Crux.
+(defun zy/move-to-line-start ()
+  "Move to the beginning, skipping mode specific line start regexp."
+  (interactive)
+  (beginning-of-line nil)
+  (let ((line-start-regexp (cdr (seq-find
+                                 (lambda (e) (derived-mode-p (car e)))
+                                 zy-line-start-regexp-alist
+                                 (assoc 'default
+                                        zy-line-start-regexp-alist)))))
+    (search-forward-regexp line-start-regexp (line-end-position) t)))
+
+;; This is adapted from Crux.
+;;;###autoload
+(defun zy/move-beginning-of-line (arg)
+  "Move point back to indentation of beginning of line.
+
+When moving from position that has no ‘field’ property, this
+command doesn’t enter text which has non-nil ‘field’ property.
+In particular, when invoked in the minibuffer, the command will
+stop short of entering the text of the minibuffer prompt.  See
+‘inhibit-field-text-motion’ for how to inhibit this.
+
+Move point to the first non-whitespace character on this line.
+If point is already there, move to the beginning of the line.
+Effectively toggle between the first non-whitespace character and
+the beginning of the line.
+
+With argument ARG not nil or 1, move forward ARG - 1 lines first.
+If point reaches the beginning or end of buffer, it stops there.
+(But if the buffer doesn’t end in a newline, it stops at the
+beginning of the last line.)If ARG is not nil or 1, move forward
+ARG - 1 lines first.  If point reaches the beginning or end of
+the buffer, stop there."
+  (interactive "^p")
+  (setq arg (or arg 1))
+  ;; Move lines first.
+  (when (/= arg 1)
+    (let ((line-move-visual nil))
+      (forward-line (1- arg))))
+  ;; Move the point.
+  (let ((orig-point (point)))
+    (zy/move-to-line-start)
+    (when (= orig-point (point))
+      (move-beginning-of-line 1))))
+
 ;;;;; Line filling
 
 ;;;###autoload
