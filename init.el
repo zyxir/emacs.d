@@ -564,6 +564,17 @@ is determined, several other directories, like `org-directory',
 
 ;;;;; Custom hooks
 
+;;;;;; First user input hook
+
+(defcustom zy-first-input-hook nil
+  "Hooks run before the first user input."
+  :type 'hook
+  :local 'permenant-local
+  :group 'zyxir)
+
+(zy-run-hook-on 'zy-first-input-hook
+                '(pre-command-hook))
+
 ;;;;;; Switch buffer/window/frame hook
 
 (defvar zy-switch-buffer-hook nil
@@ -978,8 +989,12 @@ If this is a daemon session, load them all immediately instead."
 ;; This controls how texts (paragraphs or comments) should be wrapped to a given
 ;; column count.
 
+(autoload 'zy/unfill-paragraph "zyutils" nil t)
+
 (use-package line-filling
   :defer t
+  :general
+  ("M-Q" 'zy/unfill-paragraph)
   :init
   (setq!
    ;; 80 is a sane default.  Recommended by Google.
@@ -1528,7 +1543,11 @@ remove itself from `after-make-frame-functions' if it is there."
   :config
   (setq!
    ;; Use the cyan pulse.
-   pulsar-face 'pulsar-cyan))
+   pulsar-face 'pulsar-cyan)
+  ;; More pulse functions.
+  (when (boundp 'pulsar-pulse-functions)
+    (add-to-list 'pulsar-pulse-functions
+                 'outline-cycle-buffer)))
 
 ;;;;; Scrolling
 
@@ -1549,6 +1568,17 @@ This is an :around advice, and FN is the adviced function."
       (apply fn arg)))
   (advice-add #'scroll-up-command :around 'zy--golden-ratio-scroll-a)
   (advice-add #'scroll-down-command :around 'zy--golden-ratio-scroll-a))
+
+;;;;; Which-key (handy key hints)
+
+(use-package which-key
+  :straight t
+  :hook zy-first-input
+  :config
+  (setq!
+   ;; If it turns out that I do need help from Which-key, show subsequent popups
+   ;; right away.
+   which-key-idle-secondary-delay 0.05))
 
 ;;;; Features
 

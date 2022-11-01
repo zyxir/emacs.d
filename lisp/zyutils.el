@@ -38,6 +38,17 @@
 
 ;;; Code:
 
+;;;; Text-editing
+
+;;;;; Line filling
+
+;;;###autoload
+(defun zy/unfill-paragraph ()
+  "Do the inverse of `fill-paragraph'."
+  (interactive)
+  (dlet ((fill-column most-positive-fixnum))
+    (call-interactively 'fill-paragraph)))
+
 ;;;; File type specific settings
 
 ;;;;; Emacs Lisp
