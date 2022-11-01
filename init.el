@@ -66,8 +66,8 @@
       (normal-gc-cons-threshold (* 20 1024 1024)))
   (setq gc-cons-threshold init-gc-cons-threshold)
   (add-hook 'emacs-startup-hook
-	    (lambda ()
-	      (setq gc-cons-threshold normal-gc-cons-threshold))))
+	        (lambda ()
+	          (setq gc-cons-threshold normal-gc-cons-threshold))))
 
 ;;;;; Unset file name handlers
 
@@ -78,31 +78,31 @@
 
 (let ((old-value (default-toplevel-value 'file-name-handler-alist)))
   (setq file-name-handler-alist
-	;; If the bundled elisp for this Emacs install isn't byte-compiled (but
-	;; is compressed), then leave the gzip file handler there so Emacs won't
-	;; forget how to read read them.
+	    ;; If the bundled elisp for this Emacs install isn't byte-compiled (but
+	    ;; is compressed), then leave the gzip file handler there so Emacs won't
+	    ;; forget how to read read them.
         ;;
         ;; calc-loaddefs.el is our heuristic for this because it is built-in to
         ;; all supported versions of Emacs, and calc.el explicitly loads it
         ;; uncompiled. This ensures that the only other, possible fallback would
         ;; be calc-loaddefs.el.gz.
-	(if (eval-when-compile
-	      (locate-file-internal "calc-loaddefs.el" load-path))
-	    nil
-	  (list (rassq 'jka-compr-handler old-value))))
+	    (if (eval-when-compile
+	          (locate-file-internal "calc-loaddefs.el" load-path))
+	        nil
+	      (list (rassq 'jka-compr-handler old-value))))
   ;; Make sure the new value survives any current let-binding.
   (set-default-toplevel-value 'file-name-handler-alist file-name-handler-alist)
   ;; Remember the old value so that it can be used when needed.
   (put 'file-name-handler-alist 'initial-value old-value)
   ;; Restore it after startup.
   (add-hook 'emacs-startup-hook
-	    (defun zy--reset-file-handler-alist-h ()
-	      (setq file-name-handler-alist
-		    ;; Merge instead of overwrite in case it is modified during
-		    ;; startup.
-		    (delete-dups
-		     (append file-name-handler-alist old-value))))
-	    -99))
+	        (defun zy--reset-file-handler-alist-h ()
+	          (setq file-name-handler-alist
+		            ;; Merge instead of overwrite in case it is modified during
+		            ;; startup.
+		            (delete-dups
+		             (append file-name-handler-alist old-value))))
+	        -99))
 
 ;;;;; Reduce GUI noises
 
@@ -121,8 +121,8 @@
   (defun display-startup-echo-area-message ()
     "Display startup time."
     (message "Emacs ready in %.2f seconds."
-	     (float-time
-	      (time-subtract (current-time) before-init-time))))
+	         (float-time
+	          (time-subtract (current-time) before-init-time))))
 
   ;; Even if `inhibit-startup-screen' is set to t, it would still initialize
   ;; anyway.  This involves some file IO and/or bitmap work.  It should be
@@ -132,7 +132,7 @@
   ;; Start the scratch buffer in `fundamental-mode' with no additional text.
   ;; This is cleaner and saves some time.
   (setq initial-major-mode 'fundamental-mode
-	initial-scratch-message nil)
+	    initial-scratch-message nil)
 
   (unless init-file-debug
     ;; Site files tend to use `load-file', which emits "Loading X..."  messages
@@ -140,45 +140,45 @@
     ;; can be expensive during startup.  This may also cause an flash of white
     ;; when creating the first frame.
     (advice-add #'load-file :override
-		(defun load-file-silently-a (file)
-		  (load file nil 'nomessage)))
+		        (defun load-file-silently-a (file)
+		          (load file nil 'nomessage)))
     ;; And disable this advice latter
     (add-hook 'emacs-startup-hook
-	      (defun zy--restore-load-file-h ()
-		(advice-remove #'load-file 'load-file-silently-a)))
+	          (defun zy--restore-load-file-h ()
+		        (advice-remove #'load-file 'load-file-silently-a)))
 
     ;; Disabling the mode line also reduces startup time by approximately 30 to
     ;; 50 ms, according to Doom Emacs.
     (put 'mode-line-format 'initial-value
-	 (default-toplevel-value 'mode-line-format))
+	     (default-toplevel-value 'mode-line-format))
     (setq-default mode-line-format nil)
     (dolist (buf (buffer-list))
       (with-current-buffer buf (setq mode-line-format nil)))
     (add-hook 'after-init-hook
-	      (defun zy--reset-modeline-format-h ()
-		(unless (default-toplevel-value 'mode-line-format)
-		  (setq-default mode-line-format
-				(get 'mode-line-format 'initial-value)))))
+	          (defun zy--reset-modeline-format-h ()
+		        (unless (default-toplevel-value 'mode-line-format)
+		          (setq-default mode-line-format
+				                (get 'mode-line-format 'initial-value)))))
 
     ;; Redisplays during startup cost time and produce ugly flashes of unstyled
     ;; Emacs.  However, if any error occurs during startup, Emacs could appear
     ;; frozen or garbled.
     (setq-default inhibit-redisplay t
-		  inhibit-message t)
+		          inhibit-message t)
     (add-hook 'after-init-hook
-	      (defun zy--reset-inhibited-vars-h ()
-		(setq-default inhibit-redisplay nil
-			      inhibit-message nil))
-	      (redraw-frame))
+	          (defun zy--reset-inhibited-vars-h ()
+		        (setq-default inhibit-redisplay nil
+			                  inhibit-message nil))
+	          (redraw-frame))
 
     ;; Even if the toolbar is explicitly disabled in early-init.el, it is still
     ;; populated regardless.  So it should be lazy-loaded until `tool-bar-mode'
     ;; is actually called.
     (advice-add #'tool-bar-setup :override #'ignore)
     (advice-add #'tool-bar-mode :before
-		(defun zy--setup-toolbar-a (&rest _)
-		  (tool-bar-setup)
-		  (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
+		        (defun zy--setup-toolbar-a (&rest _)
+		          (tool-bar-setup)
+		          (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
 
 ;;;; Additional functions & macros
 
@@ -190,7 +190,7 @@
 (defvar zy-log-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map (make-composed-keymap button-buffer-map
-						 special-mode-map))
+						                         special-mode-map))
     map)
   "Keymap for Zyxir's Log mode.")
 
@@ -213,31 +213,31 @@ The message is prettified, and combined with additional
 information (including MODULE, the module that is logging the
 message), before being written to the *Log* buffer."
   (let* (;; Time since initialization.
-	 (time (format "%.06f" (float-time (time-since before-init-time))))
-	 ;; The module indicator.
-	 (module (format ":%s:" (if (symbolp module)
-				    (symbol-name module)
-				  module)))
-	 ;; Padding between each printed line.
-	 (padding (make-string (+ (length time) (length module) 2) ?\s))
-	 ;; The formatted text.
-	 (text (apply 'format text args))
-	 ;; Split `text' into segments by newlines.
-	 (text-segs (delete "" (split-string text "\n"))))
+	     (time (format "%.06f" (float-time (time-since before-init-time))))
+	     ;; The module indicator.
+	     (module (format ":%s:" (if (symbolp module)
+				                    (symbol-name module)
+				                  module)))
+	     ;; Padding between each printed line.
+	     (padding (make-string (+ (length time) (length module) 2) ?\s))
+	     ;; The formatted text.
+	     (text (apply 'format text args))
+	     ;; Split `text' into segments by newlines.
+	     (text-segs (delete "" (split-string text "\n"))))
     ;; Print all text segments into the *Log* buffer.
     (with-current-buffer zy-log-buffer
       (goto-char (point-max))
       (let ((inhibit-read-only t))
-	(insert (concat
-		 (propertize time 'face 'font-lock-doc-face)
-		 " "
-		 (propertize module 'face 'font-lock-keyword-face)
-		 " "
-		 (car-safe text-segs)
-		 "\n"))
-	(when (cdr-safe text-segs)
-	  (dolist (seg (cdr text-segs))
-	    (insert (concat padding seg "\n"))))))))
+	    (insert (concat
+		         (propertize time 'face 'font-lock-doc-face)
+		         " "
+		         (propertize module 'face 'font-lock-keyword-face)
+		         " "
+		         (car-safe text-segs)
+		         "\n"))
+	    (when (cdr-safe text-segs)
+	      (dolist (seg (cdr text-segs))
+	        (insert (concat padding seg "\n"))))))))
 
 (defmacro zy-log (module message &rest args)
   "Log MESSAGE formatted with ARGS in *Messages*.
@@ -295,15 +295,15 @@ HOOKS is a list of hook variable symbols.  This is used as an
 advice to replace `run-hooks'."
   (dolist (hook hooks)
     (condition-case-unless-debug e
-	(let ((zy--hook hook))
-	  (run-hook-wrapped hook #'zy-run-hook))
+	    (let ((zy--hook hook))
+	      (run-hook-wrapped hook #'zy-run-hook))
       (hook-error
        (unless debug-on-error
-	 (lwarn hook :error "Error running hook %S because: %s"
-		(if (symbolp (cadr e))
-		    (symbol-name (cadr e))
-		  (cadr e))
-		(caddr e)))
+	     (lwarn hook :error "Error running hook %S because: %s"
+		        (if (symbolp (cadr e))
+		            (symbol-name (cadr e))
+		          (cadr e))
+		        (caddr e)))
        (signal 'hook-error (cons hook (cdr e)))))))
 
 ;; This is copied from Doom Emacs.
@@ -316,32 +316,32 @@ reduce false positives).  Once HOOK-VAR is triggered, it is reset
 to nil."
   (dolist (hook trigger-hooks)
     (let ((fn (make-symbol (format "chain-%s-to-%s-h" hook-var hook)))
-	  running-p)
+	      running-p)
       (fset fn
-	    (lambda (&rest _)
-	      ;; Only trigger this after Emacs has initialized.
-	      (when (and after-init-time
-			 (not running-p)
-			 (or (daemonp)
-			     ;; In some cases, hooks may be lexically unset to
-			     ;; inhibit them during expensive batch operations
-			     ;; on buffers (such as when processing buffers
-			     ;; internally).  In these cases we should assume
-			     ;; this hook wasn't invoked interactively.
-			     (and (boundp hook)
-				  (symbol-value hook))))
-		(setq running-p t)  ; prevent infinite recursion
-		(zy-run-hooks hook-var)
-		(set hook-var nil))))
+	        (lambda (&rest _)
+	          ;; Only trigger this after Emacs has initialized.
+	          (when (and after-init-time
+			             (not running-p)
+			             (or (daemonp)
+			                 ;; In some cases, hooks may be lexically unset to
+			                 ;; inhibit them during expensive batch operations
+			                 ;; on buffers (such as when processing buffers
+			                 ;; internally).  In these cases we should assume
+			                 ;; this hook wasn't invoked interactively.
+			                 (and (boundp hook)
+				                  (symbol-value hook))))
+		        (setq running-p t)  ; prevent infinite recursion
+		        (zy-run-hooks hook-var)
+		        (set hook-var nil))))
       (cond ((daemonp)
-	     ;; Do not lazy load in a daemon session.
-	     (add-hook 'after-init-hook fn 'append))
-	    ((eq hook 'find-file-hook)
-	     ;; Advice `after-find-file' instead of using `find-file-hook'
-	     ;; because the latter is triggered too late (after the file has
-	     ;; opened and modes are all set up).
-	     (advice-add 'after-find-file :before fn '((depth . -99))))
-	    (t (add-hook hook fn -99)))
+	         ;; Do not lazy load in a daemon session.
+	         (add-hook 'after-init-hook fn 'append))
+	        ((eq hook 'find-file-hook)
+	         ;; Advice `after-find-file' instead of using `find-file-hook'
+	         ;; because the latter is triggered too late (after the file has
+	         ;; opened and modes are all set up).
+	         (advice-add 'after-find-file :before fn '((depth . -99))))
+	        (t (add-hook hook fn -99)))
       fn)))
 
 ;;;;; Macros as syntactic sugars
@@ -368,7 +368,7 @@ function (which will be advised)."
          (unintern ',fn nil))
        (cond ((functionp sym)
               (advice-add ,hook-or-function
-			  ,(if append-p :after :before) ',fn))
+			              ,(if append-p :after :before) ',fn))
              ((symbolp sym)
               (put ',fn 'permanent-local-hook t)
               (add-hook sym ',fn ,append-p))))))
@@ -382,7 +382,7 @@ Unlike `setq', this triggers custom setters on variables.  Unlike
   (macroexp-progn
    (cl-loop for (var val) on settings by 'cddr
             collect `(funcall (or (get ',var 'custom-set)
-				  #'set-default-toplevel-value)
+				                  #'set-default-toplevel-value)
                               ',var ,val))))
 
 ;; This is copied from Doom Emacs.
@@ -548,10 +548,10 @@ is determined, several other directories, like `org-directory',
     (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory))
     ;; My Org-journal directory.
     (setq-default org-journal-dir
-		  (expand-file-name "org-journal" org-directory))
+		          (expand-file-name "org-journal" org-directory))
     ;; My Org-roam directory.
     (setq-default org-roam-directory
-		  (expand-file-name "org-roam" org-directory))))
+		          (expand-file-name "org-roam" org-directory))))
 
 (defcustom zy~zybox-dir ""
   "The Zybox directory, my personal file center."
@@ -578,28 +578,28 @@ is determined, several other directories, like `org-directory',
 (defun zy-run-switch-buffer-hooks-h (&optional _)
   "Run all hooks in `zy-switch-buffer-hook'."
   (let ((gc-cons-threshold most-positive-fixnum)
-	(inhibit-redisplay t))
+	    (inhibit-redisplay t))
     (run-hooks 'zy-switch-buffer-hook)))
 
 (defvar zy--last-frame nil)
 (defun zy-run-switch-window-or-frame-hooks-h (&optional _)
   "Run the two hooks if needed."
   (let ((gc-cons-threshold most-positive-fixnum)
-	(inhibit-redisplay t))
+	    (inhibit-redisplay t))
     (unless (equal (old-selected-frame) (selected-frame))
       (run-hooks 'zy-switch-frame-hook))
     (unless (or (minibufferp)
-		(equal (old-selected-window) (minibuffer-window)))
+		        (equal (old-selected-window) (minibuffer-window)))
       (run-hooks 'zy-switch-window-hook))))
 
 ;; Initialize these hooks after startup.
 (add-hook! 'window-setup-hook
   (add-hook 'window-selection-change-functions
-	    #'zy-run-switch-window-or-frame-hooks-h)
+	        #'zy-run-switch-window-or-frame-hooks-h)
   (add-hook 'window-buffer-change-function
-	    #'zy-run-switch-buffer-hooks-h)
+	        #'zy-run-switch-buffer-hooks-h)
   (add-hook 'server-visit-hook
-	    #'zy-run-switch-buffer-hooks-h))
+	        #'zy-run-switch-buffer-hooks-h))
 
 ;;;;;; First buffer hook
 
@@ -610,7 +610,7 @@ is determined, several other directories, like `org-directory',
   :group 'zyxir)
 
 (zy-run-hook-on 'zy-first-buffer-hook
-		'(find-file-hook zy-switch-buffer-hook))
+		        '(find-file-hook zy-switch-buffer-hook))
 
 ;;;;;; First file hook
 
@@ -621,7 +621,7 @@ is determined, several other directories, like `org-directory',
   :group 'zyxir)
 
 (zy-run-hook-on 'zy-first-file-hook
-		'(find-file-hook dired-initial-position-hook))
+		        '(find-file-hook dired-initial-position-hook))
 
 ;;;;; Incremental loading
 
@@ -654,51 +654,51 @@ If NOW is non-nil, load PACKAGES incrementally now, in
 `zy-incremental-idle-timer' intervals."
   (let ((gc-cons-threshold most-positive-fixnum))
     (if (not now)
-	;; If `now' is nil, queue `packages' for loading.
-	(cl-callf append zy-incremental-packages packages)
+	    ;; If `now' is nil, queue `packages' for loading.
+	    (cl-callf append zy-incremental-packages packages)
       ;; If `now' is non-nil, do the loading now.
       (while packages
-	(let ((req (pop packages))
-	      idle-time)
-	  (if (featurep req)
-	      (zy-log 'iloader "Already loaded %s (%d left)"
-		      req (length packages))
-	    (condition-case-unless-debug e
-		(and
-		 (or
-		  ;; Don't load if not idle.
-		  (null (setq idle-time (current-idle-time)))
-		  ;; Don't load if the idle time is not enough.
-		  (< (float-time idle-time) zy-incremental-first-idle-timer)
-		  (not
-		   ;; Interrupt the load once the user inputs something.
-		   (while-no-input
-		     (zy-log 'iloader "Loading %s (%d left)"
-			     req (length packages))
-		     (let ((inhibit-message t)
-			   (file-name-handler-alist
-			    (list (rassq 'jka-compr-handler
-					 file-name-handler-alist))))
-		       ;; Ignore loading errors.
-		       (require req nil 'noerror)
-		       t))))
-		 (push req packages))
-	      (error
-	       (message "Error: failed to incrementally load %S because %s"
-			req e)
-	       (setq packages nil)))
-	    (if (null packages)
-		;; If all queued packages are loaded, the job is finished.
-		(zy-log 'iloader "Finished!")
-	      ;; Otherwise, pend the next load action.
-	      (run-at-time (if idle-time
-			       zy-incremental-idle-timer
-			     zy-incremental-first-idle-timer)
-			   nil #'zy-load-packages-incrementally
-			   packages t)
-	      ;; `packages' has been passed to the callback function, so safely
-	      ;; setting it to nil.
-	      (setq packages nil))))))))
+	    (let ((req (pop packages))
+	          idle-time)
+	      (if (featurep req)
+	          (zy-log 'iloader "Already loaded %s (%d left)"
+		              req (length packages))
+	        (condition-case-unless-debug e
+		        (and
+		         (or
+		          ;; Don't load if not idle.
+		          (null (setq idle-time (current-idle-time)))
+		          ;; Don't load if the idle time is not enough.
+		          (< (float-time idle-time) zy-incremental-first-idle-timer)
+		          (not
+		           ;; Interrupt the load once the user inputs something.
+		           (while-no-input
+		             (zy-log 'iloader "Loading %s (%d left)"
+			                 req (length packages))
+		             (let ((inhibit-message t)
+			               (file-name-handler-alist
+			                (list (rassq 'jka-compr-handler
+					                     file-name-handler-alist))))
+		               ;; Ignore loading errors.
+		               (require req nil 'noerror)
+		               t))))
+		         (push req packages))
+	          (error
+	           (message "Error: failed to incrementally load %S because %s"
+			            req e)
+	           (setq packages nil)))
+	        (if (null packages)
+		        ;; If all queued packages are loaded, the job is finished.
+		        (zy-log 'iloader "Finished!")
+	          ;; Otherwise, pend the next load action.
+	          (run-at-time (if idle-time
+			                   zy-incremental-idle-timer
+			                 zy-incremental-first-idle-timer)
+			               nil #'zy-load-packages-incrementally
+			               packages t)
+	          ;; `packages' has been passed to the callback function, so safely
+	          ;; setting it to nil.
+	          (setq packages nil))))))))
 
 (defun zy-load-packages-incrementally-h ()
   "Start loading packages incrementally.
@@ -707,10 +707,10 @@ Packages to be loaded are stored in `zy-incremental-packages'.
 If this is a daemon session, load them all immediately instead."
   (when (numberp zy-incremental-first-idle-timer)
     (if (zerop zy-incremental-first-idle-timer)
-	(mapc #'require (cdr zy-incremental-packages))
+	    (mapc #'require (cdr zy-incremental-packages))
       (run-with-idle-timer zy-incremental-first-idle-timer
-			   nil #'zy-load-packages-incrementally
-			   (cdr zy-incremental-packages) t))))
+			               nil #'zy-load-packages-incrementally
+			               (cdr zy-incremental-packages) t))))
 
 (add-hook 'window-setup-hook #'zy-load-packages-incrementally-h)
 
@@ -771,10 +771,10 @@ If this is a daemon session, load them all immediately instead."
 
   ;; Add keywords to the list.
   (dolist (keyword '(:defer-incrementally
-		     :after-call))
+		             :after-call))
     (push keyword use-package-deferring-keywords)
     (setq use-package-keywords
-	  (use-package-list-insert keyword use-package-keywords :after)))
+	      (use-package-list-insert keyword use-package-keywords :after)))
 
   ;; :defer-incrementally
 
@@ -784,9 +784,9 @@ If this is a daemon session, load them all immediately instead."
       (name _keyword targets rest state)
     (use-package-concat
      `((zy-load-packages-incrementally
-	',(if (equal targets '(t))
-	      (list name)
-	    (append targets (list name)))))
+	    ',(if (equal targets '(t))
+	          (list name)
+	        (append targets (list name)))))
      (use-package-process-keywords name rest state)))
 
   ;; :after-call
@@ -864,10 +864,10 @@ If this is a daemon session, load them all immediately instead."
  ;; A informational frame title.  Besides, my AutoHotkey scripts recognize my
  ;; Emacs window by the \"ZyEmacs\" prefix.
  frame-title-format '("ZyEmacs@"
-		      (:eval (or
-			      (file-remote-p default-directory 'host)
-			      system-name))
-		      " [%b]")
+		              (:eval (or
+			                  (file-remote-p default-directory 'host)
+			                  system-name))
+		              " [%b]")
  ;; I usually use a Hybrid font like Sarasa Gothic, which contains tremendous
  ;; amout of CJK glyphs.  Disable compacting of font makes redisplay faster.
  inhibit-compacting-font-caches t
@@ -888,7 +888,7 @@ If this is a daemon session, load them all immediately instead."
   :init
   ;; Make no auto save or backup files.
   (setq! auto-save-default nil
-	 make-backup-files nil))
+	     make-backup-files nil))
 
 ;;;;; Encoding
 
@@ -905,8 +905,8 @@ If this is a daemon session, load them all immediately instead."
        (eq locale-coding-system 'cp936))
   ;; Use GBK for cmdproxy.exe and plink.exe.
   (set-default 'process-coding-system-alist
-     '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
-       ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+               '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
 
 ;;;;; Emacs server
 
@@ -915,7 +915,7 @@ If this is a daemon session, load them all immediately instead."
   :config
   ;; Start the server if possible.
   (unless (and (fboundp 'server-running-p)
-	       (server-running-p))
+	           (server-running-p))
     (server-start)))
 
 ;;;;; Terminal settings
@@ -1012,7 +1012,7 @@ If this is a daemon session, load them all immediately instead."
   ;; 29.1.
   ([remap just-one-space] 'cycle-spacing)
   (:keymaps 'zy-toggle-map
-  ;; Toggle whitespace visualization.
+   ;; Toggle whitespace visualization.
    "SPC" 'whitespace-mode)
   :init
   ;; Show trailing whitespace for all kinds of files.
@@ -1140,7 +1140,7 @@ faster `prin1'."
     (defun zy--recentf-touch-buffer-h ()
       "Bump file in recent file list when it is switched to or written to."
       (when buffer-file-name
-	(recentf-add-file buffer-file-name))
+	    (recentf-add-file buffer-file-name))
       ;; Return nil for `write-file-functions'
       nil))
 
@@ -1230,12 +1230,12 @@ faster `prin1'."
    ;; Headings are not sized for Modus Themes shipped with Emacs 28
    ;; Maybe I should use the non-built-in version instead
    modus-themes-headings '((0 . (rainbow background 1.3))
-			   (1 . (rainbow background overline 1.5))
-			   (2 . (rainbow background overline 1.4))
-			   (3 . (rainbow background overline 1.3))
-			   (4 . (rainbow background overline 1.2))
-			   (5 . (rainbow background overline 1.1))
-			   (t . (rainbow background overline 1.0)))
+			               (1 . (rainbow background overline 1.5))
+			               (2 . (rainbow background overline 1.4))
+			               (3 . (rainbow background overline 1.3))
+			               (4 . (rainbow background overline 1.2))
+			               (5 . (rainbow background overline 1.1))
+			               (t . (rainbow background overline 1.0)))
    modus-themes-hl-line '(intense)
    modus-themes-markup '(background intense)
    modus-themes-mixed-fonts t
@@ -1410,7 +1410,9 @@ If GUI is available, setup font with `zy/setup-font-faces', and
 remove itself from `after-make-frame-functions' if it is there."
   (if (display-graphic-p)
 	  (prog1
-	      (zy/setup-font-faces)
+          (condition-case e
+	          (zy/setup-font-faces)
+            (error (lwarn 'font :warning "%s: %s" (car e) (cdr e))))
 	    (remove-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces))
     (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
 
@@ -1503,13 +1505,13 @@ parses its input."
 
   ;; Apply matching styles and dispatchers.
   (setq! orderless-matching-styles '(orderless-literal
-				     orderless-prefixes
-				     orderless-flex
-				     orderless-regexp)
-	 orderless-style-dispatchers '(zy-orderless-literal-dispatcher
-				       zy-orderless-no-literal-dispatcher
-				       zy-orderless-initialism-dispatcher
-				       zy-orderless-flex-dispatcher)))
+				                     orderless-prefixes
+				                     orderless-flex
+				                     orderless-regexp)
+	     orderless-style-dispatchers '(zy-orderless-literal-dispatcher
+				                       zy-orderless-no-literal-dispatcher
+				                       zy-orderless-initialism-dispatcher
+				                       zy-orderless-flex-dispatcher)))
 
 ;;;;; Vertico and Marginalia (minibuffer enhancements)
 
@@ -1555,7 +1557,7 @@ ARGS are the arguments passed."
 (use-package consult
   :straight t
   :commands (consult-completion-in-region
-	     consult-recent-file)
+	         consult-recent-file)
   :general
   ;; Goto map commands (default prefix is M-g).
   (:keymaps 'goto-map
@@ -1592,7 +1594,7 @@ itself to `consult-recent-file', can finally call
 
   :config
   (consult-customize consult-recent-file
-		     :preview-key (kbd "M-.")))
+		             :preview-key (kbd "M-.")))
 
 
 ;;;;; Embark (at-point dispatcher)
@@ -1630,9 +1632,9 @@ itself to `consult-recent-file', can finally call
 (eval-and-compile
   (defun zy--corfu-extensions-load-path ()
     (file-name-concat straight-base-dir
-		      "straight"
-		      straight-build-dir
-		      "corfu/extensions")))
+		              "straight"
+		              straight-build-dir
+		              "corfu/extensions")))
 
 (use-package corfu-indexed
   :load-path (lambda () (zy--corfu-extensions-load-path))
@@ -1708,58 +1710,90 @@ based on the switched input method."
   ;; Just show the error counter.
   (setq! flymake-mode-line-lighter ""))
 
+;;;;; Eshell (consistent shell across platforms)
+
+(use-package eshell
+  :commands eshell
+  :init
+  (setq!
+   ;; Keep the aliases file in version control.
+   eshell-aliases-file
+   (expand-file-name "etc/eshell/alias" user-emacs-directory))
+  :config
+  (setq!
+   ;; Scroll to the cursor on input.
+   eshell-scroll-to-bottom-on-input 'this
+   ;; Error if a glob pattern does not match, like Zsh.
+   eshell-error-if-no-glob t
+   ;; No duplicate history items.
+   eshell-hist-ignoredups t
+   ;; Save shell history.
+   eshell-save-history-on-exit t
+   ;; Prefer Lisp functions to external ones.
+   eshell-prefer-lisp-functions nil
+   ;; No need to keep the buffer after exit.
+   eshell-destroy-buffer-when-process-dies t)
+
+  ;; New command: clear.
+  (declare-function eshell-send-input "eshell")
+  (defun eshell/clear ()
+    "Clear the eshell buffer."
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (eshell-send-input))))
+
 ;;;; File type specific settings
 
-;; This section enhances Emacs on specific file types, mostly programming
-;; languages.
+   ;; This section enhances Emacs on specific file types, mostly programming
+   ;; languages.
 
 ;;;;; Emacs Lisp
 
-(autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
+   (autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
 
-(use-package elisp-mode
-  :init
-  (add-hook! emacs-lisp-mode
-    'outline-minor-mode
-    'rainbow-delimiters-mode
-    ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
-    'flymake-mode)
-  :config
-  (setq-hook! 'emacs-lisp-mode-hook
-	;; Don't treat autoloads or sexp openers as outline headers.  Use
-	;; hideshow for that.
-	outline-regexp "[ \t]*;;;;*[^ \t\n]")
+   (use-package elisp-mode
+     :init
+     (add-hook! emacs-lisp-mode
+       'outline-minor-mode
+       'rainbow-delimiters-mode
+       ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
+       'flymake-mode)
+     :config
+     (setq-hook! 'emacs-lisp-mode-hook
+	   ;; Don't treat autoloads or sexp openers as outline headers.  Use
+	   ;; hideshow for that.
+	   outline-regexp "[ \t]*;;;;*[^ \t\n]")
 
-  (setq! elisp-flymake-byte-compile-load-path
-         (delete-dups
-          (append load-path
-                  (default-toplevel-value
-                    'elisp-flymake-byte-compile-load-path))))
+     (setq! elisp-flymake-byte-compile-load-path
+            (delete-dups
+             (append load-path
+                     (default-toplevel-value
+                       'elisp-flymake-byte-compile-load-path))))
 
-  ;; Proper indent function.
-  (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
+     ;; Proper indent function.
+     (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
 
 ;;;;; Verilog
 
-(use-package verilog-mode
-  ;; Verilog mode is built-in, but I want to install the latest version, as
-  ;; suggested by the official repository.
-  :straight t
-  :magic ("\\.v" . verilog-mode)
-  :init
-  (add-hook! verilog-mode
-    'rainbow-delimiters-mode)
-  :config
-  (setq! verilog-auto-delete-trailing-whitespace t
-		 verilog-auto-newline nil
-		 verilog-case-level 4
-		 verilog-indent-begin-after-if nil
-		 verilog-indent-level 4
-		 verilog-indent-level-behavioral 0
-		 verilog-indent-level-declaration 0
-		 verilog-indent-level-module 0))
+   (use-package verilog-mode
+     ;; Verilog mode is built-in, but I want to install the latest version, as
+     ;; suggested by the official repository.
+     :straight t
+     :magic ("\\.v" . verilog-mode)
+     :init
+     (add-hook! verilog-mode
+       'rainbow-delimiters-mode)
+     :config
+     (setq! verilog-auto-delete-trailing-whitespace t
+		    verilog-auto-newline nil
+		    verilog-case-level 4
+		    verilog-indent-begin-after-if nil
+		    verilog-indent-level 4
+		    verilog-indent-level-behavioral 0
+		    verilog-indent-level-declaration 0
+		    verilog-indent-level-module 0))
 
 ;;;; The end
 
-(provide 'init)
+   (provide 'init)
 ;;; init.el ends here
