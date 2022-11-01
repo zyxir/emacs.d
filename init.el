@@ -1073,10 +1073,42 @@ If this is a daemon session, load them all immediately instead."
     :straight t
     :hook (tty-setup . global-clipetty-mode)))
 
+;;;;; Yasnippet (snippet support)
+
+(use-package yasnippet
+  :straight t
+  :init
+  ;; Enable yasnippet globally on first buffer visit.
+  (add-hook! zy-first-buffer (yas-global-mode 1))
+  :general
+  ;; I dislike expanding snippets with TAB, which I use for reindenting a lot.
+  ;; So I just remap `dabbrev-expand' (M-/ by default) for this.
+  (:keymaps 'yas-minor-mode-map
+   "<tab>" nil
+   "TAB" nil
+   [remap dabbrev-expand] 'yas-expand)
+  :init
+  ;; My own snippets.
+  (setq! yas-snippet-dirs (list
+	                       (expand-file-name "etc/snippets"
+				                             user-emacs-directory))))
+
+;; Predefined snippets.
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet)
+
+;; Insert snippets via Consult-yasnippet, with fancy live preview.
+(use-package consult-yasnippet
+  :straight t
+  :general
+  ("C-c s" 'consult-yasnippet
+   "C-c S" 'consult-yasnippet-visit-snippet-file))
+
 ;;;;; Other inbuilt modes
 
-;; Toggle subword movement and editing.
-(global-subword-mode 1)
+;; Enable subword movement (movement in camel case compartments) in prog modes.
+(add-hook! prog-mode 'subword-mode)
 
 ;;;; Workbench
 
@@ -1380,7 +1412,9 @@ faster `prin1'."
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
      (outline-minor-mode nil outline)
-     (subword-mode nil subword))))
+     (subword-mode nil subword)
+     (yas-minor-mode nil yasnippet)
+     (which-key-mode nil which-key))))
 
 ;;;;; Hl-line (highlight the current line)
 

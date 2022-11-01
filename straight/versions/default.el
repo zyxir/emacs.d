@@ -3,6 +3,7 @@
  ("clipetty" . "01b39044b9b65fa4ea7d3166f8b1ffab6f740362")
  ("compat" . "056e3ccffc716990dcb7b33273453d5fce0402de")
  ("consult" . "3226c1a01e0a2a4352b2c885b8f4eb22610d99af")
+ ("consult-yasnippet" . "ae0450889484f23dc4ec37518852a2c61b89f184")
  ("corfu" . "03688d628ff238d78bd6aa1acf0f657dcd7d0107")
  ("corfu-terminal" . "1a15a01e2e1464daadfa4973cb695802e5c23a25")
  ("dash.el" . "3df46d7d9fe74f52a661565888e4d31fd760f0df")
@@ -41,5 +42,7 @@
  ("verilog-mode" . "4730033ac976dd8b3fc8620010aac8b7d2086882")
  ("vertico" . "8f34c55cbac0e0b5ded0f01175a4d60231c7d991")
  ("with-editor" . "4ca225bf1c54d6dab2ba7e734f594419c7769e36")
- ("xref" . "cd3c12a22748b9d5257251b86cc2e20bbda4a001"))
+ ("xref" . "cd3c12a22748b9d5257251b86cc2e20bbda4a001")
+ ("yasnippet" . "5cbdbf0d2015540c59ed8ee0fcf4788effdf75b6")
+ ("yasnippet-snippets" . "cd665c9cba4bab646f6d50ac098bee63573a4ca5"))
 :gamma
