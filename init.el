@@ -1948,6 +1948,15 @@ based on the switched input method."
       (erase-buffer)
       (eshell-send-input))))
 
+;;;;; Calendar
+
+;; I use the Calendar mainly for Org-journal, so there is almost no
+;; configuration here.
+
+(use-package calendar
+  :general
+  ("C-c l" 'calendar))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
@@ -2056,6 +2065,27 @@ based on the switched input method."
    ;; Do not export TOC or tags, unless asked to.
    org-export-with-toc nil
    org-export-with-tags nil))
+
+;;;;;; Org journal
+
+(use-package org-journal
+  :straight t
+  :after calendar
+  :init
+  ;; Use `general-def' here instead of the :general keyword, so that Org-journal
+  ;; can be loaded when calendar is loaded.  Otherwise, Org-journal will only
+  ;; load after both `calendar' is loaded and `org-journal-journal' is called.
+  (general-def "C-c j" 'org-journal-new-entry)
+  :config
+  (setq!
+   org-journal-extend-today-until 3
+   org-journal-file-format "%F.org"
+   org-journal-date-format "%F %a W%V\n"
+   org-journal-date-prefix "#+title: "
+   org-journal-time-format "%R "
+   org-journal-time-format-post-midnight "%R (midnight) "
+   org-journal-time-prefix "\n* "
+   org-journal-file-header ""))
 
 ;;;;; Verilog
 
