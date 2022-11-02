@@ -885,8 +885,6 @@ If this is a daemon session, load them all immediately instead."
 ;;;;; Better defaults
 
 (setq!
- ;; Save customizations outside the init file.
- custom-file (expand-file-name "custom.el" user-emacs-directory)
  ;; As an experienced Emacs user, I don't want any command disabled.
  disabled-command-function nil
  ;; A informational frame title.  Besides, my AutoHotkey scripts recognize my
@@ -959,10 +957,8 @@ If this is a daemon session, load them all immediately instead."
 ;; noises" section.  These keys make it easier to quickly open a scratch buffer
 ;; for temporary text or Emacs Lisp evaluation.
 
-(define-prefix-command 'zy-scratch-map)
-(general-def "C-c x" 'zy-scratch-map)
-(general-def :keymaps 'zy-scratch-map
-  "x" 'zy/scratch
+(general-def :keymaps 'ctl-x-x-map
+  "k" 'zy/scratch
   "l" 'zy/scratch-elisp)
 
 ;;;;; Garbage collector magic hack
@@ -975,6 +971,16 @@ If this is a daemon session, load them all immediately instead."
   :defer 1
   :config
   (gcmh-mode 1))
+
+;;;;; Custom file
+
+;; Save customizations outside the init file.
+(setq! custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+;; Load the custom file after startup.
+(add-hook 'emacs-startup-hook
+          (defun zy--load-custom-file-h ()
+            (load custom-file 'noerror 'nomessage)))
 
 ;;;; Text-editing
 
@@ -1062,9 +1068,9 @@ If this is a daemon session, load them all immediately instead."
 
 (use-package whitespace
   :general
-  ;; Remap `just-one-space' to `cycle-spacing', which is the default in Emacs
-  ;; 29.1.
-  ([remap just-one-space] 'cycle-spacing)
+  ;; Remap "M-SPC" (`just-one-space') to `cycle-spacing'.  This is the default
+  ;; in Emacs 29.1.
+  ("M-SPC" 'cycle-spacing)
   (:keymaps 'zy-toggle-map
    ;; Toggle whitespace visualization.
    "SPC" 'whitespace-mode)
@@ -1384,10 +1390,7 @@ faster `prin1'."
 
 ;; Additional file operations.
 
-(define-prefix-command 'zy-file-map)
-;; "C-x f" is `set-fill-column' by default, which I never use.
-(general-def "C-x f" 'zy-file-map)
-(general-def :keymaps 'zy-file-map
+(general-def :keymaps 'ctl-x-x-map
   "d" 'zy/delete-file-and-buffer
   "R" 'zy/rename-file-and-buffer)
 
