@@ -857,9 +857,16 @@ If this is a daemon session, load them all immediately instead."
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
-;;;;; Load Path
+;;;;; Zyutils, the other part of the configuration
 
-(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+;; I keep a lot of function definitions and extra utilities in lisp/zyutils.el,
+;; so that they can be autoloaded.
+
+(use-package zyutils
+  :load-path "lisp"
+  :commands
+  (zy/move-beginning-of-line
+   zy/unfill-paragraph))
 
 ;;;; Base settings
 
@@ -936,6 +943,11 @@ If this is a daemon session, load them all immediately instead."
   ;; functionality is still available by holding Shift key.
   (xterm-mouse-mode 1))
 
+;;;;; Scratch buffer
+
+;; I have tweaked scratch buffer to be in `fundamental-mode' in the "Reduce GUI
+;; noises" section.  This key makes it easier to open various scratch buffers.
+
 ;;;;; Garbage collector magic hack
 
 ;; This package enforces a sneaky garbage collection strategy to minimize GC
@@ -952,8 +964,6 @@ If this is a daemon session, load them all immediately instead."
 ;; This section enhances the basic text-editing capability of Emacs.
 
 ;;;;; Cursor movement
-
-(autoload 'zy/move-beginning-of-line "zyutils" nil 'interactive)
 
 (use-package zy-curmov
   :defer t
