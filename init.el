@@ -916,7 +916,7 @@ If this is a daemon session, load them all immediately instead."
   (setq! auto-save-default nil
 	     make-backup-files nil))
 
-;;;;; Encoding
+;;;;; Encoding and locale
 
 ;; Set everything to UTF-8.
 
@@ -933,6 +933,10 @@ If this is a daemon session, load them all immediately instead."
   (set-default 'process-coding-system-alist
                '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
                  ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+
+;; Use "C" for English locale.
+
+(setq! system-time-locale "C")
 
 ;;;;; Emacs server
 
@@ -1463,10 +1467,10 @@ faster `prin1'."
 ;; TODO: Replace this with Pulsar, a fantastic package by Protesilaus Stavrou
 
 (use-package hl-line
-  :hook (zy-first-buffer . global-hl-line-mode)
+  :hook (prog-mode text-mode conf-mode org-agenda-mode)
   :config
   ;; Only highlight line in the current window.
-  (setq! global-hl-line-sticky-flag nil))
+  (setq! hl-line-sticky-flag nil))
 
 ;;;;; Rainbow colored delimiters
 
@@ -1481,16 +1485,17 @@ faster `prin1'."
 ;; Line numbers display.
 (use-package display-line-numbers
   :defer t
+  :hook (prog-mode text-mode conf-mode)
+  :general
+  (:keymaps 'zy-toggle-map
+   "l" 'display-line-numbers-mode)
   :init
   ;; Explicitly define a width to reduce the cost of on-the-fly computation.
   (setq-default display-line-numbers-width 3)
 
   ;; Show absolute line numbers for narrowed regions to make it easier to tell
   ;; the buffer is narrowed, and where you are, exactly.
-  (setq-default display-line-numbers-widen t)
-
-  ;; Enable line numbers for these modes only.
-  (add-hook! (prog-mode text-mode conf-mode) #'display-line-numbers-mode))
+  (setq-default display-line-numbers-widen t))
 
 ;;;;; Fonts for various faces
 
@@ -1669,6 +1674,14 @@ This is an :around advice, and FN is the adviced function."
    ;; If it turns out that I do need help from Which-key, show subsequent popups
    ;; right away.
    which-key-idle-secondary-delay 0.05))
+
+;;;;; Darkroom (distraction-free mode)
+
+(use-package darkroom
+  :straight t
+  :general
+  (:keymaps 'zy-toggle-map
+   "d" 'darkroom-tentative-mode))
 
 ;;;; Features
 
@@ -2074,10 +2087,10 @@ based on the switched input method."
 (use-package org-journal
   :straight t
   :after calendar
-  :init
+  :preface
   ;; Use `general-def' here instead of the :general keyword, so that Org-journal
   ;; can be loaded when calendar is loaded.  Otherwise, Org-journal will only
-  ;; load after both `calendar' is loaded and `org-journal-journal' is called.
+  ;; load after both `calendar' is loaded and `org-journal-new-entry' is called.
   (general-def "C-c j" 'org-journal-new-entry)
   :config
   (setq!
