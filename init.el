@@ -1411,13 +1411,13 @@ faster `prin1'."
    modus-themes-bold-constructs t
    ;; Headings are not sized for Modus Themes shipped with Emacs 28
    ;; Maybe I should use the non-built-in version instead
-   modus-themes-headings '((0 . (rainbow background 1.3))
-			               (1 . (rainbow background overline 1.5))
-			               (2 . (rainbow background overline 1.4))
-			               (3 . (rainbow background overline 1.3))
-			               (4 . (rainbow background overline 1.2))
-			               (5 . (rainbow background overline 1.1))
-			               (t . (rainbow background overline 1.0)))
+   modus-themes-headings '((0 . (background 1.3))
+			               (1 . (background overline 1.5))
+			               (2 . (background overline 1.4))
+			               (3 . (background overline 1.3))
+			               (4 . (background overline 1.2))
+			               (5 . (background overline 1.1))
+			               (t . (background overline 1.0)))
    modus-themes-hl-line '(intense)
    modus-themes-markup '(background intense)
    modus-themes-mixed-fonts t
@@ -1444,6 +1444,7 @@ faster `prin1'."
 
 (use-package dim
   :straight t
+  :defer 1
   :init
   (dim-minor-names
    '((clipetty-mode nil clipetty)
@@ -1966,10 +1967,23 @@ based on the switched input method."
    ;; A handy key to expand macros.
    "C-c C-x" 'emacs-lisp-macroexpand)
   :config
+  ;; Use four semicolons as level 1.  Standard Emacs Lisp files always contain
+  ;; some special comments starting with three semicolons, and I don't want to
+  ;; treat them as level 1 outline.  So, I write my own outlines starting from
+  ;; four semicolons.
+  (defadvice! zy--lisp-outline-level ()
+    "Customized approach to calculate Lisp outline level."
+    (let ((len (- (match-end 0) (match-beginning 0))))
+      (cond ((looking-at ";;;\\(;+\\) ")
+             (- (match-end 1) (match-beginning 1)))
+            ;; Above should match everything but just in case.
+            (t len))))
+
   (setq-hook! 'emacs-lisp-mode-hook
 	;; Don't treat autoloads or sexp openers as outline headers.  Use
 	;; hideshow for that.
-	outline-regexp "[ \t]*;;;;+ [^ \t\n]")
+	outline-regexp "[ \t]*;;;;+ [^ \t\n]"
+    outline-level 'zy--lisp-outline-level)
 
   (setq! elisp-flymake-byte-compile-load-path
          (delete-dups
@@ -1985,6 +1999,63 @@ based on the switched input method."
 (use-package markdown-mode
   :straight t
   :magic ("\\.md\\|\\.markdown" . markdown-mode))
+
+;;;;; Org
+
+;; This part of the configuration is very extensive.
+
+;;;;;; Org basic
+
+;; Basic settings about Org itself, and some simpler extensions.
+
+(use-package org
+  :defer t
+  :straight '(org :type built-in)
+  :init
+  (add-hook! org-mode 'visual-line-mode)
+  :general
+  ("C-c a" 'org-agenda
+   "C-c c" 'org-capture)
+  (:keymaps 'org-mode-map
+   "M-g h" 'consult-org-heading)
+  :config
+  (setq!
+   org-agenda-files (list zy-gtd-dir)
+   ;; My favorite attachment directory.
+   org-attach-id-dir "_org-att"
+   ;; Hide emphasis markers.
+   org-hide-emphasis-markers t
+   ;; Track the time of various actions.
+   org-log-done 'time
+   org-log-refile 'time
+   ;; Tag close to titles.
+   org-tag-column 0
+   ;; This set of keywords works for me.
+   org-todo-keywords '((sequence "TODO(t)"
+			                     "DOING(i)"
+			                     "|"
+			                     "DONE(d)")
+		               (sequence "|"
+			                     "CANCELED(c)"))
+   org-todo-keyword-faces '(("TODO" . org-todo)
+			                ("DOING" . (:foreground "#00bcff"))
+			                ("DONE" . org-done)
+			                ("CANCELED" . shadow))))
+
+;; Show emphasis markers while inside it.
+(use-package org-appear
+  :straight t
+  :hook org-mode)
+
+;;;;;; Org export common settings
+
+(use-package ox
+  :defer t
+  :config
+  (setq!
+   ;; Do not export TOC or tags, unless asked to.
+   org-export-with-toc nil
+   org-export-with-tags nil))
 
 ;;;;; Verilog
 
