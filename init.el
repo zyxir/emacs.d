@@ -865,8 +865,18 @@ If this is a daemon session, load them all immediately instead."
 (use-package zyutils
   :load-path "lisp"
   :commands
-  (zy/move-beginning-of-line
-   zy/unfill-paragraph))
+  (;; Scratch buffer
+   zy/scratch
+   zy/scratch-elisp
+   ;; Cursor movement
+   zy/move-beginning-of-line
+   ;; Line filling
+   zy/unfill-paragraph
+   ;; File operations
+   zy/delete-file-and-buffer
+   zy/rename-file-and-buffer
+   ;; Emacs Lisp
+   zy-lisp-indent-function))
 
 ;;;; Base settings
 
@@ -946,7 +956,14 @@ If this is a daemon session, load them all immediately instead."
 ;;;;; Scratch buffer
 
 ;; I have tweaked scratch buffer to be in `fundamental-mode' in the "Reduce GUI
-;; noises" section.  This key makes it easier to open various scratch buffers.
+;; noises" section.  These keys make it easier to quickly open a scratch buffer
+;; for temporary text or Emacs Lisp evaluation.
+
+(define-prefix-command 'zy-scratch-map)
+(general-def "C-c x" 'zy-scratch-map)
+(general-def :keymaps 'zy-scratch-map
+  "x" 'zy/scratch
+  "l" 'zy/scratch-elisp)
 
 ;;;;; Garbage collector magic hack
 
@@ -1363,6 +1380,17 @@ faster `prin1'."
 			                 (magit-project-status "Magit" "v")
 			                 (project-eshell "Eshell" "s"))))
 
+;;;;; File operations
+
+;; Additional file operations.
+
+(define-prefix-command 'zy-file-map)
+;; "C-x f" is `set-fill-column' by default, which I never use.
+(general-def "C-x f" 'zy-file-map)
+(general-def :keymaps 'zy-file-map
+  "d" 'zy/delete-file-and-buffer
+  "R" 'zy/rename-file-and-buffer)
+
 ;;;; User interface
 
 ;; This sections concentrates on improving the user interface of GNU Emacs,
@@ -1629,7 +1657,9 @@ This is an :around advice, and FN is the adviced function."
 
 (use-package which-key
   :straight t
-  :hook zy-first-input
+  :init
+  ;; Start it by default.  Delay it till the first user input doesn't work.
+  (which-key-mode 1)
   :config
   (setq!
    ;; If it turns out that I do need help from Which-key, show subsequent popups
@@ -1688,7 +1718,8 @@ parses its input."
 
 (use-package vertico
   :straight t
-  :init
+  :hook zy-first-input
+  :config
   (setq!
    ;; Use the orderless completion style.
    completion-styles '(orderless basic)
@@ -1730,6 +1761,9 @@ ARGS are the arguments passed."
   :commands (consult-completion-in-region
 	         consult-recent-file)
   :general
+  ;; C-x map commands.
+  (:keymaps 'ctl-x-map
+   "b" 'consult-buffer)
   ;; Goto map commands (default prefix is M-g).
   (:keymaps 'goto-map
    "g" 'consult-goto-line
@@ -1920,8 +1954,6 @@ based on the switched input method."
 
 ;;;;; Emacs Lisp
 
-(autoload 'zy-lisp-indent-function "zyutils" nil nil 'function)
-
 (use-package elisp-mode
   :init
   (add-hook! emacs-lisp-mode
@@ -1929,11 +1961,15 @@ based on the switched input method."
     'rainbow-delimiters-mode
     ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
     'flymake-mode)
+  :general
+  (:keymaps 'emacs-lisp-mode-map
+   ;; A handy key to expand macros.
+   "C-c C-x" 'emacs-lisp-macroexpand)
   :config
   (setq-hook! 'emacs-lisp-mode-hook
 	;; Don't treat autoloads or sexp openers as outline headers.  Use
 	;; hideshow for that.
-	outline-regexp "[ \t]*;;;;*[^ \t\n]")
+	outline-regexp "[ \t]*;;;;+ [^ \t\n]")
 
   (setq! elisp-flymake-byte-compile-load-path
          (delete-dups

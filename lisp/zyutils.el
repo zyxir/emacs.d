@@ -38,6 +38,26 @@
 
 ;;; Code:
 
+;;;; Base settings
+
+;;;;; Scratch buffer
+
+;;;###autoload
+(defun zy/scratch ()
+  "Switch to or create the default scratch buffer.
+The buffer is automatically converted to text mode."
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch*"))
+  (text-mode))
+
+;;;###autoload
+(defun zy/scratch-elisp ()
+  "Switch to or create the Lisp interaction scratch buffer.
+The buffer is automatically converted to Lisp interaction mode."
+  (interactive)
+  (switch-to-buffer (get-buffer-create "*scratch-lisp*"))
+  (lisp-interaction-mode))
+
 ;;;; Text-editing
 
 ;;;;; Cursor movement
@@ -110,6 +130,41 @@ the buffer, stop there."
   (interactive)
   (dlet ((fill-column most-positive-fixnum))
     (call-interactively 'fill-paragraph)))
+
+;;;; Workbench
+
+;;;;; File operations
+
+;; This is copied from Crux.
+;;;###autoload
+(defun zy/delete-file-and-buffer ()
+  "Kill the current buffer and deletes the file it is visiting."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (when filename
+      (if (vc-backend filename)
+          (vc-delete-file filename)
+        (when (y-or-n-p (format "Are you sure you want to delete %s? " filename))
+          (delete-file filename delete-by-moving-to-trash)
+          (message "Deleted file %s" filename)
+          (kill-buffer))))))
+
+;; This is copied from Crux.
+;;;###autoload
+(defun zy/rename-file-and-buffer ()
+  "Rename current buffer and if the buffer is visiting a file, rename it too."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if (not (and filename (file-exists-p filename)))
+        (rename-buffer (read-from-minibuffer "New name: " (buffer-name)))
+      (let* ((new-name (read-file-name "New name: " (file-name-directory filename)))
+             (containing-dir (file-name-directory new-name)))
+        (make-directory containing-dir t)
+        (cond
+         ((vc-backend filename) (vc-rename-file filename new-name))
+         (t
+          (rename-file filename new-name t)
+          (set-visited-file-name new-name t t)))))))
 
 ;;;; File type specific settings
 

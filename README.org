@@ -16,9 +16,10 @@ Lightweight Emacs configuration for my daily need.
 
 Clone this repository to ~$HOME/.emacs.d~.  Upon starting up Emacs for the first time, third-party packages will be automatically installed.
 
-It is recommended to install these third-party tools to enhance user experience:
+These third-party programs enables additional functionalities of my configuration:
 
-- Ripgrep :: Fast text search.  Used by various commands in ZyEmacs.
+- Librime :: This is required to build and use the built-in Rime input method.
+- Ripgrep :: Fast text search.  Used by commands like ~consult-ripgrep~ and ~rg~.
 
 ** Customization
 
