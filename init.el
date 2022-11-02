@@ -885,8 +885,6 @@ If this is a daemon session, load them all immediately instead."
 ;;;;; Better defaults
 
 (setq!
- ;; Save customizations outside the init file.
- custom-file (expand-file-name "custom.el" user-emacs-directory)
  ;; As an experienced Emacs user, I don't want any command disabled.
  disabled-command-function nil
  ;; A informational frame title.  Besides, my AutoHotkey scripts recognize my
@@ -975,6 +973,16 @@ If this is a daemon session, load them all immediately instead."
   :defer 1
   :config
   (gcmh-mode 1))
+
+;;;;; Custom file
+
+;; Save customizations outside the init file.
+(setq! custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+;; Load the custom file after startup.
+(add-hook 'emacs-startup-hook
+          (defun zy--load-custom-file-h ()
+            (load custom-file 'noerror 'nomessage)))
 
 ;;;; Text-editing
 
