@@ -1071,7 +1071,9 @@ If this is a daemon session, load them all immediately instead."
 ;; Hook `outline-minor-mode' to specific language modes.
 
 (use-package outline
-  :commands (outline-minor-mode)
+  :general
+  (:keymaps 'zy-toggle-map
+   "o" 'outline-minor-mode)
   :config
   (setq!
    ;; Cycle outline visibility with TAB.
@@ -1423,6 +1425,9 @@ faster `prin1'."
   ;; greater feature set.
   :straight t
   :demand t
+  :general
+  (:keymaps 'zy-toggle-map
+   "t" 'modus-themes-toggle)
   :config
   (setq!
    modus-themes-italic-constructs t
