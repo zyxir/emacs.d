@@ -1634,13 +1634,26 @@ remove itself from `after-make-frame-functions' if it is there."
   :straight t
   :hook (zy-first-buffer . pulsar-global-mode)
   :config
-  (setq!
-   ;; Use the cyan pulse.
-   pulsar-face 'pulsar-cyan)
   ;; More pulse functions.
   (when (boundp 'pulsar-pulse-functions)
-    (add-to-list 'pulsar-pulse-functions
-                 'outline-cycle-buffer)))
+    (dolist (fn '('outline-cycle-buffer
+                  'toggle-input-method))
+      (add-to-list 'pulsar-pulse-functions fn)))
+  ;; On Emacs version 28 or earlier, double-buffering is not supported on
+  ;; Windows, and pulsar will cause serious flickering.  To avoid that, make its
+  ;; animation simpler.
+  (when (and (< emacs-major-version 29)
+             (memq system-type '(windows-nt cygwin)))
+    (setq! pulsar-delay 0.2
+           pulsar-iterations 3))
+  (defadvice! zy--pulse-a (fn)
+    "Pulse the line with FN based on a set of rules."
+    :around 'pulsar-pulse-line
+    ;; Pulse the cursor in different colors based on the current IM.
+    (dlet ((pulsar-face (if current-input-method
+                            'pulsar-yellow
+                          'pulsar-cyan)))
+      (funcall fn))))
 
 ;;;;; Scrolling
 
@@ -1903,21 +1916,7 @@ itself to `consult-recent-file', can finally call
    ;; 我輸入漢字一般是逐字輸入，所以我沒有沒有「同步詞庫」的需求；而倉頡中每個漢
    ;; 字的編碼幾乎是唯一的，我幾乎可以不看候選盲打，所以在 minibuffer 中展示候選
    ;; 也不會影響我的打字。
-   rime-show-candidate 'minibuffer)
-
-  ;; Functions to run after an input method switch.
-  (defvar zy-input-method-notifiers
-    '((nil . pulsar-pulse-line-cyan)
-      ("rime" . pulsar-pulse-line-yellow))
-    "An association list of IM and FN.
-IM is an input method name, and FN is the function to run after
-switching to it.")
-  (defadvice! zy--pulse-on-im-switch-a (&rest _)
-    "Run a function after an input method switch.
-The function to run is searched in `zy-input-method-notifiers',
-based on the switched input method."
-    :after #'toggle-input-method
-    (funcall (cdr (assoc current-input-method zy-input-method-notifiers)))))
+   rime-show-candidate 'minibuffer))
 
 ;;;;; Flymake as the syntax checker
 
