@@ -544,8 +544,15 @@ is determined, several other directories, like `org-directory',
     ;; The Org directory.
     (defvar org-directory)
     (setq-default org-directory (expand-file-name "org" path))
-    ;; My GTD directory.
-    (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory))
+    ;; My GTD directory and files.
+    (defvar zy-gtd-dir)
+    (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory)
+                  zy-gtd-inbox-file
+                  (expand-file-name "inbox.org" zy-gtd-dir)
+                  zy-gtd-gtd-file
+                  (expand-file-name "gtd.org" zy-gtd-dir)
+                  zy-gtd-someday-file
+                  (expand-file-name "someday.org" zy-gtd-dir))
     ;; My Org-journal directory.
     (setq-default org-journal-dir
 		          (expand-file-name "org-journal" org-directory))
@@ -2037,16 +2044,45 @@ itself to `consult-recent-file', can finally call
   :straight '(org :type built-in)
   :init
   (add-hook! org-mode 'visual-line-mode)
+
+  ;; GTD files.
+  (defvar zy-gtd-dir nil
+    "Directory of my GTD (getting-things-done) files.
+Automatically set when `zy~zybox-dir' is customized.")
+  (defvar zy-gtd-inbox-file nil
+    "My inbox file of the GTD system.
+Automatically set when `zy~zybox-dir' is customized.")
+  (defvar zy-gtd-gtd-file nil
+    "My GTD file of the GTD system.
+Automatically set when `zy~zybox-dir' is customized.")
+  (defvar zy-gtd-someday-file nil
+    "My someday file of the GTD system.
+Automatically set when `zy~zybox-dir' is customized.")
+
   :general
   ("C-c a" 'org-agenda
    "C-c c" 'org-capture)
   (:keymaps 'org-mode-map
    "M-g h" 'consult-org-heading)
+
   :config
   (setq!
    org-agenda-files (list zy-gtd-dir)
    ;; My favorite attachment directory.
    org-attach-id-dir "_org-att"
+   ;; Capture templates for the GTD system.
+   org-capture-templates `(("i" "inbox" entry
+                            (file+headline ,zy-gtd-inbox-file "inbox")
+                            "* TODO [#B] %u %i%?"
+                            :empty-lines 1)
+                           ("s" "someday" entry
+                            (file+headline ,zy-gtd-someday-file "someday")
+                            "* TODO [#C] %u %i%?"
+                            :empty-lines 1)
+                           ("t" "GTD" entry
+                            (file+olp+datetree ,zy-gtd-gtd-file)
+                            "* TODO [#B] %u %i%?"
+                            :empty-lines 1))
    ;; Hide emphasis markers.
    org-hide-emphasis-markers t
    ;; Track the time of various actions.
