@@ -34,6 +34,10 @@
 ;;   > hook: `after-init-hook'
 ;;   > hook: `emacs-startup-hook'
 ;;   > hook: `window-setup-hook'
+;;   > After stratup:
+;;     > First user input: `zy-first-input-hook'
+;;     > First buffer visit: `zy-first-buffer-hook'
+;;     > First file visit: `zy-first-file-hook'
 
 ;;; Code:
 
@@ -1637,30 +1641,29 @@ remove itself from `after-make-frame-functions' if it is there."
 
 ;; Pulse the current ligh after some specific commands.
 
-(use-package pulsar
-  :straight t
-  :hook (zy-first-buffer . pulsar-global-mode)
-  :config
-  ;; More pulse functions.
-  (when (boundp 'pulsar-pulse-functions)
-    (dolist (fn '('outline-cycle-buffer
-                  'toggle-input-method))
-      (add-to-list 'pulsar-pulse-functions fn)))
-  ;; On Emacs version 28 or earlier, double-buffering is not supported on
-  ;; Windows, and pulsar will cause serious flickering.  To avoid that, make its
-  ;; animation simpler.
-  (when (and (< emacs-major-version 29)
-             (memq system-type '(windows-nt cygwin)))
-    (setq! pulsar-delay 0.2
-           pulsar-iterations 3))
-  (defadvice! zy--pulse-a (fn)
-    "Pulse the line with FN based on a set of rules."
-    :around 'pulsar-pulse-line
-    ;; Pulse the cursor in different colors based on the current IM.
-    (dlet ((pulsar-face (if current-input-method
-                            'pulsar-yellow
-                          'pulsar-cyan)))
-      (funcall fn))))
+;; On Emacs version 28 or earlier, double-buffering is not supported on
+;; Windows, and pulsar will cause serious flickering.  So disable Pulsar if
+;; that is the case.
+(unless (eval-when-compile
+          (and (memq system-type '(windows-nt cygwin))
+               (< emacs-major-version 29)))
+  (use-package pulsar
+    :straight t
+    :hook (zy-first-buffer . pulsar-global-mode)
+    :config
+    ;; More pulse functions.
+    (when (boundp 'pulsar-pulse-functions)
+      (dolist (fn '('outline-cycle-buffer
+                    'toggle-input-method))
+        (add-to-list 'pulsar-pulse-functions fn)))
+    (defadvice! zy--pulse-a (fn)
+      "Pulse the line with FN based on a set of rules."
+      :around 'pulsar-pulse-line
+      ;; Pulse the cursor in different colors based on the current IM.
+      (dlet ((pulsar-face (if current-input-method
+                              'pulsar-yellow
+                            'pulsar-cyan)))
+        (funcall fn)))))
 
 ;;;;; Scrolling
 
@@ -1912,7 +1915,6 @@ itself to `consult-recent-file', can finally call
 (use-package rime
   :straight t
   :defer t
-  :after pulsar
   :init
   (setq!
    ;; Use Rime as the default input method.
@@ -1923,7 +1925,21 @@ itself to `consult-recent-file', can finally call
    ;; 我輸入漢字一般是逐字輸入，所以我沒有沒有「同步詞庫」的需求；而倉頡中每個漢
    ;; 字的編碼幾乎是唯一的，我幾乎可以不看候選盲打，所以在 minibuffer 中展示候選
    ;; 也不會影響我的打字。
-   rime-show-candidate 'minibuffer))
+   rime-show-candidate 'minibuffer)
+
+  ;; Change cursor color based on current input method.
+  (add-hook
+   'post-command-hook
+   (defun zy--change-cursor-color-based-im-h ()
+     "Change cursor color based on current IM."
+     (set-frame-parameter nil 'cursor-color
+                          (if current-input-method
+                              "#ff8b3d"
+                            (if (equal
+                                 (frame-parameter nil 'background-mode)
+                                 "dark")
+                                "#000000"
+                              "#ffffff"))))))
 
 ;;;;; Flymake as the syntax checker
 
