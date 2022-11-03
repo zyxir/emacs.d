@@ -34,6 +34,10 @@
 ;;   > hook: `after-init-hook'
 ;;   > hook: `emacs-startup-hook'
 ;;   > hook: `window-setup-hook'
+;;   > After stratup:
+;;     > First user input: `zy-first-input-hook'
+;;     > First buffer visit: `zy-first-buffer-hook'
+;;     > First file visit: `zy-first-file-hook'
 
 ;;; Code:
 
