@@ -44,19 +44,21 @@
 
 ;;;###autoload
 (defun zy/scratch ()
-  "Switch to or create the default scratch buffer.
+  "Switch to the default scratch buffer.
 The buffer is automatically converted to text mode."
   (interactive)
-  (switch-to-buffer (get-buffer-create "*scratch*"))
-  (text-mode))
+  (let ((buf (get-buffer-create "*scratch*")))
+    (switch-to-buffer buf)
+    (text-mode)))
 
 ;;;###autoload
 (defun zy/scratch-elisp ()
   "Switch to or create the Lisp interaction scratch buffer.
 The buffer is automatically converted to Lisp interaction mode."
   (interactive)
-  (switch-to-buffer (get-buffer-create "*scratch-lisp*"))
-  (lisp-interaction-mode))
+  (let ((buf (get-buffer-create "*scratch-lisp*")))
+    (switch-to-buffer buf)
+    (lisp-interaction-mode)))
 
 ;;;; Text-editing
 
