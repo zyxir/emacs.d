@@ -1720,7 +1720,23 @@ This is an :around advice, and FN is the adviced function."
   :straight t
   :general
   (:keymaps 'zy-toggle-map
-   "d" 'darkroom-tentative-mode))
+   "d" 'darkroom-tentative-mode)
+  :config
+  ;; Toggle `display-line-numbers-mode' and `hl-line-mode' on text mode buffers,
+  ;; when switching darkroom mode.
+  (defadvice! zy--darkroom-enter-a (&rest _)
+    "Turn off UI elements when entering Darkroom in a text mode buffer."
+    :after 'darkroom--enter
+    (when (derived-mode-p 'text-mode)
+      (display-line-numbers-mode -1)
+      (hl-line-mode -1)))
+  (defadvice! zy--darkroom-leave-a (&rest _)
+    "Turn on UI elements when leaving Darkroom in a text mode buffer."
+    :after 'darkroom--leave
+    (when (derived-mode-p 'text-mode)
+      (display-line-numbers-mode 1)
+      (hl-line-mode 1)))
+  )
 
 ;;;; Features
 
@@ -2157,6 +2173,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   (declare-function org-export-define-derived-backend "ox")
   (declare-function org-combine-plists "org-macs")
   (declare-function org-html-close-tag "ox-html")
+  (declare-function org-html-export-to-html "ox-html")
   (declare-function org-html--make-attribute-string "ox-html")
 
   (defun org-html-export-to-mhtml (async subtree visible body)
@@ -2252,6 +2269,8 @@ Automatically set when `zy~zybox-dir' is customized.")
 
   ;; Export smartphone-friendly PDF
 
+  (declare-function org-export-define-derived-backend "ox")
+  (declare-function org-latex-export-to-pdf "ox-latex")
   (defun zy/org-export-to-pdf-phone
       (&optional async subtreep visible-only body-only ext-plist)
     "Export current buffer to smartphone-friendly PDF.
@@ -2262,7 +2281,6 @@ The function works like `org-latex-export-to-pdf', except that
       (org-latex-export-to-pdf async subtreep visible-only
                                body-only ext-plist)))
 
-  (declare-function org-export-define-derived-backend "ox")
   (org-export-define-derived-backend
       'latex-pdf-phone 'latex
     :menu-entry '(?l
