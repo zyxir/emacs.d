@@ -2146,6 +2146,44 @@ Automatically set when `zy~zybox-dir' is customized.")
    org-export-with-toc nil
    org-export-with-tags nil))
 
+;;;;;; Org export to HTML
+
+(use-package ox-html
+  :defer t
+  :config
+  ;; MHTML exporter that embeds images.
+  ;; See https://niklasfasching.de/posts/org-html-export-inline-images/
+
+  (declare-function org-export-define-derived-backend "ox")
+  (declare-function org-combine-plists "org-macs")
+  (declare-function org-html-close-tag "ox-html")
+  (declare-function org-html--make-attribute-string "ox-html")
+
+  (defun org-html-export-to-mhtml (async subtree visible body)
+    (cl-letf (((symbol-function 'org-html--format-image)
+               'format-image-inline))
+      (org-html-export-to-html async subtree visible body)))
+
+  (defun format-image-inline (source attributes info)
+    (let* ((ext (file-name-extension source))
+           (prefix (if (string= "svg" ext)
+                       "data:image/svg+xml;base64,"
+                     "data:;base64,"))
+           (data (with-temp-buffer (url-insert-file-contents source)
+                                   (buffer-string)))
+           (data-url (concat prefix (base64-encode-string data)))
+           (attributes (org-combine-plists
+			`(:src ,data-url) attributes)))
+      (org-html-close-tag
+       "img"
+       (org-html--make-attribute-string attributes)
+       info)))
+
+  (org-export-define-derived-backend 'html-inline-images 'html
+    :menu-entry '(?h
+                  "Export to HTML"
+                  ((?m "As MHTML file" org-html-export-to-mhtml)))))
+
 ;;;;;; Org export to LaTeX
 
 (use-package ox-latex
