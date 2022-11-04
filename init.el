@@ -859,15 +859,6 @@ If this is a daemon session, load them all immediately instead."
   :demand t)
 (declare-function general-def "general")
 
-;;;;;; Hydra provides another key binding style
-
-;; A Hydra is something works like "C-x C-=": after the first key combination,
-;; you can only press single "+" or "-" to further adjusting the font size.
-
-(use-package hydra
-  :straight t
-  :demand t)
-
 ;;;;;; Global keymaps
 
 ;; The toggle map.
@@ -1022,14 +1013,12 @@ If this is a daemon session, load them all immediately instead."
 
 ;;;;; Indentation
 
-(use-package indentation
+(use-package zy-indentation
   :defer t
   :init
   (setq!
    ;; Always use spaces.
-   indent-tabs-mode nil
-   ;; If tabs exist, show them as 4 spaces, which is used by all Modern editors.
-   tab-width 4))
+   indent-tabs-mode nil))
 
 ;;;;; Isearch (incremental searching)
 
@@ -1164,10 +1153,19 @@ If this is a daemon session, load them all immediately instead."
   ("C-c s" 'consult-yasnippet
    "C-c S" 'consult-yasnippet-visit-snippet-file))
 
-;;;;; Other inbuilt modes
+;;;;; Subword
 
 ;; Enable subword movement (movement in camel case compartments) in prog modes.
-(add-hook! prog-mode 'subword-mode)
+(use-package subword
+  :hook prog-mode)
+
+;;;;; Smartparens (parenthesis automation)
+
+(use-package smartparens
+  :straight t
+  :hook (prog-mode conf-mode)
+  :config
+  (require 'smartparens-config))
 
 ;;;; Workbench
 
@@ -1473,12 +1471,13 @@ faster `prin1'."
 (use-package dim
   :straight t
   :defer 1
-  :init
+  :config
   (dim-minor-names
    '((clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
      (outline-minor-mode nil outline)
+     (smartparens-mode nil smartparens)
      (subword-mode nil subword)
      (yas-minor-mode nil yasnippet)
      (which-key-mode nil which-key))))
@@ -1695,10 +1694,11 @@ This is an :around advice, and FN is the adviced function."
 
 (use-package which-key
   :straight t
-  :init
-  ;; Start it by default.  Delay it till the first user input doesn't work.
-  (which-key-mode 1)
+  ;; Which-key takes a lot of time (60 to 70 milliseconds) to load, and on most
+  ;; occasions I won't need it on the first couple of keystrokes.
+  :defer 2
   :config
+  (which-key-mode 1)
   (setq!
    ;; If it turns out that I do need help from Which-key, show subsequent popups
    ;; right away.
@@ -1725,8 +1725,7 @@ This is an :around advice, and FN is the adviced function."
     :after 'darkroom--leave
     (when (derived-mode-p 'text-mode)
       (display-line-numbers-mode 1)
-      (hl-line-mode 1)))
-  )
+      (hl-line-mode 1))))
 
 ;;;; Features
 
@@ -1908,7 +1907,8 @@ itself to `consult-recent-file', can finally call
   :hook corfu-mode)
 
 (use-package corfu-info
-  :load-path (lambda () (zy--corfu-extensions-load-path)))
+  :load-path (lambda () (zy--corfu-extensions-load-path))
+  :after corfu)
 
 ;; Enable Corfu in Terminal via Corfu-terminal
 
@@ -2312,6 +2312,69 @@ The function works like `org-latex-export-to-pdf', except that
    org-journal-time-format-post-midnight "%R (midnight) "
    org-journal-time-prefix "\n* "
    org-journal-file-header ""))
+
+;;;;;; Org Roam
+
+(use-package org-roam
+  :straight t
+  :general
+  ("C-c r f" 'org-roam-node-find)
+  :config
+  (general-def
+    :prefix "C-c r"
+    "i" 'org-roam-node-insert
+    "c" 'org-roam-capture
+    "a" 'org-roam-alias-add
+    "l" 'org-roam-buffer-toggle)
+  (org-roam-db-autosync-mode 1))
+
+;;;;; PDF
+
+(use-package pdf-tools
+  :straight t
+  :magic ("%PDF" . pdf-view-mode)
+  :config
+  (declare-function pdf-tools-install "pdf-tools")
+  (pdf-tools-install))
+
+;;;;; TeX / LaTeX
+
+(use-package auctex
+  :straight t
+  :defer t)
+
+(use-package tex
+  :defer t
+  :config
+  (setq! TeX-auto-save t
+	 TeX-parse-self t
+	 TeX-save-query nil
+	 TeX-engine 'xetex
+	 TeX-source-correlate-start-server t
+	 TeX-command-default "XeLaTeX")
+  (defvar TeX-command-list)
+  (add-to-list 'TeX-command-list
+	       '("XeLaTeX"
+                 "%`xelatex%(mode)%' --synctex=1%(mode)%' %t"
+                 TeX-run-TeX
+                 nil
+                 t))
+  (declare-function TeX-source-correlate-mode "tex")
+  (add-hook 'LaTeX-mode-hook
+	    (lambda ()
+	      (setq-local TeX-command-default "XeLaTeX")
+	      (TeX-source-correlate-mode 1))))
+
+(use-package reftex
+  :defer t
+  :after tex
+  :config
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (with-eval-after-load 'reftex
+    (setq-default reftex-plug-into-AUCTeX t
+		  reftex-enable-partial-scans t
+		  reftex-save-parse-info t
+		  reftex-use-multiple-selection-buffers t)))
 
 ;;;;; Verilog
 
