@@ -1,16 +1,25 @@
 #+html: <div align="center">
-* ZyEmacs
+* A simple Emacs config
 #+html: </div>
 
 Lightweight Emacs configuration for my daily need.
 
-- *Supported Emacs version*: Emacs 28 or higher.
+- *Supported Emacs version*: Emacs 28.1 or higher.
 - *Supported operation systems*:
   - Windows (with MSYS2).
-  - WSL (Windows subsystem for Linux), Ubuntu in my case.
+  - WSL (Windows subsystem for Linux), the distro is Ubuntu in my case.
   - Linux, Arch Linux in my case.
 
-[[file:etc/screenshots/zyemacs_20221026.png]]
+** Philosophy
+
+- Efficiency :: Being fast and productive is the utmost goal.
+- Minimal :: Stick to a simple, text-based UI.  No fancy graphics.
+- Personalized :: Carefully tailored for my own needs.
+
+** Screenshots
+
+[[file:etc/screenshots/zyemacs_dark_20221105.png]]
+[[file:etc/screenshots/zyemacs_light_20221105.png]]
 
 ** Installation
 
@@ -26,7 +35,7 @@ These third-party programs enables additional functionalities of my configuratio
 Most behavior of this configuration is hard-coded.  That is because I am currently the only user of this configuration, and I can change any behavior by modifying the code.  However there are some machine-dependent settings that is not consistent in every computing environemnt of mine.  It is recommended to configure these settings via the ~customize~ UI:
 
 - ~zy/font-size~ :: This determines the default font size.  Customize this according to the screen size of the computing device.
-- ~TeX-view-program-selection~ :: This determines what program is used to preview TeX output.  Just choose one in the default list.  In fact it has pretty decent defaults and works out of the box.
+- ~TeX-view-program-selection~ :: This determines what program is used to preview TeX output.  Just choose one in the default list.  It has some pretty decent defaults and works out of the box.
 
 ** Code Style
 
