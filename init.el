@@ -2294,12 +2294,17 @@ The function works like `org-latex-export-to-pdf', except that
   :straight t
   :after calendar
   :preface
-  ;; Use `general-def' here instead of the :general keyword, so that Org-journal
-  ;; can be loaded when calendar is loaded.  Otherwise, Org-journal will only
-  ;; load after both `calendar' is loaded and `org-journal-new-entry' is called.
+  ;; Use `general-def' and :preface keyword here instead of the :general
+  ;; keyword, so that Org-journal can be loaded after calendar is loaded.
+  ;; Otherwise, Org-journal will only load after both `calendar' is loaded and
+  ;; `org-journal-new-entry' is called.
   (general-def "C-c j" 'org-journal-new-entry)
   :config
   (setq!
+   ;; In `org-journal-mode', use the original "C-c j" key as a prefix.
+   org-journal-prefix-key "C-c j"
+   ;; The following settings are applied for all my old journals, and work well
+   ;; for me.  I tend not to change them, even if they are not the best.
    org-journal-extend-today-until 3
    org-journal-file-format "%F.org"
    org-journal-date-format "%F %a W%V\n"
