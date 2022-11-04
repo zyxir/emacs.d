@@ -108,7 +108,7 @@ the beginning of the line.
 
 With argument ARG not nil or 1, move forward ARG - 1 lines first.
 If point reaches the beginning or end of buffer, it stops there.
-(But if the buffer doesn’t end in a newline, it stops at the
+\(But if the buffer doesn’t end in a newline, it stops at the
 beginning of the last line.)If ARG is not nil or 1, move forward
 ARG - 1 lines first.  If point reaches the beginning or end of
 the buffer, stop there."
@@ -259,3 +259,36 @@ the Lisp function does not specify a special indentation."
 
 (provide 'zyutils)
 ;;; zyutils.el ends here
+;;;;; Org
+
+;;;;;; Org export to LaTeX
+
+;;;###autoload
+(defun zy/update-zylatex-file ()
+  "Update zylatex.sty from GitHub or existing project."
+  (interactive)
+  (defvar zy-zyprojects-dir)
+  (defvar zy-zylatex-file)
+  (let (ego-path
+        zylatex-file)
+    (if ;; Try to find the zylatex.sty from local repository.
+        (and
+         ;; The Zyprojects directory exists.
+         zy-zyprojects-dir
+         ;; The "ego" repository exists in Zyprojects.
+         (setq ego-path (locate-file "ego" (list zy-zyprojects-dir) nil
+                                     (lambda (&rest _) 'dir-ok)))
+         ;; The "zylatex.sty" file exists in "ego".
+         (setq zylatex-file (locate-file "std/std-latex/zylatex.sty"
+                                         (list ego-path))))
+        ;; If local zylatex.sty is found, copy it here.
+        (progn
+          (copy-file zylatex-file zy-zylatex-file
+                     'ok-if-already-exists 'keep-time
+                     'preserve-uid-gid 'preserve-permissions)
+          (message "\"zylatex.sty\" copied from project \"ego\""))
+      ;; If cannot locate zylatex.sty locally, download it from GitHub.
+      (url-copy-file
+       "https://raw.githubusercontent.com/zyxir/std-latex/main/zylatex.sty"
+       zy-zylatex-file 'ok-if-already-exists)
+      (message "\"zylatex.sty\" downloaded."))))

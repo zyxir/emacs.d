@@ -548,6 +548,10 @@ is determined, several other directories, like `org-directory',
     ;; The Org directory.
     (defvar org-directory)
     (setq-default org-directory (expand-file-name "org" path))
+    ;; My projects directory.
+    (defvar zy-zyprojects-dir)
+    (setq-default zy-zyprojects-dir
+                  (expand-file-name "../Zyprojects" path))
     ;; My GTD directory and files.
     (defvar zy-gtd-dir)
     (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory)
@@ -570,8 +574,13 @@ is determined, several other directories, like `org-directory',
   :type 'directory
   :set #'zy--set-zybox-path)
 
+(defvar zy-zyprojects-dir nil
+  "The directory where I put Git repositories.
+Automatically set when `zy~zybox-dir' is customized.")
+
 (defvar zy-gtd-dir nil
-  "The GTD directory with my getting-things-done files.")
+  "Directory of my GTD (getting-things-done) files.
+Automatically set when `zy~zybox-dir' is customized.")
 
 ;;;;; Custom hooks
 
@@ -887,7 +896,9 @@ If this is a daemon session, load them all immediately instead."
    zy/delete-file-and-buffer
    zy/rename-file-and-buffer
    ;; Emacs Lisp
-   zy-lisp-indent-function))
+   zy-lisp-indent-function
+   ;; Org export to LaTeX
+   zy/update-zylatex-file))
 
 ;;;; Base settings
 
@@ -2067,9 +2078,6 @@ itself to `consult-recent-file', can finally call
   (add-hook! org-mode 'visual-line-mode)
 
   ;; GTD files.
-  (defvar zy-gtd-dir nil
-    "Directory of my GTD (getting-things-done) files.
-Automatically set when `zy~zybox-dir' is customized.")
   (defvar zy-gtd-inbox-file nil
     "My inbox file of the GTD system.
 Automatically set when `zy~zybox-dir' is customized.")
@@ -2137,6 +2145,92 @@ Automatically set when `zy~zybox-dir' is customized.")
    ;; Do not export TOC or tags, unless asked to.
    org-export-with-toc nil
    org-export-with-tags nil))
+
+;;;;;; Org export to LaTeX
+
+(use-package ox-latex
+  :defer t
+  :config
+  ;; Get the zylatex.sty file.
+
+  (defvar zy-zylatex-file
+    (expand-file-name "etc/zylatex.sty" user-emacs-directory)
+    "My personal LaTeX style file.")
+
+  (unless (file-exists-p zy-zylatex-file)
+    (condition-case-unless-debug e
+	    (zy/update-zylatex-file)
+      (error
+       (message "Error fetching \"zylatex.sty\" because %s." e)
+       (setq zy-zylatex-file nil))))
+
+  ;; Configure Org to LaTeX export
+
+  (setq! org-latex-compiler "xelatex"
+		 org-latex-default-class "article"
+		 ;; Delete ".tex" file as well.
+		 org-latex-logfiles-extensions
+		 '("aux" "bcf" "blg" "fdb_latexmk" "fls" "figlist" "idx" "log"
+		   "nav" "out" "ptc" "run.xml" "snm" "tex" "toc" "vrb" "xdv"))
+
+  (when zy-zylatex-file
+    (setq! org-latex-classes
+		   `((;; 自用導出配置，用於個人日誌、散文等。
+              "article"
+		      ,(format "\
+\\documentclass[12pt]{article}
+\\usepackage[]{%s}
+[PACKAGES]
+[EXTRA]" (file-name-sans-extension zy-zylatex-file))
+		      ("\\section{%s}" . "\\section*{%s}")
+		      ("\\subsection{%s}" . "\\subsection*{%s}")
+		      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+		     (;; 適合手機屏幕閱讀的配置。
+		      "article-phone"
+		      ,(format "\
+\\documentclass[12pt]{article}
+\\usepackage[layout=phone]{%s}
+[PACKAGES]
+[EXTRA]" (file-name-sans-extension zy-zylatex-file))
+		      ("\\section{%s}" . "\\section*{%s}")
+		      ("\\subsection{%s}" . "\\subsection*{%s}")
+		      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		      ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+		     (;; 適用於簡體中文的配置。
+		      "article-sc"
+		      ,(format "\
+\\documentclass[12pt]{article}
+\\usepackage[style=tc, fontset=ctex]{%s}
+[PACKAGES]
+[EXTRA]" (file-name-sans-extension zy-zylatex-file))
+		      ("\\section{%s}" . "\\section*{%s}")
+		      ("\\subsection{%s}" . "\\subsection*{%s}")
+		      ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		      ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		      ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))))
+
+  ;; Export smartphone-friendly PDF
+
+  (defun zy/org-export-to-pdf-phone
+      (&optional async subtreep visible-only body-only ext-plist)
+    "Export current buffer to smartphone-friendly PDF.
+
+The function works like `org-latex-export-to-pdf', except that
+`org-latex-default-class' is set to \"article-phone\"."
+    (dlet ((org-latex-default-class "article-phone"))
+      (org-latex-export-to-pdf async subtreep visible-only
+                               body-only ext-plist)))
+
+  (declare-function org-export-define-derived-backend "ox")
+  (org-export-define-derived-backend
+      'latex-pdf-phone 'latex
+    :menu-entry '(?l
+		          "Export to LaTeX"
+		          ((?j "As PDF file (phone-friendly)"
+		               zy/org-export-to-pdf-phone)))))
 
 ;;;;;; Org journal
 
