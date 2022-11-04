@@ -3,7 +3,12 @@
 etc/zylatex.sty
 !eshell/alias
 
-# Other temporary files
+# Ignore straight except for lockfiles
+
+straight/*
+!straight/versions
+
+# Ignore other temporary files
 
 .cache/
 *.elc
@@ -12,13 +17,15 @@ etc/zylatex.sty
 auto-save-list
 bookmarks
 custom.el
+dirvish
 eln-cache
 eshell
 history
-straight
+image-dired
 org-persist
 org-roam.db
 places
+projectile-bookmarks.eld
 projects
 recentf
 server
