@@ -1003,10 +1003,8 @@ If this is a daemon session, load them all immediately instead."
 ;; Save customizations outside the init file.
 (setq! custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-;; Load the custom file after startup.
-(add-hook 'emacs-startup-hook
-          (defun zy--load-custom-file-h ()
-            (load custom-file 'noerror 'nomessage)))
+;; Load the custom NOW.
+(load custom-file 'noerror 'nomessage)
 
 ;;;; Text-editing
 
@@ -1090,7 +1088,7 @@ If this is a daemon session, load them all immediately instead."
    ;; Cycle outline visibility with TAB.
    outline-minor-mode-cycle t
    ;; Highlight outline headings.
-   outline-minor-mode-highlight 'append))
+   outline-minor-mode-highlight 'override))
 
 ;;;;; Whitespaces
 
@@ -1300,7 +1298,8 @@ faster `prin1'."
   ;; overriding my Magit keys.  I never use this though.
   (setq! diff-hl-command-prefix (kbd "C-x M-d"))
   :config
-  (diff-hl-margin-mode 1)
+  (unless (display-graphic-p)
+    (diff-hl-margin-mode 1))
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
@@ -1429,8 +1428,6 @@ faster `prin1'."
 
 ;;;;; Theme Emacs with Modus themes
 
-;; Protesilaus Stavrou, the author of Modus themes, is a really cool bro.
-
 (use-package modus-themes
   ;; Modus themes are built-in now, but I prefer using the latest version for a
   ;; greater feature set.
@@ -1443,15 +1440,12 @@ faster `prin1'."
   (setq!
    modus-themes-italic-constructs t
    modus-themes-bold-constructs t
-   ;; Headings are not sized for Modus Themes shipped with Emacs 28
-   ;; Maybe I should use the non-built-in version instead
-   modus-themes-headings '((0 . (background 1.3))
-			               (1 . (background overline 1.5))
-			               (2 . (background overline 1.4))
-			               (3 . (background overline 1.3))
-			               (4 . (background overline 1.2))
-			               (5 . (background overline 1.1))
-			               (t . (background overline 1.0)))
+   modus-themes-headings '((0 . (1.3))
+			               (1 . (1.4))
+			               (2 . (1.3))
+			               (3 . (1.2))
+			               (4 . (1.1))
+			               (t . (1.0)))
    modus-themes-hl-line '(intense)
    modus-themes-markup '(background intense)
    modus-themes-mixed-fonts t
@@ -1541,10 +1535,6 @@ faster `prin1'."
   :type 'integer
   :group 'zyemacs)
 
-(defface zy-sans nil
-  "Sans-serif font face."
-  :group 'zyemacs)
-
 (defun zy-set-face-charset-font (face frame charset font)
   "Set the font used for character set CHARSET in face FACE.
 
@@ -1606,18 +1596,18 @@ does the job."
 This function does not work correctly on Terminal Emacs."
   (interactive)
   (defvar zy-font-size)
-  ;; Default face
+  ;; Default face.
   (set-face-attribute 'default nil
 			          :font (font-spec :family "Sarasa Mono CL"
 					                   :size zy-font-size))
   (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
-  ;; Fixed-pitch face
+  ;; Fixed-pitch face.
   (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
 			          :height 'unspecified)
   (zy-set-face-charset-font 'fixed-pitch nil zy-cjk-charsets "Sarasa Mono CL")
-  ;; ZyEmacs sans-serif face
-  (set-face-attribute 'zy-sans nil :font "Roboto")
-  (zy-set-face-charset-font 'zy-sans nil zy-cjk-charsets "Sarasa Mono CL"))
+  ;; Variable-pitch face.
+  (set-face-attribute 'variable-pitch nil :font "Roboto")
+  (zy-set-face-charset-font 'variable-pitch nil zy-cjk-charsets "Sarasa Mono CL"))
 
 (defun zy-maybe-setup-font-faces (&rest _)
   "Try to setup font faces.
@@ -2091,7 +2081,14 @@ itself to `consult-recent-file', can finally call
   :defer t
   :straight '(org :type built-in)
   :init
-  (add-hook! org-mode 'visual-line-mode)
+  (setq!
+   ;; Indent sections by depth.
+   org-startup-indented t)
+  (add-hook! org-mode
+    ;; Org is my main prose editor.  I prefer working with visual lines and
+    ;; variable pitch fonts when writing proses.
+    'visual-line-mode
+    'variable-pitch-mode)
 
   ;; GTD files.
   (defvar zy-gtd-inbox-file nil
@@ -2130,6 +2127,8 @@ Automatically set when `zy~zybox-dir' is customized.")
                             :empty-lines 1))
    ;; Hide emphasis markers.
    org-hide-emphasis-markers t
+   ;; Less indentation for `org-indent-mode'.
+   org-indent-indentation-per-level 1
    ;; Track the time of various actions.
    org-log-done 'time
    org-log-refile 'time
