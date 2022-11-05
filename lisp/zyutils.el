@@ -267,6 +267,7 @@ the Lisp function does not specify a special indentation."
 (defun zy/update-zylatex-file ()
   "Update zylatex.sty from GitHub or existing project."
   (interactive)
+  (require 'ox-latex)
   (defvar zy-zyprojects-dir)
   (defvar zy-zylatex-file)
   (let (ego-path

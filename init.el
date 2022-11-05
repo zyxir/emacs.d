@@ -2377,6 +2377,7 @@ The function works like `org-latex-export-to-pdf', except that
   :straight t
   :defer t)
 
+;; TODO: Add comments for theses settings.
 (use-package tex
   :defer t
   :config
@@ -2386,19 +2387,26 @@ The function works like `org-latex-export-to-pdf', except that
          TeX-engine 'xetex
          TeX-source-correlate-start-server t
          TeX-command-default "XeLaTeX")
+
+  ;; Always compile with XeLaTeX (which provides better Chinese support), and
+  ;; always enable correlate mode (for SyncTeX).
   (defvar TeX-command-list)
   (add-to-list 'TeX-command-list
                '("XeLaTeX"
                  "%`xelatex%(mode)%' --synctex=1%(mode)%' %t"
-                 TeX-run-TeX
-                 nil
-                 t))
+                 TeX-run-TeX nil t))
   (declare-function TeX-source-correlate-mode "tex")
   (add-hook 'LaTeX-mode-hook
             (lambda ()
               (setq-local TeX-command-default "XeLaTeX")
-              (TeX-source-correlate-mode 1))))
+              (TeX-source-correlate-mode 1)))
 
+  ;; Revert document buffer after compilation.
+  (declare-function TeX-revert-document-buffer "tex")
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer))
+
+;; TODO: Add comments for theses settings.
 (use-package reftex
   :defer t
   :after tex
