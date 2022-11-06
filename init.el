@@ -2007,8 +2007,8 @@ itself to `consult-recent-file', can finally call
    "M-p" 'flymake-goto-prev-error
    "M-n" 'flymake-goto-next-error)
   :config
-  ;; Just show the error counter.
-  (setq! flymake-mode-line-lighter ""))
+  ;; Show a shorter mode lighter.
+  (setq! flymake-mode-line-lighter "Chk"))
 
 ;;;;; Eshell (consistent shell across platforms)
 
