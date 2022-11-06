@@ -555,7 +555,7 @@ is determined, several other directories, like `org-directory',
                   (expand-file-name "../Zyprojects" path))
     ;; My GTD directory and files.
     (defvar zy-gtd-dir)
-    (setq-default zy-gtd-dir (expand-file-name "org-gtd" org-directory)
+    (setq-default zy-gtd-dir org-directory
                   zy-gtd-inbox-file
                   (expand-file-name "inbox.org" zy-gtd-dir)
                   zy-gtd-gtd-file
@@ -2143,7 +2143,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 
   :config
   (setq!
-   org-agenda-files (list zy-gtd-dir)
+   org-agenda-files (list zy-gtd-gtd-file)
    ;; My favorite attachment directory.
    org-attach-id-dir "_org-att"
    ;; Capture templates for the GTD system.
@@ -2166,14 +2166,11 @@ Automatically set when `zy~zybox-dir' is customized.")
    ;; Track the time of various actions.
    org-log-done 'time
    org-log-refile 'time
-   ;; Tag close to titles.
-   org-tag-column 0
    ;; This set of keywords works for me.
    org-todo-keywords '((sequence "TODO(t)"
                                  "DOING(i)"
                                  "|"
-                                 "DONE(d)")
-                       (sequence "|"
+                                 "DONE(d)"
                                  "CANCELED(c)"))
    org-todo-keyword-faces '(("TODO" . org-todo)
                             ("DOING" . (:foreground "#00bcff"))
