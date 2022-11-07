@@ -2143,29 +2143,22 @@ Automatically set when `zy~zybox-dir' is customized.")
 
   :config
   (setq!
-   org-agenda-files (list zy-gtd-gtd-file)
+   org-agenda-files (list zy-gtd-inbox-file zy-gtd-gtd-file)
    ;; My favorite attachment directory.
    org-attach-id-dir "_org-att"
    ;; Capture templates for the GTD system.
    org-capture-templates `(("i" "inbox" entry
-                            (file+headline ,zy-gtd-inbox-file "inbox")
-                            "* TODO [#B] %u %i%?"
-                            :empty-lines 1)
-                           ("s" "someday" entry
-                            (file+headline ,zy-gtd-someday-file "someday")
-                            "* TODO [#C] %u %i%?"
-                            :empty-lines 1)
-                           ("t" "GTD" entry
-                            (file+olp+datetree ,zy-gtd-gtd-file)
-                            "* TODO [#B] %u %i%?"
-                            :empty-lines 1))
+                            (file+headline ,zy-gtd-inbox-file "Inbox")
+                            "* TODO %i%? %^G\nCREATED: %U"))
    ;; Hide emphasis markers.
    org-hide-emphasis-markers t
    ;; Less indentation for `org-indent-mode'.
    org-indent-indentation-per-level 1
    ;; Track the time of various actions.
    org-log-done 'time
-   org-log-refile 'time
+   ;; Refile from inbox to other GTD files.
+   org-refile-targets `((,zy-gtd-gtd-file :level . 2)
+                        (,zy-gtd-someday-file :maxlevel . 3))
    ;; This set of keywords works for me.
    org-todo-keywords '((sequence "TODO(t)"
                                  "DOING(i)"
