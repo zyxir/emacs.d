@@ -975,10 +975,11 @@ If this is a daemon session, load them all immediately instead."
 ;;;;; Execution path
 
 ;; Get PATH from shell.
-(use-package exec-path-from-shell
-  :straight t
-  :config
-  (exec-path-from-shell-initialize))
+(unless (memq system-type '(windows-nt))
+  (use-package exec-path-from-shell
+    :straight t
+    :config
+    (exec-path-from-shell-initialize)))
 
 ;;;;; Terminal settings
 
@@ -2422,7 +2423,8 @@ The function works like `org-latex-export-to-pdf', except that
   :defer t
   :init
   (add-hook! python-mode
-    'eglot-ensure)
+    'eglot-ensure
+    'rainbow-delimiters-mode)
   :config
   (setq!
    ;; See the documentation.
