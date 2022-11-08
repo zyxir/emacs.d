@@ -19,6 +19,7 @@ bookmarks
 custom.el
 dirvish
 eln-cache
+emacs_backtrace.txt
 eshell
 history
 image-dired

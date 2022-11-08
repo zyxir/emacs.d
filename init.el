@@ -781,7 +781,9 @@ If this is a daemon session, load them all immediately instead."
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
-(require 'straight)
+;; `autoload' is deprecated in Emacs 29.  Suppress that warning.
+(with-suppressed-warnings ((obsolete autoload))
+  (require 'straight))
 
 ;;;;; Use-package (isolate package configurations)
 
@@ -1101,9 +1103,6 @@ If this is a daemon session, load them all immediately instead."
   ("M-Q" 'zy/unfill-paragraph)
   :init
   (setq!
-   ;; Character used to indicate the fill column in
-   ;; `display-fill-column-indicator-mode'.
-   display-fill-column-indicator-character ?\u2502
    ;; 80 is a sane default.  Recommended by Google.
    fill-column 80
    ;; These settings are adapted from Protesilaus Stavrou's configuration.
@@ -2038,7 +2037,14 @@ itself to `consult-recent-file', can finally call
                                 "#000000"
                               "#ffffff"))))))
 
-;;;;; Flymake as the syntax checker
+;;;;; Syntax checker (Flymake and Flycheck)
+
+;; Flymake is a great.  Its philosophy fits better with Emacs, and Eglot only
+;; works with it.  However, Flymake is troublesome in Windows: sometimes it
+;; creates a lot of processes without destroying them, sometimes it lints the
+;; current Emacs Lisp buffer with another Emacs process, but that process ends
+;; up with a fatal error.  So I have no choice but using Flymake and Flycheck at
+;; the same time for different kinds of buffers.
 
 (use-package flymake
   :straight t
@@ -2049,7 +2055,18 @@ itself to `consult-recent-file', can finally call
             "M-n" 'flymake-goto-next-error)
   :config
   ;; Show a shorter mode lighter.
-  (setq! flymake-mode-line-lighter "Chk"))
+  (setq! flymake-mode-line-lighter "Fm"))
+
+(use-package flycheck
+  :straight t
+  :commands flycheck-mode
+  :general
+  (:keymaps 'flycheck-mode-map
+            "M-p" 'flycheck-previous-error
+            "M-n" 'flycheck-next-error)
+  :config
+  ;; Show a shorter mode lighter.
+  (setq! flycheck-mode-line-prefix "Fc"))
 
 ;;;;; Eshell (consistent shell across platforms)
 
@@ -2122,13 +2139,17 @@ itself to `consult-recent-file', can finally call
   (add-hook! emacs-lisp-mode
     'outline-minor-mode
     'rainbow-delimiters-mode
-    ;; Emacs itself is a Flymake checker for Emacs Lisp, so always enable it.
-    'flymake-mode)
+    ;; Emacs itself is a Flycheck checker for Emacs Lisp, so always enable it.
+    'flycheck-mode)
   :general
   (:keymaps 'emacs-lisp-mode-map
             ;; A handy key to expand macros.
             "C-c C-x" 'emacs-lisp-macroexpand)
   :config
+  (setq!
+   ;; Let Flycheck inherit Emacs load path.
+   flycheck-emacs-lisp-load-path 'inherit)
+
   ;; Use four semicolons as level 1.  Standard Emacs Lisp files always contain
   ;; some special comments starting with three semicolons, and I don't want to
   ;; treat them as level 1 outline.  So, I write my own outlines starting from
@@ -2147,6 +2168,8 @@ itself to `consult-recent-file', can finally call
     outline-regexp "[ \t]*;;;;+ [^ \t\n]"
     outline-level 'zy--lisp-outline-level)
 
+  ;; Flymake is good, but it crashes a lot on Windows.  These code are kept in
+  ;; case someday I decide to switch back to it.
   (setq! elisp-flymake-byte-compile-load-path
          (delete-dups
           (append load-path
@@ -2498,7 +2521,8 @@ The function works like `org-latex-export-to-pdf', except that
          verilog-indent-level 2
          verilog-indent-level-behavioral 0
          verilog-indent-level-declaration 0
-         verilog-indent-level-module 0))
+         verilog-indent-level-module 0
+         verilog-indent-lists nil))
 
 ;;;; The end
 
