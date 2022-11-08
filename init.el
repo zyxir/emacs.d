@@ -899,8 +899,6 @@ If this is a daemon session, load them all immediately instead."
    ;; File operations
    zy/delete-file-and-buffer
    zy/rename-file-and-buffer
-   ;; Emacs Lisp
-   zy-lisp-indent-function
    ;; Org export to LaTeX
    zy/update-zylatex-file))
 
@@ -2151,10 +2149,7 @@ itself to `consult-recent-file', can finally call
          (delete-dups
           (append load-path
                   (default-toplevel-value
-                    'elisp-flymake-byte-compile-load-path))))
-
-  ;; Proper indent function.
-  (advice-add #'lisp-indent-function :override 'zy-lisp-indent-function))
+                    'elisp-flymake-byte-compile-load-path)))))
 
 ;;;;; Markdown
 
