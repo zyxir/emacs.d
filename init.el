@@ -974,6 +974,14 @@ If this is a daemon session, load them all immediately instead."
                (server-running-p))
     (server-start)))
 
+;;;;; Execution path
+
+;; Get PATH from shell.
+(use-package exec-path-from-shell
+  :straight t
+  :config
+  (exec-path-from-shell-initialize))
+
 ;;;;; Terminal settings
 
 (add-hook! tty-setup
@@ -1033,6 +1041,30 @@ If this is a daemon session, load them all immediately instead."
    ;; Always use spaces.
    indent-tabs-mode nil))
 
+;; Mode used to highlight indentation.
+(use-package highlight-indent-guides
+  :straight t
+  :hook (prog-mode conf-mode)
+  :config
+  (setq!
+   highlight-indent-guides-method 'character)
+
+  ;; Indent guides doesn't show properly with Modus Vivendi theme.  When that
+  ;; theme is enabled, set the faces accordingly.
+  (defun zy--setup-indent-guides ()
+    "Setup proper face for indent guides."
+    (if (memq 'modus-vivendi custom-enabled-themes)
+        (progn
+          ;; Disable face auto-setting.
+          (setq! highlight-indent-guides-auto-enabled nil)
+          ;; Assign a custom face.
+          (set-face-foreground 'highlight-indent-guides-character-face
+                               "gray20"))
+      ;; Enable face auto-setting.
+      (setq! highlight-indent-guides-auto-enabled t)))
+  (zy--setup-indent-guides)
+  (add-hook! zy-load-theme 'zy--setup-indent-guides))
+
 ;;;;; Isearch (incremental searching)
 
 (use-package isearch
@@ -1064,10 +1096,15 @@ If this is a daemon session, load them all immediately instead."
 
 (use-package line-filling
   :defer t
+  ;; Always display fill column in prog modes.
+  :hook (prog-mode . display-fill-column-indicator-mode)
   :general
   ("M-Q" 'zy/unfill-paragraph)
   :init
   (setq!
+   ;; Character used to indicate the fill column in
+   ;; `display-fill-column-indicator-mode'.
+   display-fill-column-indicator-character ?\u2502
    ;; 80 is a sane default.  Recommended by Google.
    fill-column 80
    ;; These settings are adapted from Protesilaus Stavrou's configuration.
@@ -1178,7 +1215,11 @@ If this is a daemon session, load them all immediately instead."
   :straight t
   :hook (prog-mode conf-mode)
   :config
-  (require 'smartparens-config))
+  (require 'smartparens-config)
+  (setq!
+   ;; Do not show overlays.
+   sp-highlight-pair-overlay nil
+   sp-highlight-wrap-overlay nil))
 
 ;;;; Workbench
 
@@ -1307,7 +1348,7 @@ faster `prin1'."
   :init
   ;; I set a key binding here because I don't want its default key binding
   ;; overriding my Magit keys.  I never use this though.
-  (setq! diff-hl-command-prefix (kbd "C-x M-d"))
+  (setq! diff-hl-command-prefix (kbd "C-c d"))
   :config
   (unless (display-graphic-p)
     (diff-hl-margin-mode 1))
@@ -2051,6 +2092,24 @@ itself to `consult-recent-file', can finally call
   :general
   ("C-c l" 'calendar))
 
+;;;;; Eglot (language server protocol support)
+
+;; By Emacs 29.1 Eglot is built-in.
+(when (< emacs-major-version 29)
+  (straight-use-package 'eglot))
+
+(use-package eglot
+  :general
+  (:keymaps 'eglot-mode-map
+   :prefix "M-o"
+   "r" 'eglot-rename
+   "c" 'eglot-reconnect)
+  :config
+  (setq!
+   ;; Languages and their servers to use.
+   eglot-server-programs '((python-mode . "pylsp")
+                           (verilog-mode . "svls"))))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
@@ -2361,6 +2420,21 @@ The function works like `org-latex-export-to-pdf', except that
   (declare-function pdf-tools-install "pdf-tools")
   (pdf-tools-install))
 
+;;;;; Python
+
+(use-package python
+  :defer t
+  :init
+  (add-hook! python-mode
+    'eglot-ensure)
+  :config
+  (setq!
+   ;; See the documentation.
+   python-fill-docstring-style 'pep-257-nn)
+  (setq-hook! python-mode
+    ;; As suggested by PEP8.
+    fill-column 79))
+
 ;;;;; TeX / LaTeX
 
 (use-package auctex
@@ -2421,9 +2495,9 @@ The function works like `org-latex-export-to-pdf', except that
   :config
   (setq! verilog-auto-delete-trailing-whitespace t
          verilog-auto-newline nil
-         verilog-case-level 4
+         verilog-case-level 2
          verilog-indent-begin-after-if nil
-         verilog-indent-level 4
+         verilog-indent-level 2
          verilog-indent-level-behavioral 0
          verilog-indent-level-declaration 0
          verilog-indent-level-module 0))
