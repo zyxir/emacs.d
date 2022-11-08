@@ -1528,6 +1528,7 @@ faster `prin1'."
    '((clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
+     (highlight-indent-guides-mode nil highlight-indent-guides)
      (outline-minor-mode nil outline)
      (smartparens-mode nil smartparens)
      (subword-mode nil subword)
