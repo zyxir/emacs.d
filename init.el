@@ -2522,7 +2522,8 @@ The function works like `org-latex-export-to-pdf', except that
          verilog-indent-level-behavioral 0
          verilog-indent-level-declaration 0
          verilog-indent-level-module 0
-         verilog-indent-lists nil))
+         ;; Lint with Icarus Verilog.
+         verilog-linter "iverilog"))
 
 ;;;; The end
 
