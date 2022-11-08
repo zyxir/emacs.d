@@ -1119,7 +1119,7 @@ If this is a daemon session, load them all immediately instead."
 (use-package outline
   :general
   (:keymaps 'zy-toggle-map
-   "o" 'outline-minor-mode)
+            "o" 'outline-minor-mode)
   :config
   (setq!
    ;; Cycle outline visibility with TAB.
@@ -1135,8 +1135,8 @@ If this is a daemon session, load them all immediately instead."
   ;; in Emacs 29.1.
   ("M-SPC" 'cycle-spacing)
   (:keymaps 'zy-toggle-map
-   ;; Toggle whitespace visualization.
-   "SPC" 'whitespace-mode)
+            ;; Toggle whitespace visualization.
+            "SPC" 'whitespace-mode)
   :init
   ;; Show trailing whitespace for all kinds of files.
   (add-hook! (prog-mode text-mode conf-mode)
@@ -1180,9 +1180,9 @@ If this is a daemon session, load them all immediately instead."
   ;; I dislike expanding snippets with TAB, which I use for reindenting a lot.
   ;; So I just remap `dabbrev-expand' (M-/ by default) for this.
   (:keymaps 'yas-minor-mode-map
-   "<tab>" nil
-   "TAB" nil
-   [remap dabbrev-expand] 'yas-expand)
+            "<tab>" nil
+            "TAB" nil
+            [remap dabbrev-expand] 'yas-expand)
   :init
   ;; My own snippets.
   (setq! yas-snippet-dirs (list
@@ -1329,9 +1329,9 @@ faster `prin1'."
   (dash f s with-editor git-commit package eieio transient)
   :general
   (:keymaps 'ctl-x-map
-   "v" 'magit-status
-   "C-v" 'magit-dispatch
-   "M-v" 'magit-file-dispatch)
+            "v" 'magit-status
+            "C-v" 'magit-dispatch
+            "M-v" 'magit-file-dispatch)
   :init
   (setq!
    ;; Do not use default Magit key bindings.
@@ -1423,10 +1423,10 @@ faster `prin1'."
   :after dired
   :general
   (:keymaps 'dired-mode-map
-   "TAB" 'dired-subtree-toggle
-   [tab] 'dired-subtree-toggle
-   "S-TAB" 'dired-subtree-remove
-   [backtab] 'dired-subtree-remove))
+            "TAB" 'dired-subtree-toggle
+            [tab] 'dired-subtree-toggle
+            "S-TAB" 'dired-subtree-remove
+            [backtab] 'dired-subtree-remove))
 
 ;; Editable Dired buffer.
 (use-package wdired
@@ -1454,7 +1454,7 @@ faster `prin1'."
   :defer t
   :general
   (:keymaps 'project-prefix-map
-   "g" 'rg-project)
+            "g" 'rg-project)
   :config
   (setq!
    project-switch-commands '((project-find-file "Find file" "f")
@@ -1485,7 +1485,7 @@ faster `prin1'."
   :demand t
   :general
   (:keymaps 'zy-toggle-map
-   "t" 'modus-themes-toggle)
+            "t" 'modus-themes-toggle)
   :config
   (setq!
    modus-themes-italic-constructs t
@@ -1561,7 +1561,7 @@ faster `prin1'."
   :hook (prog-mode text-mode conf-mode)
   :general
   (:keymaps 'zy-toggle-map
-   "l" 'display-line-numbers-mode)
+            "l" 'display-line-numbers-mode)
   :init
   ;; Explicitly define a width to reduce the cost of on-the-fly computation.
   (setq-default display-line-numbers-width 3)
@@ -1784,7 +1784,7 @@ This is an :around advice, and FN is the adviced function."
   :straight t
   :general
   (:keymaps 'zy-toggle-map
-   "d" 'darkroom-tentative-mode)
+            "d" 'darkroom-tentative-mode)
   :config
   ;; Toggle `display-line-numbers-mode' and `hl-line-mode' on text mode buffers,
   ;; when switching darkroom mode.
@@ -1898,19 +1898,19 @@ ARGS are the arguments passed."
   :general
   ;; C-x map commands.
   (:keymaps 'ctl-x-map
-   "b" 'consult-buffer)
+            "b" 'consult-buffer)
   ;; Goto map commands (default prefix is M-g).
   (:keymaps 'goto-map
-   "g" 'consult-goto-line
-   "M-g" 'consult-goto-line
-   "m" 'consult-mark
-   "M" 'consult-global-mark
-   "o" 'consult-outline
-   "i" 'consult-imenu)
+            "g" 'consult-goto-line
+            "M-g" 'consult-goto-line
+            "m" 'consult-mark
+            "M" 'consult-global-mark
+            "o" 'consult-outline
+            "i" 'consult-imenu)
   ;; Search map commands (default prefix is M-s).
   (:keymaps 'search-map
-   "g" 'consult-ripgrep
-   "l" 'consult-line)
+            "g" 'consult-ripgrep
+            "l" 'consult-line)
   :init
   ;; Perform `completion-in-region' with Consult.
   (setq! completion-in-region-function 'consult-completion-in-region)
@@ -2044,8 +2044,8 @@ itself to `consult-recent-file', can finally call
   :commands flymake-mode
   :general
   (:keymaps 'flymake-mode-map
-   "M-p" 'flymake-goto-prev-error
-   "M-n" 'flymake-goto-next-error)
+            "M-p" 'flymake-goto-prev-error
+            "M-n" 'flymake-goto-next-error)
   :config
   ;; Show a shorter mode lighter.
   (setq! flymake-mode-line-lighter "Chk"))
@@ -2100,9 +2100,9 @@ itself to `consult-recent-file', can finally call
 (use-package eglot
   :general
   (:keymaps 'eglot-mode-map
-   :prefix "M-o"
-   "r" 'eglot-rename
-   "c" 'eglot-reconnect)
+            :prefix "M-o"
+            "r" 'eglot-rename
+            "c" 'eglot-reconnect)
   :config
   (setq!
    ;; Languages and their servers to use.
@@ -2125,8 +2125,8 @@ itself to `consult-recent-file', can finally call
     'flymake-mode)
   :general
   (:keymaps 'emacs-lisp-mode-map
-   ;; A handy key to expand macros.
-   "C-c C-x" 'emacs-lisp-macroexpand)
+            ;; A handy key to expand macros.
+            "C-c C-x" 'emacs-lisp-macroexpand)
   :config
   ;; Use four semicolons as level 1.  Standard Emacs Lisp files always contain
   ;; some special comments starting with three semicolons, and I don't want to
@@ -2150,7 +2150,7 @@ itself to `consult-recent-file', can finally call
          (delete-dups
           (append load-path
                   (default-toplevel-value
-                    'elisp-flymake-byte-compile-load-path)))))
+                   'elisp-flymake-byte-compile-load-path)))))
 
 ;;;;; Markdown
 
@@ -2194,7 +2194,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   ("C-c a" 'org-agenda
    "C-c c" 'org-capture)
   (:keymaps 'org-mode-map
-   "M-g h" 'consult-org-heading)
+            "M-g h" 'consult-org-heading)
 
   :config
   (setq!
