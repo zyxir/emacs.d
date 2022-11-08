@@ -2106,8 +2106,8 @@ itself to `consult-recent-file', can finally call
   :config
   (setq!
    ;; Languages and their servers to use.
-   eglot-server-programs '((python-mode . "pylsp")
-                           (verilog-mode . "svls"))))
+   eglot-server-programs '((python-mode . ("pylsp"))
+                           (verilog-mode . ("svls")))))
 
 ;;;; File type specific settings
 
