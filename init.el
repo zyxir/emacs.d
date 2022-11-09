@@ -1050,17 +1050,17 @@ If this is a daemon session, load them all immediately instead."
   (setq!
    highlight-indent-guides-method 'character)
 
-  ;; Indent guides doesn't show properly with Modus Vivendi theme.  When that
-  ;; theme is enabled, set the faces accordingly.
+  ;; Indent guides doesn't show properly for dark themes.  When that is the
+  ;; case, set the faces accordingly.
   (defun zy--setup-indent-guides ()
     "Setup proper face for indent guides."
-    (if (memq 'modus-vivendi custom-enabled-themes)
+    (if (equal (frame-parameter nil 'background-mode) 'dark)
         (progn
           ;; Disable face auto-setting.
           (setq! highlight-indent-guides-auto-enabled nil)
           ;; Assign a custom face.
           (set-face-foreground 'highlight-indent-guides-character-face
-                               "gray20"))
+                               "gray25"))
       ;; Enable face auto-setting.
       (setq! highlight-indent-guides-auto-enabled t)))
   (zy--setup-indent-guides)
@@ -1097,8 +1097,6 @@ If this is a daemon session, load them all immediately instead."
 
 (use-package line-filling
   :defer t
-  ;; Always display fill column in prog modes.
-  :hook (prog-mode . display-fill-column-indicator-mode)
   :general
   ("M-Q" 'zy/unfill-paragraph)
   :init
@@ -1490,12 +1488,25 @@ faster `prin1'."
 ;; This sections concentrates on improving the user interface of GNU Emacs,
 ;; either graphical or terminal.
 
-;;;;; Theme Emacs with Modus themes
+;;;;; Theme Emacs
+
+(defcustom zy~default-theme 'modus-operandi
+  "The theme in use.
+Will only take effect after restart."
+  :group 'zyxir
+  :type '(choice (const modus-vivendi)
+                 (const modus-operandi)
+                 (const doom-one)
+                 (const doom-one-light)
+                 (const doom-vibrant)
+                 (const doom-wilmersdorf)
+                 (const nil)))
 
 (use-package modus-themes
   ;; Modus themes are built-in now, but I prefer using the latest version for a
   ;; greater feature set.
   :straight t
+  :when (memq zy~default-theme '(modus-vivendi modus-operandi))
   :demand t
   :general
   (:keymaps 'zy-toggle-map
@@ -1510,7 +1521,21 @@ faster `prin1'."
    modus-themes-region '(accented no-extend)
    modus-themes-org-blocks '(gray-background)
    modus-themes-prompts '(background))
-  (load-theme 'modus-vivendi 'no-confirm))
+  (load-theme zy~default-theme 'no-confirm))
+
+(use-package doom-themes
+  :straight t
+  :when (string-prefix-p "doom-" (symbol-name zy~default-theme))
+  :demand t
+  :config
+  (setq! doom-themes-enable-bold t
+         doom-themes-enable-italic t)
+  (load-theme zy~default-theme 'no-confirm))
+
+(use-package solaire-mode
+  :straight t
+  :after (:any modus-themes doom-themes)
+  :hook (zy-first-buffer . solaire-global-mode))
 
 ;;;;; Mode line
 
@@ -1814,7 +1839,7 @@ This is an :around advice, and FN is the adviced function."
 ;; Customize the appearance of headings in Org-mode, Markdown-mode, and
 ;; Outline-mode.
 
-(defun zy-setup-heading-appearance ()
+(defun zy--setup-heading-appearance ()
   "Setup heading appearance.
 This tweaks the heights and fonts of headings.
 
@@ -1852,8 +1877,8 @@ Should be run again after theme switch."
       (set-face-attribute 'org-document-title nil :family font))))
 
 ;; Set them now, and after each theme switch.
-(zy-setup-heading-appearance)
-(add-hook 'zy-load-theme-hook #'zy-setup-heading-appearance)
+(zy--setup-heading-appearance)
+(add-hook 'zy-load-theme-hook #'zy--setup-heading-appearance)
 
 ;;;; Features
 
@@ -2505,6 +2530,7 @@ The function works like `org-latex-export-to-pdf', except that
   :defer t
   :init
   (add-hook! python-mode
+    'display-fill-column-indicator-mode
     'eglot-ensure
     'rainbow-delimiters-mode)
   :config
