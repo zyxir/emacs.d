@@ -1504,12 +1504,6 @@ faster `prin1'."
   (setq!
    modus-themes-italic-constructs t
    modus-themes-bold-constructs t
-   modus-themes-headings '((0 . (1.3))
-                           (1 . (1.4))
-                           (2 . (1.3))
-                           (3 . (1.2))
-                           (4 . (1.1))
-                           (t . (1.0)))
    modus-themes-hl-line '(intense)
    modus-themes-markup '(background intense)
    modus-themes-mixed-fonts t
@@ -1656,6 +1650,24 @@ does the job."
 ;; Anyway this is just my personal configuration, I can change the code at any
 ;; time.
 
+(defun zy-set-heading-fonts ()
+  "Set dedicated fonts for headings."
+  (let ((font "Roboto Slab")
+        face num)
+    (with-eval-after-load 'outline
+      (setq num 1)
+      (while (<= num 8)
+        (setq face (intern (format "outline-%d" num)))
+        (set-face-attribute face nil :family font)
+        (setq num (1+ num))))
+    (with-eval-after-load 'org
+      (setq num 1)
+      (while (<= num 8)
+        (setq face (intern (format "org-level-%d" num)))
+        (set-face-attribute face nil :family font)
+        (setq num (1+ num)))
+      (set-face-attribute 'org-document-title nil :family font))))
+
 (defun zy/setup-font-faces ()
   "Setup font for several faces.
 
@@ -1675,25 +1687,7 @@ This function does not work correctly on Terminal Emacs."
   ;; Variable-pitch face.
   (set-face-attribute 'variable-pitch nil :font "Roboto")
   (zy-set-face-charset-font 'variable-pitch nil
-                            zy-cjk-charsets "Sarasa Mono CL")
-  ;; Dedicated font for headings.
-  (add-hook! zy-load-theme
-    (defun zy--set-heading-fonts-h ()
-      (let ((font "Roboto Slab")
-            face num)
-        (with-eval-after-load 'outline
-          (setq num 1)
-          (while (<= num 8)
-            (setq face (intern (format "outline-%d" num)))
-            (set-face-attribute face nil :family font)
-            (setq num (1+ num))))
-        (with-eval-after-load 'org
-          (setq num 1)
-          (while (<= num 8)
-            (setq face (intern (format "org-level-%d" num)))
-            (set-face-attribute face nil :family font)
-            (setq num (1+ num)))
-          (set-face-attribute 'org-document-title nil :family font))))))
+                            zy-cjk-charsets "Sarasa Mono CL"))
 
 (defun zy-maybe-setup-font-faces (&rest _)
   "Try to setup font faces.
@@ -1814,6 +1808,52 @@ This is an :around advice, and FN is the adviced function."
     (when (derived-mode-p 'text-mode)
       (display-line-numbers-mode 1)
       (hl-line-mode 1))))
+
+;;;;; Headings
+
+;; Customize the appearance of headings in Org-mode, Markdown-mode, and
+;; Outline-mode.
+
+(defun zy-setup-heading-appearance ()
+  "Setup heading appearance.
+This tweaks the heights and fonts of headings.
+
+Should be run again after theme switch."
+  (let ((font "Roboto Slab")
+        face num)
+    ;; Setup for `outline-mode' and `outline-minor-mode'.
+    (with-eval-after-load 'outline
+      (setq num 1)
+      (while (<= num 8)
+        (setq face (intern (format "outline-%d" num)))
+        (set-face-attribute face nil :height
+                            (max (- 1.5 (* 0.1 num)) 1.1))
+        (set-face-attribute face nil :family font)
+        (setq num (1+ num))))
+    ;; Setup for `markdown-mode'.
+    (with-eval-after-load 'markdown-mode
+      (setq num 1)
+      (while (<= num 6)
+        (setq face (intern (format "markdown-header-face-%d" num)))
+        (set-face-attribute face nil :height
+                            (max (- 1.5 (* 0.1 num)) 1.1))
+        (set-face-attribute face nil :family font)
+        (setq num (1+ num))))
+    ;; Setup for `org-mode'.
+    (with-eval-after-load 'org
+      (setq num 1)
+      (while (<= num 8)
+        (setq face (intern (format "org-level-%d" num)))
+        (set-face-attribute face nil :height
+                            (max (- 1.5 (* 0.1 num)) 1.1))
+        (set-face-attribute face nil :family font)
+        (setq num (1+ num)))
+      (set-face-attribute 'org-document-title nil :height 1.4)
+      (set-face-attribute 'org-document-title nil :family font))))
+
+;; Set them now, and after each theme switch.
+(zy-setup-heading-appearance)
+(add-hook 'zy-load-theme-hook #'zy-setup-heading-appearance)
 
 ;;;; Features
 
