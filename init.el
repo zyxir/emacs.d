@@ -1225,6 +1225,14 @@ If this is a daemon session, load them all immediately instead."
    sp-highlight-pair-overlay nil
    sp-highlight-wrap-overlay nil))
 
+;;;;; Avy (quick text jump)
+
+(use-package avy
+  :straight t
+  :general
+  ("M-z" 'avy-goto-char
+   "M-Z" 'avy-goto-char-2))
+
 ;;;; Workbench
 
 ;; This section contains settings about buffers, files, directories, projects,
@@ -1948,8 +1956,7 @@ itself to `consult-recent-file', can finally call
 (use-package embark
   :straight t
   :general
-  ("M-m" 'embark-act
-   "M-z" 'embark-dwim))
+  ("M-m" 'embark-act))
 
 ;; Embark and Consult integration.
 (use-package embark-consult
