@@ -1970,6 +1970,9 @@ itself to `consult-recent-file', can finally call
   :straight '(corfu :files (:defaults "extensions"))
   ;; Enable auto completion for almost every modes.
   :hook (prog-mode text-mode conf-mode)
+  :general
+  (:keymaps 'zy-toggle-map
+            "c" 'corfu-mode)
   :config
   (setq!
    ;; Make completion automatically.
@@ -2148,17 +2151,17 @@ itself to `consult-recent-file', can finally call
 ;;;;; Emacs Lisp
 
 (use-package elisp-mode
-  :init
-  (add-hook! emacs-lisp-mode
-    'outline-minor-mode
-    'rainbow-delimiters-mode
-    ;; Emacs itself is a Flycheck checker for Emacs Lisp, so always enable it.
-    'flycheck-mode)
   :general
   (:keymaps 'emacs-lisp-mode-map
             ;; A handy key to expand macros.
             "C-c C-x" 'emacs-lisp-macroexpand)
   :config
+  (add-hook! emacs-lisp-mode
+    'outline-minor-mode
+    'rainbow-delimiters-mode
+    ;; Emacs itself is a Flycheck checker for Emacs Lisp, so always enable it.
+    'flycheck-mode)
+
   (setq!
    ;; Let Flycheck inherit Emacs load path.
    flycheck-emacs-lisp-load-path 'inherit)
@@ -2193,7 +2196,10 @@ itself to `consult-recent-file', can finally call
 
 (use-package markdown-mode
   :straight t
-  :magic ("\\.md\\|\\.markdown" . markdown-mode))
+  :magic ("\\.md\\|\\.markdown" . markdown-mode)
+  :config
+  (add-hook! markdown-mode
+    'visual-line-mode))
 
 ;;;;; Org
 
