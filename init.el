@@ -1213,7 +1213,13 @@ If this is a daemon session, load them all immediately instead."
   :straight t
   :hook (prog-mode conf-mode)
   :config
+  ;; Use default config.
   (require 'smartparens-config)
+  ;; Use default keybindings except a few keys.
+  (delete '("M-<delete>" . sp-unwrap-sexp) sp-smartparens-bindings)
+  (delete '("M-<backspace>" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
+  (sp-use-smartparens-bindings)
+
   (setq!
    ;; Do not show overlays.
    sp-highlight-pair-overlay nil
