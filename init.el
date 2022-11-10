@@ -1864,17 +1864,20 @@ Should be run again after theme switch."
                             (max (- 1.5 (* 0.1 num)) 1.1))
         (set-face-attribute face nil :family font)
         (setq num (1+ num))))
-    ;; Setup for `org-mode'.
-    (with-eval-after-load 'org
-      (setq num 1)
-      (while (<= num 8)
-        (setq face (intern (format "org-level-%d" num)))
-        (set-face-attribute face nil :height
-                            (max (- 1.5 (* 0.1 num)) 1.1))
-        (set-face-attribute face nil :family font)
-        (setq num (1+ num)))
-      (set-face-attribute 'org-document-title nil :height 1.4)
-      (set-face-attribute 'org-document-title nil :family font))))
+    ;; Setup for `org-mode', unless a Doom theme is enabled.  Doom themes make
+    ;; Org heading faces inherit Outline faces, so no additional settings is
+    ;; required.
+    (unless (string-prefix-p "doom-" (symbol-name (car custom-enabled-themes)))
+      (with-eval-after-load 'org
+        (setq num 1)
+        (while (<= num 8)
+          (setq face (intern (format "org-level-%d" num)))
+          (set-face-attribute face nil :height
+                              (max (- 1.5 (* 0.1 num)) 1.1))
+          (set-face-attribute face nil :family font)
+          (setq num (1+ num)))
+        (set-face-attribute 'org-document-title nil :height 1.4)
+        (set-face-attribute 'org-document-title nil :family font)))))
 
 ;; Set them now, and after each theme switch.
 (zy--setup-heading-appearance)
@@ -2485,10 +2488,12 @@ The function works like `org-latex-export-to-pdf', except that
   ;; Otherwise, Org-journal will only load after both `calendar' is loaded and
   ;; `org-journal-new-entry' is called.
   (general-def "C-c j" 'org-journal-new-entry)
-  :config
+  :init
   (setq!
    ;; In `org-journal-mode', use the original "C-c j" key as a prefix.
-   org-journal-prefix-key "C-c j"
+   org-journal-prefix-key "C-c j")
+  :config
+  (setq!
    ;; The following settings are applied for all my old journals, and work well
    ;; for me.  I tend not to change them, even if they are not the best.
    org-journal-extend-today-until 3
@@ -2551,12 +2556,21 @@ The function works like `org-latex-export-to-pdf', except that
 (use-package tex
   :defer t
   :config
-  (setq! TeX-auto-save t
-         TeX-parse-self t
-         TeX-save-query nil
-         TeX-engine 'xetex
-         TeX-source-correlate-start-server t
-         TeX-command-default "XeLaTeX")
+  (setq!
+   ;; Do not fontify superscripts and subscripts.
+   font-latex-fontify-script nil
+   ;; Automatically save style information when saving the buffer.
+   TeX-auto-save t
+   ;; Parse file after loading it if no style hook is found for it.
+   TeX-parse-self t
+   ;; Do not ask the user to save the file.  Do it automatically.
+   TeX-save-query nil
+   ;; I forget what this does.  Just keep it.
+   TeX-engine 'xetex
+   ;; Always enable synchronizing between source and target file.
+   TeX-source-correlate-start-server t
+   ;; Always use XeLaTeX to compile the document, as it supports Chinese well.
+   TeX-command-default "XeLaTeX")
 
   ;; Always compile with XeLaTeX (which provides better Chinese support), and
   ;; always enable correlate mode (for SyncTeX).
@@ -2576,17 +2590,22 @@ The function works like `org-latex-export-to-pdf', except that
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer))
 
-;; TODO: Add comments for theses settings.
 (use-package reftex
-  :defer t
   :after tex
+  :demand t
   :config
+  ;; Always turn on RefTeX while writting LaTeX.
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (with-eval-after-load 'reftex
-    (setq-default reftex-plug-into-AUCTeX t
-                  reftex-enable-partial-scans t
-                  reftex-save-parse-info t
-                  reftex-use-multiple-selection-buffers t)))
+    (setq!
+     ;; Integrate with AUCTeX.
+     reftex-plug-into-AUCTeX t
+     ;; Reparse only 1 file when asked to.
+     reftex-enable-partial-scans t
+     ;; Save parsed information.
+     reftex-save-parse-info t
+     ;; Use a separate selection buffer for each label type.
+     reftex-use-multiple-selection-buffers t)))
 
 ;;;;; Verilog
 
