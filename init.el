@@ -1498,26 +1498,24 @@ faster `prin1'."
   ;; Customizing many of these options triggers the load of `tab-bar-mode', so
   ;; just set them instead.
   (setq
+   ;; Do not auto determine tab widths.
+   tab-bar-auto-width nil
    ;; Show the tab bar, but not the close button.
    tab-bar-show t
-   tab-bar-close-button nil
+   tab-bar-close-button-show nil
    ;; Reduce tab bar UI elements.
-   tab-bar-format '(tab-bar-format-tabs tab-bar-separator)
-   ;; Show tab numbers.
-   tab-bar-tab-hints t
-   ;; Select tab with the Meta key plus tab number.  For example: M-3 selects
-   ;; the 3rd tab, and M-0 selects the most recent tab.
-   tab-bar-select-tab-modifiers (list 'meta))
+   tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
 
-  ;; On top of the default keybindings, bind "M-8" and "M-9" to previous/next
-  ;; tab, as I seldom open 8 to 9 tabs simutaneously.
-  (defadvice! zy--setup-additional-tab-bar-keys-a (&rest _)
-    "Install additional tab bar keybindings."
-    :after 'tab-bar--define-keys
-    (global-set-key (vector (append tab-bar-select-tab-modifiers (list ?8)))
-                            'tab-previous)
-    (global-set-key (vector (append tab-bar-select-tab-modifiers (list ?9)))
-                    'tab-next)))
+  ;; Tab name with more paddings.
+  (defun zy--tab-bar-tab-name-format (tab &optional _i)
+    "Fucntion to produce centered tab name."
+    (propertize
+     (concat "  " (alist-get 'name tab) "  ")
+     'face (funcall tab-bar-tab-face-function tab)))
+  (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format)
+
+  ;; Use bold font for the current tab.
+  (set-face-attribute 'tab-bar-tab nil :weight 'bold))
 
 ;;;; User interface
 
@@ -2238,7 +2236,7 @@ itself to `consult-recent-file', can finally call
 (use-package eglot
   :general
   (:keymaps 'eglot-mode-map
-            :prefix "M-o"
+            :prefix "C-c e"
             "r" 'eglot-rename
             "c" 'eglot-reconnect)
   :config
