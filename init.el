@@ -1238,7 +1238,7 @@ If this is a daemon session, load them all immediately instead."
 ;;;; Workbench
 
 ;; This section contains settings about buffers, files, directories, projects,
-;; windows, frames, and other things about the "workbench".
+;; windows, frames, workspaces, and other things about the "workbench".
 
 ;;;;; Autorevert (automatically refresh file-visiting buffers)
 
@@ -1486,6 +1486,38 @@ faster `prin1'."
 (general-def :keymaps 'ctl-x-x-map
   "d" 'zy/delete-file-and-buffer
   "R" 'zy/rename-file-and-buffer)
+
+;;;;; Tab bar
+
+;; A tab in Emacs is not like a tab in a browser or VS Code.  It is more like a
+;; workspace.
+
+(use-package tab-bar
+  :defer t
+  :config
+  ;; Customizing many of these options triggers the load of `tab-bar-mode', so
+  ;; just set them instead.
+  (setq
+   ;; Show the tab bar, but not the close button.
+   tab-bar-show t
+   tab-bar-close-button nil
+   ;; Reduce tab bar UI elements.
+   tab-bar-format '(tab-bar-format-tabs tab-bar-separator)
+   ;; Show tab numbers.
+   tab-bar-tab-hints t
+   ;; Select tab with the Meta key plus tab number.  For example: M-3 selects
+   ;; the 3rd tab, and M-0 selects the most recent tab.
+   tab-bar-select-tab-modifiers (list 'meta))
+
+  ;; On top of the default keybindings, bind "M-8" and "M-9" to previous/next
+  ;; tab, as I seldom open 8 to 9 tabs simutaneously.
+  (defadvice! zy--setup-additional-tab-bar-keys-a (&rest _)
+    "Install additional tab bar keybindings."
+    :after 'tab-bar--define-keys
+    (global-set-key (vector (append tab-bar-select-tab-modifiers (list ?8)))
+                            'tab-previous)
+    (global-set-key (vector (append tab-bar-select-tab-modifiers (list ?9)))
+                    'tab-next)))
 
 ;;;; User interface
 
