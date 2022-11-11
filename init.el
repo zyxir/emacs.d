@@ -562,6 +562,10 @@ is determined, several other directories, like `org-directory',
                   (expand-file-name "gtd.org" zy-gtd-dir)
                   zy-gtd-someday-file
                   (expand-file-name "someday.org" zy-gtd-dir))
+    ;; My other Org directory.
+    (defvar zy-notes-file)
+    (setq-default zy-notes-file
+                  (expand-file-name "notes.org" org-directory))
     ;; My Org-journal directory.
     (setq-default org-journal-dir
                   (expand-file-name "org-journal" org-directory))
@@ -2301,6 +2305,11 @@ Automatically set when `zy~zybox-dir' is customized.")
     "My someday file of the GTD system.
 Automatically set when `zy~zybox-dir' is customized.")
 
+  ;; Other org files.
+  (defvar zy-notes-file nil
+    "My file of short notes.
+Automatically set when `zy~zybox-dir' is customized.")
+
   :general
   ("C-c a" 'org-agenda
    "C-c c" 'org-capture)
@@ -2313,9 +2322,16 @@ Automatically set when `zy~zybox-dir' is customized.")
    ;; My favorite attachment directory.
    org-attach-id-dir "_org-att"
    ;; Capture templates for the GTD system.
-   org-capture-templates `(("i" "inbox" entry
+   org-capture-templates `(("i" "GTD inbox" entry
                             (file+headline ,zy-gtd-inbox-file "Inbox")
-                            "* TODO %i%? %^G\nCREATED: %U"))
+                            "* TODO %i%? %^G\nCREATED: %U"
+                            :kill-buffer)
+                           ("n" "Write a note" entry
+                            (file+headline ,zy-notes-file "Notes")
+                            "* %i%? \nCREATED: %U"
+                            :empty-lines 1
+                            :prepend
+                            :kill-buffer))
    ;; Hide emphasis markers.
    org-hide-emphasis-markers t
    ;; Less indentation for `org-indent-mode'.
