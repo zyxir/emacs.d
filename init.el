@@ -2357,13 +2357,13 @@ Automatically set when `zy~zybox-dir' is customized.")
    org-capture-templates `(("i" "GTD inbox" entry
                             (file+headline ,zy-gtd-inbox-file "Inbox")
                             "* TODO %i%? %^G\nCREATED: %U"
-                            :kill-buffer)
+                            :kill-buffer t)
                            ("n" "Write a note" entry
                             (file+headline ,zy-notes-file "Notes")
                             "* %i%? \nCREATED: %U"
                             :empty-lines 1
-                            :prepend
-                            :kill-buffer))
+                            :prepend t
+                            :kill-buffer t))
    ;; Hide emphasis markers.
    org-hide-emphasis-markers t
    ;; Less indentation for `org-indent-mode'.
