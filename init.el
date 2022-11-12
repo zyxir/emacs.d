@@ -2395,7 +2395,11 @@ Automatically set when `zy~zybox-dir' is customized.")
   (setq!
    ;; Do not export TOC or tags, unless asked to.
    org-export-with-toc nil
-   org-export-with-tags nil))
+   org-export-with-tags nil
+   ;; Normally I don't use "_" or "^" in Org files, and exporting them as
+   ;; sub/superscripts will mess up terms like "Pop!_OS".  So I disable this,
+   ;; and it can always be toggled file-wise if really needed.
+   org-export-with-sub-superscripts nil))
 
 ;;;;;; Org export to HTML
 

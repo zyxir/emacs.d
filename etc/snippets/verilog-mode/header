@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: File header
+# key: header
+# --
+// *********************************************************************************
+// Project Name : ${1:project name}
+// Author       : `user-full-name`
+// Email        : `user-mail-address`
+// Create Time  : `(format-time-string "%Y-%m-%d")`
+// File Name    : `(file-name-nondirectory (buffer-file-name))`
+// Copyright (c) `(format-time-string "%Y")` All rights reserved
+// *********************************************************************************
+$0
