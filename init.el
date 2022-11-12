@@ -2380,7 +2380,15 @@ Automatically set when `zy~zybox-dir' is customized.")
    org-todo-keyword-faces '(("TODO" . org-todo)
                             ("DOING" . (:foreground "#00bcff"))
                             ("DONE" . org-done)
-                            ("CANCELED" . shadow))))
+                            ("CANCELED" . shadow)))
+
+  ;; Setup faces.
+  (defun zy--setup-org-faces (&rest _)
+    "Setup faces for Org mode."
+    ;; Use monospaced font for code and blocks.
+    (set-face-attribute 'org-block nil :family "Sarasa Mono CL"))
+  (zy--setup-org-faces)
+  (add-hook 'zy-load-theme-hook 'zy--setup-org-faces))
 
 ;; Show emphasis markers while inside it.
 (use-package org-appear
