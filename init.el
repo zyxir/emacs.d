@@ -1655,7 +1655,8 @@ Will only take effect after restart."
   :group 'zyemacs
   :set #'(lambda (sym size)
            (set sym size)
-           (zy/setup-font-faces)))
+           (when (fboundp 'zy/setup-font-faces)
+             (zy/setup-font-faces))))
 
 (defun zy-set-face-charset-font (face frame charset font)
   "Set the font used for character set CHARSET in face FACE.
