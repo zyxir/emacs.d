@@ -1649,10 +1649,13 @@ Will only take effect after restart."
 
 ;; Font faces setup
 
-(defcustom zy-font-size 18
+(defcustom zy~font-size 18
   "The pixel size of font in `default' face."
   :type 'integer
-  :group 'zyemacs)
+  :group 'zyemacs
+  :set #'(lambda (sym size)
+           (set sym size)
+           (zy/setup-font-faces)))
 
 (defun zy-set-face-charset-font (face frame charset font)
   "Set the font used for character set CHARSET in face FACE.
@@ -1732,11 +1735,11 @@ does the job."
 
 This function does not work correctly on Terminal Emacs."
   (interactive)
-  (defvar zy-font-size)
+  (defvar zy~font-size)
   ;; Default face.
   (set-face-attribute 'default nil
                       :font (font-spec :family "Sarasa Mono CL"
-                                       :size zy-font-size))
+                                       :size zy~font-size))
   (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
   ;; Fixed-pitch face.
   (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
