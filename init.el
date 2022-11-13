@@ -2390,6 +2390,10 @@ Automatically set when `zy~zybox-dir' is customized.")
   (zy--setup-org-faces)
   (add-hook 'zy-load-theme-hook 'zy--setup-org-faces))
 
+;; Use Org tempo for block expansion.
+(use-package org-tempo
+  :after org)
+
 ;; Show emphasis markers while inside it.
 (use-package org-appear
   :straight t
