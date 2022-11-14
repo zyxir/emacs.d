@@ -54,6 +54,7 @@
  ("themes" . "535800fd6ca7f5af56f7aa3d0e8f46fef8b7999b")
  ("transient" . "ad953cc3c5b8a066d3da11a8527c035744f1385f")
  ("use-package" . "17a049b0f70f1c05f83516827425d694c21f20aa")
+ ("valign" . "c9d30a31002cd296f2ea7398ca86ae9f48553467")
  ("verilog-mode" . "4730033ac976dd8b3fc8620010aac8b7d2086882")
  ("vertico" . "74dd1dae762cb87739b37de9ab8ae8d64e5baf7b")
  ("with-editor" . "4ca225bf1c54d6dab2ba7e734f594419c7769e36")

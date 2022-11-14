@@ -877,6 +877,7 @@ If this is a daemon session, load them all immediately instead."
   :straight t
   :demand t)
 (declare-function general-def "general")
+(declare-function general-unbind "general")
 
 ;;;;;; Global keymaps
 
@@ -1234,6 +1235,12 @@ If this is a daemon session, load them all immediately instead."
   :general
   ("M-z" 'avy-goto-char
    "M-Z" 'avy-goto-char-2))
+
+;;;;; Mouse yank
+
+;; Disable yanking with the middle mouse button.
+
+(general-unbind "<mouse-2>" "<down-mouse-2>")
 
 ;;;; Workbench
 
@@ -2248,6 +2255,14 @@ itself to `consult-recent-file', can finally call
    ;; Languages and their servers to use.
    eglot-server-programs '((python-mode . ("pylsp"))
                            (verilog-mode . ("svls")))))
+
+;;;;; Valign (table alignment in Org and Markdown)
+
+;; Valign provide pixel-perfect alignment for tables.
+
+(use-package valign
+  :straight t
+  :hook (org-mode markdown-mode))
 
 ;;;; File type specific settings
 
