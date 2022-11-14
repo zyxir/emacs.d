@@ -1632,7 +1632,7 @@ Will only take effect after restart."
 ;; Line numbers display.
 (use-package display-line-numbers
   :defer t
-  :hook (prog-mode text-mode conf-mode)
+  :hook (prog-mode conf-mode)
   :general
   (:keymaps 'zy-toggle-map
             "l" 'display-line-numbers-mode)
