@@ -2165,7 +2165,7 @@ itself to `consult-recent-file', can finally call
                               "#ff8b3d"
                             (if (equal
                                  (frame-parameter nil 'background-mode)
-                                 "dark")
+                                 'dark)
                                 "#ffffff"
                               "#000000"))))))
 
