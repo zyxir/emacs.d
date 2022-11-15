@@ -979,15 +979,6 @@ If this is a daemon session, load them all immediately instead."
                (server-running-p))
     (server-start)))
 
-;;;;; Execution path
-
-;; Get PATH from shell.
-(unless (memq system-type '(windows-nt))
-  (use-package exec-path-from-shell
-    :straight t
-    :config
-    (exec-path-from-shell-initialize)))
-
 ;;;;; Terminal settings
 
 (add-hook! tty-setup
