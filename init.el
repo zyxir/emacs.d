@@ -1870,13 +1870,11 @@ This is an :around advice, and FN is the adviced function."
     "Turn off UI elements when entering Darkroom in a text mode buffer."
     :after 'darkroom--enter
     (when (derived-mode-p 'text-mode)
-      (display-line-numbers-mode -1)
       (hl-line-mode -1)))
   (defadvice! zy--darkroom-leave-a (&rest _)
     "Turn on UI elements when leaving Darkroom in a text mode buffer."
     :after 'darkroom--leave
     (when (derived-mode-p 'text-mode)
-      (display-line-numbers-mode 1)
       (hl-line-mode 1))))
 
 ;;;;; Headings
@@ -2163,8 +2161,8 @@ itself to `consult-recent-file', can finally call
                             (if (equal
                                  (frame-parameter nil 'background-mode)
                                  "dark")
-                                "#000000"
-                              "#ffffff"))))))
+                                "#ffffff"
+                              "#000000"))))))
 
 ;;;;; Syntax checker (Flymake and Flycheck)
 
