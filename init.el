@@ -1242,6 +1242,20 @@ If this is a daemon session, load them all immediately instead."
 
 (general-unbind "<mouse-2>" "<down-mouse-2>")
 
+;;;;; Keyboard macros
+
+(use-package kmacro
+  :defer t
+  :config
+  (with-eval-after-load 'corfu
+    (defadvice! zy--disable-corfu-while-kmacro (fn &rest rest)
+      "Disable Corfu while executing a keyboard macro."
+      :around 'kmacro-call-macro
+      (let ((corfu-enabled-p corfu-mode))
+        (when corfu-enabled-p (corfu-mode -1))
+        (apply fn rest)
+        (when corfu-enabled-p (corfu-mode 1))))))
+
 ;;;; Workbench
 
 ;; This section contains settings about buffers, files, directories, projects,
