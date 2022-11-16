@@ -1837,6 +1837,10 @@ Return what `zy/setup-font-faces' returns."
   ;; Keep the cursor position relative to the scrren.
   (setq! scroll-preserve-screen-position t)
 
+  ;; Enable smooth scroll on GTK.
+  (when (memq window-system '(x pgtk))
+    (pixel-scroll-precision-mode 1))
+
   (defun zy--golden-ratio-scroll-a (fn &rest arg)
     "Make scroll commands scroll 0.618 of the screen.
 
@@ -1912,20 +1916,19 @@ Should be run again after theme switch."
                             (max (- 1.5 (* 0.1 num)) 1.1))
         (set-face-attribute face nil :family font)
         (setq num (1+ num))))
-    ;; Setup for `org-mode', unless a Doom theme is enabled.  Doom themes make
-    ;; Org heading faces inherit Outline faces, so no additional settings is
-    ;; required.
-    (unless (string-prefix-p "doom-" (symbol-name (car custom-enabled-themes)))
-      (with-eval-after-load 'org
+    ;; Setup for `org-mode'.  Doom themes make Org heading faces inherit Outline
+    ;; faces, so only set document title for them.
+    (with-eval-after-load 'org
+      (unless (string-prefix-p "doom-" (symbol-name (car custom-enabled-themes)))
         (setq num 1)
         (while (<= num 8)
           (setq face (intern (format "org-level-%d" num)))
           (set-face-attribute face nil :height
                               (max (- 1.5 (* 0.1 num)) 1.1))
           (set-face-attribute face nil :family font)
-          (setq num (1+ num)))
-        (set-face-attribute 'org-document-title nil :height 1.4)
-        (set-face-attribute 'org-document-title nil :family font)))))
+          (setq num (1+ num))))
+      (set-face-attribute 'org-document-title nil :height 1.4)
+      (set-face-attribute 'org-document-title nil :family font))))
 
 ;; Set them now, and after each theme switch.
 (zy--setup-heading-appearance)
