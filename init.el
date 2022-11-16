@@ -1242,6 +1242,8 @@ If this is a daemon session, load them all immediately instead."
     (defadvice! zy--disable-corfu-while-kmacro (fn &rest rest)
       "Disable Corfu while executing a keyboard macro."
       :around 'kmacro-call-macro
+      (defvar corfu-mode)
+      (declare-function corfu-mode "corfu")
       (let ((corfu-enabled-p corfu-mode))
         (when corfu-enabled-p (corfu-mode -1))
         (apply fn rest)
@@ -1604,13 +1606,17 @@ Will only take effect after restart."
   :defer 1
   :config
   (dim-minor-names
-   '((clipetty-mode nil clipetty)
+   '((buffer-face-mode nil face-remap)
+     (clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
      (highlight-indent-guides-mode nil highlight-indent-guides)
+     (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
      (smartparens-mode nil smartparens)
      (subword-mode nil subword)
+     (valign-mode nil valign)
+     (visual-line-mode " VL" simple)
      (yas-minor-mode nil yasnippet)
      (which-key-mode nil which-key))))
 
@@ -2138,7 +2144,7 @@ itself to `consult-recent-file', can finally call
   (add-hook! corfu-mode
     (add-to-list 'completion-at-point-functions #'cape-file)))
 
-;;;;; Rime input method
+;;;;; Input method
 
 ;; Rime is my favorite input method for every platforms.  Fortunately it is
 ;; integrated into Emacs as well.
