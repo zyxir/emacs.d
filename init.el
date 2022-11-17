@@ -1491,7 +1491,7 @@ faster `prin1'."
                              (project-find-dir "Find directory" "d")
                              (rg-project "Grep" "g")
                              (magit-project-status "Magit" "v")
-                             (project-eshell "Eshell" "s"))))
+                             (project-eshell "Eshell" "e"))))
 
 ;;;;; File operations
 
@@ -2152,6 +2152,14 @@ itself to `consult-recent-file', can finally call
 (use-package rime
   :straight t
   :defer t
+  :general
+  ;; On Linux, I map Left Shift to F16 when pressed alone in Emacs via Xremap,
+  ;; so that I can toggle input method conveniently inside Emacs.  However,
+  ;; Emacs interprets F16 to <Launch7>, so I have to map that.
+  ;;
+  ;; Why don't I map it to C-\ directly?  Because Xremap doesn't support that.
+  ;; Besides, mapping it to a rarely-used key causes less side effects.
+  ("<Launch7>" 'toggle-input-method)
   :init
   (setq!
    ;; Use Rime as the default input method.
@@ -2171,7 +2179,10 @@ itself to `consult-recent-file', can finally call
      "Change cursor color based on current IM."
      (set-frame-parameter nil 'cursor-color
                           (if current-input-method
-                              "#ff8b3d"
+                              ;; If input method is on, use this orange color.
+                              "orange"
+                            ;; Other wise, use white or black based on the
+                            ;; current background color.
                             (if (equal
                                  (frame-parameter nil 'background-mode)
                                  'dark)
