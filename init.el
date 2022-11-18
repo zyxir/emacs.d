@@ -1757,18 +1757,18 @@ This function does not work correctly on Terminal Emacs."
   (defvar zy~font-size)
   ;; Default face.
   (set-face-attribute 'default nil
-                      :font (font-spec :family "Sarasa Mono CL"
+                      :font (font-spec :family "Sarasa Mono HC"
                                        :size zy~font-size))
-  (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono CL")
+  (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono HC")
   ;; Fixed-pitch face.
-  (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono CL"
+  (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono HC"
                       :height 'unspecified)
   (zy-set-face-charset-font 'fixed-pitch nil
-                            zy-cjk-charsets "Sarasa Mono CL")
+                            zy-cjk-charsets "Sarasa Mono HC")
   ;; Variable-pitch face.
   (set-face-attribute 'variable-pitch nil :font "Roboto")
   (zy-set-face-charset-font 'variable-pitch nil
-                            zy-cjk-charsets "Sarasa Mono CL"))
+                            zy-cjk-charsets "Sarasa Mono HC"))
 
 (defun zy-maybe-setup-font-faces (&rest _)
   "Try to setup font faces.
@@ -2428,7 +2428,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   (defun zy--setup-org-faces (&rest _)
     "Setup faces for Org mode."
     ;; Use monospaced font for code and blocks.
-    (set-face-attribute 'org-block nil :family "Sarasa Mono CL"))
+    (set-face-attribute 'org-block nil :family "Sarasa Mono HC"))
   (zy--setup-org-faces)
   (add-hook 'zy-load-theme-hook 'zy--setup-org-faces))
 
