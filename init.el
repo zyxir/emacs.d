@@ -2656,7 +2656,6 @@ The function works like `org-latex-export-to-pdf', except that
   :straight t
   :defer t)
 
-;; TODO: Add comments for theses settings.
 (use-package tex
   :defer t
   :config
@@ -2677,17 +2676,20 @@ The function works like `org-latex-export-to-pdf', except that
    TeX-command-default "XeLaTeX")
 
   ;; Always compile with XeLaTeX (which provides better Chinese support), and
-  ;; always enable correlate mode (for SyncTeX).
+  ;; always compile with SyncTeX support.
   (defvar TeX-command-list)
   (add-to-list 'TeX-command-list
                '("XeLaTeX"
                  "%`xelatex%(mode)%' --synctex=1%(mode)%' %t"
                  TeX-run-TeX nil t))
-  (declare-function TeX-source-correlate-mode "tex")
-  (add-hook 'LaTeX-mode-hook
-            (lambda ()
-              (setq-local TeX-command-default "XeLaTeX")
-              (TeX-source-correlate-mode 1)))
+  (add-hook! tex-mode
+    ;; Always enable correlate mode (for SyncTeX).
+    'TeX-source-correlate-mode
+    ;; Lint with Flycheck.
+    'flycheck-mode)
+  (setq-hook! tex-mode
+    ;; Always use XeLeTeX by default.
+    TeX-command-default "XeLaTeX")
 
   ;; Revert document buffer after compilation.
   (declare-function TeX-revert-document-buffer "tex")
