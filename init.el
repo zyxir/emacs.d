@@ -1539,16 +1539,11 @@ faster `prin1'."
 ;;;;; Theme Emacs
 
 (defcustom zy~default-theme 'modus-operandi
-  "The theme in use.
-Will only take effect after restart."
+  "Default theme of Emacs.
+Will only take effect after restart.  If you want to tweak the
+theme, use `customize-themes' instead."
   :group 'zyxir
-  :type '(choice (const modus-vivendi)
-                 (const modus-operandi)
-                 (const doom-one)
-                 (const doom-one-light)
-                 (const doom-vibrant)
-                 (const doom-wilmersdorf)
-                 (const nil)))
+  :type 'symbol)
 
 (use-package modus-themes
   ;; Modus themes are built-in now, but I prefer using the latest version for a
@@ -1569,6 +1564,15 @@ Will only take effect after restart."
    modus-themes-region '(accented no-extend)
    modus-themes-org-blocks '(gray-background)
    modus-themes-prompts '(background))
+  (load-theme zy~default-theme 'no-confirm))
+
+(use-package ef-themes
+  :straight t
+  :when (string-prefix-p "ef-" (symbol-name zy~default-theme))
+  :demand t
+  :config
+  (setq!
+   ef-themes-region '(no-extend))
   (load-theme zy~default-theme 'no-confirm))
 
 (use-package doom-themes
