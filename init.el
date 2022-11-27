@@ -2291,6 +2291,14 @@ itself to `consult-recent-file', can finally call
   :straight t
   :hook (org-mode markdown-mode))
 
+;;;;; Sudo edit
+
+;; Allow to switch editing rights on an already opened read-only file.
+
+(use-package sudo-edit
+  :straight t
+  :commands 'sudo-edit)
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
