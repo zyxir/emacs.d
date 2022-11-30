@@ -1538,46 +1538,15 @@ faster `prin1'."
 
 ;;;;; Theme Emacs
 
-(defcustom zy~default-theme 'modus-operandi
+(defcustom zy~default-theme 'doom-one
   "Default theme of Emacs.
 Will only take effect after restart.  If you want to tweak the
 theme, use `customize-themes' instead."
   :group 'zyxir
   :type 'symbol)
 
-(use-package modus-themes
-  ;; Modus themes are built-in now, but I prefer using the latest version for a
-  ;; greater feature set.
-  :straight t
-  :when (memq zy~default-theme '(modus-vivendi modus-operandi))
-  :demand t
-  :general
-  (:keymaps 'zy-toggle-map
-            "t" 'modus-themes-toggle)
-  :config
-  (setq!
-   modus-themes-italic-constructs t
-   modus-themes-bold-constructs t
-   modus-themes-hl-line '(intense)
-   modus-themes-markup '(background intense)
-   modus-themes-mixed-fonts t
-   modus-themes-region '(accented no-extend)
-   modus-themes-org-blocks '(gray-background)
-   modus-themes-prompts '(background))
-  (load-theme zy~default-theme 'no-confirm))
-
-(use-package ef-themes
-  :straight t
-  :when (string-prefix-p "ef-" (symbol-name zy~default-theme))
-  :demand t
-  :config
-  (setq!
-   ef-themes-region '(no-extend))
-  (load-theme zy~default-theme 'no-confirm))
-
 (use-package doom-themes
   :straight t
-  :when (string-prefix-p "doom-" (symbol-name zy~default-theme))
   :demand t
   :config
   (setq! doom-themes-enable-bold t
@@ -1586,7 +1555,7 @@ theme, use `customize-themes' instead."
 
 (use-package solaire-mode
   :straight t
-  :after (:any modus-themes doom-themes)
+  :after doom-themes
   :hook (zy-first-buffer . solaire-global-mode))
 
 ;;;;; Mode line
@@ -1929,14 +1898,6 @@ Should be run again after theme switch."
     ;; Setup for `org-mode'.  Doom themes make Org heading faces inherit Outline
     ;; faces, so only set document title for them.
     (with-eval-after-load 'org
-      (unless (string-prefix-p "doom-" (symbol-name (car custom-enabled-themes)))
-        (setq num 1)
-        (while (<= num 8)
-          (setq face (intern (format "org-level-%d" num)))
-          (set-face-attribute face nil :height
-                              (max (- 1.5 (* 0.1 num)) 1.1))
-          (set-face-attribute face nil :family font)
-          (setq num (1+ num))))
       (set-face-attribute 'org-document-title nil :height 1.4)
       (set-face-attribute 'org-document-title nil :family font))))
 
