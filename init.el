@@ -1704,24 +1704,6 @@ does the job."
 ;; Anyway this is just my personal configuration, I can change the code at any
 ;; time.
 
-(defun zy-set-heading-fonts ()
-  "Set dedicated fonts for headings."
-  (let ((font "Roboto Slab")
-        face num)
-    (with-eval-after-load 'outline
-      (setq num 1)
-      (while (<= num 8)
-        (setq face (intern (format "outline-%d" num)))
-        (set-face-attribute face nil :family font)
-        (setq num (1+ num))))
-    (with-eval-after-load 'org
-      (setq num 1)
-      (while (<= num 8)
-        (setq face (intern (format "org-level-%d" num)))
-        (set-face-attribute face nil :family font)
-        (setq num (1+ num)))
-      (set-face-attribute 'org-document-title nil :family font))))
-
 (defun zy/setup-font-faces ()
   "Setup font for several faces.
 
