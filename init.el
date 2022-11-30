@@ -2035,51 +2035,24 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after (embark consult))
 
+;;;;; Company (completion framework)
 
-;;;;; Corfu (completion at point)
-
-(use-package corfu
-  :straight '(corfu :files (:defaults "extensions"))
-  ;; Enable auto completion for almost every modes.
-  :hook (prog-mode text-mode conf-mode)
+(use-package company
+  :straight t
+  :hook (conf-mode prog-mode text-mode)
   :general
+  ("C-c TAB" 'company-complete)
+  ("C-c <tab>" 'company-complete)
   (:keymaps 'zy-toggle-map
-            "c" 'corfu-mode)
+            "c" 'company-mode)
   :config
   (setq!
-   ;; Make completion automatically.
-   corfu-auto t
-   ;; Make completion a bit more aggresive.
-   corfu-auto-prefix 2
-   ;; On-the-fly completion.
-   corfu-auto-delay 0))
-
-;; Corfu extensions.
-
-;; Define the load path at compile time.
-(eval-and-compile
-  (defun zy--corfu-extensions-load-path ()
-    (file-name-concat straight-base-dir
-                      "straight"
-                      straight-build-dir
-                      "corfu/extensions")))
-
-(use-package corfu-indexed
-  :load-path (lambda () (zy--corfu-extensions-load-path))
-  :hook corfu-mode)
-
-(use-package corfu-info
-  :load-path (lambda () (zy--corfu-extensions-load-path))
-  :after corfu)
-
-;; Enable Corfu in Terminal via Corfu-terminal
-
-(use-package corfu-terminal
-  :straight t
-  :after corfu
-  :unless (display-graphic-p)
-  :config
-  (corfu-terminal-mode 1))
+   ;; Show candidates instantly.
+   company-idle-delay 0
+   ;; Show candidates immediately after typing.
+   company-minimum-prefix-length 1
+   ;; Show quick access indices to the left.
+   company-show-quick-access 'left))
 
 ;;;;; Cape provides more completion-at-point functions
 
