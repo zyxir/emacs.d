@@ -2042,24 +2042,16 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after (embark consult))
 
-;;;;; Company (completion framework)
+;;;;; Lsp-bridge (LSP implementation and completion framework)
 
-(use-package company
-  :straight t
-  :hook (conf-mode prog-mode text-mode)
-  :general
-  ("C-c TAB" 'company-complete)
-  ("C-c <tab>" 'company-complete)
-  (:keymaps 'zy-toggle-map
-            "c" 'company-mode)
-  :config
-  (setq!
-   ;; Show candidates instantly.
-   company-idle-delay 0
-   ;; Show candidates immediately after typing.
-   company-minimum-prefix-length 1
-   ;; Show quick access indices to the left.
-   company-show-quick-access 'left))
+;; Lsp-bridge is a special package. Currently I install it manually as a
+;; git submodule.
+
+(add-to-list 'load-path
+             (expand-file-name "site-lisp/lsp-bridge"
+                               user-emacs-directory))
+(autoload 'lsp-bridge-mode "lsp-bridge")
+(add-hook! (conf-mode prog-mode text-mode) 'lsp-bridge-mode)
 
 ;;;;; Cape provides more completion-at-point functions
 
