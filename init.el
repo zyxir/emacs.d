@@ -572,13 +572,18 @@ is determined, several other directories, like `org-directory',
     ;; My Org-roam directory.
     (setq-default org-roam-directory
                   (expand-file-name "org-roam" org-directory))
-    ;; My Zotero BibLaTeX database.
+    ;; My BibLaTeX databases.
     (defvar zy-bib-files)
-    (let ((zotero-bib-file (expand-file-name "zotero/references.bib" path)))
+    (defvar zy-ebib-bib-file)
+    (let ((zotero-bib-file (expand-file-name "zotero/references.bib" path))
+          (ebib-bib-file (expand-file-name "ebib/references.bib" path)))
       (unless (boundp 'zy-bib-files)
         (setq-default zy-bib-files nil))
       (when (file-exists-p zotero-bib-file)
-        (add-to-list 'zy-bib-files zotero-bib-file)))))
+        (add-to-list 'zy-bib-files zotero-bib-file))
+      (when (file-exists-p ebib-bib-file)
+        (add-to-list 'zy-bib-files ebib-bib-file)
+        (setq-default zy-ebib-bib-file ebib-bib-file)))))
 
 (defcustom zy~zybox-dir ""
   "The Zybox directory, my personal file center."
@@ -2219,14 +2224,29 @@ itself to `consult-recent-file', can finally call
 ;; Manage ".bib" databases with Emacs.
 
 (defvar zy-bib-files nil
-  "All of my BibLaTeX databases.")
+  "All of my BibLaTeX databases.
+Automatically set when `zy~zybox-dir' is customized.")
 
-;; Inserting and managing citations with citar.
+;; Inserting and managing citations with Citar.
 
 (use-package citar
   :straight t
   :general
   ("C-c t" 'citar-insert-citation))
+
+;; Manage bibliography database in Emacs with Ebib.
+
+(use-package ebib
+  :straight t
+  :general
+  ("C-c e" 'ebib)
+  :init
+  (defvar zy-ebib-bib-file nil
+    "BibLaTeX database used by Ebib.
+Automatically set when `zy~zybox-dir' is customized.")
+  :config
+  (when (bound-and-true-p zy-ebib-bib-file)
+    (add-to-list 'ebib-preload-bib-files zy-ebib-bib-file)))
 
 ;;;; File type specific settings
 
