@@ -571,7 +571,14 @@ is determined, several other directories, like `org-directory',
                   (expand-file-name "org-journal" org-directory))
     ;; My Org-roam directory.
     (setq-default org-roam-directory
-                  (expand-file-name "org-roam" org-directory))))
+                  (expand-file-name "org-roam" org-directory))
+    ;; My Zotero BibLaTeX database.
+    (defvar zy-bib-files)
+    (let ((zotero-bib-file (expand-file-name "zotero/references.bib" path)))
+      (unless (boundp 'zy-bib-files)
+        (setq-default zy-bib-files nil))
+      (when (file-exists-p zotero-bib-file)
+        (add-to-list 'zy-bib-files zotero-bib-file)))))
 
 (defcustom zy~zybox-dir ""
   "The Zybox directory, my personal file center."
@@ -2214,6 +2221,20 @@ itself to `consult-recent-file', can finally call
 (use-package sudo-edit
   :straight t
   :commands 'sudo-edit)
+
+;;;;; Bibliography management
+
+;; Manage ".bib" databases with Emacs.
+
+(defvar zy-bib-files nil
+  "All of my BibLaTeX databases.")
+
+;; Inserting and managing citations with citar.
+
+(use-package citar
+  :straight t
+  :general
+  ("C-c t" 'citar-insert-citation))
 
 ;;;; File type specific settings
 
