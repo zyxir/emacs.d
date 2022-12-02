@@ -575,15 +575,22 @@ is determined, several other directories, like `org-directory',
     ;; My BibLaTeX databases.
     (defvar zy-bib-files)
     (defvar zy-ebib-bib-file)
-    (let ((zotero-bib-file (expand-file-name "zotero/references.bib" path))
-          (ebib-bib-file (expand-file-name "ebib/references.bib" path)))
+    (let ((zotero-bib-file
+           (expand-file-name "zotero/references.bib" path))
+          (ebib-bib-file
+           (expand-file-name "ebib/references.bib" path)))
       (unless (boundp 'zy-bib-files)
         (setq-default zy-bib-files nil))
       (when (file-exists-p zotero-bib-file)
         (add-to-list 'zy-bib-files zotero-bib-file))
       (when (file-exists-p ebib-bib-file)
         (add-to-list 'zy-bib-files ebib-bib-file)
-        (setq-default zy-ebib-bib-file ebib-bib-file)))))
+        (setq-default zy-ebib-bib-file ebib-bib-file)))
+    ;; Ebib paths.
+    (setq-default ebib-notes-directory
+                  (expand-file-name "ebib/notes" path)
+                  ebib-file-search-dirs
+                  `(,(expand-file-name "ebib/files" path)))))
 
 (defcustom zy~zybox-dir ""
   "The Zybox directory, my personal file center."
@@ -2232,7 +2239,10 @@ Automatically set when `zy~zybox-dir' is customized.")
 (use-package citar
   :straight t
   :general
-  ("C-c t" 'citar-insert-citation))
+  ("C-c i" 'citar-insert-citation)
+  :config
+  (setq!
+   citar-bibliography zy-bib-files))
 
 ;; Manage bibliography database in Emacs with Ebib.
 
@@ -2245,8 +2255,19 @@ Automatically set when `zy~zybox-dir' is customized.")
     "BibLaTeX database used by Ebib.
 Automatically set when `zy~zybox-dir' is customized.")
   :config
+  ;; Set the preloaded bib database.
   (when (bound-and-true-p zy-ebib-bib-file)
     (add-to-list 'ebib-preload-bib-files zy-ebib-bib-file)))
+
+;; Import entry with DOI via Biblio.
+
+(use-package biblio
+  :straight t
+  :general
+  (:keymaps 'ebib-index-mode-map
+            "B" 'ebib-biblio-import-doi)
+  (:keymaps 'biblio-selection-mode-map
+            "e" 'ebib-biblio-selection-import))
 
 ;;;; File type specific settings
 
