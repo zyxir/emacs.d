@@ -23,11 +23,18 @@ Lightweight Emacs configuration for my daily need.
 
 ** Installation
 
-Clone this repository to ~$HOME/.emacs.d~.  Run Eamcs with ~emacs --debug-init~, and third-party packages will be automatically installed.
+Clone this repository, along with its submodules, to ~$HOME/.emacs.d~.
+
+#+begin_src sh
+  git clone --recurse-submodules -j$(nproc) git@github.com:zyxir/emacs.d.git ~/.emacs.d
+#+end_src
+
+Run Eamcs with ~emacs --debug-init~, and third-party packages will be automatically installed.
 
 These third-party programs enables additional functionalities of my configuration:
 
 - Librime :: This is required to build and use the built-in Rime input method.
+- Python packages :: ~epc~, ~orjson~ and ~six~ are required to use Lsp-bridge.
 - Ripgrep :: Fast text search.  Used by commands like ~consult-ripgrep~ and ~rg~.
 
 ** Customization

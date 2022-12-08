@@ -2238,11 +2238,22 @@ Automatically set when `zy~zybox-dir' is customized.")
   :straight t
   :general
   ("C-c e" 'ebib)
+  (:keymaps 'ebib-index-mode-map
+            "t" 'ebib-import-file)
   :init
   (defvar zy-ebib-bib-file nil
     "BibLaTeX database used by Ebib.
 Automatically set when `zy~zybox-dir' is customized.")
   :config
+  (setq!
+   ;; Generate BibTeX keys automatically.
+   ebib-auotgenerate-keys t
+   ;; Ways to open entry files.
+   ebib-file-associations
+   `(("pdf" . ,(pcase system-type
+                 ('gnu/linux "xdg-open")
+                 ('windows-nt "explorer")))
+     ("ps" . "gv")))
   ;; Set the preloaded bib database.
   (when (bound-and-true-p zy-ebib-bib-file)
     (add-to-list 'ebib-preload-bib-files zy-ebib-bib-file)))
@@ -2255,7 +2266,23 @@ Automatically set when `zy~zybox-dir' is customized.")
   (:keymaps 'ebib-index-mode-map
             "B" 'ebib-biblio-import-doi)
   (:keymaps 'biblio-selection-mode-map
-            "e" 'ebib-biblio-selection-import))
+            "e" 'ebib-biblio-selection-import)
+  :config
+  (setq!
+   ;; Generate keys automatically.
+   biblio-bibtex-use-autokey t))
+
+;; Automatic key generation with bibtex.
+
+(use-package bibtex
+  :defer t
+  :config
+  (setq!
+   ;; See `bibtex-generate-autokey'.
+   bibtex-autokey-year-length 4
+   bibtex-autokey-titlewords 2
+   bibtex-autokey-name-year-separator "_"
+   bibtex-autokey-year-title-separator "_"))
 
 ;;;; File type specific settings
 
@@ -2325,7 +2352,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 
 (use-package org
   :defer t
-  :straight '(org :type built-in)
+  :straight t
   :init
   (setq!
    ;; Indent sections by depth.
