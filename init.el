@@ -1603,6 +1603,7 @@ theme, use `customize-themes' instead."
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
      (highlight-indent-guides-mode nil highlight-indent-guides)
+     (lsp-bridge-mode nil lsp-bridge)
      (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
      (smartparens-mode nil smartparens)
@@ -2064,6 +2065,11 @@ itself to `consult-recent-file', can finally call
                                user-emacs-directory))
 (autoload 'lsp-bridge-mode "lsp-bridge")
 (add-hook! (conf-mode prog-mode text-mode) 'lsp-bridge-mode)
+(general-def
+  :keymaps 'lsp-bridge-mode-map
+  :prefix "C-c h"
+  "a" 'lsp-bridge-code-action
+  "r" 'lsp-bridge-rename)
 
 ;;;;; Cape provides more completion-at-point functions
 
@@ -2191,24 +2197,6 @@ itself to `consult-recent-file', can finally call
 (use-package calendar
   :general
   ("C-c l" 'calendar))
-
-;;;;; Eglot (language server protocol support)
-
-;; By Emacs 29.1 Eglot is built-in.
-(when (< emacs-major-version 29)
-  (straight-use-package 'eglot))
-
-(use-package eglot
-  :general
-  (:keymaps 'eglot-mode-map
-            :prefix "C-c e"
-            "r" 'eglot-rename
-            "c" 'eglot-reconnect)
-  :config
-  (setq!
-   ;; Languages and their servers to use.
-   eglot-server-programs '((python-mode . ("pylsp"))
-                           (verilog-mode . ("svls")))))
 
 ;;;;; Valign (table alignment in Org and Markdown)
 
@@ -2626,7 +2614,7 @@ The function works like `org-latex-export-to-pdf', except that
   :init
   (add-hook! python-mode
     'display-fill-column-indicator-mode
-    'eglot-ensure
+    'flycheck-mode
     'rainbow-delimiters-mode)
   :config
   (setq!
