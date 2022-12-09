@@ -1388,6 +1388,11 @@ faster `prin1'."
    ;; Show commit time in the status buffer.
    magit-status-margin '(t age magit-log-margin-width nil 18)))
 
+;; Extra autoloaded magit commands.
+(use-package magit-extras
+  :commands
+  (magit-project-status))
+
 ;; Use Diff-hl to highlight file changes.
 (use-package diff-hl
   :straight t
@@ -1503,7 +1508,8 @@ faster `prin1'."
   :defer t
   :general
   (:keymaps 'project-prefix-map
-            "g" 'rg-project)
+            "g" 'rg-project
+            "v" 'magit-project-status)
   :config
   (setq!
    project-switch-commands '((project-find-file "Find file" "f")
