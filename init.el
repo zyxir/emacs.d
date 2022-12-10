@@ -918,6 +918,7 @@ If this is a daemon session, load them all immediately instead."
   (;; Scratch buffer
    zy/scratch
    zy/scratch-elisp
+   zy/scratch-org
    ;; Cursor movement
    zy/move-beginning-of-line
    ;; Line filling
@@ -1013,7 +1014,8 @@ If this is a daemon session, load them all immediately instead."
 
 (general-def :keymaps 'ctl-x-x-map
   "k" 'zy/scratch
-  "l" 'zy/scratch-elisp)
+  "l" 'zy/scratch-elisp
+  "o" 'zy/scratch-org)
 
 ;;;;; Garbage collector magic hack
 
@@ -2359,7 +2361,10 @@ Automatically set when `zy~zybox-dir' is customized.")
 ;; Basic settings about Org itself, and some simpler extensions.
 
 (use-package org
-  :defer t
+  :defer-incrementally
+  calendar find-func format-spec org-macs org-compat org-faces org-entities
+  org-list org-pcomplete org-src org-footnote org-macro ob org org-agenda
+  org-capture
   :straight t
   :init
   (setq!

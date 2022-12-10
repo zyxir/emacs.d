@@ -60,6 +60,15 @@ The buffer is automatically converted to Lisp interaction mode."
     (switch-to-buffer buf)
     (lisp-interaction-mode)))
 
+;;;###autoload
+(defun zy/scratch-org ()
+  "Switch to or create the Org scratch buffer.
+The buffer is automatically converted to Org mode."
+  (interactive)
+  (let ((buf (get-buffer-create "*scratch-org*")))
+    (switch-to-buffer buf)
+    (org-mode)))
+
 ;;;; Text-editing
 
 ;;;;; Cursor movement
