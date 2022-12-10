@@ -1391,7 +1391,9 @@ faster `prin1'."
 ;; Extra autoloaded magit commands.
 (use-package magit-extras
   :commands
-  (magit-project-status))
+  (magit-project-status)
+  :config
+  (require 'project))
 
 ;; Use Diff-hl to highlight file changes.
 (use-package diff-hl
