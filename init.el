@@ -2091,7 +2091,9 @@ itself to `consult-recent-file', can finally call
   (add-hook! corfu-mode
     (add-to-list 'completion-at-point-functions #'cape-file)))
 
-;;;;; Input method
+;;;;; Lingual
+
+;;;;;; Rime input method
 
 ;; Rime is my favorite input method for every platforms.  Fortunately it is
 ;; integrated into Emacs as well.
@@ -2135,6 +2137,30 @@ itself to `consult-recent-file', can finally call
                                  'dark)
                                 "#ffffff"
                               "#000000"))))))
+
+;;;;;; OpenCC (simplified/traditional chinese converter)
+
+;; OpenCC is a handy tool for me.  It is not easy to install it on Windows, but
+;; lucily Librime provides an executable of it.  However, the configuration
+;; files have to be set manually on Windows.
+
+(use-package opencc
+  :straight t
+  :commands (opencc-replace-at-point
+             opencc-print-buffer
+             opencc-insert-mode
+             opencc-isearch-mode)
+  :config
+  ;; Set absolute path for configuration files on Windows.  For me, OpenCC is
+  ;; always provided by Librime, which is installed by Scoop, so the path is
+  ;; consistent.  But it should not work for you.
+  (when (eq system-type 'windows-nt)
+    (let ((opencc-path-prefix
+           "C:\\Users\\zyxir\\scoop\\apps\\librime\\current\\share\\opencc\\"))
+      (setq! opencc-configuration-files
+             (mapcar (lambda (file)
+                       (expand-file-name file opencc-path-prefix))
+                     opencc-configuration-files)))))
 
 ;;;;; Syntax checker (Flymake and Flycheck)
 
