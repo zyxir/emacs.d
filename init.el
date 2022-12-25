@@ -1719,7 +1719,7 @@ does the job."
       ;; Set font for the fontset
       (if (listp charset)
           (mapc (lambda (c)
-                  (set-fontset-font fontset c font frame))
+                  (set-fontset-font fontset c font frame 'prepend))
                 charset)
         (set-fontset-font fontset charset font frame))
       ;; Assign the fontset to the face if necessary
@@ -1745,6 +1745,13 @@ This function does not work correctly on Terminal Emacs."
                       :font (font-spec :family "Sarasa Mono HC"
                                        :size zy~font-size))
   (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono HC")
+  ;; Native emoji and symbol fonts.
+  (let ((symbol-and-emoji-fonts
+         (pcase system-type
+           ('windows-nt '("Segoe UI Symbol" "Segoe UI Emoji"))
+           ('gnu/linux '("Noto Sans Symbol" "Noto Color Emoji")))))
+    (zy-set-face-charset-font 'default nil 'symbol (car symbol-and-emoji-fonts))
+    (zy-set-face-charset-font 'default nil 'emoji (cadr symbol-and-emoji-fonts)))
   ;; Fixed-pitch face.
   (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono HC"
                       :height 'unspecified)
@@ -1777,6 +1784,23 @@ Return what `zy/setup-font-faces' returns."
   :defer t
   :init
   (zy-maybe-setup-font-faces))
+
+;;;;; Emoji support
+
+;; Displaying and inserting emojis.
+
+(use-package emojify
+  :straight t
+  :hook (zy-first-buffer . global-emojify-mode)
+  :general
+  ;; Replace the default emoji shortcut.
+  ("C-x 8 e" 'emojify-insert-emoji)
+  :config
+  (setq!
+   ;; Display only Unicode emojis.
+   emojify-emoji-styles '(unicode)
+   ;; Display emojis with Unicode fonts.
+   emojify-display-style 'unicode))
 
 ;;;;; No ringing the bell
 
