@@ -2109,16 +2109,6 @@ itself to `consult-recent-file', can finally call
   "a" 'lsp-bridge-code-action
   "r" 'lsp-bridge-rename)
 
-;;;;; Cape provides more completion-at-point functions
-
-(use-package cape
-  :straight t
-  :commands (cape-file)
-  :init
-  ;; Complete file names where Corfu is enabled.
-  (add-hook! corfu-mode
-    (add-to-list 'completion-at-point-functions #'cape-file)))
-
 ;;;;; Lingual
 
 ;;;;;; Rime input method
