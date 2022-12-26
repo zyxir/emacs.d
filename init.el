@@ -2067,6 +2067,10 @@ itself to `consult-recent-file', can finally call
 (add-hook! (conf-mode prog-mode text-mode) 'lsp-bridge-mode)
 (general-def
   :keymaps 'lsp-bridge-mode-map
+  "M-p" 'lsp-bridge-diagnostic-jump-prev
+  "M-n" 'lsp-bridge-diagnostic-jump-next)
+(general-def
+  :keymaps 'lsp-bridge-mode-map
   :prefix "C-c h"
   "a" 'lsp-bridge-code-action
   "r" 'lsp-bridge-rename)
