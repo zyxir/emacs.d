@@ -918,6 +918,7 @@ If this is a daemon session, load them all immediately instead."
   (;; Scratch buffer
    zy/scratch
    zy/scratch-elisp
+   zy/scratch-org
    ;; Cursor movement
    zy/move-beginning-of-line
    ;; Line filling
@@ -1013,7 +1014,8 @@ If this is a daemon session, load them all immediately instead."
 
 (general-def :keymaps 'ctl-x-x-map
   "k" 'zy/scratch
-  "l" 'zy/scratch-elisp)
+  "l" 'zy/scratch-elisp
+  "o" 'zy/scratch-org)
 
 ;;;;; Garbage collector magic hack
 
@@ -1388,6 +1390,13 @@ faster `prin1'."
    ;; Show commit time in the status buffer.
    magit-status-margin '(t age magit-log-margin-width nil 18)))
 
+;; Extra autoloaded magit commands.
+(use-package magit-extras
+  :commands
+  (magit-project-status)
+  :config
+  (require 'project))
+
 ;; Use Diff-hl to highlight file changes.
 (use-package diff-hl
   :straight t
@@ -1503,7 +1512,8 @@ faster `prin1'."
   :defer t
   :general
   (:keymaps 'project-prefix-map
-            "g" 'rg-project)
+            "g" 'rg-project
+            "v" 'magit-project-status)
   :config
   (setq!
    project-switch-commands '((project-find-file "Find file" "f")
@@ -1709,7 +1719,7 @@ does the job."
       ;; Set font for the fontset
       (if (listp charset)
           (mapc (lambda (c)
-                  (set-fontset-font fontset c font frame))
+                  (set-fontset-font fontset c font frame 'prepend))
                 charset)
         (set-fontset-font fontset charset font frame))
       ;; Assign the fontset to the face if necessary
@@ -1735,6 +1745,13 @@ This function does not work correctly on Terminal Emacs."
                       :font (font-spec :family "Sarasa Mono HC"
                                        :size zy~font-size))
   (zy-set-face-charset-font 'default nil zy-cjk-charsets "Sarasa Mono HC")
+  ;; Native emoji and symbol fonts.
+  (let ((symbol-and-emoji-fonts
+         (pcase system-type
+           ('windows-nt '("Segoe UI Symbol" "Segoe UI Emoji"))
+           ('gnu/linux '("Noto Sans Symbol" "Noto Color Emoji")))))
+    (zy-set-face-charset-font 'default nil 'symbol (car symbol-and-emoji-fonts))
+    (zy-set-face-charset-font 'default nil 'emoji (cadr symbol-and-emoji-fonts)))
   ;; Fixed-pitch face.
   (set-face-attribute 'fixed-pitch nil :font "Sarasa Mono HC"
                       :height 'unspecified)
@@ -1767,6 +1784,23 @@ Return what `zy/setup-font-faces' returns."
   :defer t
   :init
   (zy-maybe-setup-font-faces))
+
+;;;;; Emoji support
+
+;; Displaying and inserting emojis.
+
+(use-package emojify
+  :straight t
+  :hook (zy-first-buffer . global-emojify-mode)
+  :general
+  ;; Replace the default emoji shortcut.
+  ("C-x 8 e" 'emojify-insert-emoji)
+  :config
+  (setq!
+   ;; Display only Unicode emojis.
+   emojify-emoji-styles '(unicode)
+   ;; Display emojis with Unicode fonts.
+   emojify-display-style 'unicode))
 
 ;;;;; No ringing the bell
 
@@ -2085,7 +2119,9 @@ itself to `consult-recent-file', can finally call
   (add-hook! corfu-mode
     (add-to-list 'completion-at-point-functions #'cape-file)))
 
-;;;;; Input method
+;;;;; Lingual
+
+;;;;;; Rime input method
 
 ;; Rime is my favorite input method for every platforms.  Fortunately it is
 ;; integrated into Emacs as well.
@@ -2129,6 +2165,30 @@ itself to `consult-recent-file', can finally call
                                  'dark)
                                 "#ffffff"
                               "#000000"))))))
+
+;;;;;; OpenCC (simplified/traditional chinese converter)
+
+;; OpenCC is a handy tool for me.  It is not easy to install it on Windows, but
+;; lucily Librime provides an executable of it.  However, the configuration
+;; files have to be set manually on Windows.
+
+(use-package opencc
+  :straight t
+  :commands (opencc-replace-at-point
+             opencc-print-buffer
+             opencc-insert-mode
+             opencc-isearch-mode)
+  :config
+  ;; Set absolute path for configuration files on Windows.  For me, OpenCC is
+  ;; always provided by Librime, which is installed by Scoop, so the path is
+  ;; consistent.  But it should not work for you.
+  (when (eq system-type 'windows-nt)
+    (let ((opencc-path-prefix
+           "C:\\Users\\zyxir\\scoop\\apps\\librime\\current\\share\\opencc\\"))
+      (setq! opencc-configuration-files
+             (mapcar (lambda (file)
+                       (expand-file-name file opencc-path-prefix))
+                     opencc-configuration-files)))))
 
 ;;;;; Syntax checker (Flymake and Flycheck)
 
@@ -2355,7 +2415,10 @@ Automatically set when `zy~zybox-dir' is customized.")
 ;; Basic settings about Org itself, and some simpler extensions.
 
 (use-package org
-  :defer t
+  :defer-incrementally
+  calendar find-func format-spec org-macs org-compat org-faces org-entities
+  org-list org-pcomplete org-src org-footnote org-macro ob org org-agenda
+  org-capture
   :straight t
   :init
   (setq!
