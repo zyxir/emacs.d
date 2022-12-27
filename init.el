@@ -1168,6 +1168,10 @@ If this is a daemon session, load them all immediately instead."
    ;; load kinsoku.el automatically, which enhances line breaking.
    word-wrap-by-category t))
 
+;; Enable the mode for all text modes.
+
+(add-hook 'text-mode-hook 'visual-line-mode)
+
 ;;;;; Clipboard and kill ring
 
 (use-package select
@@ -2401,10 +2405,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 
 (use-package markdown-mode
   :straight t
-  :magic ("\\.md\\|\\.markdown" . markdown-mode)
-  :config
-  (add-hook! markdown-mode
-    'visual-line-mode))
+  :magic ("\\.md\\|\\.markdown" . markdown-mode))
 
 ;;;;; Org
 
@@ -2425,9 +2426,8 @@ Automatically set when `zy~zybox-dir' is customized.")
    ;; Indent sections by depth.
    org-startup-indented t)
   (add-hook! org-mode
-    ;; Org is my main prose editor.  I prefer working with visual lines and
-    ;; variable pitch fonts when writing proses.
-    'visual-line-mode
+    ;; Org is my main prose editor.  I prefer working with variable pitch fonts
+    ;; when writing proses.
     'variable-pitch-mode)
 
   ;; GTD files.
