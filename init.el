@@ -2320,7 +2320,7 @@ Automatically set when `zy~zybox-dir' is customized.")
    ebib-file-associations
    `(("pdf" . ,(pcase system-type
                  ('gnu/linux "xdg-open")
-                 ('windows-nt "explorer")))
+                 ('windows-nt "powershell.exe -c start %s")))
      ("ps" . "gv")))
   ;; Set the preloaded bib database.
   (when (bound-and-true-p zy-ebib-bib-file)
