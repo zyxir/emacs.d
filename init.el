@@ -1613,6 +1613,7 @@ theme, use `customize-themes' instead."
   :config
   (dim-minor-names
    '((buffer-face-mode nil face-remap)
+     (citar-embark-mode nil citar-embark)
      (clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
@@ -2300,6 +2301,13 @@ Automatically set when `zy~zybox-dir' is customized.")
   (setq!
    citar-bibliography zy-bib-files))
 
+(use-package citar-embark
+  :straight t
+  :after citar embark
+  :no-require
+  :config
+  (citar-embark-mode))
+
 ;; Manage bibliography database in Emacs with Ebib.
 
 (use-package ebib
@@ -2346,6 +2354,8 @@ Automatically set when `zy~zybox-dir' is customized.")
   :defer t
   :config
   (setq!
+   ;; Use biblatex dialect.
+   bibtex-dialect 'biblatex
    ;; See `bibtex-generate-autokey'.
    bibtex-autokey-year-length 4
    bibtex-autokey-titlewords 2
