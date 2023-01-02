@@ -927,6 +927,7 @@ If this is a daemon session, load them all immediately instead."
    ;; File operations
    zy/delete-file-and-buffer
    zy/rename-file-and-buffer
+   zy/open-externally
    ;; Org export to LaTeX
    zy/update-zylatex-file))
 
@@ -2298,7 +2299,11 @@ Automatically set when `zy~zybox-dir' is customized.")
 (use-package citar
   :straight t
   :general
-  ("C-c i" 'citar-insert-citation))
+  ("C-c i" 'citar-insert-citation)
+  :config
+  (setq!
+   ;; Open files externally.
+   citar-file-open-functions '((t . zy/open-externally))))
 
 (use-package citar-embark
   :straight t
@@ -2323,12 +2328,10 @@ Automatically set when `zy~zybox-dir' is customized.")
   (setq!
    ;; Generate BibTeX keys automatically.
    ebib-auotgenerate-keys t
-   ;; Ways to open entry files.
+   ;; Open entry files externally.
    ebib-file-associations
-   `(("pdf" . ,(pcase system-type
-                 ('gnu/linux "xdg-open")
-                 ('windows-nt "powershell.exe -c start %s")))
-     ("ps" . "gv"))))
+   `(("pdf" . zy/open-externally)
+     ("ps" . zy/open-externally))))
 
 ;; Import entry with DOI via Biblio.
 
