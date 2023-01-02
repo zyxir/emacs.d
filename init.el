@@ -575,21 +575,22 @@ is determined, several other directories, like `org-directory',
     ;; My BibLaTeX databases.
     (defvar zy-bib-files)
     (defvar zy-ebib-bib-file)
-    (let ((zotero-bib-file
-           (expand-file-name "zotero/references.bib" path))
-          (ebib-bib-file
+    (let ((ebib-bib-file
            (expand-file-name "ebib/references.bib" path)))
       (unless (boundp 'zy-bib-files)
         (setq-default zy-bib-files nil))
-      (when (file-exists-p zotero-bib-file)
-        (add-to-list 'zy-bib-files zotero-bib-file))
       (when (file-exists-p ebib-bib-file)
         (add-to-list 'zy-bib-files ebib-bib-file)
         (setq-default zy-ebib-bib-file ebib-bib-file)))
     ;; Ebib paths.
-    (setq-default ebib-notes-directory
+    (setq-default ebib-preload-bib-files zy-bib-files
+                  ebib-notes-directory
                   (expand-file-name "ebib/notes" path)
                   ebib-file-search-dirs
+                  `(,(expand-file-name "ebib/files" path)))
+    ;; Citar paths. (Identical with Ebib ones)
+    (setq-default citar-bibliography zy-bib-files
+                  citar-library-paths
                   `(,(expand-file-name "ebib/files" path)))))
 
 (defcustom zy~zybox-dir ""
@@ -2285,7 +2286,8 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Bibliography management
 
-;; Manage ".bib" databases with Emacs.
+;; Manage ".bib" databases with Emacs.  These tools are in use: Bibtex
+;; (built-in), Biblio, Citar, Citar-embark, Ebib.
 
 (defvar zy-bib-files nil
   "All of my BibLaTeX databases.
@@ -2296,14 +2298,11 @@ Automatically set when `zy~zybox-dir' is customized.")
 (use-package citar
   :straight t
   :general
-  ("C-c i" 'citar-insert-citation)
-  :config
-  (setq!
-   citar-bibliography zy-bib-files))
+  ("C-c i" 'citar-insert-citation))
 
 (use-package citar-embark
   :straight t
-  :after citar embark
+  :after embark
   :no-require
   :config
   (citar-embark-mode))
@@ -2329,10 +2328,7 @@ Automatically set when `zy~zybox-dir' is customized.")
    `(("pdf" . ,(pcase system-type
                  ('gnu/linux "xdg-open")
                  ('windows-nt "powershell.exe -c start %s")))
-     ("ps" . "gv")))
-  ;; Set the preloaded bib database.
-  (when (bound-and-true-p zy-ebib-bib-file)
-    (add-to-list 'ebib-preload-bib-files zy-ebib-bib-file)))
+     ("ps" . "gv"))))
 
 ;; Import entry with DOI via Biblio.
 
