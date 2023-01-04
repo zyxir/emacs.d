@@ -2284,7 +2284,8 @@ itself to `consult-recent-file', can finally call
   "All of my BibLaTeX databases.
 Automatically set when `zy~zybox-dir' is customized.")
 
-;; Inserting and managing citations with Citar.
+;; Inserting and managing citations with Citar.  Related directories are set
+;; when `zy~zybox-dir' is customized.
 
 (use-package citar
   :straight t
@@ -2295,6 +2296,9 @@ Automatically set when `zy~zybox-dir' is customized.")
    ;; Open files externally.
    citar-file-open-functions '((t . zy/open-externally))))
 
+;; Load Citar-embark when Embark is loaded, so that BibTeX keys can be
+;; recognized.
+
 (use-package citar-embark
   :straight t
   :after embark
@@ -2302,7 +2306,8 @@ Automatically set when `zy~zybox-dir' is customized.")
   :config
   (citar-embark-mode))
 
-;; Manage bibliography database in Emacs with Ebib.
+;; Manage bibliography database in Emacs with Ebib.  Related directories are set
+;; when `zy~zybox-dir' is customized.
 
 (use-package ebib
   :straight t
