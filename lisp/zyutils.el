@@ -177,6 +177,45 @@ the buffer, stop there."
           (rename-file filename new-name t)
           (set-visited-file-name new-name t t)))))))
 
+(declare-function dired-get-marked-files 'dired)
+
+;; This is adapted from Xah Emacs.
+;;;###autoload
+(defun zy/open-externally (&optional filename)
+  "Open FILENAME in default external program.
+If FILENAME is omitted or nil, open visited file, or Dired marked
+files."
+  (interactive)
+  (let* ((file-list (if filename
+                        (list filename)
+                      (if (string-equal major-mode "dired-mode")
+                          (dired-get-marked-files)
+                        (list (buffer-file-name)))))
+         (do-it-p (if (<= (length file-list) 5)
+                      t
+                    (y-or-n-p "Open more than 5 files? "))))
+    (when do-it-p
+      (cond
+       ((eq system-type 'windows-nt)
+        (mapc
+         (lambda (fpath)
+           (shell-command
+            (concat "PowerShell -Command \"Invoke-Item -LiteralPath\" " "'"
+                    (shell-quote-argument (expand-file-name fpath )) "'")))
+         file-list))
+       ((eq system-type 'darwin)
+        (mapc
+         (lambda (fpath)
+           (shell-command
+            (concat "open " (shell-quote-argument fpath))))
+         file-list))
+       ((eq system-type 'gnu/linux)
+        (mapc
+         (lambda (fpath)
+           (let ((process-connection-type nil))
+             (start-process "" nil "xdg-open" fpath)))
+         file-list))))))
+
 ;;;; File type specific settings
 
 ;;;;; Org

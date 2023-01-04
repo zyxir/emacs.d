@@ -575,21 +575,22 @@ is determined, several other directories, like `org-directory',
     ;; My BibLaTeX databases.
     (defvar zy-bib-files)
     (defvar zy-ebib-bib-file)
-    (let ((zotero-bib-file
-           (expand-file-name "zotero/references.bib" path))
-          (ebib-bib-file
+    (let ((ebib-bib-file
            (expand-file-name "ebib/references.bib" path)))
       (unless (boundp 'zy-bib-files)
         (setq-default zy-bib-files nil))
-      (when (file-exists-p zotero-bib-file)
-        (add-to-list 'zy-bib-files zotero-bib-file))
       (when (file-exists-p ebib-bib-file)
         (add-to-list 'zy-bib-files ebib-bib-file)
         (setq-default zy-ebib-bib-file ebib-bib-file)))
     ;; Ebib paths.
-    (setq-default ebib-notes-directory
+    (setq-default ebib-preload-bib-files zy-bib-files
+                  ebib-notes-directory
                   (expand-file-name "ebib/notes" path)
                   ebib-file-search-dirs
+                  `(,(expand-file-name "ebib/files" path)))
+    ;; Citar paths. (Identical with Ebib ones)
+    (setq-default citar-bibliography zy-bib-files
+                  citar-library-paths
                   `(,(expand-file-name "ebib/files" path)))))
 
 (defcustom zy~zybox-dir ""
@@ -926,6 +927,7 @@ If this is a daemon session, load them all immediately instead."
    ;; File operations
    zy/delete-file-and-buffer
    zy/rename-file-and-buffer
+   zy/open-externally
    ;; Org export to LaTeX
    zy/update-zylatex-file))
 
@@ -1167,6 +1169,10 @@ If this is a daemon session, load them all immediately instead."
    ;; Allow line breaking after CJK characters.  Setting this with `setq!' will
    ;; load kinsoku.el automatically, which enhances line breaking.
    word-wrap-by-category t))
+
+;; Enable the mode for all text modes.
+
+(add-hook 'text-mode-hook 'visual-line-mode)
 
 ;;;;; Clipboard and kill ring
 
@@ -1609,6 +1615,7 @@ theme, use `customize-themes' instead."
   :config
   (dim-minor-names
    '((buffer-face-mode nil face-remap)
+     (citar-embark-mode nil citar-embark)
      (clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
      (gcmh-mode nil gcmh)
@@ -2270,7 +2277,8 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Bibliography management
 
-;; Manage ".bib" databases with Emacs.
+;; Manage ".bib" databases with Emacs.  These tools are in use: Bibtex
+;; (built-in), Biblio, Citar, Citar-embark, Ebib.
 
 (defvar zy-bib-files nil
   "All of my BibLaTeX databases.
@@ -2284,7 +2292,15 @@ Automatically set when `zy~zybox-dir' is customized.")
   ("C-c i" 'citar-insert-citation)
   :config
   (setq!
-   citar-bibliography zy-bib-files))
+   ;; Open files externally.
+   citar-file-open-functions '((t . zy/open-externally))))
+
+(use-package citar-embark
+  :straight t
+  :after embark
+  :no-require
+  :config
+  (citar-embark-mode))
 
 ;; Manage bibliography database in Emacs with Ebib.
 
@@ -2302,15 +2318,10 @@ Automatically set when `zy~zybox-dir' is customized.")
   (setq!
    ;; Generate BibTeX keys automatically.
    ebib-auotgenerate-keys t
-   ;; Ways to open entry files.
+   ;; Open entry files externally.
    ebib-file-associations
-   `(("pdf" . ,(pcase system-type
-                 ('gnu/linux "xdg-open")
-                 ('windows-nt "explorer")))
-     ("ps" . "gv")))
-  ;; Set the preloaded bib database.
-  (when (bound-and-true-p zy-ebib-bib-file)
-    (add-to-list 'ebib-preload-bib-files zy-ebib-bib-file)))
+   `(("pdf" . zy/open-externally)
+     ("ps" . zy/open-externally))))
 
 ;; Import entry with DOI via Biblio.
 
@@ -2332,6 +2343,8 @@ Automatically set when `zy~zybox-dir' is customized.")
   :defer t
   :config
   (setq!
+   ;; Use biblatex dialect.
+   bibtex-dialect 'biblatex
    ;; See `bibtex-generate-autokey'.
    bibtex-autokey-year-length 4
    bibtex-autokey-titlewords 2
@@ -2391,10 +2404,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 
 (use-package markdown-mode
   :straight t
-  :magic ("\\.md\\|\\.markdown" . markdown-mode)
-  :config
-  (add-hook! markdown-mode
-    'visual-line-mode))
+  :magic ("\\.md\\|\\.markdown" . markdown-mode))
 
 ;;;;; Org
 
@@ -2415,9 +2425,8 @@ Automatically set when `zy~zybox-dir' is customized.")
    ;; Indent sections by depth.
    org-startup-indented t)
   (add-hook! org-mode
-    ;; Org is my main prose editor.  I prefer working with visual lines and
-    ;; variable pitch fonts when writing proses.
-    'visual-line-mode
+    ;; Org is my main prose editor.  I prefer working with variable pitch fonts
+    ;; when writing proses.
     'variable-pitch-mode)
 
   ;; GTD files.
