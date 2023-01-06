@@ -2794,7 +2794,8 @@ The function works like `org-latex-export-to-pdf', except that
   :magic ("\\.v" . verilog-mode)
   :init
   (add-hook! verilog-mode
-    'rainbow-delimiters-mode)
+    'rainbow-delimiters-mode
+    'flycheck-mode)
   :config
   (setq! verilog-auto-delete-trailing-whitespace t
          verilog-auto-newline nil
