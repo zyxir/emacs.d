@@ -2742,8 +2742,6 @@ The function works like `org-latex-export-to-pdf', except that
    TeX-save-query nil
    ;; I forget what this does.  Just keep it.
    TeX-engine 'xetex
-   ;; Always enable synchronizing between source and target file.
-   TeX-source-correlate-start-server t
    ;; Always use XeLaTeX to compile the document, as it supports Chinese well.
    TeX-command-default "XeLaTeX")
 
@@ -2754,12 +2752,14 @@ The function works like `org-latex-export-to-pdf', except that
                '("XeLaTeX"
                  "%`xelatex%(mode)%' --synctex=1%(mode)%' %t"
                  TeX-run-TeX nil t))
-  (add-hook! tex-mode
-    ;; Always enable correlate mode (for SyncTeX).
+
+  (declare-function TeX-source-correlate-mode 'tex)
+  (add-hook! TeX-mode
+    ;; Enable inverse search.
     'TeX-source-correlate-mode
     ;; Lint with Flycheck.
     'flycheck-mode)
-  (setq-hook! tex-mode
+  (setq-hook! TeX-mode
     ;; Always use XeLeTeX by default.
     TeX-command-default "XeLaTeX")
 
