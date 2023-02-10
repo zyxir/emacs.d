@@ -2720,7 +2720,8 @@ The function works like `org-latex-export-to-pdf', except that
    python-fill-docstring-style 'pep-257-nn)
   (setq-hook! python-mode
     ;; As suggested by PEP8.
-    fill-column 79))
+    fill-column 79)
+  (setenv "PYTHONIOENCODING" "UTF-8"))
 
 ;;;;; TeX / LaTeX
 
