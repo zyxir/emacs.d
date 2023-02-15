@@ -1948,6 +1948,37 @@ Should be run again after theme switch."
 (zy--setup-heading-appearance)
 (add-hook 'zy-load-theme-hook #'zy--setup-heading-appearance)
 
+;;;;; Colorful Shell Output
+
+(use-package xterm-color
+  :straight t
+  :after (:or comint eshell shell)
+  :config
+  (require 'comint)
+  (require 'eshell)
+  (require 'esh-mode)
+  (require 'shell)
+  ;; Configure Comint.
+  (setq comint-output-filter-functions
+        (remove 'ansi-color-process-output comint-output-filter-functions))
+  (add-hook 'shell-mode-hook
+            (lambda ()
+              ;; Disable font-locking in this buffer to improve performance.
+              (font-lock-mode -1)
+              ;; Prevent font-locking from being re-enabled in this buffer.
+              (make-local-variable 'font-lock-function)
+              (setq font-lock-function (lambda (_) nil))
+              (add-hook 'comint-preoutput-filter-functions
+                        'xterm-color-filter nil t)))
+  ;; Configure Eshell.
+  (add-hook 'eshell-before-prompt-hook
+            (lambda ()
+              (setq xterm-color-preserve-properties t)))
+  (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+  (setq eshell-output-filter-functions
+        (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+  (setenv "TERM" "xterm-256color"))
+
 ;;;; Features
 
 ;; This section is for settings that provide additional features for Emacs.
