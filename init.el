@@ -1244,7 +1244,19 @@ If this is a daemon session, load them all immediately instead."
   (setq!
    ;; Do not show overlays.
    sp-highlight-pair-overlay nil
-   sp-highlight-wrap-overlay nil))
+   sp-highlight-wrap-overlay nil)
+
+  ;; Auto newline between multi-line parentheses.
+  (defun zy-enter-and-indent-sexp (&rest _ignored)
+    "Insert an extra newline after point, and reindent."
+    (newline)
+    (indent-according-to-mode)
+    (forward-line -1)
+    (indent-according-to-mode))
+  (dolist (paren '("{" "(" "["))
+    (sp-local-pair 'prog-mode paren nil :post-handlers
+                   '((zy-enter-and-indent-sexp "RET")
+                     (zy-enter-and-indent-sexp "<return>")))))
 
 ;;;;; Avy (quick text jump)
 
