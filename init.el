@@ -792,6 +792,8 @@ If this is a daemon session, load them all immediately instead."
  straight-check-for-modifications '(find-when-checking))
 
 (defvar bootstrap-version)
+(or (boundp 'native-comp-deferred-compilation-deny-list)
+    (defvar native-comp-deferred-compilation-deny-list '()))
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el"
                          user-emacs-directory))
@@ -2018,14 +2020,22 @@ parses its input."
       `(orderless-flex . ,(substring pattern 0 -1))))
 
   ;; Apply matching styles and dispatchers.
-  (setq! orderless-matching-styles '(orderless-literal
-                                     orderless-prefixes
-                                     orderless-flex
-                                     orderless-regexp)
-         orderless-style-dispatchers '(zy-orderless-literal-dispatcher
-                                       zy-orderless-no-literal-dispatcher
-                                       zy-orderless-initialism-dispatcher
-                                       zy-orderless-flex-dispatcher)))
+  (setq!
+   orderless-matching-styles '(orderless-literal
+                               orderless-prefixes
+                               orderless-flex
+                               orderless-regexp)
+   orderless-style-dispatchers '(zy-orderless-literal-dispatcher
+                                 zy-orderless-no-literal-dispatcher
+                                 zy-orderless-initialism-dispatcher
+                                 zy-orderless-flex-dispatcher))
+
+  ;; Enable the orderless completion style.
+  (setq!
+   ;; Use the orderless completion style.
+   completion-styles '(orderless basic)
+   completion-category-defaults nil
+   completion-category-overrides '((file (styles . (partial-completion))))))
 
 ;;;;; Vertico and Marginalia (minibuffer enhancements)
 
@@ -2034,8 +2044,6 @@ parses its input."
   :hook zy-first-input
   :config
   (setq!
-   ;; Use the orderless completion style.
-   completion-styles '(orderless basic)
    ;; Make minibuffer intangible to cursor events.
    minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)
@@ -2126,6 +2134,41 @@ itself to `consult-recent-file', can finally call
 (use-package embark-consult
   :straight t
   :after (embark consult))
+
+;;;;; Corfu (at-point completion)
+
+(use-package corfu
+  :straight '(corfu :files (:defaults "extensions/*.el"))
+  :init
+  (setq completion-cycle-threshold 3)
+  (global-corfu-mode +1)
+  :config
+  (setq!
+   ;; Enable auto completion.
+   corfu-auto t
+   ;; No delay for completion.
+   corfu-auto-delay 0
+   ;; No prefix needed for completion.
+   corfu-auto-prefix 0
+   ;; Enable cycling.
+   corfu-cycle t)
+  ;; Corfu extensions.
+  ;; Select candidates using Avy-style keys.
+  (general-def :keymaps 'corfu-map
+    "M-q" 'corfu-quick-complete
+    "C-q" 'corfu-quick-insert)
+  ;; Remember completion history.
+  (corfu-history-mode +1)
+  ;; Show candidate documentation.
+  (corfu-popupinfo-mode +1))
+
+;; Extra CAPFs (completion-at-point-function).
+(use-package cape
+  :straight t
+  :after corfu
+  :config
+  (dolist (backend '(cape-symbol cape-keyword cape-file))
+    (add-to-list 'completion-at-point-functions backend)))
 
 ;;;;; Lingual
 
@@ -2723,7 +2766,7 @@ The function works like `org-latex-export-to-pdf', except that
   :init
   (add-hook! python-mode
     'display-fill-column-indicator-mode
-    'flycheck-mode
+    'eglot-ensure
     'rainbow-delimiters-mode)
   :config
   (setq!
