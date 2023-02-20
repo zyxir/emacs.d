@@ -2127,33 +2127,6 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after (embark consult))
 
-;;;;; Lsp-bridge (LSP implementation and completion framework)
-
-;; Lsp-bridge is a special package. Currently I install it manually as a
-;; git submodule.
-
-(add-to-list 'load-path
-             (expand-file-name "site-lisp/lsp-bridge"
-                               user-emacs-directory))
-(autoload 'lsp-bridge-mode "lsp-bridge")
-(add-hook! (conf-mode prog-mode text-mode) 'lsp-bridge-mode)
-(general-def
-  :keymaps 'lsp-bridge-mode-map
-  "M-." 'lsp-bridge-find-def
-  "M-," 'lsp-bridge-find-def-return)
-(general-def
-  :keymaps 'lsp-bridge-mode-map
-  :prefix "C-c h"
-  "a" 'lsp-bridge-code-action
-  "r" 'lsp-bridge-rename
-  "R" 'lsp-bridge-restart-process)
-(with-eval-after-load 'lsp-bridge
-  (setq!
-   ;; Disable tabnine support, because I don't like it.
-   acm-enable-tabnine nil
-   ;; Selection of LSP servers.
-   lsp-bridge-python-lsp-server "pylsp"))
-
 ;;;;; Lingual
 
 ;;;;;; Rime input method
