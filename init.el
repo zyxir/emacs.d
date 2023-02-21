@@ -1241,6 +1241,8 @@ If this is a daemon session, load them all immediately instead."
   ;; Use default keybindings except a few keys.
   (delete '("M-<delete>" . sp-unwrap-sexp) sp-smartparens-bindings)
   (delete '("M-<backspace>" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
+  (push '("M-\\" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
+  (push '("C-M-\\" . sp-unwrap-sexp) sp-smartparens-bindings)
   (sp-use-smartparens-bindings)
 
   (setq!
@@ -1412,7 +1414,7 @@ faster `prin1'."
   :init
   ;; I set a key binding here because I don't want its default key binding
   ;; overriding my Magit keys.  I never use this though.
-  (setq! diff-hl-command-prefix (kbd "C-c d"))
+  (setq! diff-hl-command-prefix (kbd "C-c M-d"))
   :config
   (unless (display-graphic-p)
     (diff-hl-margin-mode 1))
