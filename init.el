@@ -2201,21 +2201,24 @@ itself to `consult-recent-file', can finally call
    rime-show-candidate 'minibuffer)
 
   ;; Change cursor color based on current input method.
-  (add-hook
-   'post-command-hook
-   (defun zy--change-cursor-color-based-im-h ()
-     "Change cursor color based on current IM."
-     (set-frame-parameter nil 'cursor-color
-                          (if current-input-method
-                              ;; If input method is on, use this orange color.
-                              "orange"
-                            ;; Other wise, use white or black based on the
-                            ;; current background color.
-                            (if (equal
-                                 (frame-parameter nil 'background-mode)
-                                 'dark)
-                                "#ffffff"
-                              "#000000"))))))
+  (defvar zy--default-cursor-color nil
+    "Default cursor color of the theme.")
+  (defun zy--setup-cursor-color-h ()
+    "Setup cursor color changing based on current input method."
+    (setq zy--default-cursor-color (frame-parameter nil 'cursor-color))
+    (add-hook
+     'post-command-hook
+     (defun zy--change-cursor-color-based-im-h ()
+       "Change cursor color based on current IM."
+       (set-frame-parameter nil 'cursor-color
+                            (if current-input-method
+                                ;; If input method is on, use this orange color.
+                                "orange"
+                              ;; Other wise, use the default color.
+                              zy--default-cursor-color))))
+    (message "Default cursor color is %s" zy--default-cursor-color))
+  (add-hook 'zy-load-theme-hook 'zy--setup-cursor-color-h)
+  (zy--setup-cursor-color-h))
 
 ;;;;;; OpenCC (simplified/traditional chinese converter)
 
