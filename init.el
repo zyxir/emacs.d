@@ -1547,6 +1547,10 @@ faster `prin1'."
 
 (use-package tab-bar
   :defer t
+  :general
+  ("C-<tab>" nil
+   "M-[" 'tab-bar-switch-to-prev-tab
+   "M-]" 'tab-bar-switch-to-next-tab)
   :config
   ;; Customizing many of these options triggers the load of `tab-bar-mode', so
   ;; just set them instead.
@@ -1565,10 +1569,7 @@ faster `prin1'."
     (propertize
      (concat "  " (alist-get 'name tab) "  ")
      'face (funcall tab-bar-tab-face-function tab)))
-  (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format)
-
-  ;; Use bold font for the current tab.
-  (set-face-attribute 'tab-bar-tab nil :weight 'bold))
+  (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format))
 
 ;;;; User interface
 
@@ -2373,7 +2374,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   :general
   ("C-c e" 'ebib)
   (:keymaps 'ebib-index-mode-map
-            "t" 'ebib-import-file)
+            "+" 'ebib-import-file)
   :init
   (defvar zy-ebib-bib-file nil
     "BibLaTeX database used by Ebib.
