@@ -2278,6 +2278,15 @@ itself to `consult-recent-file', can finally call
   ;; Show a shorter mode lighter.
   (setq! flycheck-mode-line-prefix "Fc"))
 
+;;;;; Eglot (language server protocol support)
+
+(use-package eglot
+  :general
+  (:keymaps 'eglot-mode-map
+            :prefix "C-c g"
+            "r" 'eglot-rename
+            "R" 'eglot-reconnect))
+
 ;;;;; Eshell (consistent shell across platforms)
 
 (use-package eshell
