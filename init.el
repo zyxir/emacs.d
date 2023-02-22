@@ -2385,7 +2385,8 @@ Automatically set when `zy~zybox-dir' is customized.")
    ebib-auotgenerate-keys t
    ;; Open entry files externally.
    ebib-file-associations
-   `(("pdf" . zy/open-externally)
+   `(("caj" . zy/open-externally)
+     ("pdf" . zy/open-externally)
      ("ps" . zy/open-externally))))
 
 ;; Import entry with DOI via Biblio.
