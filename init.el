@@ -2151,8 +2151,8 @@ itself to `consult-recent-file', can finally call
    corfu-auto t
    ;; No delay for completion.
    corfu-auto-delay 0
-   ;; No prefix needed for completion.
-   corfu-auto-prefix 0
+   ;; Only need 1 prefix for completion.
+   corfu-auto-prefix 1
    ;; Enable cycling.
    corfu-cycle t)
   ;; Corfu extensions.
