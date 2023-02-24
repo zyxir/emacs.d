@@ -1427,6 +1427,9 @@ faster `prin1'."
 
 (use-package dired
   :defer t
+  :general
+  (:keymaps 'dired-mode-map
+            "E" 'zy/open-externally)
   :config
   (setq!
    ;; Move to trash when available.

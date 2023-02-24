@@ -4,7 +4,7 @@
 
 Lightweight Emacs configuration for my daily need.
 
-- *Supported Emacs version*: Emacs 28.1 or higher.
+- *Supported Emacs version*: Emacs 28.1 or higher (but 29+ is recommended).
 - *Supported operation systems*:
   - Windows (with MSYS2).
   - WSL (Windows subsystem for Linux), the distro is Ubuntu in my case.
