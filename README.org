@@ -33,15 +33,17 @@ Run Eamcs with ~emacs --debug-init~, and third-party packages will be automatica
 
 These third-party programs enables additional functionalities of my configuration:
 
-- Librime :: This is required to build and use the built-in Rime input method.
-- Python packages :: ~epc~, ~orjson~ and ~six~ are required to use Lsp-bridge.
+- ~Fd~ :: Fast filesystem search.  Used by commands like ~project-find-file~.
+- Librime :: This is required to build and use the built-in Rime input method.  Also install ~librime-data~ if available.
 - Ripgrep :: Fast text search.  Used by commands like ~consult-ripgrep~ and ~rg~.
 
 ** Customization
 
 Most behavior of this configuration is hard-coded.  That is because I am currently the only user of this configuration, and I can change any behavior by modifying the code.  However there are some machine-dependent settings that is not consistent in every computing environemnt of mine.  It is recommended to configure these settings via the ~customize~ UI:
 
-- ~zy/font-size~ :: This determines the default font size.  Customize this according to the screen size of the computing device.
+- ~zy~default-theme~ :: Default theme to use.  Must be one of the Doom Themes.
+- ~zy~font-size~ :: This determines the default font size.  Customize this according to the screen size of the computing device.
+- ~zy~zybox-dir~ :: The location of Zybox, which is my own cloud file center.
 - ~TeX-view-program-selection~ :: This determines what program is used to preview TeX output.  Just choose one in the default list.  It has some pretty decent defaults and works out of the box.
 
 ** Code Style
