@@ -2284,6 +2284,7 @@ itself to `consult-recent-file', can finally call
 ;;;;; Eglot (language server protocol support)
 
 (use-package eglot
+  :straight t
   :general
   (:keymaps 'eglot-mode-map
             :prefix "C-c g"
