@@ -2208,6 +2208,10 @@ itself to `consult-recent-file', can finally call
    ;; 也不會影響我的打字。
    rime-show-candidate 'minibuffer)
 
+  ;; On Windows, the share directory has to be manually set.
+  (when (eq system-type 'windows-nt)
+    (setq! rime-share-data-dir "c:/msys64/mingw64/share/rime-data"))
+
   ;; Change cursor color based on current input method.
   (defvar zy--default-cursor-color nil
     "Default cursor color of the theme.")
