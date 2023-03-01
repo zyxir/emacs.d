@@ -2427,6 +2427,15 @@ Automatically set when `zy~zybox-dir' is customized.")
 ;; This section enhances Emacs on specific file types, mostly programming
 ;; languages.
 
+;;;;; C and similiar languages
+
+(use-package cc-mode
+  :defer t
+  :config
+  (add-hook! cc-mode
+    'rainbow-delimiters-mode
+    'eglot-ensure))
+
 ;;;;; Emacs Lisp
 
 (use-package elisp-mode
