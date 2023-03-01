@@ -1071,23 +1071,10 @@ If this is a daemon session, load them all immediately instead."
   :hook (prog-mode conf-mode)
   :config
   (setq!
-   highlight-indent-guides-method 'character)
-
-  ;; Indent guides doesn't show properly for dark themes.  When that is the
-  ;; case, set the faces accordingly.
-  (defun zy--setup-indent-guides ()
-    "Setup proper face for indent guides."
-    (if (equal (frame-parameter nil 'background-mode) 'dark)
-        (progn
-          ;; Disable face auto-setting.
-          (setq! highlight-indent-guides-auto-enabled nil)
-          ;; Assign a custom face.
-          (set-face-foreground 'highlight-indent-guides-character-face
-                               "gray25"))
-      ;; Enable face auto-setting.
-      (setq! highlight-indent-guides-auto-enabled t)))
-  (zy--setup-indent-guides)
-  (add-hook! zy-load-theme 'zy--setup-indent-guides))
+   ;; Use filling to indicate indentation.
+   highlight-indent-guides-method 'fill
+   ;; Highlight the current indentation.
+   highlight-indent-guides-responsive t))
 
 ;;;;; Isearch (incremental searching)
 
