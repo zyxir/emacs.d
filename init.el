@@ -2147,6 +2147,7 @@ itself to `consult-recent-file', can finally call
    corfu-auto-prefix 1
    ;; Enable cycling.
    corfu-cycle t)
+
   ;; Corfu extensions.
   ;; Select candidates using Avy-style keys.
   (general-def :keymaps 'corfu-map
@@ -2155,7 +2156,13 @@ itself to `consult-recent-file', can finally call
   ;; Remember completion history.
   (corfu-history-mode +1)
   ;; Show candidate documentation.
-  (corfu-popupinfo-mode +1))
+  (corfu-popupinfo-mode +1)
+
+  ;; Conservative completion in Eshell.
+  (add-hook 'eshell-mode-hook
+          (lambda ()
+            (setq-local corfu-auto nil)
+            (corfu-mode))))
 
 ;; Extra CAPFs (completion-at-point-function).
 (use-package cape
