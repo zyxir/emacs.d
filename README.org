@@ -18,8 +18,9 @@ Lightweight Emacs configuration for my daily need.
 
 ** Screenshots
 
-[[file:etc/screenshots/zyemacs_dark_20221105.png]]
-[[file:etc/screenshots/zyemacs_light_20221105.png]]
+The following screenshot was taken on a Ubuntu 22.04.3 machine with Gnome Wayland.
+
+[[file:etc/screenshots/zyemacs_20230307.png]]
 
 ** Installation
 
@@ -33,7 +34,7 @@ Run Eamcs with ~emacs --debug-init~, and third-party packages will be automatica
 
 These third-party programs enables additional functionalities of my configuration:
 
-- ~Fd~ :: Fast filesystem search.  Used by commands like ~project-find-file~.
+- Fd :: Fast filesystem search.  Used by commands like ~project-find-file~.
 - Librime :: This is required to build and use the built-in Rime input method.  Also install ~librime-data~ if available.
 - Ripgrep :: Fast text search.  Used by commands like ~consult-ripgrep~ and ~rg~.
 
