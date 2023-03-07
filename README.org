@@ -18,7 +18,7 @@ Lightweight Emacs configuration for my daily need.
 
 ** Screenshots
 
-The following screenshot was taken on a Ubuntu 22.04.3 machine with Gnome Wayland.
+The following screenshot was taken on a Ubuntu 22.04.2 LTS machine with Gnome Wayland.
 
 [[file:etc/screenshots/zyemacs_20230307.png]]
 
