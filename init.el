@@ -1522,7 +1522,16 @@ faster `prin1'."
                              (project-find-dir "Find directory" "d")
                              (rg-project "Grep" "g")
                              (magit-project-status "Magit" "v")
-                             (project-eshell "Eshell" "e"))))
+                             (project-eshell "Eshell" "e")))
+
+  ;; Explicitly specify a project root with a .project file.
+  (defun zy-project-try-explicit (dir)
+    "Find a super-directory of DIR containing a .project file."
+    (locate-dominating-file dir ".project"))
+  (cl-defmethod project-root ((project string))
+             project)
+  (add-hook 'project-find-functions
+	    #'zy-project-try-explicit))
 
 ;;;;; File operations
 
