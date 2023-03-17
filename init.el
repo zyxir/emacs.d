@@ -2814,27 +2814,6 @@ The function works like `org-latex-export-to-pdf', except that
     fill-column 79)
   (setenv "PYTHONIOENCODING" "UTF-8"))
 
-;;;;; Scala
-
-(use-package scala-mode
-  :straight t
-  :interpreter
-  ("scala" . scala-mode)
-  :init
-  (add-hook! scala-mode
-    'eglot-ensure
-    'rainbow-delimiters-mode))
-
-(use-package sbt-mode
-  :straight t
-  :commands (sbt-start sbt-command)
-  :config
-  ;; WORKAROUND: allows using SPACE when in the minibuffer
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map))
-
 ;;;;; TeX / LaTeX
 
 (use-package auctex
