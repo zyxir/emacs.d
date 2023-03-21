@@ -1269,15 +1269,6 @@ If this is a daemon session, load them all immediately instead."
         (apply fn rest)
         (when corfu-enabled-p (corfu-mode 1))))))
 
-;;;;; Docstring
-
-(use-package docstr
-  :straight t
-  :hook ((python-mode) . docstr-mode)
-  :config
-  (setq!
-   docstr-python-style 'google))
-
 ;;;; Workbench
 
 ;; This section contains settings about buffers, files, directories, projects,
