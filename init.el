@@ -1964,18 +1964,6 @@ Should be run again after theme switch."
   (require 'eshell)
   (require 'esh-mode)
   (require 'shell)
-  ;; Configure Comint.
-  (setq comint-output-filter-functions
-        (remove 'ansi-color-process-output comint-output-filter-functions))
-  (add-hook 'shell-mode-hook
-            (lambda ()
-              ;; Disable font-locking in this buffer to improve performance.
-              (font-lock-mode -1)
-              ;; Prevent font-locking from being re-enabled in this buffer.
-              (make-local-variable 'font-lock-function)
-              (setq font-lock-function (lambda (_) nil))
-              (add-hook 'comint-preoutput-filter-functions
-                        'xterm-color-filter nil t)))
   ;; Configure Eshell.
   (add-hook 'eshell-before-prompt-hook
             (lambda ()
@@ -2260,27 +2248,11 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Syntax checker (Flymake and Flycheck)
 
-;; Flymake is a great.  Its philosophy fits better with Emacs, and Eglot only
-;; works with it.  However, Flymake is troublesome in Windows: sometimes it
-;; creates a lot of processes without destroying them, sometimes it lints the
-;; current Emacs Lisp buffer with another Emacs process, but that process ends
-;; up with a fatal error.  So I have no choice but using Flymake and Flycheck at
-;; the same time for different kinds of buffers.
-
-(use-package flymake
-  :straight t
-  :commands flymake-mode
-  :general
-  (:keymaps 'flymake-mode-map
-            "M-p" 'flymake-goto-prev-error
-            "M-n" 'flymake-goto-next-error)
-  :config
-  ;; Show a shorter mode lighter.
-  (setq! flymake-mode-line-lighter "Fm"))
-
 (use-package flycheck
   :straight t
   :commands flycheck-mode
+  :hook ((cc-mode emacs-lisp-mode python-mode scala-mode TeX-mode verilog-mode)
+         . flycheck-mode)
   :general
   (:keymaps 'flycheck-mode-map
             "M-p" 'flycheck-previous-error
@@ -2297,7 +2269,19 @@ itself to `consult-recent-file', can finally call
   (:keymaps 'eglot-mode-map
             :prefix "C-c g"
             "r" 'eglot-rename
-            "R" 'eglot-reconnect))
+            "R" 'eglot-reconnect)
+  :init
+  (add-hook!
+      '(cc-mode-hook python-mode-hook scala-mode-hook verilog-mode-hook)
+    :depth 100
+    'eglot-ensure))
+
+;; Make Flycheck and Eglot work together.
+(use-package flycheck-eglot
+  :straight '(flycheck-eglot :host github :repo "intramurz/flycheck-eglot")
+  :after (flycheck eglot)
+  :config
+  (global-flycheck-eglot-mode 1))
 
 ;;;;; Eshell (consistent shell across platforms)
 
@@ -2449,8 +2433,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   :defer t
   :config
   (add-hook! cc-mode
-    'rainbow-delimiters-mode
-    'eglot-ensure))
+    'rainbow-delimiters-mode))
 
 ;;;;; Emacs Lisp
 
@@ -2462,9 +2445,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   :config
   (add-hook! emacs-lisp-mode
     'outline-minor-mode
-    'rainbow-delimiters-mode
-    ;; Emacs itself is a Flycheck checker for Emacs Lisp, so always enable it.
-    'flycheck-mode)
+    'rainbow-delimiters-mode)
 
   (setq!
    ;; Let Flycheck inherit Emacs load path.
@@ -2803,16 +2784,45 @@ The function works like `org-latex-export-to-pdf', except that
   :init
   (add-hook! python-mode
     'display-fill-column-indicator-mode
-    'eglot-ensure
     'rainbow-delimiters-mode)
   :config
   (setq!
    ;; See the documentation.
-   python-fill-docstring-style 'pep-257-nn)
+   python-fill-docstring-style 'pep-257-nn
+   ;; Use the default executable for the shell.
+   python-shell-interpreter "python")
   (setq-hook! python-mode
     ;; As suggested by PEP8.
     fill-column 79)
   (setenv "PYTHONIOENCODING" "UTF-8"))
+
+;; Enable running Pytest with the `python-pytest' command.
+(use-package python-pytest
+  :straight t)
+
+;; Virtual environment management.
+(use-package pyvenv
+  :straight t
+  :config
+  (defun zy-pyvenv-autoload ()
+    "Automatically activates pyvenv if .venv directory exists."
+    (let* ((venv-possible-names '(".venv"))
+           (venv-path (cl-some
+                       (lambda (name)
+                         (let ((loc (locate-dominating-file
+                                     default-directory name)))
+                           (when loc
+                             (expand-file-name name loc))))
+                       venv-possible-names)))
+      (when venv-path
+        (pyvenv-activate venv-path))))
+  (add-hook 'python-mode-hook 'zy-pyvenv-autoload))
+
+(use-package pip-requirements
+  :straight t
+  :config
+  (add-hook 'pip-requirements-mode-hook
+            #'pip-requirements-auto-complete-setup))
 
 ;;;;; Scala
 
@@ -2821,7 +2831,6 @@ The function works like `org-latex-export-to-pdf', except that
   :interpreter ("scala" . scala-mode)
   :config
   (add-hook! scala-mode
-    'eglot-ensure
     'rainbow-delimiters-mode))
 
 (use-package sbt-mode
@@ -2871,9 +2880,7 @@ The function works like `org-latex-export-to-pdf', except that
   (declare-function TeX-source-correlate-mode 'tex)
   (add-hook! TeX-mode
     ;; Enable inverse search.
-    'TeX-source-correlate-mode
-    ;; Lint with Flycheck.
-    'flycheck-mode)
+    'TeX-source-correlate-mode)
   (setq-hook! TeX-mode
     ;; Always use XeLeTeX by default.
     TeX-command-default "XeLaTeX")
@@ -2909,8 +2916,7 @@ The function works like `org-latex-export-to-pdf', except that
   :magic ("\\.v" . verilog-mode)
   :init
   (add-hook! verilog-mode
-    'rainbow-delimiters-mode
-    'flycheck-mode)
+    'rainbow-delimiters-mode)
   :config
   (setq! verilog-auto-delete-trailing-whitespace t
          verilog-auto-newline nil
