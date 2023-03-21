@@ -1531,7 +1531,16 @@ faster `prin1'."
                              (project-find-dir "Find directory" "d")
                              (rg-project "Grep" "g")
                              (magit-project-status "Magit" "v")
-                             (project-eshell "Eshell" "e"))))
+                             (project-eshell "Eshell" "e")))
+
+  ;; Explicitly specify a project root with a .project file.
+  (defun zy-project-try-explicit (dir)
+    "Find a super-directory of DIR containing a .project file."
+    (locate-dominating-file dir ".project"))
+  (cl-defmethod project-root ((project string))
+             project)
+  (add-hook 'project-find-functions
+	    #'zy-project-try-explicit))
 
 ;;;;; File operations
 
@@ -2813,6 +2822,29 @@ The function works like `org-latex-export-to-pdf', except that
     ;; As suggested by PEP8.
     fill-column 79)
   (setenv "PYTHONIOENCODING" "UTF-8"))
+
+;;;;; Scala
+
+(use-package scala-mode
+  :straight t
+  :interpreter ("scala" . scala-mode)
+  :config
+  (add-hook! scala-mode
+    'eglot-ensure
+    'rainbow-delimiters-mode))
+
+(use-package sbt-mode
+  :straight t
+  :commands (sbt-start sbt-command)
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 ;;;;; TeX / LaTeX
 
