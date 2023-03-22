@@ -1594,6 +1594,7 @@ A dominating file is a file or directory with a name in
   :custom
   (persp-mode-prefix-key (kbd "C-z"))
   (persp-state-default-file (expand-file-name "persps" user-emacs-directory))
+  (persp-modestring-dividers '("<" ">" "|"))
   :general
   ([remap list-buffers] 'persp-list-buffers
    [remap kill-buffer] 'persp-kill-buffer*)
