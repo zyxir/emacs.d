@@ -1634,6 +1634,7 @@ theme, use `customize-themes' instead."
      (lsp-bridge-mode nil lsp-bridge)
      (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
+     (pet-mode nil pet)
      (smartparens-mode nil smartparens)
      (subword-mode nil subword)
      (valign-mode nil valign)
