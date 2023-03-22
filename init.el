@@ -2160,11 +2160,22 @@ itself to `consult-recent-file', can finally call
   ;; Show candidate documentation.
   (corfu-popupinfo-mode +1)
 
-  ;; Conservative completion in Eshell.
-  (add-hook 'eshell-mode-hook
-          (lambda ()
-            (setq-local corfu-auto nil)
-            (corfu-mode))))
+  ;; Enable Corfu in minibuffer.
+  (defun zy-enable-corfu-in-minibuffer ()
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point (list (current-local-map)))
+      ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+      (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                  corfu-popupinfo-delay nil)
+      (corfu-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'zy-enable-corfu-in-minibuffer)
+
+  ;; Conservative completion in Shell and Eshell.
+  (add-hook! '(shell-mode-hook eshell-mode-hook)
+    (message "I am executed!")
+    (setq-local corfu-auto nil)
+    (when (fboundp 'corfu-mode)
+      (corfu-mode 1))))
 
 ;; Extra CAPFs (completion-at-point-function).
 (use-package cape
