@@ -2308,7 +2308,19 @@ itself to `consult-recent-file', can finally call
   (:keymaps 'ctl-x-4-map "s" 'zy/shell-other-window)
   (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame)
   :config
-  ;; Shell hook that is run after the shell is fully ready.
+  ;; Send shell command once the next prompt is ready.
+  (defun zy-send-shell-command (command)
+    "Send COMMAND once the next prompt is ready.
+Can only be used in a `shell-mode' buffer.
+
+This will lock the program until the next prompt is ready."
+    (require 'comint)
+    (goto-char (point-max))
+    (insert command)
+    (comint-send-input)
+    (accept-process-output (get-buffer-process (current-buffer))))
+
+  ;; Shell command that is run after the shell prompt is shown.
   (defvar zy-shell-ready-functions nil
     "Functions to run after `shell' gives its first prompt.
 The functions are run with one argument, the shell buffer.")
@@ -2316,8 +2328,9 @@ The functions are run with one argument, the shell buffer.")
     "Run `zy-shell-ready-functions' after the shell is created."
     :around 'shell
     (let ((buf (apply fn args)))
-      (accept-process-output (get-buffer-process buf) 2)
-      (goto-char (point-max))
+      ;; Wait for the prompt to show.
+      (accept-process-output (get-buffer-process (current-buffer)) 1)
+      ;; Run hook functions.
       (run-hook-with-args 'zy-shell-ready-functions buf))))
 
 ;; Eshell is a consistent shell environment across platforms.
@@ -2834,39 +2847,34 @@ The function works like `org-latex-export-to-pdf', except that
   (setq-hook! python-mode
     ;; As suggested by PEP8.
     fill-column 79)
-  (setenv "PYTHONIOENCODING" "UTF-8")
+  (setenv "PYTHONIOENCODING" "UTF-8"))
 
+;; Enable running Pytest with the `python-pytest' command.
+(use-package python-pytest
+  :straight t
+  :commands python-pytest)
+
+;; Pet, the Python executable tracker, which automatically detects a Python
+;; virtual environment and apply it to various Python packages like
+;; python-pytest, python-isort and built-in project.el.  Pity it is not in
+;; MELPA.
+(use-package pet
+  :straight '(pet :host github :repo "wyuenho/emacs-pet")
+  :hook (python-mode)
+  :init
   ;; Activate Python virtual environment automatically in shell-mode.
   (declare-function comint-send-input 'comint)
   (add-hook! 'zy-shell-ready-functions
     (defun zy--setup-python-venv-h (buf)
       "Activate Python virtual environment if there is one."
+      (require 'pet)
       (with-current-buffer buf
-        (when (file-directory-p (expand-file-name ".venv" default-directory))
-          (insert "source ./.venv/bin/activate")
-          (comint-send-input))))))
-
-;; Enable running Pytest with the `python-pytest' command.
-(use-package python-pytest
-  :straight t)
-
-;; Virtual environment management.
-(use-package pyvenv
-  :straight t
-  :config
-  (defun zy-pyvenv-autoload ()
-    "Automatically activates pyvenv if .venv directory exists."
-    (let* ((venv-possible-names '(".venv"))
-           (venv-path (cl-some
-                       (lambda (name)
-                         (let ((loc (locate-dominating-file
-                                     default-directory name)))
-                           (when loc
-                             (expand-file-name name loc))))
-                       venv-possible-names)))
-      (when venv-path
-        (pyvenv-activate venv-path))))
-  (add-hook 'python-mode-hook 'zy-pyvenv-autoload))
+        (let ((venv-root (pet-virtualenv-root)))
+          (when venv-root
+            (zy-send-shell-command
+             (format "source %s"
+                     (expand-file-name "bin/activate"
+                                       venv-root)))))))))
 
 (use-package pip-requirements
   :straight t
