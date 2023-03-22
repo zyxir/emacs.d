@@ -1519,8 +1519,7 @@ faster `prin1'."
   :defer t
   :general
   (:keymaps 'project-prefix-map
-            "g" 'rg-project
-            "v" 'magit-project-status)
+            "b" 'consult-project-buffer)
   :config
   (setq!
    project-switch-commands '((project-find-file "Find file" "f")
@@ -1562,9 +1561,9 @@ A dominating file is a file or directory with a name in
 (use-package tab-bar
   :defer t
   :general
-  ("C-<tab>" nil
-   "M-[" 'tab-bar-switch-to-prev-tab
-   "M-]" 'tab-bar-switch-to-next-tab)
+  ;; Disable C-<tab> for tab switching, as it collides with other packages, like
+  ;; Magit.
+  ("C-<tab>" nil)
   :config
   ;; Customizing many of these options triggers the load of `tab-bar-mode', so
   ;; just set them instead.
@@ -1584,6 +1583,30 @@ A dominating file is a file or directory with a name in
      (concat "  " (alist-get 'name tab) "  ")
      'face (funcall tab-bar-tab-face-function tab)))
   (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format))
+
+;;;;; Manage workspaces with Perspective
+
+(use-package perspective
+  :straight t
+  :general
+  ("M-[" 'persp-prev
+   "M-]" 'persp-next)
+  :custom
+  (persp-mode-prefix-key (kbd "C-z"))
+  (persp-state-default-file (expand-file-name "persps" user-emacs-directory))
+  :general
+  ([remap list-buffers] 'persp-list-buffers
+   [remap kill-buffer] 'persp-kill-buffer*)
+  :init
+  (persp-mode 1)
+  :config
+  ;; Only show buffers from the current perspective in Consult.
+  (with-eval-after-load 'consult
+    (consult-customize consult--source-buffer :hidden t :default nil)
+    (add-to-list 'consult-buffer-sources persp-consult-source))
+
+  ;; Save perspectives to disk on exit.
+  (add-hook 'kill-emacs-hook #'persp-state-save))
 
 ;;;; User interface
 
