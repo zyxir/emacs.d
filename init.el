@@ -2424,19 +2424,30 @@ The functions are run with one argument, the shell buffer.")
   :straight t
   :commands (restart-emacs-start-new-emacs)
   :init
-  (defun zy/test-config ()
-    "Restart Emacs with \"--debug-init\" to test the config."
-    (interactive)
-    (restart-emacs-start-new-emacs '("--debug-init")))
+  (defun zy/test-config (&optional args)
+    "Start a new Emacs with \"--debug-init\" to test the config.
+
+When called interactively with a prefix argument, restart Emacs
+instead (without \"--debug-init\")."
+    (interactive "P")
+    (if args
+        ;; This may call the built-in version of `restart-emacs', which is
+        ;; introduced in Emacs 29, or the function with the same name of the
+        ;; package Restart-emacs.  Whatever is called, it works the same.
+        (restart-emacs)
+      (restart-emacs-start-new-emacs '("--debug-init"))))
   (general-def "C-c ," 'zy/test-config))
 
-;; Quickly open the config file in another window.
+;; Quickly open the config file.
 (defun zy/open-config ()
-  "Open Emacs configuration."
+  "Open Emacs configuration.
+If the current buffer is visiting a file, open it in another window."
   (interactive)
   (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
-    (unless (file-equal-p (buffer-file-name) init-file)
-      (find-file-other-window init-file))))
+    (if (buffer-file-name)
+        (unless (file-equal-p (buffer-file-name) init-file)
+          (find-file-other-window init-file))
+      (find-file init-file))))
 (general-def "C-," 'zy/open-config)
 
 ;;;;; Sudo edit
