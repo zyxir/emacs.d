@@ -2172,7 +2172,6 @@ itself to `consult-recent-file', can finally call
 
   ;; Conservative completion in Shell and Eshell.
   (add-hook! '(shell-mode-hook eshell-mode-hook)
-    (message "I am executed!")
     (setq-local corfu-auto nil)
     (when (fboundp 'corfu-mode)
       (corfu-mode 1))))
@@ -2307,7 +2306,19 @@ itself to `consult-recent-file', can finally call
   :general
   (:keymaps 'ctl-x-x-map "s" 'shell)
   (:keymaps 'ctl-x-4-map "s" 'zy/shell-other-window)
-  (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame))
+  (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame)
+  :config
+  ;; Shell hook that is run after the shell is fully ready.
+  (defvar zy-shell-ready-functions nil
+    "Functions to run after `shell' gives its first prompt.
+The functions are run with one argument, the shell buffer.")
+  (defadvice! zy--shell-ready-a (fn &rest args)
+    "Run `zy-shell-ready-functions' after the shell is created."
+    :around 'shell
+    (let ((buf (apply fn args)))
+      (accept-process-output (get-buffer-process buf) 2)
+      (goto-char (point-max))
+      (run-hook-with-args 'zy-shell-ready-functions buf))))
 
 ;; Eshell is a consistent shell environment across platforms.
 (use-package eshell
@@ -2823,7 +2834,17 @@ The function works like `org-latex-export-to-pdf', except that
   (setq-hook! python-mode
     ;; As suggested by PEP8.
     fill-column 79)
-  (setenv "PYTHONIOENCODING" "UTF-8"))
+  (setenv "PYTHONIOENCODING" "UTF-8")
+
+  ;; Activate Python virtual environment automatically in shell-mode.
+  (declare-function comint-send-input 'comint)
+  (add-hook! 'zy-shell-ready-functions
+    (defun zy--setup-python-venv-h (buf)
+      "Activate Python virtual environment if there is one."
+      (with-current-buffer buf
+        (when (file-directory-p (expand-file-name ".venv" default-directory))
+          (insert "source ./.venv/bin/activate")
+          (comint-send-input))))))
 
 ;; Enable running Pytest with the `python-pytest' command.
 (use-package python-pytest
