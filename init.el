@@ -2417,6 +2417,28 @@ The functions are run with one argument, the shell buffer.")
   :straight t
   :hook (org-mode markdown-mode))
 
+;;;;; Emacs configuration helper
+
+;; Restart Emacs from withing Emacs.
+(use-package restart-emacs
+  :straight t
+  :commands (restart-emacs-start-new-emacs)
+  :init
+  (defun zy/test-config ()
+    "Restart Emacs with \"--debug-init\" to test the config."
+    (interactive)
+    (restart-emacs-start-new-emacs '("--debug-init")))
+  (general-def "C-c ," 'zy/test-config))
+
+;; Quickly open the config file in another window.
+(defun zy/open-config ()
+  "Open Emacs configuration."
+  (interactive)
+  (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
+    (unless (file-equal-p (buffer-file-name) init-file)
+      (find-file-other-window init-file))))
+(general-def "C-," 'zy/open-config)
+
 ;;;;; Sudo edit
 
 ;; Allow to switch editing rights on an already opened read-only file.
