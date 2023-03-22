@@ -1527,12 +1527,20 @@ faster `prin1'."
                              (project-find-dir "Find directory" "d")
                              (rg-project "Grep" "g")
                              (magit-project-status "Magit" "v")
+                             (project-shell "Shell" "s")
                              (project-eshell "Eshell" "e")))
 
-  ;; Explicitly specify a project root with a .project file.
+  ;; Explicitly specify a project root with a dominating file (directory).
+  (defvar zy-project-dom-filenames '(".project")
+    "Possible dominating file/directory names for a project.")
   (defun zy-project-try-explicit (dir)
-    "Find a super-directory of DIR containing a .project file."
-    (locate-dominating-file dir ".project"))
+    "Find a super-directory of DIR containing a dominating file.
+A dominating file is a file or directory with a name in
+`zy-project-dom-filenames'."
+    (cl-some
+     (lambda (fname)
+       (locate-dominating-file dir fname))
+     zy-project-dom-filenames))
   (cl-defmethod project-root ((project string))
              project)
   (add-hook 'project-find-functions
