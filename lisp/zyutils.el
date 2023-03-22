@@ -216,6 +216,143 @@ files."
              (start-process "" nil "xdg-open" fpath)))
          file-list))))))
 
+;;;; Features
+
+;;;;; Shell and Eshell
+
+(defun zy-other-window-prefix ()
+  "Same as `other-window-prefix' but non-interactive."
+  (display-buffer-override-next-command
+   (lambda (buffer alist)
+     (let ((alist (append '((inhibit-same-window . t)) alist))
+           window type)
+       (if (setq window (display-buffer-pop-up-window buffer alist))
+           (setq type 'window)
+         (setq window (display-buffer-use-some-window buffer alist)
+               type 'reuse))
+       (cons window type)))
+   nil "[other-window]"))
+
+(defun zy-other-frame-prefix ()
+  "Same as `other-frame-prefix' but non-interactive."
+  (display-buffer-override-next-command
+   (lambda (buffer alist)
+     (cons (display-buffer-pop-up-frame
+            buffer (append '((inhibit-same-window . t))
+                           alist))
+           'frame))
+   nil "[other-frame]"))
+
+;;;###autoload
+(defun zy/eshell-other-window (&optional arg)
+  "Run `eshell' in another window (optionally with ARG)."
+  (interactive "P")
+  (zy-other-window-prefix)
+  (eshell arg))
+
+;;;###autoload
+(defun zy/eshell-other-frame (&optional arg)
+  "Run `eshell' in another frame (optionally with ARG)."
+  (interactive "P")
+  (zy-other-frame-prefix)
+  (eshell arg))
+
+(require 'shell)
+
+;;;###autoload
+(defun zy/shell-other-window (&optional buffer file-name)
+  "Run `shell' in another window (optionally with BUFFER and FILE-NAME)."
+  (interactive
+   (let* ((buffer
+           (and current-prefix-arg
+		(read-buffer "Shell buffer: "
+			     ;; If the current buffer is an inactive
+			     ;; shell buffer, use it as the default.
+			     (if (and (eq major-mode 'shell-mode)
+				      (null (get-buffer-process
+				             (current-buffer))))
+				 (buffer-name)
+			       (generate-new-buffer-name "*shell*")))))
+	  (buf (if (or buffer (not (derived-mode-p 'shell-mode))
+                       (comint-check-proc (current-buffer)))
+                   (get-buffer-create (or buffer "*shell*"))
+                 ;; If the current buffer is a dead shell buffer, use it.
+                 (current-buffer))))
+
+     (with-current-buffer buf
+       (when (and buffer (file-remote-p default-directory))
+	 ;; It must be possible to declare a local default-directory.
+	 (setq default-directory
+	       (expand-file-name
+		(read-directory-name
+		 "Default directory: " default-directory default-directory
+		 t nil))))
+       (list
+        buffer
+        ;; On remote hosts, the local `shell-file-name' might be useless.
+        (with-connection-local-variables
+         (when (and (file-remote-p default-directory)
+                    (null explicit-shell-file-name)
+                    (null (getenv "ESHELL")))
+           ;; `expand-file-name' shall not add the MS Windows volume letter
+           ;; (Bug#49229).
+           (replace-regexp-in-string
+            "^[[:alpha:]]:" ""
+            (file-local-name
+             (expand-file-name
+              (read-file-name "Remote shell path: " default-directory
+                              shell-file-name t shell-file-name
+                              #'file-remote-p))))))))))
+  (zy-other-window-prefix)
+  (shell buffer file-name))
+
+;;;###autoload
+(defun zy/shell-other-frame (&optional buffer file-name)
+  "Run `shell' in another frame (optionally with BUFFER and FILE-NAME)."
+  (interactive
+   (let* ((buffer
+           (and current-prefix-arg
+		(read-buffer "Shell buffer: "
+			     ;; If the current buffer is an inactive
+			     ;; shell buffer, use it as the default.
+			     (if (and (eq major-mode 'shell-mode)
+				      (null (get-buffer-process
+				             (current-buffer))))
+				 (buffer-name)
+			       (generate-new-buffer-name "*shell*")))))
+	  (buf (if (or buffer (not (derived-mode-p 'shell-mode))
+                       (comint-check-proc (current-buffer)))
+                   (get-buffer-create (or buffer "*shell*"))
+                 ;; If the current buffer is a dead shell buffer, use it.
+                 (current-buffer))))
+
+     (with-current-buffer buf
+       (when (and buffer (file-remote-p default-directory))
+	 ;; It must be possible to declare a local default-directory.
+	 (setq default-directory
+	       (expand-file-name
+		(read-directory-name
+		 "Default directory: " default-directory default-directory
+		 t nil))))
+       (list
+        buffer
+        ;; On remote hosts, the local `shell-file-name' might be useless.
+        (with-connection-local-variables
+         (when (and (file-remote-p default-directory)
+                    (null explicit-shell-file-name)
+                    (null (getenv "ESHELL")))
+           ;; `expand-file-name' shall not add the MS Windows volume letter
+           ;; (Bug#49229).
+           (replace-regexp-in-string
+            "^[[:alpha:]]:" ""
+            (file-local-name
+             (expand-file-name
+              (read-file-name "Remote shell path: " default-directory
+                              shell-file-name t shell-file-name
+                              #'file-remote-p))))))))))
+  (zy-other-frame-prefix)
+  (shell buffer file-name))
+
 ;;;; File type specific settings
 
 ;;;;; Org

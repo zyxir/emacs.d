@@ -930,6 +930,11 @@ If this is a daemon session, load them all immediately instead."
    zy/delete-file-and-buffer
    zy/rename-file-and-buffer
    zy/open-externally
+   ;; Shell and Eshell
+   zy/eshell-other-window
+   zy/eshell-other-frame
+   zy/shell-other-window
+   zy/shell-other-frame
    ;; Org export to LaTeX
    zy/update-zylatex-file))
 
@@ -2283,10 +2288,23 @@ itself to `consult-recent-file', can finally call
   :config
   (global-flycheck-eglot-mode 1))
 
-;;;;; Eshell (consistent shell across platforms)
+;;;;; Shell and Eshell
 
+;; The inferior shell inside Emacs.
+(use-package shell
+  :commands shell
+  :general
+  (:keymaps 'ctl-x-x-map "s" 'shell)
+  (:keymaps 'ctl-x-4-map "s" 'zy/shell-other-window)
+  (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame))
+
+;; Eshell is a consistent shell environment across platforms.
 (use-package eshell
   :commands eshell
+  :general
+  (:keymaps 'ctl-x-x-map "e" 'eshell)
+  (:keymaps 'ctl-x-4-map "e" 'zy/eshell-other-window)
+  (:keymaps 'ctl-x-5-map "e" 'zy/eshell-other-frame)
   :init
   (setq!
    ;; Keep the aliases file in version control.
