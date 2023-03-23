@@ -1519,7 +1519,8 @@ faster `prin1'."
   :defer t
   :general
   (:keymaps 'project-prefix-map
-            "b" 'consult-project-buffer)
+            "b" 'consult-project-buffer
+            "v" 'magit-project-status)
   :config
   (setq!
    project-switch-commands '((project-find-file "Find file" "f")
