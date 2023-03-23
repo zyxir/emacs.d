@@ -2320,8 +2320,9 @@ itself to `consult-recent-file', can finally call
             "r" 'eglot-rename
             "R" 'eglot-reconnect)
   :init
+  ;; Always ensure Eglot after everything else.
   (add-hook!
-      '(cc-mode-hook python-mode-hook scala-mode-hook verilog-mode-hook)
+      (cc-mode python-mode scala-mode verilog-mode)
     :depth 100
     'eglot-ensure))
 
@@ -2941,7 +2942,24 @@ The function works like `org-latex-export-to-pdf', except that
             (zy-send-shell-command
              (format "source %s"
                      (expand-file-name "bin/activate"
-                                       venv-root)))))))))
+                                       venv-root))))))))
+  :config
+  ;; Let Eglot find LSP server executables with Pet.
+  (defadvice! zy--pet-executable-find-a (oldfun command &optional remote)
+    "Like `executable-find', but respect Python virtual environments.
+That is, when `python-mode' is on, use `pet-executable-find' instead.
+
+This is used as an :around advice for `eglot--executable-find', so that
+Eglot can use the LSP server located in a Python virtual
+environment."
+    :around 'eglot--executable-find
+    (if (and
+         ;; Not a remote directory.
+         (null (and remote (file-remote-p default-directory)))
+         ;; The current mode is derived from `python-mode'.
+         (derived-mode-p 'python-mode))
+        (pet-executable-find command)
+      (funcall oldfun command remote))))
 
 (use-package pip-requirements
   :straight t
