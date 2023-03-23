@@ -410,8 +410,8 @@ quoted hook variable or a quoted list of hook variables."
 (defmacro add-hook! (hooks &rest rest)
   "A convennient macro to add N functions to M hooks.
 
-HOOKS is either a quoted hook variable or a quoted list of hook
-variables.
+HOOKS is either an unquoted mode, an unquoted list of modes, a
+quoted hook variable or a quoted list of hook variables.
 
 REST can contain optional properties :local, :append, and/or
 :depth [N], which will make the hook buffer-local or append to
@@ -2187,8 +2187,8 @@ itself to `consult-recent-file', can finally call
   ;; Corfu extensions.
   ;; Select candidates using Avy-style keys.
   (general-def :keymaps 'corfu-map
-    "M-q" 'corfu-quick-complete
-    "C-q" 'corfu-quick-insert)
+    "M-o" 'corfu-quick-complete
+    "C-o" 'corfu-quick-insert)
   ;; Remember completion history.
   (corfu-history-mode +1)
   ;; Show candidate documentation.
