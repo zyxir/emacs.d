@@ -1114,10 +1114,25 @@ If this is a daemon session, load them all immediately instead."
   :defer t
   :general
   ("M-Q" 'zy/unfill-paragraph)
+  :hook
+  (prog-mode . display-fill-column-indicator-mode)
   :init
   (setq!
-   ;; 80 is a sane default.  Recommended by Google.
-   fill-column 80
+   ;; Google suggests a line length of 80, which is a bit two short.  I change
+   ;; default `fill-column' to 100 for several reasons.
+   ;;
+   ;; First, this is the default for all modes, and should be longer, as some
+   ;; programming languages (like Emacs Lisp and Scala) tend to have longer
+   ;; lines.  And `fill-column' is actually not a strict rule, in most cases it
+   ;; is just used by `display-fill-column-indicator-mode' to display a visual
+   ;; indicator.
+   ;;
+   ;; Second, programming languages should have their own formatters, like Black
+   ;; is the formatter for Python, and formatting the code is their job.
+   ;;
+   ;; However, some legacy code of mine may still use 80 as the line length.
+   ;; That doesn't matter, though.
+   fill-column 100
    ;; These settings are adapted from Protesilaus Stavrou's configuration.
    sentence-end-double-space t
    sentence-end-without-period nil
@@ -2952,7 +2967,6 @@ The function works like `org-latex-export-to-pdf', except that
   :defer t
   :init
   (add-hook! python-mode
-    'display-fill-column-indicator-mode
     'rainbow-delimiters-mode)
   :config
   (setq!
@@ -2960,9 +2974,6 @@ The function works like `org-latex-export-to-pdf', except that
    python-fill-docstring-style 'pep-257-nn
    ;; Use the default executable for the shell.
    python-shell-interpreter "python")
-  (setq-hook! python-mode
-    ;; As suggested by PEP8.
-    fill-column 79)
   (setenv "PYTHONIOENCODING" "UTF-8"))
 
 ;; Font-lock for docstring.
