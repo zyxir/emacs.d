@@ -2951,6 +2951,11 @@ The function works like `org-latex-export-to-pdf', except that
     fill-column 79)
   (setenv "PYTHONIOENCODING" "UTF-8"))
 
+;; Font-lock for docstring.
+(use-package python-docstring
+  :straight t
+  :hook python-mode)
+
 ;; Enable running Pytest with the `python-pytest' command.
 (use-package python-pytest
   :straight t
@@ -2995,6 +3000,7 @@ environment."
         (pet-executable-find command)
       (funcall oldfun command remote))))
 
+;; Syntax highlight for requirements.txt.
 (use-package pip-requirements
   :straight t
   :config
