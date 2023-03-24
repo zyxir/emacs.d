@@ -1637,8 +1637,14 @@ A dominating file is a file or directory with a name in
     (consult-customize consult--source-buffer :hidden t :default nil)
     (add-to-list 'consult-buffer-sources persp-consult-source))
 
-  ;; Save perspectives to disk on exit.
-  (add-hook 'kill-emacs-hook #'persp-state-save))
+  ;; Save perspectives if this session explicitly loads perspectives.
+  (defadvice! zy--persp-save-if-load-a ()
+    "Add `persp-state-save' to `kill-emacs-hook'.
+This should be used as an :after hook to `persp-state-load', so
+that automatic state saving only happens when the state is
+explicitly loaded by the user."
+    :after 'persp-state-load
+    (add-hook 'kill-emacs-hook #'persp-state-save)))
 
 ;;;; User interface
 
@@ -2030,7 +2036,7 @@ Should be run again after theme switch."
 
 (use-package hl-todo
   :straight t
-  :hook (text-mode conf-mode)
+  :hook (prog-mode text-mode conf-mode)
   :init
   (setq hl-todo-keyword-faces
         '(("TODO"   . "#FF0000")
