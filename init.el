@@ -2333,10 +2333,17 @@ itself to `consult-recent-file', can finally call
   ;; Server-specific configuraration.
   (setq!
    eglot-workspace-configuration
-   '(:pylsp
+   '(;; Python.
+     :pylsp
      (:plugins
-      (:pydocstyle (:enabled t :convention "pep257")
-                   :pylint (:enabled t))))))
+      (;; Documentation checking.
+       :pydocstyle (:enabled t :convention "pep257")
+                   ;; Type checking.
+                   :mypy (:enabled t)
+                   ;; Code formatting.
+                   :black (:enabled t)
+                   ;; Linting.
+                   :ruff (:enabled t))))))
 
 ;; Make Flycheck and Eglot work together.
 (use-package flycheck-eglot
