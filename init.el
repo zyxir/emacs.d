@@ -2258,11 +2258,13 @@ itself to `consult-recent-file', can finally call
   :general
   ;; On Linux, I map Left Shift to F16 when pressed alone in Emacs via Xremap,
   ;; so that I can toggle input method conveniently inside Emacs.  However,
-  ;; Emacs interprets F16 to <Launch7>, so I have to map that.
+  ;; Emacs interprets F16 to <Launch7> (on Pure GTK) or <XF86Launch7> (on X), so
+  ;; I have to map that.
   ;;
   ;; Why don't I map it to C-\ directly?  Because Xremap doesn't support that.
   ;; Besides, mapping it to a rarely-used key causes less side effects.
-  ("<Launch7>" 'toggle-input-method)
+  ("<Launch7>" 'toggle-input-method
+   "<XF86Launch7>" 'toggle-input-method)
   :init
   (setq!
    ;; Use Rime as the default input method.
@@ -2344,6 +2346,8 @@ itself to `consult-recent-file', can finally call
   :general
   (:keymaps 'eglot-mode-map
             :prefix "C-c g"
+            "a" 'eglot-code-actions
+            "f" 'eglot-format
             "r" 'eglot-rename
             "R" 'eglot-reconnect)
   :init
