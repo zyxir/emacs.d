@@ -2012,6 +2012,19 @@ Should be run again after theme switch."
         (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
   (setenv "TERM" "xterm-256color"))
 
+;;;;; Highlight TODO and similiar keywords
+
+(use-package hl-todo
+  :straight t
+  :hook (text-mode conf-mode)
+  :init
+  (setq hl-todo-keyword-faces
+        '(("TODO"   . "#FF0000")
+          ("FIXME"  . "#FF0000")
+          ("DEBUG"  . "#A020F0")
+          ("GOTCHA" . "#FF4500")
+          ("STUB"   . "#1E90FF"))))
+
 ;;;; Features
 
 ;; This section is for settings that provide additional features for Emacs.
