@@ -1677,6 +1677,7 @@ theme, use `customize-themes' instead."
      (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
      (pet-mode nil pet)
+     (python-docstring-mode nil python-docstring)
      (smartparens-mode nil smartparens)
      (subword-mode nil subword)
      (valign-mode nil valign)
