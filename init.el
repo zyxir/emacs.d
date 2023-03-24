@@ -1608,6 +1608,14 @@ A dominating file is a file or directory with a name in
    [remap kill-buffer] 'persp-kill-buffer*)
   :init
   (persp-mode 1)
+  ;; Load perspectives without asking.
+  (defun zy/persp-state-load (&rest _)
+    "Restore the perspective state saved in `persp-state-default-file'."
+    (interactive)
+    (if (file-exists-p persp-state-default-file)
+        (persp-state-load persp-state-default-file)
+      (message "No `persp-state-default-file' is set.")))
+  (general-def [remap persp-state-load] 'zy/persp-state-load)
   :config
   ;; Only show buffers from the current perspective in Consult.
   (with-eval-after-load 'consult
