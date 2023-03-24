@@ -1288,21 +1288,20 @@ If this is a daemon session, load them all immediately instead."
 
 ;;;;; Integrated tree-sitter support
 
-(use-package treesit
-  :when (treesit-available-p)
-  :init
-  (require 'treesit)
-  (defvar zy-treesit-enabled-langs '(python)
-    "Languages with tree-sitter support enabled.")
-  (add-to-list
-   'treesit-language-source-alist
-   '(python "https://github.com/tree-sitter/tree-sitter-python.git"))
-  (dolist (lang zy-treesit-enabled-langs)
-    (add-to-list 'major-mode-remap-alist
-                 (cons (intern (concat (symbol-name lang) "-mode"))
-                       (intern (concat (symbol-name lang) "-ts-mode"))))
-    (unless (treesit-language-available-p lang)
-      (treesit-install-language-grammar lang))))
+;; Automatically enable tree-sitter powered major modes.
+(use-package treesit-auto
+  :straight '(treesit-auto :host github :repo "renzmann/treesit-auto")
+  :demand
+  :config
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode 1)
+  ;; Migrate normal hooks to tree-sitter mode hooks after startup.
+  (add-hook! 'emacs-startup-hook
+    :depth 100
+    (defun zy--migrate-ts-hooks-h (&rest _)
+      "Mirror major mode hooks to the corresponding tree-sitter hooks.
+For example, mirror `python-mode-hook' to `python-ts-mode-hook'."
+      (setq python-ts-mode-hook python-mode-hook))))
 
 ;;;; Workbench
 
@@ -2356,7 +2355,7 @@ itself to `consult-recent-file', can finally call
 ;;;;; Eglot (language server protocol support)
 
 (use-package eglot
-  :straight t
+  :straight '(eglot :type built-in)
   :general
   (:keymaps 'eglot-mode-map
             :prefix "C-c g"
@@ -3041,8 +3040,9 @@ environment."
     (if (and
          ;; Not a remote directory.
          (null (and remote (file-remote-p default-directory)))
-         ;; The current mode is derived from `python-mode'.
-         (derived-mode-p 'python-mode))
+         ;; The current mode is derived from `python-base-mode'.  Both `python-mode' and
+         ;; `python-ts-mode' are derived from it.
+         (or (derived-mode-p 'python-base-mode)))
         (pet-executable-find command)
       (funcall oldfun command remote))))
 
