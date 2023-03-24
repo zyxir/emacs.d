@@ -1296,6 +1296,24 @@ If this is a daemon session, load them all immediately instead."
   :straight t
   :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
 
+;;;;; Integrated tree-sitter support
+
+(use-package treesit
+  :when (treesit-available-p)
+  :init
+  (require 'treesit)
+  (defvar zy-treesit-enabled-langs '(python)
+    "Languages with tree-sitter support enabled.")
+  (add-to-list
+   'treesit-language-source-alist
+   '(python "https://github.com/tree-sitter/tree-sitter-python.git"))
+  (dolist (lang zy-treesit-enabled-langs)
+    (add-to-list 'major-mode-remap-alist
+                 (cons (intern (concat (symbol-name lang) "-mode"))
+                       (intern (concat (symbol-name lang) "-ts-mode"))))
+    (unless (treesit-language-available-p lang)
+      (treesit-install-language-grammar lang))))
+
 ;;;; Workbench
 
 ;; This section contains settings about buffers, files, directories, projects,
