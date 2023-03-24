@@ -2336,14 +2336,12 @@ itself to `consult-recent-file', can finally call
    '(;; Python.
      :pylsp
      (:plugins
-      (;; Documentation checking.
-       :pydocstyle (:enabled t :convention "pep257")
-                   ;; Type checking.
-                   :mypy (:enabled t)
-                   ;; Code formatting.
-                   :black (:enabled t)
-                   ;; Linting.
-                   :ruff (:enabled t))))))
+      (;; Type checking.
+       :mypy (:enabled t)
+       ;; Code formatting.
+       :black (:enabled t)
+       ;; Linting.
+       :ruff (:enabled t))))))
 
 ;; Make Flycheck and Eglot work together.
 (use-package flycheck-eglot
