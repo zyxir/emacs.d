@@ -1118,21 +1118,11 @@ If this is a daemon session, load them all immediately instead."
   (prog-mode . display-fill-column-indicator-mode)
   :init
   (setq!
-   ;; Google suggests a line length of 80, which is a bit two short.  I change
-   ;; default `fill-column' to 100 for several reasons.
-   ;;
-   ;; First, this is the default for all modes, and should be longer, as some
-   ;; programming languages (like Emacs Lisp and Scala) tend to have longer
-   ;; lines.  And `fill-column' is actually not a strict rule, in most cases it
-   ;; is just used by `display-fill-column-indicator-mode' to display a visual
-   ;; indicator.
-   ;;
-   ;; Second, programming languages should have their own formatters, like Black
-   ;; is the formatter for Python, and formatting the code is their job.
-   ;;
-   ;; However, some legacy code of mine may still use 80 as the line length.
-   ;; That doesn't matter, though.
-   fill-column 100
+   ;; `fill-column' controls the line length when using commands like `fill-paragraph'.
+   ;; Google suggests a line length limit of 80 characters, which is a sane default.
+   ;; However, this should not be mandatory: feel free to exceed the limit at any time,
+   ;; unless when paid to write lines of code shorter than 80 characters.
+   fill-column 80
    ;; These settings are adapted from Protesilaus Stavrou's configuration.
    sentence-end-double-space t
    sentence-end-without-period nil
@@ -2658,6 +2648,9 @@ Automatically set when `zy~zybox-dir' is customized.")
   (add-hook! emacs-lisp-mode
     'outline-minor-mode
     'rainbow-delimiters-mode)
+  (setq-hook! emacs-lisp-mode
+    ;; Emacs Lisp code tends to be wide, so use a bigger fill-column.
+    fill-column 90)
 
   (setq!
    ;; Let Flycheck inherit Emacs load path.
