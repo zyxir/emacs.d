@@ -1993,25 +1993,6 @@ Should be run again after theme switch."
 (zy--setup-heading-appearance)
 (add-hook 'zy-load-theme-hook #'zy--setup-heading-appearance)
 
-;;;;; Colorful Shell Output
-
-(use-package xterm-color
-  :straight t
-  :after (:or comint eshell shell)
-  :config
-  (require 'comint)
-  (require 'eshell)
-  (require 'esh-mode)
-  (require 'shell)
-  ;; Configure Eshell.
-  (add-hook 'eshell-before-prompt-hook
-            (lambda ()
-              (setq xterm-color-preserve-properties t)))
-  (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
-  (setq eshell-output-filter-functions
-        (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
-  (setenv "TERM" "xterm-256color"))
-
 ;;;;; Highlight TODO and similiar keywords
 
 (use-package hl-todo
@@ -2356,6 +2337,8 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Shell and Eshell
 
+;;;;;; Shell
+
 ;; The inferior shell inside Emacs.
 (use-package shell
   :commands shell
@@ -2388,6 +2371,8 @@ The functions are run with one argument, the shell buffer.")
       (accept-process-output (get-buffer-process (current-buffer)) 1)
       ;; Run hook functions.
       (run-hook-with-args 'zy-shell-ready-functions buf))))
+
+;;;;;; Eshell
 
 ;; Eshell is a consistent shell environment across platforms.
 (use-package eshell
@@ -2423,6 +2408,25 @@ The functions are run with one argument, the shell buffer.")
     (let ((inhibit-read-only t))
       (erase-buffer)
       (eshell-send-input))))
+
+;;;;;; Colorful Shell Output
+
+(use-package xterm-color
+  :straight t
+  :after (:or comint eshell shell)
+  :config
+  (require 'comint)
+  (require 'eshell)
+  (require 'esh-mode)
+  (require 'shell)
+  ;; Configure Eshell.
+  (add-hook 'eshell-before-prompt-hook
+            (lambda ()
+              (setq xterm-color-preserve-properties t)))
+  (add-to-list 'eshell-preoutput-filter-functions 'xterm-color-filter)
+  (setq eshell-output-filter-functions
+        (remove 'eshell-handle-ansi-color eshell-output-filter-functions))
+  (setenv "TERM" "xterm-256color"))
 
 ;;;;; Calendar
 
