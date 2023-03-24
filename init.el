@@ -2324,7 +2324,15 @@ itself to `consult-recent-file', can finally call
   (add-hook!
       (cc-mode python-mode scala-mode verilog-mode)
     :depth 100
-    'eglot-ensure))
+    'eglot-ensure)
+
+  ;; Server-specific configuraration.
+  (setq!
+   eglot-workspace-configuration
+   '(:pylsp
+     (:plugins
+      (:pydocstyle (:enabled t :convention "pep257")
+                   :pylint (:enabled t))))))
 
 ;; Make Flycheck and Eglot work together.
 (use-package flycheck-eglot
