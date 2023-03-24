@@ -1274,6 +1274,13 @@ If this is a daemon session, load them all immediately instead."
         (apply fn rest)
         (when corfu-enabled-p (corfu-mode 1))))))
 
+;;;;; Eldoc, the at-point documentation
+
+;; Show documentation in a child frame.
+(use-package eldoc-box
+  :straight t
+  :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
+
 ;;;; Workbench
 
 ;; This section contains settings about buffers, files, directories, projects,
@@ -1662,6 +1669,8 @@ theme, use `customize-themes' instead."
      (citar-embark-mode nil citar-embark)
      (clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
+     (eldoc-box-hover-mode nil eldoc-box)
+     (eldoc-box-hover-at-point-mode nil eldoc-box)
      (gcmh-mode nil gcmh)
      (highlight-indent-guides-mode nil highlight-indent-guides)
      (lsp-bridge-mode nil lsp-bridge)
