@@ -1293,7 +1293,11 @@ If this is a daemon session, load them all immediately instead."
   :straight '(treesit-auto :host github :repo "renzmann/treesit-auto")
   :demand
   :config
-  (setq treesit-auto-install 'prompt)
+  (setq
+   ;; Only enable for these modes.
+   treesit-auto-langs '(python)
+   ;; Prompt the user to install grammar.
+   treesit-auto-install 'prompt)
   (global-treesit-auto-mode 1)
   ;; Migrate normal hooks to tree-sitter mode hooks after startup.
   (add-hook! 'emacs-startup-hook
@@ -1616,42 +1620,44 @@ A dominating file is a file or directory with a name in
 
 ;;;;; Manage workspaces with Perspective
 
-(use-package perspective
-  :straight t
-  :general
-  ("M-[" 'persp-prev
-   "M-]" 'persp-next)
-  :custom
-  (persp-mode-prefix-key (kbd "C-z"))
-  (persp-state-default-file (expand-file-name "persps" user-emacs-directory))
-  (persp-modestring-dividers '("<" ">" "|"))
-  :general
-  ([remap list-buffers] 'persp-list-buffers
-   [remap kill-buffer] 'persp-kill-buffer*)
-  :init
-  (persp-mode 1)
-  ;; Load perspectives without asking.
-  (defun zy/persp-state-load (&rest _)
-    "Restore the perspective state saved in `persp-state-default-file'."
-    (interactive)
-    (if (file-exists-p persp-state-default-file)
-        (persp-state-load persp-state-default-file)
-      (message "No `persp-state-default-file' is set.")))
-  (general-def [remap persp-state-load] 'zy/persp-state-load)
-  :config
-  ;; Only show buffers from the current perspective in Consult.
-  (with-eval-after-load 'consult
-    (consult-customize consult--source-buffer :hidden t :default nil)
-    (add-to-list 'consult-buffer-sources persp-consult-source))
+;; I find perspectives not so useful currently, so it is temporarily disabled.
 
-  ;; Save perspectives if this session explicitly loads perspectives.
-  (defadvice! zy--persp-save-if-load-a ()
-    "Add `persp-state-save' to `kill-emacs-hook'.
-This should be used as an :after hook to `persp-state-load', so
-that automatic state saving only happens when the state is
-explicitly loaded by the user."
-    :after 'persp-state-load
-    (add-hook 'kill-emacs-hook #'persp-state-save)))
+;; (use-package perspective
+;;   :straight t
+;;   :general
+;;   ("M-[" 'persp-prev
+;;    "M-]" 'persp-next)
+;;   :custom
+;;   (persp-mode-prefix-key (kbd "C-z"))
+;;   (persp-state-default-file (expand-file-name "persps" user-emacs-directory))
+;;   (persp-modestring-dividers '("<" ">" "|"))
+;;   :general
+;;   ([remap list-buffers] 'persp-list-buffers
+;;    [remap kill-buffer] 'persp-kill-buffer*)
+;;   :init
+;;   (persp-mode 1)
+;;   ;; Load perspectives without asking.
+;;   (defun zy/persp-state-load (&rest _)
+;;     "Restore the perspective state saved in `persp-state-default-file'."
+;;     (interactive)
+;;     (if (file-exists-p persp-state-default-file)
+;;         (persp-state-load persp-state-default-file)
+;;       (message "No `persp-state-default-file' is set.")))
+;;   (general-def [remap persp-state-load] 'zy/persp-state-load)
+;;   :config
+;;   ;; Only show buffers from the current perspective in Consult.
+;;   (with-eval-after-load 'consult
+;;     (consult-customize consult--source-buffer :hidden t :default nil)
+;;     (add-to-list 'consult-buffer-sources persp-consult-source))
+
+;;   ;; Save perspectives if this session explicitly loads perspectives.
+;;   (defadvice! zy--persp-save-if-load-a ()
+;;     "Add `persp-state-save' to `kill-emacs-hook'.
+;; This should be used as an :after hook to `persp-state-load', so
+;; that automatic state saving only happens when the state is
+;; explicitly loaded by the user."
+;;     :after 'persp-state-load
+;;     (add-hook 'kill-emacs-hook #'persp-state-save)))
 
 ;;;; User interface
 
@@ -3049,6 +3055,7 @@ environment."
 ;; Syntax highlight for requirements.txt.
 (use-package pip-requirements
   :straight t
+  :defer t
   :config
   (add-hook 'pip-requirements-mode-hook
             #'pip-requirements-auto-complete-setup))
