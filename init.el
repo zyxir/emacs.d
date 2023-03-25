@@ -994,7 +994,8 @@ If this is a daemon session, load them all immediately instead."
   ;; Use GBK for cmdproxy.exe and plink.exe.
   (set-default 'process-coding-system-alist
                '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
-                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos))))
+                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
+                 ("[pP][oO][wW][eE][rR][sS][hH][eE][lL][lL]" gbk-dos . gbk-dos))))
 
 ;; Use "C" for English locale.
 
@@ -2396,9 +2397,16 @@ itself to `consult-recent-file', can finally call
   :config
   (global-flycheck-eglot-mode 1))
 
-;;;;; Shell and Eshell
+;;;;; Shell
 
-;;;;;; Shell
+;;;;;; Comint and Shell
+
+(use-package comint
+  :defer t
+  :config
+  (setq!
+   ;; Do not delete the prompt.
+   comint-prompt-read-only t))
 
 ;; The inferior shell inside Emacs.
 (use-package shell
@@ -2986,6 +2994,14 @@ The function works like `org-latex-export-to-pdf', except that
   ;; Install PDF Tools.
   (declare-function pdf-tools-install "pdf-tools")
   (pdf-tools-install))
+
+;;;;; PowerShell
+
+;; This mode is useful on Windows, especially for its `powershell' command.
+
+(use-package powershell
+  :straight t
+  :commands (powershell))
 
 ;;;;; Python
 
