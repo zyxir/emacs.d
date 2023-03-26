@@ -2418,32 +2418,7 @@ itself to `consult-recent-file', can finally call
   :general
   (:keymaps 'ctl-x-x-map "s" 'shell)
   (:keymaps 'ctl-x-4-map "s" 'zy/shell-other-window)
-  (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame)
-  :config
-  ;; Send shell command once the next prompt is ready.
-  (defun zy-send-shell-command (command)
-    "Send COMMAND once the next prompt is ready.
-Can only be used in a `shell-mode' buffer.
-
-This will lock the program until the next prompt is ready."
-    (require 'comint)
-    (goto-char (point-max))
-    (insert command)
-    (comint-send-input)
-    (accept-process-output (get-buffer-process (current-buffer))))
-
-  ;; Shell command that is run after the shell prompt is shown.
-  (defvar zy-shell-ready-functions nil
-    "Functions to run after `shell' gives its first prompt.
-The functions are run with one argument, the shell buffer.")
-  (defadvice! zy--shell-ready-a (fn &rest args)
-    "Run `zy-shell-ready-functions' after the shell is created."
-    :around 'shell
-    (let ((buf (apply fn args)))
-      ;; Wait for the prompt to show.
-      (accept-process-output (get-buffer-process (current-buffer)) 1)
-      ;; Run hook functions.
-      (run-hook-with-args 'zy-shell-ready-functions buf))))
+  (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame))
 
 ;;;;;; Eshell
 
@@ -3039,20 +3014,6 @@ The function works like `org-latex-export-to-pdf', except that
 (use-package pet
   :straight '(pet :host github :repo "wyuenho/emacs-pet")
   :hook (python-mode)
-  :init
-  ;; Activate Python virtual environment automatically in shell-mode.
-  (declare-function comint-send-input 'comint)
-  (add-hook! 'zy-shell-ready-functions
-    (defun zy--setup-python-venv-h (buf)
-      "Activate Python virtual environment if there is one."
-      (require 'pet)
-      (with-current-buffer buf
-        (let ((venv-root (pet-virtualenv-root)))
-          (when venv-root
-            (zy-send-shell-command
-             (format "source %s"
-                     (expand-file-name "bin/activate"
-                                       venv-root))))))))
   :config
   ;; Let Eglot find LSP server executables with Pet.
   (defadvice! zy--pet-executable-find-a (oldfun command &optional remote)
