@@ -1237,22 +1237,19 @@ If this is a daemon session, load them all immediately instead."
 ;;;;; Smartparens (parenthesis automation)
 
 (use-package smartparens
-  :straight t
-  :hook (prog-mode conf-mode)
+  :straight '(smartparens :host github :repo "zyxir/smartparens")
+  :defer t
+  :hook (conf-mode prog-mode text-mode)
   :config
   ;; Use default config.
   (require 'smartparens-config)
-  ;; Use default keybindings except a few keys.
-  (delete '("M-<delete>" . sp-unwrap-sexp) sp-smartparens-bindings)
-  (delete '("M-<backspace>" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
-  (push '("M-\\" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
-  (push '("C-M-\\" . sp-unwrap-sexp) sp-smartparens-bindings)
   (sp-use-smartparens-bindings)
-
-  (setq!
+  (setq
    ;; Do not show overlays.
    sp-highlight-pair-overlay nil
-   sp-highlight-wrap-overlay nil))
+   sp-highlight-wrap-overlay nil
+   ;; Do not auto insert colon for Python.
+   sp-python-insert-colon-in-function-definitions nil))
 
 ;;;;; Avy (quick text jump)
 
