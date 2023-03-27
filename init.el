@@ -2119,6 +2119,8 @@ Should be run again after theme switch."
   (setq!
    orderless-matching-styles '(orderless-literal
                                orderless-prefixes
+                               orderless-flex
+                               orderless-initialism
                                orderless-regexp)
    orderless-style-dispatchers '(zy-orderless-regexp-dispatcher
                                  zy-orderless-literal-dispatcher
