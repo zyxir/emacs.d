@@ -2462,12 +2462,10 @@ itself to `consult-recent-file', can finally call
 
 (use-package xterm-color
   :straight t
-  :after (:or comint eshell shell)
+  :after eshell
   :config
-  (require 'comint)
   (require 'eshell)
   (require 'esh-mode)
-  (require 'shell)
   ;; Configure Eshell.
   (add-hook 'eshell-before-prompt-hook
             (lambda ()
