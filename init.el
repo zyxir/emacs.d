@@ -2238,8 +2238,8 @@ itself to `consult-recent-file', can finally call
    corfu-auto t
    ;; No delay for completion.
    corfu-auto-delay 0
-   ;; Only need 1 prefix for completion.
-   corfu-auto-prefix 1
+   ;; I used to use 1, but it was too aggresive.  Now I think 3 (the default) is good.
+   corfu-auto-prefix 3
    ;; Enable cycling.
    corfu-cycle t)
 
