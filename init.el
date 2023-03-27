@@ -1284,13 +1284,6 @@ If this is a daemon session, load them all immediately instead."
         (apply fn rest)
         (when corfu-enabled-p (corfu-mode 1))))))
 
-;;;;; Eldoc, the at-point documentation
-
-;; Show documentation in a child frame.
-(use-package eldoc-box
-  :straight t
-  :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
-
 ;;;;; Integrated tree-sitter support
 
 ;; Automatically enable tree-sitter powered major modes.
@@ -2352,9 +2345,9 @@ itself to `consult-recent-file', can finally call
 
 (use-package flycheck
   :straight t
+  ;; Enable Flycheck only when there is no Eglot support.
+  :hook (emacs-lisp-mode TeX-mode verilog-mode)
   :commands flycheck-mode
-  :hook ((cc-mode emacs-lisp-mode python-mode scala-mode TeX-mode verilog-mode)
-         . flycheck-mode)
   :general
   (:keymaps 'flycheck-mode-map
             "M-p" 'flycheck-previous-error
@@ -2362,6 +2355,14 @@ itself to `consult-recent-file', can finally call
   :config
   ;; Show a shorter mode lighter.
   (setq! flycheck-mode-line-prefix "Fc"))
+
+(use-package flymake
+  ;; Enable Flymake only for Eglot.
+  :hook eglot-managed-mode-hook
+  :general
+  (:keymaps 'flymake-mode-map
+            "M-p" 'flymake-goto-prev-error
+            "M-n" 'flymake-goto-next-error))
 
 ;;;;; Eglot (language server protocol support)
 
@@ -2395,11 +2396,11 @@ itself to `consult-recent-file', can finally call
        :ruff (:enabled t))))))
 
 ;; Make Flycheck and Eglot work together.
-(use-package flycheck-eglot
-  :straight '(flycheck-eglot :host github :repo "intramurz/flycheck-eglot")
-  :after (flycheck eglot)
-  :config
-  (global-flycheck-eglot-mode 1))
+;; (use-package flycheck-eglot
+;;   :straight '(flycheck-eglot :host github :repo "intramurz/flycheck-eglot")
+;;   :after (flycheck eglot)
+;;   :config
+;;   (global-flycheck-eglot-mode 1))
 
 ;;;;; Shell
 
