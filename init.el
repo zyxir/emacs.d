@@ -2370,7 +2370,7 @@ itself to `consult-recent-file', can finally call
   :straight '(eglot :type built-in)
   :general
   (:keymaps 'eglot-mode-map
-            :prefix "C-c g"
+            :prefix "M-o"
             "a" 'eglot-code-actions
             "f" 'eglot-format
             "r" 'eglot-rename
@@ -2382,8 +2382,10 @@ itself to `consult-recent-file', can finally call
     :depth 100
     'eglot-ensure)
 
-  ;; Server-specific configuraration.
   (setq!
+   ;; Do not need extra confirm on code actions.
+   eglot-confirm-server-initiated-edits nil
+   ;; Server-specific configuraration.
    eglot-workspace-configuration
    '(;; Python.
      :pylsp
@@ -2394,13 +2396,6 @@ itself to `consult-recent-file', can finally call
        :black (:enabled t)
        ;; Linting.
        :ruff (:enabled t))))))
-
-;; Make Flycheck and Eglot work together.
-;; (use-package flycheck-eglot
-;;   :straight '(flycheck-eglot :host github :repo "intramurz/flycheck-eglot")
-;;   :after (flycheck eglot)
-;;   :config
-;;   (global-flycheck-eglot-mode 1))
 
 ;;;;; Shell
 
