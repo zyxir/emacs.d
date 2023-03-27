@@ -1154,9 +1154,13 @@ If this is a daemon session, load them all immediately instead."
 
 (use-package whitespace
   :general
-  ;; Remap "M-SPC" (`just-one-space') to `cycle-spacing'.  This is the default
-  ;; in Emacs 29.1.
-  ("M-SPC" 'cycle-spacing)
+  (;; Remap "M-SPC" (`just-one-space') to `cycle-spacing'.  This is the default
+   ;; in Emacs 29.1.
+   "M-SPC" 'cycle-spacing
+   ;; Sometimes "M-SPC" is unavailable (occupied by the window manager), so use this as an
+   ;; alternative.  "M-r" is boiund to `move-to-window-line-top-bottom' by default, which
+   ;; I found myself never use.
+   "M-r" 'cycle-spacing)
   (:keymaps 'zy-toggle-map
             ;; Toggle whitespace visualization.
             "SPC" 'whitespace-mode)
@@ -1243,6 +1247,16 @@ If this is a daemon session, load them all immediately instead."
   :config
   ;; Use default config.
   (require 'smartparens-config)
+  ;; Change some default bindings before applying them.
+
+  ;; These two default keybindings change my habit too much.  I cannot tolerate them.
+  (delete '("M-<delete>" . sp-unwrap-sexp) sp-smartparens-bindings)
+  (delete '("M-<backspace>" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
+  ;; So I use these two instead.  "M-\\" is `just-one-space' by default, which can be
+  ;; replaced by "M-SPC", and "C-M-\\" is `indent-region' by default, which can be
+  ;; replaced by the TAB key.
+  (push '("M-\\" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
+  (push '("C-M-\\" . sp-unwrap-sexp) sp-smartparens-bindings)
   (sp-use-smartparens-bindings)
   (setq
    ;; Do not show overlays.
