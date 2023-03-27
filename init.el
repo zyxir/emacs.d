@@ -2064,9 +2064,23 @@ Should be run again after theme switch."
 
 (use-package orderless
   :straight t
+  :defer t
+  :init
+  ;; Enable the orderless completion style.
+  (setq!
+   ;; Use the orderless completion style.
+   completion-styles '(basic orderless)
+   completion-category-defaults nil
+   completion-category-overrides '((file (styles . (partial-completion)))))
   :config
   ;; Custom Orderless dispatchers.  These are adapted from Protesilaus Stavrou's
   ;; configuration.
+
+  ;; Regexp matching (default).
+  (defun zy-orderless-regexp-dispatcher (pattern _index _total)
+    "Regexp dispatcher using the percent sign."
+    (when (string-suffix-p "%" pattern)
+      `(orderless-regexp . ,(substring pattern 0 -1))))
 
   ;; Literal matching.
   (defun zy-orderless-literal-dispatcher (pattern _index _total)
@@ -2080,37 +2094,21 @@ Should be run again after theme switch."
     (when (string-suffix-p "!" pattern)
       `(orderless-without-literal . ,(substring pattern 0 -1))))
 
-  ;; Initialism matching.
-  (defun zy-orderless-initialism-dispatcher (pattern _index _total)
-    "Initialism dispatcher using the comma suffix."
+  ;; Prefixes matching.
+  (defun zy-orderless-prefixes-dispatcher (pattern _index _total)
+    "Prefixes dispatcher using the comma sign."
     (when (string-suffix-p "," pattern)
-      `(orderless-initialism . ,(substring pattern 0 -1))))
-
-  ;; Flex matching.
-  (defun zy-orderless-flex-dispatcher (pattern _index _total)
-    "Flex dispatcher using the tilde suffix.
-It matches PATTERN _INDEX and _TOTAL according to how Orderless
-parses its input."
-    (when (string-suffix-p "~" pattern)
-      `(orderless-flex . ,(substring pattern 0 -1))))
+      `(orderless-prefixes . ,(substring pattern 0 -1))))
 
   ;; Apply matching styles and dispatchers.
   (setq!
    orderless-matching-styles '(orderless-literal
                                orderless-prefixes
-                               orderless-flex
                                orderless-regexp)
-   orderless-style-dispatchers '(zy-orderless-literal-dispatcher
+   orderless-style-dispatchers '(zy-orderless-regexp-dispatcher
+                                 zy-orderless-literal-dispatcher
                                  zy-orderless-no-literal-dispatcher
-                                 zy-orderless-initialism-dispatcher
-                                 zy-orderless-flex-dispatcher))
-
-  ;; Enable the orderless completion style.
-  (setq!
-   ;; Use the orderless completion style.
-   completion-styles '(orderless basic)
-   completion-category-defaults nil
-   completion-category-overrides '((file (styles . (partial-completion))))))
+                                 zy-orderless-prefixes-dispatcher)))
 
 ;;;;; Vertico and Marginalia (minibuffer enhancements)
 
