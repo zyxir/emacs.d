@@ -1403,7 +1403,7 @@ faster `prin1'."
   ;; Clean up recent files when quitting Emacs.
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
 
-;;;;; Version control (Magit and Diff-hl)
+;;;;; Version control (Magit, Diff-hl, and Git-timemachine)
 
 ;; Use Magit as the Git interface.
 (use-package magit
@@ -1442,6 +1442,10 @@ faster `prin1'."
     (diff-hl-margin-mode 1))
   (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
   (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
+
+(use-package git-timemachine
+  :straight t
+  :commands git-timemachine)
 
 ;;;;; Dired (built-in directory manager)
 
