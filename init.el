@@ -1607,10 +1607,6 @@ A dominating file is a file or directory with a name in
 
 (use-package tab-bar
   :defer t
-  :general
-  ;; Disable C-<tab> for tab switching, as it collides with other packages, like
-  ;; Magit.
-  ("C-<tab>" nil)
   :config
   ;; Customizing many of these options triggers the load of `tab-bar-mode', so
   ;; just set them instead.
@@ -1629,7 +1625,11 @@ A dominating file is a file or directory with a name in
     (propertize
      (concat "  " (alist-get 'name tab) "  ")
      'face (funcall tab-bar-tab-face-function tab)))
-  (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format))
+  (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format)
+
+  ;; Disable C-<tab> for tab switching, as it collides with other packages, like
+  ;; Magit.
+  (general-unbind "C-<tab>"))
 
 ;;;;; Manage workspaces with Perspective
 
@@ -1974,9 +1974,6 @@ Return what `zy/setup-font-faces' returns."
 (use-package zy-scrolling
   :defer t
   :init
-  ;; Keep the cursor position relative to the scrren.
-  (setq! scroll-preserve-screen-position t)
-
   ;; Enable smooth scroll on GTK.
   (when (memq window-system '(x pgtk))
     (pixel-scroll-precision-mode 1))
