@@ -3122,7 +3122,9 @@ environment."
   :interpreter ("scala" . scala-mode)
   :config
   (add-hook! scala-mode
-    'rainbow-delimiters-mode))
+    'rainbow-delimiters-mode)
+  (setq-hook! scala-mode
+    fill-column 110))
 
 (use-package sbt-mode
   :straight t
