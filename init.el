@@ -2629,6 +2629,11 @@ Automatically set when `zy~zybox-dir' is customized.")
    bibtex-autokey-name-year-separator "_"
    bibtex-autokey-year-title-separator "_"))
 
+;;;;; Show unused keys via Free-keys
+
+(use-package free-keys
+  :straight t)
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming

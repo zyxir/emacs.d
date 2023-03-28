@@ -31,6 +31,7 @@
  ("epl" . "78ab7a85c08222cd15582a298a364774e3282ce6")
  ("f.el" . "d50dca48929575642912bb5bbb2585709ba38f82")
  ("flycheck" . "5f31d75af803e541684eb606fa9831106b02039c")
+ ("free-keys" . "7348ce68192871b8a69b687ec124d9f816d493ca")
  ("gcmh" . "0089f9c3a6d4e9a310d0791cf6fa8f35642ecfd9")
  ("general.el" . "9651024e7f40a8ac5c3f31f8675d3ebe2b667344")
  ("git-timemachine" . "d8ffd0d7cc4ab3dd7de494c9ea36dfd99e2744fa")
