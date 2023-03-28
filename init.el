@@ -1243,7 +1243,7 @@ If this is a daemon session, load them all immediately instead."
 (use-package smartparens
   :straight '(smartparens :host github :repo "zyxir/smartparens")
   :defer t
-  :hook (conf-mode prog-mode text-mode)
+  :hook (conf-mode prog-mode text-mode comint-mode eshell-mode)
   :config
   ;; Use default config.
   (require 'smartparens-config)
