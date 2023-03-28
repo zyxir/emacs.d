@@ -1672,6 +1672,14 @@ A dominating file is a file or directory with a name in
 ;;     :after 'persp-state-load
 ;;     (add-hook 'kill-emacs-hook #'persp-state-save)))
 
+;;;;; Sudo edit
+
+;; Allow to switch editing rights on an already opened read-only file.
+
+(use-package sudo-edit
+  :straight t
+  :commands 'sudo-edit)
+
 ;;;; User interface
 
 ;; This sections concentrates on improving the user interface of GNU Emacs,
@@ -2075,7 +2083,9 @@ Should be run again after theme switch."
 
 ;; This section is for settings that provide additional features for Emacs.
 
-;;;;; Orderless completion style
+;;;;; Completion
+
+;;;;;; Orderless completion style
 
 (use-package orderless
   :straight t
@@ -2127,7 +2137,7 @@ Should be run again after theme switch."
                                  zy-orderless-no-literal-dispatcher
                                  zy-orderless-prefixes-dispatcher)))
 
-;;;;; Vertico and Marginalia (minibuffer enhancements)
+;;;;;; Vertico and Marginalia (minibuffer completion)
 
 (use-package vertico
   :straight t
@@ -2165,7 +2175,7 @@ ARGS are the arguments passed."
   :init
   (marginalia-mode 1))
 
-;;;;; Consult (additional completing-read commands)
+;;;;;; Consult (additional completing-read commands)
 
 (use-package consult
   :straight t
@@ -2213,7 +2223,9 @@ itself to `consult-recent-file', can finally call
                      :preview-key (kbd "M-.")))
 
 
-;;;;; Embark (at-point dispatcher)
+;;;;;; Embark (at-point dispatcher)
+
+;; This technically is not completion, but it is related to the Vertico family.
 
 (use-package embark
   :straight t
@@ -2225,7 +2237,7 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after (embark consult))
 
-;;;;; Corfu (at-point completion)
+;;;;;; Corfu (at-point completion)
 
 (use-package corfu
   :straight '(corfu :files (:defaults "extensions/*.el"))
@@ -2502,7 +2514,7 @@ itself to `consult-recent-file', can finally call
   :straight t
   :hook (org-mode markdown-mode))
 
-;;;;; Emacs configuration helper
+;;;;; Emacs configuration management
 
 ;; Restart Emacs from withing Emacs.
 (use-package restart-emacs
@@ -2534,14 +2546,6 @@ If the current buffer is visiting a file, open it in another window."
           (find-file-other-window init-file))
       (find-file init-file))))
 (general-def "C-," 'zy/open-config)
-
-;;;;; Sudo edit
-
-;; Allow to switch editing rights on an already opened read-only file.
-
-(use-package sudo-edit
-  :straight t
-  :commands 'sudo-edit)
 
 ;;;;; Bibliography management
 
