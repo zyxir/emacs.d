@@ -2560,21 +2560,16 @@ itself to `consult-recent-file', can finally call
 ;; Restart Emacs from withing Emacs.
 (use-package restart-emacs
   :straight t
-  :commands (restart-emacs-start-new-emacs)
-  :init
-  (defun zy/test-config (&optional args)
-    "Start a new Emacs with \"--debug-init\" to test the config.
+  :commands (restart-emacs restart-emacs-start-new-emacs))
 
-When called interactively with a prefix argument, restart Emacs
-instead (without \"--debug-init\")."
-    (interactive "P")
-    (if args
-        ;; This may call the built-in version of `restart-emacs', which is
-        ;; introduced in Emacs 29, or the function with the same name of the
-        ;; package Restart-emacs.  Whatever is called, it works the same.
-        (restart-emacs)
-      (restart-emacs-start-new-emacs '("--debug-init"))))
-  (general-def "C-c ," 'zy/test-config))
+(declare-function restart-emacs 'restart-emacs)
+(declare-function restart-emacs-start-new-emacs 'restart-emacs)
+
+;; Open another Emacs to test the current config.
+(defun zy/test-config (&rest _)
+  "Start a new Emacs with \"--debug-init\" to test the config."
+  (interactive)
+  (restart-emacs-start-new-emacs '("--debug-init")))
 
 ;; Quickly open the config file.
 (defun zy/open-config ()
@@ -2586,7 +2581,10 @@ If the current buffer is visiting a file, open it in another window."
         (unless (file-equal-p (buffer-file-name) init-file)
           (find-file-other-window init-file))
       (find-file init-file))))
-(general-def "C-," 'zy/open-config)
+(general-def
+  "C-c e e" 'zy/open-config
+  "C-c e t" 'zy/test-config
+  "C-c e R" 'restart-emacs)
 
 ;;;;; Bibliography management
 
@@ -2625,7 +2623,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 (use-package ebib
   :straight t
   :general
-  ("C-c e" 'ebib)
+  ("C-c b" 'ebib)
   (:keymaps 'ebib-index-mode-map
             "+" 'ebib-import-file)
   :init
