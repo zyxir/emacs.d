@@ -8,7 +8,7 @@ etc/zylatex.sty
 straight/*
 !straight/versions
 
-# Ignore other temporary files
+# Ignore other temporary or non-tracked files
 
 .cache/
 *.elc
@@ -31,6 +31,7 @@ projectile-bookmarks.eld
 projects
 recentf
 server
+session.*
 tramp
 transient
 tree-sitter
