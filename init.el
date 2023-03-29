@@ -1248,26 +1248,74 @@ If this is a daemon session, load them all immediately instead."
   :straight '(smartparens :host github :repo "zyxir/smartparens")
   :defer t
   :hook (conf-mode prog-mode text-mode comint-mode eshell-mode)
+  :general
+  ;; Failed to get used to the default keybindings (which is actually Fuco1's
+  ;; keybindings), I ended up making my own keybindings.  My own keybindings have two
+  ;; advantages:
+  ;;
+  ;; First, keys are binded with `general-def', so that they can be overviewebbbd with
+  ;; `general-describe-keybindings'.
+  ;;
+  ;; Second, unlike Fuco1's config, my keybindings trys to preserve Emacs behavior, so no
+  ;; confusion is created.
+  ;;
+  ;; However, my keybindings indeed provide less feature than Fuco1's, so that my small
+  ;; brain can remember them, and bind them to my musle memory.
+  (:keymaps 'smartparens-mode-map
+            ;;
+            ;; --- Moving and marking ---
+            ;;
+            ;; Was `mark-sexp'.
+            "C-M-SPC" 'sp-mark-sexp
+            ;; Was `forward-sexp'.
+            "C-M-f" 'sp-forward-sexp
+            ;; Was `backward-sexp'.
+            "C-M-b" 'sp-backward-sexp
+            ;; Was an alias of `backward-sentence'.
+            "M-A" 'sp-begining-of-sexp
+            ;; Was an alias of `forward-sentence'.
+            "M-E" 'sp-end-of-sexp
+            ;; Was `down-list'.
+            "C-M-d" 'sp-down-sexp
+            ;; Was `backward-up-list'.
+            "C-M-u" 'sp-backward-up-sexp
+            ;; Was `backward-list'.
+            "C-M-p" 'sp-previous-sexp
+            ;; Was `forward-list'.
+            "C-M-n" 'sp-next-sexp
+            ;;
+            ;; --- Manipulation ---
+            ;;
+            ;; Was `kill-sexp'.
+            "C-M-k" 'sp-kill-sexp
+            ;; Was `backward-kill-sexp', inaccessible in terminal.
+            "C-M-<backspace>" 'sp-backward-kill-sexp
+            ;; Also was `backward-kill-sexp', accessible in terminal.
+            "C-M-<delete>" 'sp-backward-kill-sexp
+            ;; Was `insert-parentheses', which is useless as long as Smartparens is on.
+            "M-(" 'sp-backward-unwrap-sexp
+            ;; Was `move-past-close-and-reindent'.
+            "M-)" 'sp-unwrap-sexp
+            ;; Was `transpose-sexp'.
+            "C-M-t" 'sp-transpose-sexp
+            ;;
+            ;; --- Useful commands ---
+            ;;
+            ;; Was `indent-region', which can be achieved via <tab>.
+            "C-M-\\" 'sp-indent-defun
+            ;; Was nothing.
+            "M-]" 'sp-rewrap-sexp
+            ;; Was nothing.
+            "M-\"" 'sp-change-inner)
   :config
-  ;; Use default config.
-  (require 'smartparens-config)
-  ;; Change some default bindings before applying them.
-
-  ;; These two default keybindings change my habit too much.  I cannot tolerate them.
-  (delete '("M-<delete>" . sp-unwrap-sexp) sp-smartparens-bindings)
-  (delete '("M-<backspace>" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
-  ;; So I use these two instead.  "M-\\" is `just-one-space' by default, which can be
-  ;; replaced by "M-SPC", and "C-M-\\" is `indent-region' by default, which can be
-  ;; replaced by the TAB key.
-  (push '("M-\\" . sp-backward-unwrap-sexp) sp-smartparens-bindings)
-  (push '("C-M-\\" . sp-unwrap-sexp) sp-smartparens-bindings)
-  (sp-use-smartparens-bindings)
   (setq
    ;; Do not show overlays.
    sp-highlight-pair-overlay nil
    sp-highlight-wrap-overlay nil
    ;; Do not auto insert colon for Python.
-   sp-python-insert-colon-in-function-definitions nil))
+   sp-python-insert-colon-in-function-definitions nil)
+  ;; Apply default config.
+  (require 'smartparens-config))
 
 ;;;;; Avy (quick text jump)
 
