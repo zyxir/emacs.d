@@ -66,7 +66,7 @@
  ("restart-emacs" . "1607da2bc657fe05ae01f7fdf26f716eafead02c")
  ("rg.el" . "3880e8c734c976a2d393aeacf60d510f56d8217d")
  ("s.el" . "e957dcb0677da18b2bb60ad867db5df5c35b5616")
- ("smartparens" . "afffa3f6c223c1a61e88c764e4828ac932ef4464")
+ ("smartparens" . "ad26c03e4697dfcfe990758ea8a5ac265d624195")
  ("straight.el" . "3eca39dfc6797243ec7d1c6a7d45142407f73f88")
  ("string-inflection" . "50ad54970b3cc79b6b83979bde9889ad9a9e1a9c")
  ("sudo-edit" . "74eb1e6986461baed9a9269566ff838530b4379b")
