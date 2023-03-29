@@ -2699,7 +2699,7 @@ Automatically set when `zy~zybox-dir' is customized.")
     'rainbow-delimiters-mode)
   (setq-hook! emacs-lisp-mode
     ;; Emacs Lisp code tends to be wide, so use a bigger fill-column.
-    fill-column 90)
+    fill-column 80)
 
   (setq!
    ;; Let Flycheck inherit Emacs load path.
@@ -3268,3 +3268,7 @@ environment."
 
 (provide 'init)
 ;;; init.el ends here
+
+;; Local Variables:
+;; fill-column: 90
+;; End:

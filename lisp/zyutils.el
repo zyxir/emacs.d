@@ -394,3 +394,7 @@ files."
 
 (provide 'zyutils)
 ;;; zyutils.el ends here
+
+;; Local Variables:
+;; fill-column: 90
+;; End:
