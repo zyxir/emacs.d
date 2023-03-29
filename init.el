@@ -3054,6 +3054,21 @@ The function works like `org-latex-export-to-pdf', except that
    python-shell-interpreter "python")
   (setenv "PYTHONIOENCODING" "UTF-8")
 
+  ;; Fix the <backspace> key in Python.  I want <backspace> always perform `delete-region'
+  ;; when there is an active region, but `python-indent-dedent-line-backspace' doesn't.
+  (declare-function python-indent-dedent-line "python")
+  (defadvice! zy--python-indent-dedent-line-backspace-a (arg)
+    "Do backspace, or de-indent current line.
+This is like `python-indent-dedent-line-backspace', but always
+perform `backward-delete-char-untabify' when there is an active
+buffer.
+
+This overrides `python-indent-dedent-line-backspace'."
+    :override 'python-indent-dedent-line-backspace
+    (interactive "*p")
+    (when (or (region-active-p) (not (python-indent-dedent-line)))
+      (backward-delete-char-untabify arg)))
+
   ;; Automatically enable Python virtual environment in inferior shell.  The package Pet
   ;; can detect a lot of virtual environemnt already, and can configure a lot of Python
   ;; tools to use the detected environment, but it does not configure the inferior shell.
