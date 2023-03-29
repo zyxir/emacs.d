@@ -79,6 +79,7 @@
  ("verilog-mode" . "4730033ac976dd8b3fc8620010aac8b7d2086882")
  ("vertico" . "74dd1dae762cb87739b37de9ab8ae8d64e5baf7b")
  ("with-editor" . "4ca225bf1c54d6dab2ba7e734f594419c7769e36")
+ ("xclip" . "a1ac607f75a250dddf49866918bb493884451130")
  ("xterm-color" . "1a4012854c69a5cdaeb5a73d2ad705011892fca3")
  ("yasnippet" . "5cbdbf0d2015540c59ed8ee0fcf4788effdf75b6")
  ("yasnippet-snippets" . "cd665c9cba4bab646f6d50ac098bee63573a4ca5"))

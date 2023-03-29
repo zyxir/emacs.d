@@ -969,6 +969,9 @@ If this is a daemon session, load them all immediately instead."
  ;; The default (4 kB) is too low considering some language server responses are in 800 kB
  ;; to 3 MB.  So it is set to 1 MB as suggested by Lsp-mode.
  read-process-output-max (* 1024 1024)
+ ;; Save existing clipboard text into kill ring before replacing it.  This
+ ;; saves me so many time!
+ save-interprogram-paste-before-kill t
  ;; Uniquify buffer names in a saner way.
  uniquify-buffer-name-style 'forward
  ;; Never use dialog boxes.
@@ -1015,12 +1018,23 @@ If this is a daemon session, load them all immediately instead."
                (server-running-p))
     (server-start)))
 
-;;;;; Terminal settings
+;;;;; Terminal-specific settings
+
+;; These settings only apply to Emacs running in a terminal.
 
 (add-hook! tty-setup
   ;; Let Emacs handle mouse events by default.  However, normal xterm mouse
   ;; functionality is still available by holding Shift key.
   (xterm-mouse-mode 1))
+
+;; Communicate with GUI clipboard within terminal Emacs.
+;;
+;; Caution: If Emacs is not built with GUI support (which is not my case), this package
+;; have to use external tools to communicate with the clipboard, see URL
+;; `https://elpa.gnu.org/packages/xclip.html'.
+(use-package xclip
+  :straight t
+  :hook (emacs-startup . xclip-mode))
 
 ;;;;; Scratch buffer
 
@@ -1183,22 +1197,6 @@ If this is a daemon session, load them all immediately instead."
 ;; Enable the mode for all text modes.
 
 (add-hook 'text-mode-hook 'visual-line-mode)
-
-;;;;; Clipboard and kill ring
-
-(use-package select
-  :init
-  ;; Save existing clipboard text into kill ring before replacing it.  This
-  ;; saves me so many time!
-  (setq save-interprogram-paste-before-kill t))
-
-;; Clipetty provides clipboard access in Terminal.  It sends killed text to the
-;; system clipboard.  However, copying from clipboard can only be done by GUI
-;; commands (like "Ctrl+Shift+V" on most terminal emulators).
-(unless (display-graphic-p)
-  (use-package clipetty
-    :straight t
-    :hook (tty-setup . global-clipetty-mode)))
 
 ;;;;; Yasnippet (snippet support)
 
@@ -1778,7 +1776,6 @@ theme, use `customize-themes' instead."
   (dim-minor-names
    '((buffer-face-mode nil face-remap)
      (citar-embark-mode nil citar-embark)
-     (clipetty-mode nil clipetty)
      (eldoc-mode nil eldoc)
      (eldoc-box-hover-mode nil eldoc-box)
      (eldoc-box-hover-at-point-mode nil eldoc-box)
