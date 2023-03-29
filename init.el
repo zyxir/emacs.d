@@ -3083,7 +3083,7 @@ This overrides `python-indent-dedent-line-backspace'."
   ;; However, this simple mechanism only support the built-in venv and third-party
   ;; virtualenv.  I don't know how tools like Peotry and Pyenv work, so I didn't add
   ;; support for them.
-  (defvar zy-python-venv-dirs '(".venv")
+  (defvar zy-python-venv-dirs '(".venv" "venv")
     "Possible directory name for a Python virtual environment.")
 
   (defun zy-python--venv-command (venv)
