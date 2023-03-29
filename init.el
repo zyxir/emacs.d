@@ -1122,7 +1122,7 @@ If this is a daemon session, load them all immediately instead."
   :hook
   (prog-mode . display-fill-column-indicator-mode)
   :init
-  (setq!
+  (setq-default
    ;; `fill-column' controls the line length when using commands like `fill-paragraph'.
    ;; Google suggests a line length limit of 80 characters, which is a sane default.
    ;; However, this should not be mandatory: feel free to exceed the limit at any time,
@@ -1133,7 +1133,11 @@ If this is a daemon session, load them all immediately instead."
    sentence-end-without-period nil
    colon-double-space nil
    use-hard-newlines nil
-   adaptive-fill-mode t))
+   adaptive-fill-mode t
+   ;; Modify paragraph definition.  In addition to default rules, make a line of 3 or more
+   ;; symbols separate paragraphs.  "\s" is a space, "\f" is a "^L", and "\t" is a tab.
+   paragraph-start "^\\([^[:alnum:]]\\)\\1+\n\\|\f\\|[\s\t]*$"
+   paragraph-separate "\\([^[:alnum:]]\\)\\1+\n\\|[\s\t\f]*$"))
 
 ;;;;; Outline minor mode for buffer structuring
 
