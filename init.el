@@ -1298,9 +1298,14 @@ If this is a daemon session, load them all immediately instead."
             ;; Was `indent-region', which can be achieved via <tab>.
             "C-M-\\" 'sp-indent-defun
             ;; Was nothing.
-            "M-]" 'sp-rewrap-sexp
-            ;; Was nothing.
-            "M-\"" 'sp-change-inner)
+            "M-\"" 'sp-rewrap-sexp)
+  ;; Extra Smartparens commands with the "M-]" prefix.
+  (:keymaps 'smartparens-mode-map
+            :prefix "M-]"
+            "i" 'sp-change-inner
+            "a" 'sp-splice-sexp-killing-around
+            "f" 'sp-splice-sexp-killing-forward
+            "b" 'sp-splice-sexp-killing-backward)
   :config
   (setq
    ;; Do not show overlays.
