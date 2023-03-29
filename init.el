@@ -2255,8 +2255,7 @@ itself to `consult-recent-file', can finally call
   ;; Corfu extensions.
   ;; Select candidates using Avy-style keys.
   (general-def :keymaps 'corfu-map
-    "M-o" 'corfu-quick-complete
-    "C-o" 'corfu-quick-insert)
+    "C-q" 'corfu-quick-insert)
   ;; Remember completion history.
   (corfu-history-mode +1)
   ;; Show candidate documentation.
