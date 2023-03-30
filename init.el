@@ -2419,7 +2419,10 @@ Should be run again after theme switch."
   :general
   (:keymaps 'flymake-mode-map
             "M-p" 'flymake-goto-prev-error
-            "M-n" 'flymake-goto-next-error))
+            "M-n" 'flymake-goto-next-error)
+  :config
+  ;; Show a shorter mode lighter.
+  (setq! flymake-mode-line-lighter "Fm"))
 
 ;;;;; Language server protocol support via Eglot
 
