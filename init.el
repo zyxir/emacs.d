@@ -1203,7 +1203,9 @@ itself to `consult-recent-file', can finally call
     "C-q" 'corfu-quick-insert)
   ;; Remember completion history.
   (corfu-history-mode +1)
-  ;; Show candidate documentation.
+  ;; Show candidate documentation in a popup.  Documentation is not shown automatically --
+  ;; toggle it via "M-h" `corfu-info-documentation'.
+  (setq corfu-popupinfo-delay '(nil . 0.0))
   (corfu-popupinfo-mode +1)
 
   ;; Enable Corfu in minibuffer.
@@ -1220,7 +1222,17 @@ itself to `consult-recent-file', can finally call
   (add-hook! '(shell-mode-hook eshell-mode-hook)
     (setq-local corfu-auto nil)
     (when (fboundp 'corfu-mode)
-      (corfu-mode 1))))
+      (corfu-mode 1)))
+
+  ;; Fix on C-g with `corfu-mode' and `smartparens-mode'.
+  ;;
+  ;; When `corfu-mode' and `smartparens-mode' are both on, sometimes you have to hit C-g
+  ;; twice to close the completion popup: the first hit calls
+  ;; `sp-remove-active-pair-overlay', and the second calls `corfu-quit'.
+  ;;
+  ;; This is simple to solve with an advice.
+  (with-eval-after-load 'smartparens
+    (advice-add 'sp-remove-active-pair-overlay :after 'corfu-quit)))
 
 ;; Extra CAPFs (completion-at-point-function).
 (use-package cape
