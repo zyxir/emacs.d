@@ -1042,6 +1042,9 @@ Automatically set when `zy~zybox-dir' is customized.")
  ;; Never use dialog boxes.
  use-dialog-box nil)
 
+;; Type "y" or "n" instead of "yes" or "no".
+(advice-add 'yes-or-no-p :override 'y-or-n-p)
+
 ;;;; Searching, completion, and text-manipulation
 
 ;; This section contains bottom layer settings that control how Emacs works.
