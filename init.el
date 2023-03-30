@@ -44,11 +44,13 @@
 (eval-when-compile (require 'subr-x))
 (require 'cl-lib)
 
-;;;; Preparations
+;;;; Base settings
 
-;; Preparations that must be evaluated before all other things.
+;;;;; Make startup faster
 
-;;;;; Check minimum version
+;; These settings are needed prior to everything else.
+
+;;;;;; Check minimum version
 
 ;; Check version at both compile and runtime.
 (eval-and-compile
@@ -58,7 +60,7 @@
      "Emacs version is %s, but this config requires 28.1 or newer"
      emacs-version)))
 
-;;;;; Adjust garbage collection
+;;;;;; Adjust garbage collection
 
 ;; Garbage collection can occur many times during startup, which slows things
 ;; down.  As is suggested by a lot of users (and by the official documentation
@@ -73,7 +75,7 @@
             (lambda ()
               (setq gc-cons-threshold normal-gc-cons-threshold))))
 
-;;;;; Unset file name handlers
+;;;;;; Unset file name handlers
 
 ;; This technique is borrowed from Doom Emacs.  `file-name-handler-alist' is
 ;; consulted on each call to `require', `load', or various file/io functions
@@ -108,7 +110,7 @@
                      (append file-name-handler-alist old-value))))
             -99))
 
-;;;;; Reduce GUI noises
+;;;;;; Reduce GUI noises
 
 ;; Reduce some GUI noises can also reduce startup time.
 
@@ -184,12 +186,14 @@
                   (tool-bar-setup)
                   (advice-remove #'tool-bar-mode 'zy--setup-toolbar-a)))))
 
-;;;; Additional functions & macros
+;;;;; Define common functions, variables, hooks
+
+;;;;;; Additional functions & macros
 
 ;; These functions and macros make writting this configuration much easier.
 ;; Many of them are copied or adapted from Doom Emacs.
 
-;;;;; Logging
+;;;;;;; Logging
 
 (defvar zy-log-mode-map
   (let ((map (make-sparse-keymap)))
@@ -251,7 +255,7 @@ If `init-file-debug' is nil, do nothing."
   (declare (debug t))
   `(when init-file-debug (zy--log ,module ,message ,@args)))
 
-;;;;; Symbol manipulation
+;;;;;;; Symbol manipulation
 
 ;; This is copied from Doom Emacs.
 (eval-and-compile
@@ -269,7 +273,7 @@ If `init-file-debug' is nil, do nothing."
   (cl-check-type str string)
   (intern (concat ":" str)))
 
-;;;;; Enhanced hook system
+;;;;;;; Enhanced hook system
 
 (define-error 'hook-error "Error in a hook.")
 
@@ -348,7 +352,7 @@ to nil."
             (t (add-hook hook fn -99)))
       fn)))
 
-;;;;; Macros as syntactic sugars
+;;;;;;; Macros as syntactic sugars
 
 ;; This is copied from Doom Emacs.
 (defmacro add-transient-hook! (hook-or-function &rest forms)
@@ -516,100 +520,9 @@ undefiner when testing advice (when combined with `rotate-text').
        (dolist (target (cdr targets))
          (advice-remove target #',symbol)))))
 
-;;;; Top level utilities
+;;;;;; Custom hooks
 
-;; Top levels utilities that should be loaded before other customizations.
-
-;;;;; Global variables and customizations
-
-;; My personal information.  They are useful in various occasions, such as
-;; snippet expansion.
-(setq user-full-name "Eric Zhuo Chen"
-      user-mail-address "zyxirchen@outlook.com")
-
-(defgroup zyxir nil
-  "Zyxir's customization layer over Emacs."
-  :group 'emacs)
-
-(defgroup zyxir-paths nil
-  "Collection of paths of Zyxir's personal directories."
-  :group 'zyxir)
-
-(defun zy--set-zybox-path (sym path)
-  "Set SYM to PATH, and set several other paths as well.
-
-SYM is a symbol whose variable difinition stores the path of
-Zybox, and PATH is the path of Zybox.  Once the location of Zybox
-is determined, several other directories, like `org-directory',
-`org-journal-directory', is decided by this function as well."
-  ;; Set the value of `sym' to `path'.
-  (set sym path)
-  ;; Set other directories only when `path' is a valid directory.
-  (when (file-directory-p path)
-    ;; The Org directory.
-    (defvar org-directory)
-    (setq! org-directory (expand-file-name "org" path))
-    ;; My projects directory.
-    (defvar zy-zyprojects-dir)
-    (setq! zy-zyprojects-dir
-           (expand-file-name "../Zyprojects" path))
-    ;; My GTD directory and files.
-    (defvar zy-gtd-dir)
-    (setq! zy-gtd-dir org-directory
-           zy-gtd-inbox-file
-           (expand-file-name "inbox.org" zy-gtd-dir)
-           zy-gtd-gtd-file
-           (expand-file-name "gtd.org" zy-gtd-dir)
-           zy-gtd-someday-file
-           (expand-file-name "someday.org" zy-gtd-dir))
-    ;; My other Org directory.
-    (defvar zy-notes-file)
-    (setq! zy-notes-file
-           (expand-file-name "notes.org" org-directory))
-    ;; My Org-journal directory.
-    (setq! org-journal-dir
-           (expand-file-name "org-journal" org-directory))
-    ;; My Org-roam directory.
-    (setq! org-roam-directory
-           (expand-file-name "org-roam" org-directory))
-    ;; My BibLaTeX databases.
-    (defvar zy-bib-files)
-    (defvar zy-ebib-bib-file)
-    (let ((ebib-bib-file
-           (expand-file-name "ebib/references.bib" path)))
-      (unless (boundp 'zy-bib-files)
-        (setq! zy-bib-files nil))
-      (when (file-exists-p ebib-bib-file)
-        (add-to-list 'zy-bib-files ebib-bib-file)
-        (setq! zy-ebib-bib-file ebib-bib-file)))
-    ;; Ebib paths.
-    (setq! ebib-preload-bib-files zy-bib-files
-           ebib-notes-directory
-           (expand-file-name "ebib/notes" path)
-           ebib-file-search-dirs
-           `(,(expand-file-name "ebib/files" path)))
-    ;; Citar paths. (Identical with Ebib ones)
-    (setq! citar-bibliography zy-bib-files
-           citar-library-paths
-           `(,(expand-file-name "ebib/files" path)))))
-
-(defcustom zy~zybox-dir ""
-  "The Zybox directory, my personal file center."
-  :group 'zyxir-paths
-  :type 'directory
-  :set #'zy--set-zybox-path)
-
-(defvar zy-zyprojects-dir nil
-  "The directory where I put Git repositories.
-Automatically set when `zy~zybox-dir' is customized.")
-
-(defvar zy-gtd-dir nil
-  "Directory of my GTD (getting-things-done) files.
-Automatically set when `zy~zybox-dir' is customized.")
-
-;;;;; Custom hooks
-
-;;;;;; First user input hook
+;;;;;;; First user input hook
 
 (defcustom zy-first-input-hook nil
   "Hooks run before the first user input."
@@ -620,7 +533,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 (zy-run-hook-on 'zy-first-input-hook
                 '(pre-command-hook))
 
-;;;;;; Switch buffer/window/frame hook
+;;;;;;; Switch buffer/window/frame hook
 
 (defvar zy-switch-buffer-hook nil
   "Hooks run after changing the current buffer.")
@@ -657,7 +570,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   (add-hook 'server-visit-hook
             #'zy-run-switch-buffer-hooks-h))
 
-;;;;;; Load theme hook
+;;;;;;; Load theme hook
 
 (defvar zy-load-theme-hook nil
   "Hooks run after loading a theme.")
@@ -667,7 +580,7 @@ Automatically set when `zy~zybox-dir' is customized.")
   :after 'load-theme
   (zy-run-hooks 'zy-load-theme-hook))
 
-;;;;;; First buffer hook
+;;;;;;; First buffer hook
 
 (defcustom zy-first-buffer-hook nil
   "Hooks run before the first interactively opened buffer."
@@ -678,7 +591,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 (zy-run-hook-on 'zy-first-buffer-hook
                 '(dired-load-hook find-file-hook zy-switch-buffer-hook))
 
-;;;;;; First file hook
+;;;;;;; First file hook
 
 (defcustom zy-first-file-hook nil
   "Hooks run before the first interactively opened file."
@@ -689,7 +602,7 @@ Automatically set when `zy~zybox-dir' is customized.")
 (zy-run-hook-on 'zy-first-file-hook
                 '(find-file-hook dired-initial-position-hook))
 
-;;;;; Incremental loading
+;;;;;; Incremental loading from Doom Emacs
 
 ;; I tried to design my own incremental loader at version 4.0, but it turned out
 ;; to be too complicated.  Finally I decided to adopt Doom Emacs's code.
@@ -780,7 +693,9 @@ If this is a daemon session, load them all immediately instead."
 
 (add-hook 'window-setup-hook #'zy-load-packages-incrementally-h)
 
-;;;;; Straight as the package manager
+;;;;; Install third-party base utilities
+
+;;;;;; Use Straight as package manager
 
 (setq-default
  ;; Cache autoloads into a single file to speed up startup.
@@ -811,7 +726,7 @@ If this is a daemon session, load them all immediately instead."
 (with-suppressed-warnings ((obsolete autoload))
   (require 'straight))
 
-;;;;; Use-package (isolate package configurations)
+;;;;;; Isolate package configuration with Use-package
 
 (straight-use-package 'use-package)
 
@@ -891,9 +806,7 @@ If this is a daemon session, load them all immediately instead."
                    forms)))
          (use-package-process-keywords name rest state))))))
 
-;;;;; Key binding
-
-;;;;;; General as the key binding manager
+;;;;;; Bind keys with General
 
 (use-package general
   :straight t
@@ -901,16 +814,107 @@ If this is a daemon session, load them all immediately instead."
 (declare-function general-def "general")
 (declare-function general-unbind "general")
 
-;;;;;; Global keymaps
+;;;;; Load the custom file
 
-;; The toggle map.
+;; Save customizations outside the init file.
+(setq! custom-file (expand-file-name "custom.el" user-emacs-directory))
+
+;; Load the custom NOW.
+(load custom-file 'noerror 'nomessage)
+
+;;;;; ZyEmacs variables and keymaps
+
+;; My personal information.  They are useful in various occasions, such as
+;; snippet expansion.
+(setq user-full-name "Eric Zhuo Chen"
+      user-mail-address "zyxirchen@outlook.com")
+
+(defgroup zyxir nil
+  "Zyxir's customization layer over Emacs."
+  :group 'emacs)
+
+(defgroup zyxir-paths nil
+  "Collection of paths of Zyxir's personal directories."
+  :group 'zyxir)
+
+(defun zy--set-zybox-path (sym path)
+  "Set SYM to PATH, and set several other paths as well.
+
+SYM is a symbol whose variable difinition stores the path of
+Zybox, and PATH is the path of Zybox.  Once the location of Zybox
+is determined, several other directories, like `org-directory',
+`org-journal-directory', is decided by this function as well."
+  ;; Set the value of `sym' to `path'.
+  (set sym path)
+  ;; Set other directories only when `path' is a valid directory.
+  (when (file-directory-p path)
+    ;; The Org directory.
+    (defvar org-directory)
+    (setq! org-directory (expand-file-name "org" path))
+    ;; My projects directory.
+    (defvar zy-zyprojects-dir)
+    (setq! zy-zyprojects-dir
+           (expand-file-name "../Zyprojects" path))
+    ;; My GTD directory and files.
+    (defvar zy-gtd-dir)
+    (setq! zy-gtd-dir org-directory
+           zy-gtd-inbox-file
+           (expand-file-name "inbox.org" zy-gtd-dir)
+           zy-gtd-gtd-file
+           (expand-file-name "gtd.org" zy-gtd-dir)
+           zy-gtd-someday-file
+           (expand-file-name "someday.org" zy-gtd-dir))
+    ;; My other Org directory.
+    (defvar zy-notes-file)
+    (setq! zy-notes-file
+           (expand-file-name "notes.org" org-directory))
+    ;; My Org-journal directory.
+    (setq! org-journal-dir
+           (expand-file-name "org-journal" org-directory))
+    ;; My Org-roam directory.
+    (setq! org-roam-directory
+           (expand-file-name "org-roam" org-directory))
+    ;; My BibLaTeX databases.
+    (defvar zy-bib-files)
+    (defvar zy-ebib-bib-file)
+    (let ((ebib-bib-file
+           (expand-file-name "ebib/references.bib" path)))
+      (unless (boundp 'zy-bib-files)
+        (setq! zy-bib-files nil))
+      (when (file-exists-p ebib-bib-file)
+        (add-to-list 'zy-bib-files ebib-bib-file)
+        (setq! zy-ebib-bib-file ebib-bib-file)))
+    ;; Ebib paths.
+    (setq! ebib-preload-bib-files zy-bib-files
+           ebib-notes-directory
+           (expand-file-name "ebib/notes" path)
+           ebib-file-search-dirs
+           `(,(expand-file-name "ebib/files" path)))
+    ;; Citar paths. (Identical with Ebib ones)
+    (setq! citar-bibliography zy-bib-files
+           citar-library-paths
+           `(,(expand-file-name "ebib/files" path)))))
+
+(defcustom zy~zybox-dir ""
+  "The Zybox directory, my personal file center."
+  :group 'zyxir-paths
+  :type 'directory
+  :set #'zy--set-zybox-path)
+
+(defvar zy-zyprojects-dir nil
+  "The directory where I put Git repositories.
+Automatically set when `zy~zybox-dir' is customized.")
+
+(defvar zy-gtd-dir nil
+  "Directory of my GTD (getting-things-done) files.
+Automatically set when `zy~zybox-dir' is customized.")
 
 (defvar zy-toggle-map (make-sparse-keymap)
   "Keymap for toggling various options.")
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
-;;;;; Zyutils, the other part of the configuration
+;;;;; Load Zyutils, the other part of the configuration
 
 ;; I keep a lot of function definitions and extra utilities in lisp/zyutils.el,
 ;; so that they can be autoloaded.
@@ -938,11 +942,51 @@ If this is a daemon session, load them all immediately instead."
    ;; Org export to LaTeX
    zy/update-zylatex-file))
 
-;;;; Base settings
+;;;;; Start Emacs server
 
-;; This section contains bottom layer settings that control how Emacs works.
+;; With the server on it is possible to edit files everywhere with only one Emacs
+;; instance.
 
-;;;;; Better defaults
+(use-package server
+  :defer 1
+  :config
+  ;; Start the server if possible.
+  (unless (and (fboundp 'server-running-p)
+               (server-running-p))
+    (server-start)))
+
+;;;;; Terminal-specific settings
+
+;; These settings only apply to Emacs running in a terminal.
+
+(add-hook! tty-setup
+  ;; Let Emacs handle mouse events by default.  However, normal xterm mouse
+  ;; functionality is still available by holding Shift key.
+  (xterm-mouse-mode 1))
+
+;; Communicate with GUI clipboard within terminal Emacs.
+;;
+;; Caution: If Emacs is not built with GUI support (which is not my case), this package
+;; have to use external tools to communicate with the clipboard, see URL
+;; `https://elpa.gnu.org/packages/xclip.html'.
+(use-package xclip
+  :straight t
+  :hook (emacs-startup . xclip-mode))
+
+;;;;; Tweak garbage collection
+
+;; This package enforces a sneaky garbage collection strategy to minimize GC
+;; interference with user activity.
+
+(use-package gcmh
+  :straight t
+  :defer 1
+  :config
+  (gcmh-mode 1))
+
+;;;;; Miscellaneous configuration
+
+;; I put short, uncategorized configuration here.
 
 (setq!
  ;; Suppress warning messages generated by ad-handle-definition.
@@ -977,100 +1021,216 @@ If this is a daemon session, load them all immediately instead."
  ;; Never use dialog boxes.
  use-dialog-box nil)
 
-;;;;; No auto save or backup files
+;;;; Searching, completion, and text-manipulation
 
-(use-package files
+;; This section contains bottom layer settings that control how Emacs works.
+
+;;;;; Enhance completion with the Vertico suite
+
+;;;;;; Orderless completion style
+
+(use-package orderless
+  :straight t
+  :defer t
   :init
-  ;; Make no auto save or backup files.
-  (setq! auto-save-default nil
-         make-backup-files nil))
-
-;;;;; Encoding and locale
-
-;; Set everything to UTF-8.
-
-(set-language-environment "UTF-8")
-
-;; Encoding hacks on Microsoft Windows in Chinese locale.
-
-(when (and
-       ;; The operating system is Microsoft Windows.
-       (eq system-type 'windows-nt)
-       ;; Code page 936, the character encoding for simplified Chinese.
-       (eq locale-coding-system 'cp936))
-  ;; Use GBK for cmdproxy.exe and plink.exe.
-  (set-default 'process-coding-system-alist
-               '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
-                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
-                 ("[pP][oO][wW][eE][rR][sS][hH][eE][lL][lL]" gbk-dos . gbk-dos))))
-
-;; Use "C" for English locale.
-
-(setq! system-time-locale "C")
-
-;;;;; Emacs server
-
-(use-package server
-  :defer 1
+  ;; Enable the orderless completion style.
+  (setq!
+   ;; Use the orderless completion style.
+   completion-styles '(basic orderless)
+   completion-category-defaults nil
+   completion-category-overrides '((file (styles . (partial-completion)))))
   :config
-  ;; Start the server if possible.
-  (unless (and (fboundp 'server-running-p)
-               (server-running-p))
-    (server-start)))
+  ;; Custom Orderless dispatchers.  These are adapted from Protesilaus Stavrou's
+  ;; configuration.
 
-;;;;; Terminal-specific settings
+  ;; Regexp matching (default).
+  (defun zy-orderless-regexp-dispatcher (pattern _index _total)
+    "Regexp dispatcher using the percent sign."
+    (when (string-suffix-p "%" pattern)
+      `(orderless-regexp . ,(substring pattern 0 -1))))
 
-;; These settings only apply to Emacs running in a terminal.
+  ;; Literal matching.
+  (defun zy-orderless-literal-dispatcher (pattern _index _total)
+    "Literal dispatcher using the equal sing suffix."
+    (when (string-suffix-p "=" pattern)
+      `(orderless-literal . ,(substring pattern 0 -1))))
 
-(add-hook! tty-setup
-  ;; Let Emacs handle mouse events by default.  However, normal xterm mouse
-  ;; functionality is still available by holding Shift key.
-  (xterm-mouse-mode 1))
+  ;; No-literal matching.
+  (defun zy-orderless-no-literal-dispatcher (pattern _index _total)
+    "Exclusive literal dispatcher using the exclamation suffix."
+    (when (string-suffix-p "!" pattern)
+      `(orderless-without-literal . ,(substring pattern 0 -1))))
 
-;; Communicate with GUI clipboard within terminal Emacs.
-;;
-;; Caution: If Emacs is not built with GUI support (which is not my case), this package
-;; have to use external tools to communicate with the clipboard, see URL
-;; `https://elpa.gnu.org/packages/xclip.html'.
-(use-package xclip
+  ;; Prefixes matching.
+  (defun zy-orderless-prefixes-dispatcher (pattern _index _total)
+    "Prefixes dispatcher using the comma sign."
+    (when (string-suffix-p "," pattern)
+      `(orderless-prefixes . ,(substring pattern 0 -1))))
+
+  ;; Apply matching styles and dispatchers.
+  (setq!
+   orderless-matching-styles '(orderless-literal
+                               orderless-prefixes
+                               orderless-flex
+                               orderless-initialism
+                               orderless-regexp)
+   orderless-style-dispatchers '(zy-orderless-regexp-dispatcher
+                                 zy-orderless-literal-dispatcher
+                                 zy-orderless-no-literal-dispatcher
+                                 zy-orderless-prefixes-dispatcher)))
+
+;;;;;; Vertico and Marginalia (minibuffer completion)
+
+(use-package vertico
   :straight t
-  :hook (emacs-startup . xclip-mode))
-
-;;;;; Scratch buffer
-
-;; I have tweaked scratch buffer to be in `fundamental-mode' in the "Reduce GUI
-;; noises" section.  These keys make it easier to quickly open a scratch buffer
-;; for temporary text or Emacs Lisp evaluation.
-
-(general-def :keymaps 'ctl-x-x-map
-  "k" 'zy/scratch
-  "l" 'zy/scratch-elisp
-  "o" 'zy/scratch-org)
-
-;;;;; Garbage collector magic hack
-
-;; This package enforces a sneaky garbage collection strategy to minimize GC
-;; interference with user activity.
-
-(use-package gcmh
-  :straight t
-  :defer 1
+  :hook zy-first-input
   :config
-  (gcmh-mode 1))
+  (setq!
+   ;; Make minibuffer intangible to cursor events.
+   minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt)
+   ;; Enable recursive minibuffer.
+   enable-recursive-minibuffers t)
 
-;;;;; Custom file
+  ;; Make minibuffer intangible.
+  (add-hook! 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-;; Save customizations outside the init file.
-(setq! custom-file (expand-file-name "custom.el" user-emacs-directory))
+  ;; Indicator for completing-read-multiple.
+  (defun crm-indicator (args)
+    "Indicator for `completing-read-multiple'.
 
-;; Load the custom NOW.
-(load custom-file 'noerror 'nomessage)
+ARGS are the arguments passed."
+    (defvar crm-separator)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-;;;; Text-editing
+  ;; Enable Vertico
+  (vertico-mode 1))
 
-;; This section enhances the basic text-editing capability of Emacs.
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode 1))
 
-;;;;; Cursor movement
+;;;;;; Consult (additional completing-read commands)
+
+(use-package consult
+  :straight t
+  :commands (consult-completion-in-region
+             consult-recent-file)
+  :general
+  ;; C-x map commands.
+  (:keymaps 'ctl-x-map
+            "b" 'consult-buffer)
+  ;; Goto map commands (default prefix is M-g).
+  (:keymaps 'goto-map
+            "g" 'consult-goto-line
+            "M-g" 'consult-goto-line
+            "m" 'consult-mark
+            "M" 'consult-global-mark
+            "o" 'consult-outline
+            "i" 'consult-imenu)
+  ;; Search map commands (default prefix is M-s).
+  (:keymaps 'search-map
+            "g" 'consult-ripgrep
+            "l" 'consult-line)
+  :init
+  ;; Perform `completion-in-region' with Consult.
+  (setq! completion-in-region-function 'consult-completion-in-region)
+
+  ;; Little hack: Enable `recentf-mode' the first time `consult-recent-file' is
+  ;; called, without advising the function itself, as that would break
+  ;; `consult-customize'.
+  (defun zy--first-consult-recent-file ()
+    "Transient replacement for `consult-recent-file'.
+
+This function enables `recentf-mode', remaps the keybinding of
+itself to `consult-recent-file', can finally call
+`consult-recent-file'."
+    (interactive)
+    (recentf-mode 1)
+    (general-def [remap zy--first-consult-recent-file] 'consult-recent-file)
+    (consult-recent-file))
+  (general-def
+    :keymaps 'ctl-x-map
+    "R" #'zy--first-consult-recent-file)
+
+  :config
+  (consult-customize consult-recent-file
+                     :preview-key (kbd "M-.")))
+
+
+;;;;;; Embark (at-point dispatcher)
+
+;; This technically is not completion, but it is related to the Vertico family.
+
+(use-package embark
+  :straight t
+  :general
+  ("M-m" 'embark-act))
+
+;; Embark and Consult integration.
+(use-package embark-consult
+  :straight t
+  :after (embark consult))
+
+;;;;;; Corfu (at-point completion)
+
+(use-package corfu
+  :straight '(corfu :files (:defaults "extensions/*.el"))
+  :init
+  (setq completion-cycle-threshold 3)
+  (global-corfu-mode +1)
+  :config
+  (setq!
+   ;; Enable auto completion.
+   corfu-auto t
+   ;; No delay for completion.
+   corfu-auto-delay 0
+   ;; I used to use 1, but it was too aggresive.  Now I think 3 (the default) is good.
+   corfu-auto-prefix 3
+   ;; Enable cycling.
+   corfu-cycle t)
+
+  ;; Corfu extensions.
+  ;; Select candidates using Avy-style keys.
+  (general-def :keymaps 'corfu-map
+    "C-q" 'corfu-quick-insert)
+  ;; Remember completion history.
+  (corfu-history-mode +1)
+  ;; Show candidate documentation.
+  (corfu-popupinfo-mode +1)
+
+  ;; Enable Corfu in minibuffer.
+  (defun zy-enable-corfu-in-minibuffer ()
+    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+    (when (where-is-internal #'completion-at-point (list (current-local-map)))
+      ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+      (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                  corfu-popupinfo-delay nil)
+      (corfu-mode 1)))
+  (add-hook 'minibuffer-setup-hook #'zy-enable-corfu-in-minibuffer)
+
+  ;; Conservative completion in Shell and Eshell.
+  (add-hook! '(shell-mode-hook eshell-mode-hook)
+    (setq-local corfu-auto nil)
+    (when (fboundp 'corfu-mode)
+      (corfu-mode 1))))
+
+;; Extra CAPFs (completion-at-point-function).
+(use-package cape
+  :straight t
+  :after corfu
+  :config
+  (dolist (backend '(cape-symbol cape-keyword cape-file))
+    (add-to-list 'completion-at-point-functions backend)))
+
+;;;;; Tweak cursor movement
 
 (use-package zy-curmov
   :defer t
@@ -1080,7 +1240,7 @@ If this is a daemon session, load them all immediately instead."
   ;; `visual-line-mode' anyway).
   ([remap move-beginning-of-line] 'zy/move-beginning-of-line))
 
-;;;;; Indentation
+;;;;; Tweak indentation
 
 (use-package zy-indentation
   :defer t
@@ -1100,7 +1260,7 @@ If this is a daemon session, load them all immediately instead."
    ;; Highlight the current indentation.
    highlight-indent-guides-responsive t))
 
-;;;;; Isearch (incremental searching)
+;;;;; Search in buffer (Isearch)
 
 (use-package isearch
   :config
@@ -1148,21 +1308,6 @@ If this is a daemon session, load them all immediately instead."
    colon-double-space nil
    use-hard-newlines nil
    adaptive-fill-mode t))
-
-;;;;; Outline minor mode for buffer structuring
-
-;; Hook `outline-minor-mode' to specific language modes.
-
-(use-package outline
-  :general
-  (:keymaps 'zy-toggle-map
-            "o" 'outline-minor-mode)
-  :config
-  (setq!
-   ;; Cycle outline visibility with TAB.
-   outline-minor-mode-cycle t
-   ;; Highlight outline headings.
-   outline-minor-mode-highlight 'override))
 
 ;;;;; Whitespaces
 
@@ -1367,12 +1512,68 @@ If this is a daemon session, load them all immediately instead."
 For example, mirror `python-mode-hook' to `python-ts-mode-hook'."
       (setq python-ts-mode-hook python-mode-hook))))
 
-;;;; Workbench
+;;;; File, buffer, window, project management
 
-;; This section contains settings about buffers, files, directories, projects,
-;; windows, frames, workspaces, and other things about the "workbench".
+;;;;; No auto save or backup files
 
-;;;;; Autorevert (automatically refresh file-visiting buffers)
+(use-package files
+  :init
+  ;; Make no auto save or backup files.
+  (setq! auto-save-default nil
+         make-backup-files nil))
+
+;;;;; Configure encoding and locale
+
+;; Set everything to UTF-8.
+
+(set-language-environment "UTF-8")
+
+;; Encoding hacks on Microsoft Windows in Chinese locale.
+
+(when (and
+       ;; The operating system is Microsoft Windows.
+       (eq system-type 'windows-nt)
+       ;; Code page 936, the character encoding for simplified Chinese.
+       (eq locale-coding-system 'cp936))
+  ;; Use GBK for cmdproxy.exe and plink.exe.
+  (set-default 'process-coding-system-alist
+               '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
+                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
+                 ("[pP][oO][wW][eE][rR][sS][hH][eE][lL][lL]" gbk-dos . gbk-dos))))
+
+;; Use "C" for English locale.
+
+(setq! system-time-locale "C")
+
+;;;;; Additional scratch buffer
+
+;; I have tweaked scratch buffer to be in `fundamental-mode' in the "Reduce GUI
+;; noises" section.  These keys make it easier to quickly open a scratch buffer
+;; for temporary text or Emacs Lisp evaluation.
+
+(general-def :keymaps 'ctl-x-x-map
+  "k" 'zy/scratch
+  "l" 'zy/scratch-elisp
+  "o" 'zy/scratch-org)
+
+;; This section enhances the basic text-editing capability of Emacs.
+
+;;;;; Structure buffers with Outline-minor-mode
+
+;; Hook `outline-minor-mode' to specific language modes.
+
+(use-package outline
+  :general
+  (:keymaps 'zy-toggle-map
+            "o" 'outline-minor-mode)
+  :config
+  (setq!
+   ;; Cycle outline visibility with TAB.
+   outline-minor-mode-cycle t
+   ;; Highlight outline headings.
+   outline-minor-mode-highlight 'override))
+
+;;;;; Automatically revert file-visiting buffers
 
 (use-package autorevert
   :hook (zy-first-file . global-auto-revert-mode)
@@ -1380,7 +1581,7 @@ For example, mirror `python-mode-hook' to `python-ts-mode-hook'."
   ;; Do not auto revert some modes.
   (setq! global-auto-revert-ignore-modes '(pdf-view-mode)))
 
-;;;;; Savehist (persist variables across sessions)
+;;;;; Persist variables across sessions with Savehist
 
 ;; This is adopted from Doom Emacs.
 (use-package savehist
@@ -1421,7 +1622,7 @@ we don't omit the unwritable tidbits."
       (setq-local register-alist
                   (cl-remove-if-not #'savehist-printable register-alist)))))
 
-;;;;; Saveplace (persist locations in buffer)
+;;;;; Persist locations in buffer with Saveplace
 
 (use-package saveplace
   :hook (zy-first-file . save-place-mode)
@@ -1434,7 +1635,7 @@ faster `prin1'."
     :around 'save-place-alist-to-file
     (cl-flet ((pp #'prin1)) (funcall fn))))
 
-;;;;; Recentf (record recently opened files)
+;;;;; Record recently opened files with Recentf
 
 (use-package recentf
   :defer-incrementally easymenu tree-widget timer
@@ -1512,7 +1713,7 @@ faster `prin1'."
   :straight t
   :commands git-timemachine)
 
-;;;;; Dired (built-in directory manager)
+;;;;; Manage files with Dired
 
 ;; Dired is a handy file manager built-in to Emacs.
 
@@ -1600,7 +1801,7 @@ faster `prin1'."
    ;; Create parent directories smartly.
    wdired-create-parent-directories t))
 
-;;;;; Rg (ripgrep integration)
+;;;;; Search multiple files with Rg (ripgrep)
 
 ;; Ripgrep is a super fast text searching program
 
@@ -1643,7 +1844,7 @@ A dominating file is a file or directory with a name in
   (add-hook 'project-find-functions
 	    #'zy-project-try-explicit))
 
-;;;;; File operations
+;;;;; Additional file operations
 
 ;; Additional file operations.
 
@@ -1651,7 +1852,7 @@ A dominating file is a file or directory with a name in
   "d" 'zy/delete-file-and-buffer
   "R" 'zy/rename-file-and-buffer)
 
-;;;;; Tab bar
+;;;;; Configure the built-in tab bar
 
 ;; A tab in Emacs is not like a tab in a browser or VS Code.  It is more like a
 ;; workspace.
@@ -1681,47 +1882,6 @@ A dominating file is a file or directory with a name in
   ;; Disable C-<tab> for tab switching, as it collides with other packages, like
   ;; Magit.
   (general-unbind "C-<tab>"))
-
-;;;;; Manage workspaces with Perspective
-
-;; I find perspectives not so useful currently, so it is temporarily disabled.
-
-;; (use-package perspective
-;;   :straight t
-;;   :general
-;;   ("M-[" 'persp-prev
-;;    "M-]" 'persp-next)
-;;   :custom
-;;   (persp-mode-prefix-key (kbd "C-z"))
-;;   (persp-state-default-file (expand-file-name "persps" user-emacs-directory))
-;;   (persp-modestring-dividers '("<" ">" "|"))
-;;   :general
-;;   ([remap list-buffers] 'persp-list-buffers
-;;    [remap kill-buffer] 'persp-kill-buffer*)
-;;   :init
-;;   (persp-mode 1)
-;;   ;; Load perspectives without asking.
-;;   (defun zy/persp-state-load (&rest _)
-;;     "Restore the perspective state saved in `persp-state-default-file'."
-;;     (interactive)
-;;     (if (file-exists-p persp-state-default-file)
-;;         (persp-state-load persp-state-default-file)
-;;       (message "No `persp-state-default-file' is set.")))
-;;   (general-def [remap persp-state-load] 'zy/persp-state-load)
-;;   :config
-;;   ;; Only show buffers from the current perspective in Consult.
-;;   (with-eval-after-load 'consult
-;;     (consult-customize consult--source-buffer :hidden t :default nil)
-;;     (add-to-list 'consult-buffer-sources persp-consult-source))
-
-;;   ;; Save perspectives if this session explicitly loads perspectives.
-;;   (defadvice! zy--persp-save-if-load-a ()
-;;     "Add `persp-state-save' to `kill-emacs-hook'.
-;; This should be used as an :after hook to `persp-state-load', so
-;; that automatic state saving only happens when the state is
-;; explicitly loaded by the user."
-;;     :after 'persp-state-load
-;;     (add-hook 'kill-emacs-hook #'persp-state-save)))
 
 ;;;;; Sudo edit
 
@@ -2129,211 +2289,6 @@ Should be run again after theme switch."
 ;;;; Features
 
 ;; This section is for settings that provide additional features for Emacs.
-
-;;;;; Completion
-
-;;;;;; Orderless completion style
-
-(use-package orderless
-  :straight t
-  :defer t
-  :init
-  ;; Enable the orderless completion style.
-  (setq!
-   ;; Use the orderless completion style.
-   completion-styles '(basic orderless)
-   completion-category-defaults nil
-   completion-category-overrides '((file (styles . (partial-completion)))))
-  :config
-  ;; Custom Orderless dispatchers.  These are adapted from Protesilaus Stavrou's
-  ;; configuration.
-
-  ;; Regexp matching (default).
-  (defun zy-orderless-regexp-dispatcher (pattern _index _total)
-    "Regexp dispatcher using the percent sign."
-    (when (string-suffix-p "%" pattern)
-      `(orderless-regexp . ,(substring pattern 0 -1))))
-
-  ;; Literal matching.
-  (defun zy-orderless-literal-dispatcher (pattern _index _total)
-    "Literal dispatcher using the equal sing suffix."
-    (when (string-suffix-p "=" pattern)
-      `(orderless-literal . ,(substring pattern 0 -1))))
-
-  ;; No-literal matching.
-  (defun zy-orderless-no-literal-dispatcher (pattern _index _total)
-    "Exclusive literal dispatcher using the exclamation suffix."
-    (when (string-suffix-p "!" pattern)
-      `(orderless-without-literal . ,(substring pattern 0 -1))))
-
-  ;; Prefixes matching.
-  (defun zy-orderless-prefixes-dispatcher (pattern _index _total)
-    "Prefixes dispatcher using the comma sign."
-    (when (string-suffix-p "," pattern)
-      `(orderless-prefixes . ,(substring pattern 0 -1))))
-
-  ;; Apply matching styles and dispatchers.
-  (setq!
-   orderless-matching-styles '(orderless-literal
-                               orderless-prefixes
-                               orderless-flex
-                               orderless-initialism
-                               orderless-regexp)
-   orderless-style-dispatchers '(zy-orderless-regexp-dispatcher
-                                 zy-orderless-literal-dispatcher
-                                 zy-orderless-no-literal-dispatcher
-                                 zy-orderless-prefixes-dispatcher)))
-
-;;;;;; Vertico and Marginalia (minibuffer completion)
-
-(use-package vertico
-  :straight t
-  :hook zy-first-input
-  :config
-  (setq!
-   ;; Make minibuffer intangible to cursor events.
-   minibuffer-prompt-properties
-   '(read-only t cursor-intangible t face minibuffer-prompt)
-   ;; Enable recursive minibuffer.
-   enable-recursive-minibuffers t)
-
-  ;; Make minibuffer intangible.
-  (add-hook! 'minibuffer-setup-hook #'cursor-intangible-mode)
-
-  ;; Indicator for completing-read-multiple.
-  (defun crm-indicator (args)
-    "Indicator for `completing-read-multiple'.
-
-ARGS are the arguments passed."
-    (defvar crm-separator)
-    (cons (format "[CRM%s] %s"
-                  (replace-regexp-in-string
-                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                   crm-separator)
-                  (car args))
-          (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
-
-  ;; Enable Vertico
-  (vertico-mode 1))
-
-(use-package marginalia
-  :straight t
-  :init
-  (marginalia-mode 1))
-
-;;;;;; Consult (additional completing-read commands)
-
-(use-package consult
-  :straight t
-  :commands (consult-completion-in-region
-             consult-recent-file)
-  :general
-  ;; C-x map commands.
-  (:keymaps 'ctl-x-map
-            "b" 'consult-buffer)
-  ;; Goto map commands (default prefix is M-g).
-  (:keymaps 'goto-map
-            "g" 'consult-goto-line
-            "M-g" 'consult-goto-line
-            "m" 'consult-mark
-            "M" 'consult-global-mark
-            "o" 'consult-outline
-            "i" 'consult-imenu)
-  ;; Search map commands (default prefix is M-s).
-  (:keymaps 'search-map
-            "g" 'consult-ripgrep
-            "l" 'consult-line)
-  :init
-  ;; Perform `completion-in-region' with Consult.
-  (setq! completion-in-region-function 'consult-completion-in-region)
-
-  ;; Little hack: Enable `recentf-mode' the first time `consult-recent-file' is
-  ;; called, without advising the function itself, as that would break
-  ;; `consult-customize'.
-  (defun zy--first-consult-recent-file ()
-    "Transient replacement for `consult-recent-file'.
-
-This function enables `recentf-mode', remaps the keybinding of
-itself to `consult-recent-file', can finally call
-`consult-recent-file'."
-    (interactive)
-    (recentf-mode 1)
-    (general-def [remap zy--first-consult-recent-file] 'consult-recent-file)
-    (consult-recent-file))
-  (general-def
-    :keymaps 'ctl-x-map
-    "R" #'zy--first-consult-recent-file)
-
-  :config
-  (consult-customize consult-recent-file
-                     :preview-key (kbd "M-.")))
-
-
-;;;;;; Embark (at-point dispatcher)
-
-;; This technically is not completion, but it is related to the Vertico family.
-
-(use-package embark
-  :straight t
-  :general
-  ("M-m" 'embark-act))
-
-;; Embark and Consult integration.
-(use-package embark-consult
-  :straight t
-  :after (embark consult))
-
-;;;;;; Corfu (at-point completion)
-
-(use-package corfu
-  :straight '(corfu :files (:defaults "extensions/*.el"))
-  :init
-  (setq completion-cycle-threshold 3)
-  (global-corfu-mode +1)
-  :config
-  (setq!
-   ;; Enable auto completion.
-   corfu-auto t
-   ;; No delay for completion.
-   corfu-auto-delay 0
-   ;; I used to use 1, but it was too aggresive.  Now I think 3 (the default) is good.
-   corfu-auto-prefix 3
-   ;; Enable cycling.
-   corfu-cycle t)
-
-  ;; Corfu extensions.
-  ;; Select candidates using Avy-style keys.
-  (general-def :keymaps 'corfu-map
-    "C-q" 'corfu-quick-insert)
-  ;; Remember completion history.
-  (corfu-history-mode +1)
-  ;; Show candidate documentation.
-  (corfu-popupinfo-mode +1)
-
-  ;; Enable Corfu in minibuffer.
-  (defun zy-enable-corfu-in-minibuffer ()
-    "Enable Corfu in the minibuffer if `completion-at-point' is bound."
-    (when (where-is-internal #'completion-at-point (list (current-local-map)))
-      ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
-      (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
-                  corfu-popupinfo-delay nil)
-      (corfu-mode 1)))
-  (add-hook 'minibuffer-setup-hook #'zy-enable-corfu-in-minibuffer)
-
-  ;; Conservative completion in Shell and Eshell.
-  (add-hook! '(shell-mode-hook eshell-mode-hook)
-    (setq-local corfu-auto nil)
-    (when (fboundp 'corfu-mode)
-      (corfu-mode 1))))
-
-;; Extra CAPFs (completion-at-point-function).
-(use-package cape
-  :straight t
-  :after corfu
-  :config
-  (dolist (backend '(cape-symbol cape-keyword cape-file))
-    (add-to-list 'completion-at-point-functions backend)))
 
 ;;;;; Lingual
 
@@ -2751,11 +2706,11 @@ Automatically set when `zy~zybox-dir' is customized.")
 ;; Basic settings about Org itself, and some simpler extensions.
 
 (use-package org
+  :straight t
   :defer-incrementally
   calendar find-func format-spec org-macs org-compat org-faces org-entities
   org-list org-pcomplete org-src org-footnote org-macro ob org org-agenda
   org-capture
-  :straight t
   :init
   (setq!
    ;; Indent sections by depth.
@@ -2830,6 +2785,19 @@ Automatically set when `zy~zybox-dir' is customized.")
     (set-face-attribute 'org-block nil :family "Sarasa Mono HC"))
   (zy--setup-org-faces)
   (add-hook 'zy-load-theme-hook 'zy--setup-org-faces))
+
+;; Setup Org-babel with some additional languages.
+(use-package ob
+  :defer t
+  :config
+  (defvar org-babel-load-languages)
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   (append org-babel-load-languages
+           '(;; For literate scripting.
+             (shell . t)
+             ;; Also for literate scripting.
+             (python . t)))))
 
 ;; Use Org tempo for block expansion.
 (use-package org-tempo
