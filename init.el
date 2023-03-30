@@ -548,50 +548,50 @@ is determined, several other directories, like `org-directory',
   (when (file-directory-p path)
     ;; The Org directory.
     (defvar org-directory)
-    (setq-default org-directory (expand-file-name "org" path))
+    (setq! org-directory (expand-file-name "org" path))
     ;; My projects directory.
     (defvar zy-zyprojects-dir)
-    (setq-default zy-zyprojects-dir
-                  (expand-file-name "../Zyprojects" path))
+    (setq! zy-zyprojects-dir
+           (expand-file-name "../Zyprojects" path))
     ;; My GTD directory and files.
     (defvar zy-gtd-dir)
-    (setq-default zy-gtd-dir org-directory
-                  zy-gtd-inbox-file
-                  (expand-file-name "inbox.org" zy-gtd-dir)
-                  zy-gtd-gtd-file
-                  (expand-file-name "gtd.org" zy-gtd-dir)
-                  zy-gtd-someday-file
-                  (expand-file-name "someday.org" zy-gtd-dir))
+    (setq! zy-gtd-dir org-directory
+           zy-gtd-inbox-file
+           (expand-file-name "inbox.org" zy-gtd-dir)
+           zy-gtd-gtd-file
+           (expand-file-name "gtd.org" zy-gtd-dir)
+           zy-gtd-someday-file
+           (expand-file-name "someday.org" zy-gtd-dir))
     ;; My other Org directory.
     (defvar zy-notes-file)
-    (setq-default zy-notes-file
-                  (expand-file-name "notes.org" org-directory))
+    (setq! zy-notes-file
+           (expand-file-name "notes.org" org-directory))
     ;; My Org-journal directory.
-    (setq-default org-journal-dir
-                  (expand-file-name "org-journal" org-directory))
+    (setq! org-journal-dir
+           (expand-file-name "org-journal" org-directory))
     ;; My Org-roam directory.
-    (setq-default org-roam-directory
-                  (expand-file-name "org-roam" org-directory))
+    (setq! org-roam-directory
+           (expand-file-name "org-roam" org-directory))
     ;; My BibLaTeX databases.
     (defvar zy-bib-files)
     (defvar zy-ebib-bib-file)
     (let ((ebib-bib-file
            (expand-file-name "ebib/references.bib" path)))
       (unless (boundp 'zy-bib-files)
-        (setq-default zy-bib-files nil))
+        (setq! zy-bib-files nil))
       (when (file-exists-p ebib-bib-file)
         (add-to-list 'zy-bib-files ebib-bib-file)
-        (setq-default zy-ebib-bib-file ebib-bib-file)))
+        (setq! zy-ebib-bib-file ebib-bib-file)))
     ;; Ebib paths.
-    (setq-default ebib-preload-bib-files zy-bib-files
-                  ebib-notes-directory
-                  (expand-file-name "ebib/notes" path)
-                  ebib-file-search-dirs
-                  `(,(expand-file-name "ebib/files" path)))
+    (setq! ebib-preload-bib-files zy-bib-files
+           ebib-notes-directory
+           (expand-file-name "ebib/notes" path)
+           ebib-file-search-dirs
+           `(,(expand-file-name "ebib/files" path)))
     ;; Citar paths. (Identical with Ebib ones)
-    (setq-default citar-bibliography zy-bib-files
-                  citar-library-paths
-                  `(,(expand-file-name "ebib/files" path)))))
+    (setq! citar-bibliography zy-bib-files
+           citar-library-paths
+           `(,(expand-file-name "ebib/files" path)))))
 
 (defcustom zy~zybox-dir ""
   "The Zybox directory, my personal file center."
