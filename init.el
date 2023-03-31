@@ -984,6 +984,27 @@ Automatically set when `zy~zybox-dir' is customized.")
   :config
   (gcmh-mode 1))
 
+;;;;; Keybinding management
+
+;;;;;; Provide key-hints with Which-key
+
+(use-package which-key
+  :straight t
+  ;; Which-key takes a lot of time (60 to 70 milliseconds) to load, and on most
+  ;; occasions I won't need it on the first couple of keystrokes.
+  :defer 2
+  :config
+  (which-key-mode 1)
+  (setq!
+   ;; If it turns out that I do need help from Which-key, show subsequent popups
+   ;; right away.
+   which-key-idle-secondary-delay 0.05))
+
+;;;;;; Show unused keys via Free-keys
+
+(use-package free-keys
+  :straight t)
+
 ;;;;; Miscellaneous configuration
 
 ;; I put short, uncategorized configuration here.
@@ -1020,6 +1041,9 @@ Automatically set when `zy~zybox-dir' is customized.")
  uniquify-buffer-name-style 'forward
  ;; Never use dialog boxes.
  use-dialog-box nil)
+
+;; Type "y" or "n" instead of "yes" or "no".
+(advice-add 'yes-or-no-p :override 'y-or-n-p)
 
 ;;;; Searching, completion, and text-manipulation
 
@@ -1896,6 +1920,27 @@ A dominating file is a file or directory with a name in
   ;; Magit.
   (general-unbind "C-<tab>"))
 
+;;;;; Configure scrolling
+
+;; Tweaked scrolling experience.
+
+(use-package zy-scrolling
+  :defer t
+  :init
+  ;; Enable smooth scroll on GTK.
+  (when (memq window-system '(x pgtk))
+    (pixel-scroll-precision-mode 1))
+
+  (defun zy--golden-ratio-scroll-a (fn &rest arg)
+    "Make scroll commands scroll 0.618 of the screen.
+
+This is an :around advice, and FN is the adviced function."
+    (dlet ((next-screen-context-lines
+            (round (* 0.382 (window-height)))))
+      (apply fn arg)))
+  (advice-add #'scroll-up-command :around 'zy--golden-ratio-scroll-a)
+  (advice-add #'scroll-down-command :around 'zy--golden-ratio-scroll-a))
+
 ;;;;; Sudo edit
 
 ;; Allow to switch editing rights on an already opened read-only file.
@@ -1909,7 +1954,7 @@ A dominating file is a file or directory with a name in
 ;; This sections concentrates on improving the user interface of GNU Emacs,
 ;; either graphical or terminal.
 
-;;;;; Theme Emacs
+;;;;; Configure themes
 
 (defcustom zy~default-theme 'doom-one
   "Default theme of Emacs.
@@ -1931,82 +1976,7 @@ theme, use `customize-themes' instead."
   :after doom-themes
   :hook (zy-first-buffer . solaire-global-mode))
 
-;;;;; Mode line
-
-;;;;;; Column and line number
-
-(use-package position-in-buffer
-  :defer t
-  :init
-  ;; Let column number be based on one.
-  (setq! column-number-indicator-zero-based nil)
-  ;; Display column and line number like this.
-  (setq! mode-line-position-column-line-format '(" %l:%c"))
-  ;; Enable column number display in the mode line.
-  (column-number-mode 1))
-
-;;;;;; Dim minor mode lighters
-
-(use-package dim
-  :straight t
-  :defer 1
-  :config
-  (dim-minor-names
-   '((buffer-face-mode nil face-remap)
-     (citar-embark-mode nil citar-embark)
-     (eldoc-mode nil eldoc)
-     (eldoc-box-hover-mode nil eldoc-box)
-     (eldoc-box-hover-at-point-mode nil eldoc-box)
-     (gcmh-mode nil gcmh)
-     (highlight-indent-guides-mode nil highlight-indent-guides)
-     (lsp-bridge-mode nil lsp-bridge)
-     (org-indent-mode nil org-indent)
-     (outline-minor-mode nil outline)
-     (pet-mode nil pet)
-     (python-docstring-mode nil python-docstring)
-     (smartparens-mode nil smartparens)
-     (subword-mode nil subword)
-     (valign-mode nil valign)
-     (visual-line-mode " VL" simple)
-     (yas-minor-mode nil yasnippet)
-     (which-key-mode nil which-key))))
-
-;;;;; Hl-line (highlight the current line)
-
-;; TODO: Replace this with Pulsar, a fantastic package by Protesilaus Stavrou
-
-(use-package hl-line
-  :hook (prog-mode text-mode conf-mode org-agenda-mode)
-  :config
-  ;; Only highlight line in the current window.
-  (setq! hl-line-sticky-flag nil))
-
-;;;;; Rainbow colored delimiters
-
-;; Hook `rainbow-delimiters-mode' to specific language modes.
-
-(use-package rainbow-delimiters
-  :straight t
-  :commands (rainbow-delimiters-mode))
-
-;;;;; Line numbers
-
-;; Line numbers display.
-(use-package display-line-numbers
-  :defer t
-  :hook (prog-mode conf-mode)
-  :general
-  (:keymaps 'zy-toggle-map
-            "l" 'display-line-numbers-mode)
-  :init
-  ;; Explicitly define a width to reduce the cost of on-the-fly computation.
-  (setq-default display-line-numbers-width 3)
-
-  ;; Show absolute line numbers for narrowed regions to make it easier to tell
-  ;; the buffer is narrowed, and where you are, exactly.
-  (setq-default display-line-numbers-widen t))
-
-;;;;; Fonts for various faces
+;;;;; Configure fonts
 
 ;; Font setter for other character sets
 
@@ -2133,120 +2103,49 @@ Return what `zy/setup-font-faces' returns."
   :init
   (zy-maybe-setup-font-faces))
 
-;;;;; Emoji support
+;;;;; Configure the mode line
 
-;; Displaying and inserting emojis.
+;;;;;; Column and line number
 
-(use-package emojify
-  :straight t
-  :hook (zy-first-buffer . global-emojify-mode)
-  :general
-  ;; Replace the default emoji shortcut.
-  ("C-x 8 e" 'emojify-insert-emoji)
-  :config
-  (setq!
-   ;; Display only Unicode emojis.
-   emojify-emoji-styles '(unicode)
-   ;; Display emojis with Unicode fonts.
-   emojify-display-style 'unicode))
-
-;;;;; No ringing the bell
-
-;; Everytime I type C-g to stop something, it rings the bell.  This is normally
-;; not a big deal, but I really hate the bell sound on Windows!  So instead of
-;; ringing the bell, I make Emacs flash the mode line instead.
-
-(defun zy-flash-mode-line ()
-  "Flash the mode line."
-  (invert-face 'mode-line)
-  (run-with-timer 0.1 nil #'invert-face 'mode-line))
-(setq ring-bell-function #'zy-flash-mode-line)
-
-;;;;; Pulsar
-
-;; Pulse the current ligh after some specific commands.
-
-;; On Emacs version 28 or earlier, double-buffering is not supported on
-;; Windows, and pulsar will cause serious flickering.  So disable Pulsar if
-;; that is the case.
-(unless (eval-when-compile
-          (and (memq system-type '(windows-nt cygwin))
-               (< emacs-major-version 29)))
-  (use-package pulsar
-    :straight t
-    :hook (zy-first-buffer . pulsar-global-mode)
-    :config
-    ;; More pulse functions.
-    (when (boundp 'pulsar-pulse-functions)
-      (dolist (fn '('outline-cycle-buffer
-                    'toggle-input-method))
-        (add-to-list 'pulsar-pulse-functions fn)))
-    (defadvice! zy--pulse-a (fn)
-      "Pulse the line with FN based on a set of rules."
-      :around 'pulsar-pulse-line
-      ;; Pulse the cursor in different colors based on the current IM.
-      (dlet ((pulsar-face (if current-input-method
-                              'pulsar-yellow
-                            'pulsar-cyan)))
-        (funcall fn)))))
-
-;;;;; Scrolling
-
-;; Tweaked scrolling experience.
-
-(use-package zy-scrolling
+(use-package position-in-buffer
   :defer t
   :init
-  ;; Enable smooth scroll on GTK.
-  (when (memq window-system '(x pgtk))
-    (pixel-scroll-precision-mode 1))
+  ;; Let column number be based on one.
+  (setq! column-number-indicator-zero-based nil)
+  ;; Display column and line number like this.
+  (setq! mode-line-position-column-line-format '(" %l:%c"))
+  ;; Enable column number display in the mode line.
+  (column-number-mode 1))
 
-  (defun zy--golden-ratio-scroll-a (fn &rest arg)
-    "Make scroll commands scroll 0.618 of the screen.
+;;;;;; Dim minor mode lighters
 
-This is an :around advice, and FN is the adviced function."
-    (dlet ((next-screen-context-lines
-            (round (* 0.382 (window-height)))))
-      (apply fn arg)))
-  (advice-add #'scroll-up-command :around 'zy--golden-ratio-scroll-a)
-  (advice-add #'scroll-down-command :around 'zy--golden-ratio-scroll-a))
-
-;;;;; Which-key (handy key hints)
-
-(use-package which-key
+(use-package dim
   :straight t
-  ;; Which-key takes a lot of time (60 to 70 milliseconds) to load, and on most
-  ;; occasions I won't need it on the first couple of keystrokes.
-  :defer 2
+  :defer 1
   :config
-  (which-key-mode 1)
-  (setq!
-   ;; If it turns out that I do need help from Which-key, show subsequent popups
-   ;; right away.
-   which-key-idle-secondary-delay 0.05))
+  (dim-minor-names
+   '((buffer-face-mode nil face-remap)
+     (citar-embark-mode nil citar-embark)
+     (eldoc-mode nil eldoc)
+     (eldoc-box-hover-mode nil eldoc-box)
+     (eldoc-box-hover-at-point-mode nil eldoc-box)
+     (gcmh-mode nil gcmh)
+     (highlight-indent-guides-mode nil highlight-indent-guides)
+     (lsp-bridge-mode nil lsp-bridge)
+     (org-indent-mode nil org-indent)
+     (outline-minor-mode nil outline)
+     (pet-mode nil pet)
+     (python-docstring-mode nil python-docstring)
+     (smartparens-mode nil smartparens)
+     (subword-mode nil subword)
+     (valign-mode nil valign)
+     (visual-line-mode " VL" simple)
+     (yas-minor-mode nil yasnippet)
+     (which-key-mode nil which-key))))
 
-;;;;; Darkroom (distraction-free mode)
+;;;;; Configure in-buffer display
 
-(use-package darkroom
-  :straight t
-  :general
-  (:keymaps 'zy-toggle-map
-            "d" 'darkroom-tentative-mode)
-  :config
-  ;; Toggle `display-line-numbers-mode' and `hl-line-mode' on text mode buffers,
-  ;; when switching darkroom mode.
-  (defadvice! zy--darkroom-enter-a (&rest _)
-    "Turn off UI elements when entering Darkroom in a text mode buffer."
-    :after 'darkroom--enter
-    (when (derived-mode-p 'text-mode)
-      (hl-line-mode -1)))
-  (defadvice! zy--darkroom-leave-a (&rest _)
-    "Turn on UI elements when leaving Darkroom in a text mode buffer."
-    :after 'darkroom--leave
-    (when (derived-mode-p 'text-mode)
-      (hl-line-mode 1))))
-
-;;;;; Headings
+;;;;;; Configure heading display
 
 ;; Customize the appearance of headings in Org-mode, Markdown-mode, and
 ;; Outline-mode.
@@ -2286,7 +2185,7 @@ Should be run again after theme switch."
 (zy--setup-heading-appearance)
 (add-hook 'zy-load-theme-hook #'zy--setup-heading-appearance)
 
-;;;;; Highlight TODO and similiar keywords
+;;;;;; Highlight TODO and similiar keywords
 
 (use-package hl-todo
   :straight t
@@ -2298,6 +2197,127 @@ Should be run again after theme switch."
           ("DEBUG"  . "#A020F0")
           ("GOTCHA" . "#FF4500")
           ("STUB"   . "#1E90FF"))))
+
+;;;;;; Visually align tables with Valign
+
+;; Valign provide pixel-perfect alignment for tables.
+
+(use-package valign
+  :straight t
+  :hook (org-mode markdown-mode))
+
+;;;;; Useful UI elements
+
+;;;;;; Highlight current line with Hl-line-mode
+
+;; TODO: Replace this with Pulsar, a fantastic package by Protesilaus Stavrou
+
+(use-package hl-line
+  :hook (prog-mode text-mode conf-mode org-agenda-mode)
+  :config
+  ;; Only highlight line in the current window.
+  (setq! hl-line-sticky-flag nil))
+
+;;;;;; Show line numbers
+
+;; Line numbers display.
+(use-package display-line-numbers
+  :defer t
+  :hook (prog-mode conf-mode)
+  :general
+  (:keymaps 'zy-toggle-map
+            "l" 'display-line-numbers-mode)
+  :init
+  ;; Explicitly define a width to reduce the cost of on-the-fly computation.
+  (setq-default display-line-numbers-width 3)
+
+  ;; Show absolute line numbers for narrowed regions to make it easier to tell
+  ;; the buffer is narrowed, and where you are, exactly.
+  (setq-default display-line-numbers-widen t))
+
+;;;;;; Rainbow colored delimiters
+
+;; Hook `rainbow-delimiters-mode' to specific language modes.
+
+(use-package rainbow-delimiters
+  :straight t
+  :commands (rainbow-delimiters-mode))
+
+;;;;;; Never lose the cursor with Pulsar
+
+;; On Emacs version 28 or earlier, double-buffering is not supported on
+;; Windows, and pulsar will cause serious flickering.  So disable Pulsar if
+;; that is the case.
+(unless (eval-when-compile
+          (and (memq system-type '(windows-nt cygwin))
+               (< emacs-major-version 29)))
+  (use-package pulsar
+    :straight t
+    :hook (zy-first-buffer . pulsar-global-mode)
+    :config
+    ;; More pulse functions.
+    (when (boundp 'pulsar-pulse-functions)
+      (dolist (fn '('outline-cycle-buffer
+                    'toggle-input-method))
+        (add-to-list 'pulsar-pulse-functions fn)))
+    (defadvice! zy--pulse-a (fn)
+      "Pulse the line with FN based on a set of rules."
+      :around 'pulsar-pulse-line
+      ;; Pulse the cursor in different colors based on the current IM.
+      (dlet ((pulsar-face (if current-input-method
+                              'pulsar-yellow
+                            'pulsar-cyan)))
+        (funcall fn)))))
+
+;;;;; Emoji support
+
+;; Displaying and inserting emojis.
+
+(use-package emojify
+  :straight t
+  :hook (zy-first-buffer . global-emojify-mode)
+  :general
+  ;; Replace the default emoji shortcut.
+  ("C-x 8 e" 'emojify-insert-emoji)
+  :config
+  (setq!
+   ;; Display only Unicode emojis.
+   emojify-emoji-styles '(unicode)
+   ;; Display emojis with Unicode fonts.
+   emojify-display-style 'unicode))
+
+;;;;; No ringing the bell
+
+;; Everytime I type C-g to stop something, it rings the bell.  This is normally
+;; not a big deal, but I really hate the bell sound on Windows!  So instead of
+;; ringing the bell, I make Emacs flash the mode line instead.
+
+(defun zy-flash-mode-line ()
+  "Flash the mode line."
+  (invert-face 'mode-line)
+  (run-with-timer 0.1 nil #'invert-face 'mode-line))
+(setq ring-bell-function #'zy-flash-mode-line)
+
+;;;;; Darkroom (distraction-free mode)
+
+(use-package darkroom
+  :straight t
+  :general
+  (:keymaps 'zy-toggle-map
+            "d" 'darkroom-tentative-mode)
+  :config
+  ;; Toggle `display-line-numbers-mode' and `hl-line-mode' on text mode buffers,
+  ;; when switching darkroom mode.
+  (defadvice! zy--darkroom-enter-a (&rest _)
+    "Turn off UI elements when entering Darkroom in a text mode buffer."
+    :after 'darkroom--enter
+    (when (derived-mode-p 'text-mode)
+      (hl-line-mode -1)))
+  (defadvice! zy--darkroom-leave-a (&rest _)
+    "Turn on UI elements when leaving Darkroom in a text mode buffer."
+    :after 'darkroom--leave
+    (when (derived-mode-p 'text-mode)
+      (hl-line-mode 1))))
 
 ;;;; Features
 
@@ -2403,9 +2423,12 @@ Should be run again after theme switch."
   :general
   (:keymaps 'flymake-mode-map
             "M-p" 'flymake-goto-prev-error
-            "M-n" 'flymake-goto-next-error))
+            "M-n" 'flymake-goto-next-error)
+  :config
+  ;; Show a shorter mode lighter.
+  (setq! flymake-mode-line-lighter "Fm"))
 
-;;;;; Eglot (language server protocol support)
+;;;;; Language server protocol support via Eglot
 
 (use-package eglot
   :straight '(eglot :type built-in)
@@ -2520,14 +2543,6 @@ Should be run again after theme switch."
   :general
   ("C-c l" 'calendar))
 
-;;;;; Valign (table alignment in Org and Markdown)
-
-;; Valign provide pixel-perfect alignment for tables.
-
-(use-package valign
-  :straight t
-  :hook (org-mode markdown-mode))
-
 ;;;;; Emacs configuration management
 
 ;; Restart Emacs from withing Emacs.
@@ -2640,11 +2655,6 @@ Automatically set when `zy~zybox-dir' is customized.")
    bibtex-autokey-titlewords 2
    bibtex-autokey-name-year-separator "_"
    bibtex-autokey-year-title-separator "_"))
-
-;;;;; Show unused keys via Free-keys
-
-(use-package free-keys
-  :straight t)
 
 ;;;; File type specific settings
 
