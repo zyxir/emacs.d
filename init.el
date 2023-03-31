@@ -1396,7 +1396,8 @@ itself to `consult-recent-file', can finally call
 ;;;;; Smartparens (parenthesis automation)
 
 (use-package smartparens
-  :straight '(smartparens :host github :repo "zyxir/smartparens")
+  :straight '(smartparens :host github :repo "Fuco1/smartparens"
+                          :fork (:repo "zyxir/smartparens" :branch "dev"))
   :defer t
   :hook (conf-mode prog-mode text-mode comint-mode eshell-mode)
   :general
@@ -3128,7 +3129,8 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
 ;; python-pytest, python-isort and built-in project.el.  Pity it is not in
 ;; MELPA.
 (use-package pet
-  :straight '(pet :host github :repo "wyuenho/emacs-pet")
+  :straight '(pet :host github :repo "wyuenho/emacs-pet"
+                  :fork (:repo "zyxir/emacs-pet" :branch "dev"))
   :hook (python-mode)
   :config
   ;; Let Eglot find LSP server executables with Pet.
