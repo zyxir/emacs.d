@@ -3148,11 +3148,6 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
         ;; Enter the command.
         (comint-send-input)))))
 
-;; Font-lock for docstring.
-(use-package python-docstring
-  :straight t
-  :hook python-mode)
-
 ;; Enable running Pytest with the `python-pytest' command.
 (use-package python-pytest
   :straight t
