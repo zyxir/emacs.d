@@ -1510,8 +1510,12 @@ itself to `consult-recent-file', can finally call
    sp-highlight-wrap-overlay nil
    ;; Do not auto insert colon for Python.
    sp-python-insert-colon-in-function-definitions nil)
+
   ;; Apply default config.
-  (require 'smartparens-config))
+  (require 'smartparens-config)
+
+  ;; Turn on strict mode for Lisp buffers.
+  (add-hook! (lisp-data-mode) (smartparens-strict-mode 1)))
 
 ;;;;; Avy (quick text jump)
 
