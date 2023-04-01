@@ -1266,6 +1266,14 @@ itself to `consult-recent-file', can finally call
   (dolist (backend '(cape-symbol cape-keyword cape-file))
     (add-to-list 'completion-at-point-functions backend)))
 
+;; SVG Icon support.
+(use-package kind-icon
+  :straight t
+  :after corfu
+  :config
+  (setq! kind-icon-default-face 'corfu-default)
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
+
 ;;;;; Tweak cursor movement
 
 (use-package zy-curmov
