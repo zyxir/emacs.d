@@ -1547,27 +1547,6 @@ itself to `consult-recent-file', can finally call
         (apply fn rest)
         (when corfu-enabled-p (corfu-mode 1))))))
 
-;;;;; Integrated tree-sitter support
-
-;; Automatically enable tree-sitter powered major modes.
-(use-package treesit-auto
-  :straight '(treesit-auto :host github :repo "renzmann/treesit-auto")
-  :when (treesit-available-p)
-  :demand
-  :config
-  (setq
-   ;; Prompt to install missing module.  However, it is prefered to use
-   ;; `treesit-auto-install-all' to install all modules at once.
-   treesit-auto-install 'prompt)
-  (global-treesit-auto-mode 1)
-  ;; Migrate normal hooks to tree-sitter mode hooks after startup.
-  (add-hook! 'emacs-startup-hook
-    :depth 100
-    (defun zy--mirror-ts-hooks-h (&rest _)
-      "Mirror major mode hooks to the corresponding tree-sitter hooks.
-For example, mirror `python-mode-hook' to `python-ts-mode-hook'."
-      (setq python-ts-mode-hook python-mode-hook))))
-
 ;;;; File, buffer, window, project management
 
 ;;;;; No auto save or backup files
