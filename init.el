@@ -1421,7 +1421,7 @@ itself to `consult-recent-file', can finally call
 
 (use-package smartparens
   :straight '(smartparens :host github :repo "Fuco1/smartparens"
-                          :fork (:repo "zyxir/smartparens" :branch "dev"))
+                          :fork (:repo "zyxir/smartparens" :branch "dev" :protocol ssh))
   :defer t
   :hook (conf-mode prog-mode text-mode comint-mode eshell-mode)
   :general
@@ -3140,7 +3140,7 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
 ;; MELPA.
 (use-package pet
   :straight '(pet :host github :repo "wyuenho/emacs-pet"
-                  :fork (:repo "zyxir/emacs-pet" :branch "dev"))
+                  :fork (:repo "zyxir/emacs-pet" :branch "dev" :protocol ssh))
   :hook (python-mode)
   :config
   ;; Let Eglot find LSP server executables with Pet.
