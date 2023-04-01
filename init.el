@@ -1304,6 +1304,13 @@ itself to `consult-recent-file', can finally call
    ;; Highlight the current indentation.
    highlight-indent-guides-responsive t))
 
+;;;;; Tweak selection
+
+(use-package zy-selection
+  :defer t
+  :init
+  (delete-selection-mode 1))
+
 ;;;;; Search in buffer (Isearch)
 
 (use-package isearch
