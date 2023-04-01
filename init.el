@@ -2223,13 +2223,18 @@ Should be run again after theme switch."
 ;; Line numbers display.
 (use-package display-line-numbers
   :defer t
-  :hook (prog-mode conf-mode)
   :general
   (:keymaps 'zy-toggle-map
             "l" 'display-line-numbers-mode)
   :init
-  ;; Explicitly define a width to reduce the cost of on-the-fly computation.
-  (setq-default display-line-numbers-width 3)
+  (add-hook! (prog-mode text-mode conf-mode)
+    ;; The argument "1" is important, otherwise in some rare circumstances the hook will
+    ;; trigger twice and turn off the mode.
+    (display-line-numbers-mode 1))
+
+  ;; Explicitly define a width to reduce the cost of on-the-fly computation.  4 is a good
+  ;; default, as programs seldom exceed 10000 lines.
+  (setq-default display-line-numbers-width 4)
 
   ;; Show absolute line numbers for narrowed regions to make it easier to tell
   ;; the buffer is narrowed, and where you are, exactly.
