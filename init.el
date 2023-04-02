@@ -2131,6 +2131,7 @@ Return what `zy/setup-font-faces' returns."
   (dim-minor-names
    '((buffer-face-mode nil face-remap)
      (citar-embark-mode nil citar-embark)
+     (docstr-mode nil docstr)
      (eldoc-mode nil eldoc)
      (eldoc-box-hover-mode nil eldoc-box)
      (eldoc-box-hover-at-point-mode nil eldoc-box)
