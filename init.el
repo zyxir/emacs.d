@@ -1042,9 +1042,6 @@ Automatically set when `zy~zybox-dir' is customized.")
  ;; Never use dialog boxes.
  use-dialog-box nil)
 
-;; Type "y" or "n" instead of "yes" or "no".
-(advice-add 'yes-or-no-p :override 'y-or-n-p)
-
 ;;;; Searching, completion, and text-manipulation
 
 ;; This section contains bottom layer settings that control how Emacs works.
@@ -1704,7 +1701,17 @@ faster `prin1'."
   ;; Clean up recent files when quitting Emacs.
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
 
-;;;;; Version control (Magit, Diff-hl, and Git-timemachine)
+;;;;; Version control (VC, Magit, Diff-hl, and Git-timemachine)
+
+;; I seldom use the built-in VC, but it affects Emacs in various circumstances, so its
+;; behavior has to be tweaked.
+(use-package vc
+  :defer t
+  :init
+  (setq!
+   ;; Do not ask me if visiting a symbolic link to a file under version control.  Just
+   ;; visit it, and tell me about it in the echo area.
+   vc-follow-symlinks t))
 
 ;; Use Magit as the Git interface.
 (use-package magit
