@@ -2666,6 +2666,16 @@ Automatically set when `zy~zybox-dir' is customized.")
    bibtex-autokey-name-year-separator "_"
    bibtex-autokey-year-title-separator "_"))
 
+;;;;; Documentation string generation
+
+(use-package docstr
+  :straight t
+  :hook (zy-first-file . global-docstr-mode)
+  :config
+  (setq!
+   ;; Use the NumPy style by default.  Should be configured project-wise.
+   docstr-python-style 'numpy))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
@@ -3136,7 +3146,9 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
 
 ;; Enable running Pytest with the `python-pytest' command.
 (use-package python-pytest
-  :straight t
+  :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest"
+                            :fork (:repo "zyxir/emacs-python-pytest"
+                                         :branch "dev" :protocol ssh))
   :commands python-pytest)
 
 ;; Pet, the Python executable tracker, which automatically detects a Python
