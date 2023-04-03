@@ -2628,6 +2628,12 @@ Should be run again after theme switch."
   (interactive)
   (restart-emacs-start-new-emacs '("--debug-init")))
 
+;; Open another Emacs with "-Q".
+(defun zy/test-no-site-file (&rest _)
+  "Start a new Emacs with \"-Q\"."
+  (interactive)
+  (restart-emacs-start-new-emacs '("-Q")))
+
 ;; Quickly open the config file.
 (defun zy/open-config ()
   "Open Emacs configuration in another tab."
@@ -2637,6 +2643,7 @@ Should be run again after theme switch."
 (general-def
   "C-c e e" 'zy/open-config
   "C-c e t" 'zy/test-config
+  "C-c e q" 'zy/test-no-site-file
   "C-c e R" 'restart-emacs)
 
 ;;;;; Bibliography management
