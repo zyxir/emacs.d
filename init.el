@@ -2576,14 +2576,10 @@ Should be run again after theme switch."
 
 ;; Quickly open the config file.
 (defun zy/open-config ()
-  "Open Emacs configuration.
-If the current buffer is visiting a file, open it in another window."
+  "Open Emacs configuration in another tab."
   (interactive)
   (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
-    (if (buffer-file-name)
-        (unless (file-equal-p (buffer-file-name) init-file)
-          (find-file-other-window init-file))
-      (find-file init-file))))
+    (find-file-other-tab init-file)))
 (general-def
   "C-c e e" 'zy/open-config
   "C-c e t" 'zy/test-config
