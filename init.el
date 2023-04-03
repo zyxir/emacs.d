@@ -3178,22 +3178,23 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
   :hook (python-mode)
   :config
   ;; Let Eglot find LSP server executables with Pet.
-  (defadvice! zy--pet-executable-find-a (oldfun command &optional remote)
-    "Like `executable-find', but respect Python virtual environments.
+  (with-eval-after-load 'eglot
+    (defadvice! zy--pet-executable-find-a (oldfun command &optional remote)
+      "Like `executable-find', but respect Python virtual environments.
 That is, when `python-mode' is on, use `pet-executable-find' instead.
 
 This is used as an :around advice for `eglot--executable-find', so that
 Eglot can use the LSP server located in a Python virtual
 environment."
-    :around 'eglot--executable-find
-    (if (and
-         ;; Not a remote directory.
-         (null (and remote (file-remote-p default-directory)))
-         ;; The current mode is derived from `python-base-mode'.  Both `python-mode' and
-         ;; `python-ts-mode' are derived from it.
-         (or (derived-mode-p 'python-base-mode)))
-        (pet-executable-find command)
-      (funcall oldfun command remote))))
+      :around 'eglot--executable-find
+      (if (and
+           ;; Not a remote directory.
+           (null (and remote (file-remote-p default-directory)))
+           ;; The current mode is derived from `python-base-mode'.  Both `python-mode' and
+           ;; `python-ts-mode' are derived from it.
+           (or (derived-mode-p 'python-base-mode)))
+          (pet-executable-find command)
+        (funcall oldfun command remote)))))
 
 ;; Syntax highlight for requirements.txt.
 (use-package pip-requirements
