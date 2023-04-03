@@ -1578,9 +1578,11 @@ itself to `consult-recent-file', can finally call
     "Set coding system for processes.
 ARGS is (PROC VAL PROC VAL ...).
 
-PROC is a process name in lowercase, which is then converted to a
-regexp to match the process in any case, like \"cmd\" is
-converted to \"[cC][mM][dD]\".
+If PROC is t, set `default-process-coding-system' to VAL.
+
+If PROC is a process name in lowercase, convert it to a regexp
+that match the process in any case, like \"cmd\" is converted to
+\"[cC][mM][dD]\", then set its coding system to VAL.
 
 VAL is the same as in `process-coding-system-alist'."
     (declare (indent defun))
@@ -1589,17 +1591,20 @@ VAL is the same as in `process-coding-system-alist'."
       (push '(setq process-coding-system-alist nil) result)
       (while (and (setq proc (pop args))
                   (setq val (pop args)))
-        (let ((proc-regexp (apply 'concat
-                                  (mapcar (lambda (char)
-                                            (concat "["
-                                                    (list
-                                                     (downcase char)
-                                                     (upcase char))
-                                                    "]"))
-                                          (string-to-list proc)))))
-          (push (list 'add-to-list (quote 'process-coding-system-alist)
-                      (list 'cons proc-regexp val))
-                result)))
+        (if (eq proc t)
+            (push (list 'setq 'default-process-coding-system val)
+                  result)
+          (let ((proc-regexp (apply 'concat
+                                    (mapcar (lambda (char)
+                                              (concat "["
+                                                      (list
+                                                       (downcase char)
+                                                       (upcase char))
+                                                      "]"))
+                                            (string-to-list proc)))))
+            (push (list 'add-to-list (quote 'process-coding-system-alist)
+                        (list 'cons proc-regexp val))
+                  result))))
       (reverse result)))
   (declare-function zy-set-process-coding-system! "init.el")
 
@@ -1614,7 +1619,8 @@ VAL is the same as in `process-coding-system-alist'."
     (zy-set-process-coding-system!
       "cmdproxy" 'gbk-dos
       "plink" 'gbk-dos
-      "rg" '(utf-8-dos . gbk-dos))))
+      "python" 'gbk-dos
+      t '(utf-8-dos . gbk-dos))))
 
 ;;;;; Additional scratch buffer
 
