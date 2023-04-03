@@ -1209,14 +1209,16 @@ itself to `consult-recent-file', can finally call
   (global-corfu-mode +1)
   :config
   (setq!
-   ;; Enable auto completion.
-   corfu-auto t
    ;; No delay for completion.
    corfu-auto-delay 0
    ;; I used to use 1, but it was too aggresive.  Now I think 3 (the default) is good.
    corfu-auto-prefix 3
    ;; Enable cycling.
    corfu-cycle t)
+
+  ;; Only enable auto completion in prog-mode and conf-mode.
+  (setq-hook! (prog-mode conf-mode)
+    corfu-auto t)
 
   ;; Corfu extensions.
   ;; Select candidates using Avy-style keys.
@@ -1238,12 +1240,6 @@ itself to `consult-recent-file', can finally call
                   corfu-popupinfo-delay nil)
       (corfu-mode 1)))
   (add-hook 'minibuffer-setup-hook #'zy-enable-corfu-in-minibuffer)
-
-  ;; Conservative completion in Shell and Eshell.
-  (add-hook! '(shell-mode-hook eshell-mode-hook)
-    (setq-local corfu-auto nil)
-    (when (fboundp 'corfu-mode)
-      (corfu-mode 1)))
 
   ;; Fix on C-g with `corfu-mode' and `smartparens-mode'.
   ;;
