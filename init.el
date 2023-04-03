@@ -914,6 +914,17 @@ Automatically set when `zy~zybox-dir' is customized.")
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
+;; A universal key for testing.  Should be remap to specific test command per major mode.
+(defun zy/test (&rest _)
+  "Run major-mode specific test.
+
+This command does nothing at all.  Remap it to specific test
+command for every major mode."
+  (declare (completion ignore))
+  (interactive)
+  (message "No test command bound for %s" major-mode))
+(general-def "M-o t" 'zy/test)
+
 ;;;;; Load Zyutils, the other part of the configuration
 
 ;; I keep a lot of function definitions and extra utilities in lisp/zyutils.el,
@@ -2334,6 +2345,24 @@ Should be run again after theme switch."
       (hl-line-mode 1)
       (display-line-numbers-mode 1))))
 
+;;;;; Configure font-lock (jit-lock)
+
+;; Configure Emacs's just-in-time font-locking (jit-lock).
+(use-package jit-lock
+  :defer t
+  :init
+   ;; Enable stealthy font locking.
+  (setq
+   ;; Calculate fonts when idle for 1.5 seconds.
+   jit-lock-stealth-time 1.5
+   ;; Pause for 0.2 seconds between calculations afterwards.
+   jit-lock-stealth-nice 0.2))
+
+;; Progress for stealthy font locking.
+(use-package jit-lock-stealth-progress
+  :straight t
+  :hook (zy-first-buffer . jit-lock-stealth-progress-mode))
+
 ;;;; Features
 
 ;; This section is for settings that provide additional features for Emacs.
@@ -3140,7 +3169,9 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
   :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest"
                             :fork (:repo "zyxir/emacs-python-pytest"
                                          :branch "dev" :protocol ssh))
-  :commands python-pytest)
+  :general
+  (:keymaps 'python-base-mode-map
+            [remap zy/test] 'python-pytest-dispatch))
 
 ;; Pet, the Python executable tracker, which automatically detects a Python
 ;; virtual environment and apply it to various Python packages like
