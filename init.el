@@ -2100,8 +2100,12 @@ Return what `zy/setup-font-faces' returns."
           (condition-case e
               (zy/setup-font-faces)
             (error (lwarn 'font :warning "%s: %s" (car e) (cdr e))))
-        (remove-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces))
-    (add-hook 'after-make-frame-functions #'zy-maybe-setup-font-faces)))
+        (remove-hook! '(after-make-frame-functions
+                        server-after-make-frame-hook)
+          #'zy-maybe-setup-font-faces))
+    (add-hook! '(after-make-frame-functions
+                 server-after-make-frame-hook)
+      #'zy-maybe-setup-font-faces)))
 
 (use-package zy-font
   :defer t
