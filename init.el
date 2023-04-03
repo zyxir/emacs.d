@@ -2358,11 +2358,6 @@ Should be run again after theme switch."
    ;; Pause for 0.2 seconds between calculations afterwards.
    jit-lock-stealth-nice 0.2))
 
-;; Progress for stealthy font locking.
-(use-package jit-lock-stealth-progress
-  :straight t
-  :hook (zy-first-buffer . jit-lock-stealth-progress-mode))
-
 ;;;; Features
 
 ;; This section is for settings that provide additional features for Emacs.
