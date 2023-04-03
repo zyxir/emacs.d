@@ -2669,16 +2669,6 @@ Automatically set when `zy~zybox-dir' is customized.")
    bibtex-autokey-name-year-separator "_"
    bibtex-autokey-year-title-separator "_"))
 
-;;;;; Documentation string generation
-
-(use-package docstr
-  :straight t
-  :hook (zy-first-file . global-docstr-mode)
-  :config
-  (setq!
-   ;; Use the NumPy style by default.  Should be configured project-wise.
-   docstr-python-style 'numpy))
-
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
