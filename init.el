@@ -1566,21 +1566,18 @@ itself to `consult-recent-file', can finally call
 ;;;;; Configure encoding and locale
 
 ;; Set everything to UTF-8.
-
 (set-language-environment "UTF-8")
 
-;; Encoding hacks on Microsoft Windows in Chinese locale.
-
+;; On Microsoft Windows, when the locale is Simplified Chinese (my mother tongue), GBK
+;; encoding is used for processes.
 (when (and
        ;; The operating system is Microsoft Windows.
        (eq system-type 'windows-nt)
        ;; Code page 936, the character encoding for simplified Chinese.
        (eq locale-coding-system 'cp936))
-  ;; Use GBK for cmdproxy.exe and plink.exe.
+  ;; Use GBK for everything.
   (set-default 'process-coding-system-alist
-               '(("[pP][lL][iI][nN][kK]" gbk-dos . gbk-dos)
-                 ("[cC][mM][dD][pP][rR][oO][xX][yY]" gbk-dos . gbk-dos)
-                 ("[pP][oO][wW][eE][rR][sS][hH][eE][lL][lL]" gbk-dos . gbk-dos))))
+               '((".*" gbk-dos))))
 
 ;; Use "C" for English locale.
 
