@@ -1565,23 +1565,56 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Configure encoding and locale
 
-;; Set everything to UTF-8.
-(set-language-environment "UTF-8")
+(use-package zy-encoding
+  :defer t
+  :init
+  ;; Set everything to UTF-8.
+  (set-language-environment "UTF-8")
+  ;; Use "C" for English locale.
+  (setq! system-time-locale "C")
 
-;; On Microsoft Windows, when the locale is Simplified Chinese (my mother tongue), GBK
-;; encoding is used for processes.
-(when (and
-       ;; The operating system is Microsoft Windows.
-       (eq system-type 'windows-nt)
-       ;; Code page 936, the character encoding for simplified Chinese.
-       (eq locale-coding-system 'cp936))
-  ;; Use GBK for everything.
-  (set-default 'process-coding-system-alist
-               '((".*" gbk-dos))))
+  ;; Handy macro to set process coding system.
+  (defmacro zy-set-process-coding-system! (&rest args)
+    "Set coding system for processes.
+ARGS is (PROC VAL PROC VAL ...).
 
-;; Use "C" for English locale.
+PROC is a process name in lowercase, which is then converted to a
+regexp to match the process in any case, like \"cmd\" is
+converted to \"[cC][mM][dD]\".
 
-(setq! system-time-locale "C")
+VAL is the same as in `process-coding-system-alist'."
+    (declare (indent defun))
+    (let ((result '(progn))
+          proc val)
+      (push '(setq process-coding-system-alist nil) result)
+      (while (and (setq proc (pop args))
+                  (setq val (pop args)))
+        (let ((proc-regexp (apply 'concat
+                                  (mapcar (lambda (char)
+                                            (concat "["
+                                                    (list
+                                                     (downcase char)
+                                                     (upcase char))
+                                                    "]"))
+                                          (string-to-list proc)))))
+          (push (list 'add-to-list (quote 'process-coding-system-alist)
+                      (list 'cons proc-regexp val))
+                result)))
+      (reverse result)))
+  (declare-function zy-set-process-coding-system! "init.el")
+
+  ;; On Microsoft Windows, when the locale is Simplified Chinese (my mother tongue), GBK
+  ;; encoding is used for some processes.
+  (when (and
+         ;; The operating system is Microsoft Windows.
+         (eq system-type 'windows-nt)
+         ;; Code page 936, the character encoding for simplified Chinese.
+         (eq locale-coding-system 'cp936))
+    ;; (set-language-environment "Chinese-GBK")
+    (zy-set-process-coding-system!
+      "cmdproxy" 'gbk-dos
+      "plink" 'gbk-dos
+      "rg" '(utf-8-dos . gbk-dos))))
 
 ;;;;; Additional scratch buffer
 
@@ -3080,7 +3113,6 @@ The function works like `org-latex-export-to-pdf', except that
    python-fill-docstring-style 'pep-257-nn
    ;; Use the default executable for the shell.
    python-shell-interpreter "python")
-  (setenv "PYTHONIOENCODING" "UTF-8")
 
   ;; Fix the <backspace> key in Python.  I want <backspace> always perform `delete-region'
   ;; when there is an active region, but `python-indent-dedent-line-backspace' doesn't.
