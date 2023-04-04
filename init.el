@@ -1890,38 +1890,60 @@ faster `prin1'."
   ;; make sure it is lazy loaded.
   :commands (rg rg-menu rg-project))
 
-;;;;; Project (built-in project manager)
+;;;;; Manage project with Projectile
 
-(use-package project
-  :defer t
+;; I decide to switch to Projectile from the built-in Project.el.  Projectile is much more
+;; feature rich by now (2023-04-05). By far, these features are provided by Projectile,
+;; and not provided by Project.el:
+;;
+;; 1. Recognizing a project smartly (with all kinds of markers like ".projectile",
+;; "build.sbt" or "Makefile").  In Project I have to manually configure this.
+;;
+;; 2. Better integration with Ripgrep, Fd, Vterm and many things.  Better integration with
+;; all kinds of VC system.
+;;
+;; 3. Many extremely useful commands like `projectile-recentf' and `projectile-ibuffer'.
+;;
+;; In conclusion, Projectile provides too many killing feature that a modern code editor
+;; should provide.  Project is just not as useful as it.  Though I am currently bound to
+;; Project.el by my musle memory, I have to switch to Projectile.
+;;
+;; The only downside of Projectile is that it doesn't provide a Consult-style conpletion
+;; UI, which Project.el does by default.  But that is not very important, though.
+
+(use-package projectile
+  :straight t
+  :commands (projectile-add-known-project
+             projectile-discover-projects-in-directory
+             projectile-discover-projects-in-search-path)
   :general
-  (:keymaps 'project-prefix-map
-            "b" 'consult-project-buffer
-            "v" 'magit-project-status)
+  ;; Disable shortcuts from the built-in Project.el. I'm so used to it that I have to
+  ;; break my musle memory.
+  (:keymaps 'global-map
+            "C-x 4 p" nil
+            "C-x 5 p" nil
+            "C-x t p" nil
+            "C-x p" nil)
+  ;; Don't load Projectile at startup.  Load Projectile on theses commands.
+  (:keymaps 'global-map
+            "C-x p p" 'projectile-switch-project
+            "C-x p f" 'projectile-find-file
+            "C-x p F" 'projectile-find-file-in-known-projects)
+  (:keymaps 'projectile-mode-map
+            "C-x p" 'projectile-command-map)
   :config
+  (projectile-mode 1)
   (setq!
-   project-switch-commands '((project-find-file "Find file" "f")
-                             (project-find-dir "Find directory" "d")
-                             (rg-project "Grep" "g")
-                             (magit-project-status "Magit" "v")
-                             (project-shell "Shell" "s")
-                             (project-eshell "Eshell" "e")))
+   ;; Ask for command after a project switch, like the built-in Project.el.
+   projectile-switch-project-action 'projectile-commander
+   ;; Make the mode line indicator shorter.
+   projectile-mode-line-lighter " Prj"
+   projectile-mode-line-prefix " Prj"))
 
-  ;; Explicitly specify a project root with a dominating file (directory).
-  (defvar zy-project-dom-filenames '(".project")
-    "Possible dominating file/directory names for a project.")
-  (defun zy-project-try-explicit (dir)
-    "Find a super-directory of DIR containing a dominating file.
-A dominating file is a file or directory with a name in
-`zy-project-dom-filenames'."
-    (cl-some
-     (lambda (fname)
-       (locate-dominating-file dir fname))
-     zy-project-dom-filenames))
-  (cl-defmethod project-root ((project string))
-             project)
-  (add-hook 'project-find-functions
-	    #'zy-project-try-explicit))
+;; Automatically run "git fetch" on Projectile projects.
+(use-package projectile-git-autofetch
+  :straight t
+  :hook projectile-mode)
 
 ;;;;; Additional file operations
 
@@ -2182,6 +2204,7 @@ Return what `zy/setup-font-faces' returns."
      (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
      (pet-mode nil pet)
+     (projectile-git-autofetch-mode nil projectile-git-autofetch)
      (python-docstring-mode nil python-docstring)
      (smartparens-mode nil smartparens)
      (subword-mode nil subword)

@@ -27,6 +27,7 @@ org-persist
 org-roam.db
 persps
 places
+projectile.cache
 projectile-bookmarks.eld
 projects
 recentf
