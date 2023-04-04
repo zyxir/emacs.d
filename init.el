@@ -3282,7 +3282,7 @@ environment."
   (add-hook! scala-mode
     'rainbow-delimiters-mode)
   (setq-hook! scala-mode
-    fill-column 110))
+    fill-column 100))
 
 (use-package sbt-mode
   :straight t
