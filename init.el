@@ -2528,7 +2528,7 @@ Should be run again after theme switch."
        ;; Linting.
        :ruff (:enabled t))))))
 
-;;;;; Shell
+;;;;; Shell and terminal
 
 ;;;;;; Comint and Shell
 
@@ -2539,23 +2539,11 @@ Should be run again after theme switch."
    ;; Do not delete the prompt.
    comint-prompt-read-only t))
 
-;; The inferior shell inside Emacs.
-(use-package shell
-  :commands shell
-  :general
-  (:keymaps 'ctl-x-x-map "s" 'shell)
-  (:keymaps 'ctl-x-4-map "s" 'zy/shell-other-window)
-  (:keymaps 'ctl-x-5-map "s" 'zy/shell-other-frame))
-
 ;;;;;; Eshell
 
 ;; Eshell is a consistent shell environment across platforms.
 (use-package eshell
   :commands eshell
-  :general
-  (:keymaps 'ctl-x-x-map "e" 'eshell)
-  (:keymaps 'ctl-x-4-map "e" 'zy/eshell-other-window)
-  (:keymaps 'ctl-x-5-map "e" 'zy/eshell-other-frame)
   :init
   (setq!
    ;; Keep the aliases file in version control.
@@ -2583,6 +2571,15 @@ Should be run again after theme switch."
     (let ((inhibit-read-only t))
       (erase-buffer)
       (eshell-send-input))))
+
+;;;;;; Vterm
+
+;; Vterm is the best terminal emulator inside Emacs.  Currently Vterm doesn't work on
+;; Windows.
+
+(use-package vterm
+  :straight t
+  :commands vterm)
 
 ;;;;;; Colorful Shell Output
 
