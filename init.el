@@ -2641,12 +2641,28 @@ Should be run again after theme switch."
   (restart-emacs-start-new-emacs '("-Q")))
 
 ;; Quickly open the config file.
-(defun zy/open-config ()
+(defun zy/open-config (&rest _)
   "Open Emacs configuration in another tab."
   (interactive)
   (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
     (find-file-other-tab init-file)))
+
+(defun zy--rebuild-config (&rest _)
+  "Repull all packages and rebuilt them."
+  (when (fboundp 'straight-pull-all)
+    (straight-pull-all))
+  (when (fboundp 'straight-rebuild-all)
+    (straight-rebuild-all)))
+
+(defun zy/rebuild-config (&rest _)
+  "Start a new Emacs and rebuild all packages."
+  (interactive)
+  (restart-emacs-start-new-emacs '("--debug-init"
+                                   "--eval"
+                                   "(zy--rebuild-config)")))
+
 (general-def
+  "C-c e b" 'zy/rebuild-config
   "C-c e e" 'zy/open-config
   "C-c e t" 'zy/test-config
   "C-c e q" 'zy/test-no-site-file
