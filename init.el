@@ -3265,6 +3265,12 @@ environment."
   (add-hook 'pip-requirements-mode-hook
             #'pip-requirements-auto-complete-setup))
 
+;; Python-docstring provides syntax highlighting and filling command for reStructuredText
+;; and Epydoc docstrings.
+(use-package python-docstring
+  :straight t
+  :hook python-base-mode)
+
 ;;;;; Scala
 
 (use-package scala-mode
