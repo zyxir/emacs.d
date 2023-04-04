@@ -1272,14 +1272,6 @@ itself to `consult-recent-file', can finally call
   (dolist (backend '(cape-symbol cape-keyword cape-file))
     (add-to-list 'completion-at-point-functions backend)))
 
-;; SVG Icon support.
-(use-package kind-icon
-  :straight t
-  :after corfu
-  :config
-  (setq! kind-icon-default-face 'corfu-default)
-  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter))
-
 ;;;;; Tweak cursor movement
 
 (use-package zy-curmov
@@ -1373,10 +1365,10 @@ itself to `consult-recent-file', can finally call
   (;; Remap "M-SPC" (`just-one-space') to `cycle-spacing'.  This is the default
    ;; in Emacs 29.1.
    "M-SPC" 'cycle-spacing
-   ;; Sometimes "M-SPC" is unavailable (occupied by the window manager), so use this as an
-   ;; alternative.  "M-r" is boiund to `move-to-window-line-top-bottom' by default, which
-   ;; I found myself never use.
-   "M-r" 'cycle-spacing)
+   ;; Sometimes "M-SPC" is unavailable (occupied by the window manager, like in WSLg), so
+   ;; use this as an alternative.  "M-\\" is bound to `delete-horizontal-space' by
+   ;; default, which is very similiar to cycle-spacing.
+   "M-\\" 'cycle-spacing)
   (:keymaps 'zy-toggle-map
             ;; Toggle whitespace visualization.
             "SPC" 'whitespace-mode)
@@ -2665,11 +2657,11 @@ Should be run again after theme switch."
                                      "(zy--rebuild-config)")))
 
   (general-def
-    "C-c e b" 'zy/rebuild-config
-    "C-c e e" 'zy/open-config
-    "C-c e t" 'zy/test-config
-    "C-c e q" 'zy/test-no-site-file
-    "C-c e R" 'restart-emacs))
+    "C-c , ," 'zy/open-config
+    "C-c , b" 'zy/rebuild-config
+    "C-c , t" 'zy/test-config
+    "C-c , q" 'zy/test-no-site-file
+    "C-c , R" 'restart-emacs))
 
 ;;;;; Bibliography management
 
