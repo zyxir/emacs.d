@@ -1757,9 +1757,9 @@ faster `prin1'."
   (dash f s with-editor git-commit package eieio transient)
   :general
   (:keymaps 'ctl-x-map
-            "v" 'magit-status
-            "C-v" 'magit-dispatch
-            "M-v" 'magit-file-dispatch)
+            "g" 'magit-status
+            "C-g" 'magit-dispatch
+            "M-g" 'magit-file-dispatch)
   :init
   (setq!
    ;; Do not use default Magit key bindings.
