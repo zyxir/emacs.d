@@ -1434,9 +1434,9 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Subword
 
-;; Enable subword movement (movement in camel case compartments) in prog modes.
+;; Enable subword movement (movement in camel case compartments) in some modes.
 (use-package subword
-  :hook prog-mode)
+  :hook (eshell-mode conf-mode prog-mode shell-mode minibuffer-mode))
 
 ;;;;; Smartparens (parenthesis automation)
 
@@ -1444,7 +1444,7 @@ itself to `consult-recent-file', can finally call
   :straight '(smartparens :host github :repo "Fuco1/smartparens"
                           :fork (:repo "zyxir/smartparens" :branch "dev" :protocol ssh))
   :defer t
-  :hook (conf-mode prog-mode text-mode comint-mode eshell-mode)
+  :hook (conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
   :general
   ;; Failed to get used to the default keybindings (which is actually Fuco1's
   ;; keybindings), I ended up making my own keybindings.  My own keybindings have two
