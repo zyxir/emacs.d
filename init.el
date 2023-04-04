@@ -3143,6 +3143,8 @@ The function works like `org-latex-export-to-pdf', except that
   (setq!
    ;; See the documentation.
    python-fill-docstring-style 'pep-257-nn
+   ;; No additional indent for def blocks, in accordence with the black convention.
+   python-indent-def-block-scale 1
    ;; Use the default executable for the shell.
    python-shell-interpreter "python")
 
