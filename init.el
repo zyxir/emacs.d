@@ -3082,6 +3082,20 @@ The function works like `org-latex-export-to-pdf', except that
                  ((?j "As PDF file (phone-friendly)"
                       zy/org-export-to-pdf-phone)))))
 
+;;;;;; Org reveal
+
+;; Org-reveal integrate Reveal.js into Org.
+
+(use-package org-reveal
+  :straight t
+  :after ox
+  :no-require t
+  :config
+  (require 'ox-reveal)
+  (setq!
+   ;; Reveal.js should be installed here.
+   org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js"))
+
 ;;;;;; Org journal
 
 (use-package org-journal
