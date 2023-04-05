@@ -854,7 +854,7 @@ is determined, several other directories, like `org-directory',
     ;; My projects directory.
     (defvar zy-zyprojects-dir)
     (setq! zy-zyprojects-dir
-           (expand-file-name "../Zyprojects" path))
+           (expand-file-name "Zyprojects" path))
     ;; My GTD directory and files.
     (defvar zy-gtd-dir)
     (setq! zy-gtd-dir org-directory
@@ -893,7 +893,10 @@ is determined, several other directories, like `org-directory',
     ;; Citar paths. (Identical with Ebib ones)
     (setq! citar-bibliography zy-bib-files
            citar-library-paths
-           `(,(expand-file-name "ebib/files" path)))))
+           `(,(expand-file-name "ebib/files" path)))
+    ;; Projectile discovery path.
+    (defvar projectile-project-search-path)
+    (setq! projectile-project-search-path `("~" ,zy-zyprojects-dir))))
 
 (defcustom zy~zybox-dir ""
   "The Zybox directory, my personal file center."
