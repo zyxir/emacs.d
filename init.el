@@ -847,7 +847,7 @@ is determined, several other directories, like `org-directory',
   ;; Set the value of `sym' to `path'.
   (set sym path)
   ;; Set other directories only when `path' is a valid directory.
-  (when (file-directory-p path)
+  (when (and (stringp path) (file-directory-p path))
     ;; The Org directory.
     (defvar org-directory)
     (setq! org-directory (expand-file-name "org" path))
@@ -1934,7 +1934,8 @@ faster `prin1'."
    ;; Discover projects in these directories.
    projectile-project-search-path (append
                                    ;; My Zyprojects directory.
-                                   (if (file-directory-p zy-zyprojects-dir)
+                                   (if (and (stringp zy-zyprojects-dir)
+                                            (file-directory-p zy-zyprojects-dir))
                                        (list zy-zyprojects-dir)
                                      nil)
                                    ;; The Emacs configuration directory.
