@@ -851,10 +851,6 @@ is determined, several other directories, like `org-directory',
     ;; The Org directory.
     (defvar org-directory)
     (setq! org-directory (expand-file-name "org" path))
-    ;; My projects directory.
-    (defvar zy-zyprojects-dir)
-    (setq! zy-zyprojects-dir
-           (expand-file-name "Zyprojects" path))
     ;; My GTD directory and files.
     (defvar zy-gtd-dir)
     (setq! zy-gtd-dir org-directory
@@ -893,20 +889,16 @@ is determined, several other directories, like `org-directory',
     ;; Citar paths. (Identical with Ebib ones)
     (setq! citar-bibliography zy-bib-files
            citar-library-paths
-           `(,(expand-file-name "ebib/files" path)))
-    ;; Projectile discovery path.
-    (defvar projectile-project-search-path)
-    (setq! projectile-project-search-path `("~" ,zy-zyprojects-dir))))
+           `(,(expand-file-name "ebib/files" path)))))
 
-(defcustom zy~zybox-dir ""
+(defcustom zy~zybox-dir nil
   "The Zybox directory, my personal file center."
   :group 'zyxir-paths
   :type 'directory
   :set #'zy--set-zybox-path)
 
-(defvar zy-zyprojects-dir nil
-  "The directory where I put Git repositories.
-Automatically set when `zy~zybox-dir' is customized.")
+(defvar zy-zyprojects-dir (expand-file-name "Zyprojects" "~")
+  "The directory where I put Git repositories.")
 
 (defvar zy-gtd-dir nil
   "Directory of my GTD (getting-things-done) files.
@@ -1937,11 +1929,18 @@ faster `prin1'."
   :config
   (projectile-mode 1)
   (setq!
-   ;; Ask for command after a project switch, like the built-in Project.el.
-   projectile-switch-project-action 'projectile-commander
    ;; Make the mode line indicator shorter.
-   projectile-mode-line-lighter " Prj"
-   projectile-mode-line-prefix " Prj"))
+   projectile-mode-line-prefix " Prj"
+   ;; Discover projects in these directories.
+   projectile-project-search-path (append
+                                   ;; My Zyprojects directory.
+                                   (if (file-directory-p zy-zyprojects-dir)
+                                       (list zy-zyprojects-dir)
+                                     nil)
+                                   ;; The Emacs configuration directory.
+                                   (list user-emacs-directory))
+   ;; Ask for command after a project switch, like the built-in Project.el.
+   projectile-switch-project-action 'projectile-commander))
 
 ;; Automatically run "git fetch" on Projectile projects.
 (use-package projectile-git-autofetch
@@ -2207,6 +2206,7 @@ Return what `zy/setup-font-faces' returns."
      (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
      (pet-mode nil pet)
+     (projectile-mode " Prj" projectile)
      (projectile-git-autofetch-mode nil projectile-git-autofetch)
      (python-docstring-mode nil python-docstring)
      (smartparens-mode nil smartparens)
