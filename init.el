@@ -2767,6 +2767,19 @@ Automatically set when `zy~zybox-dir' is customized.")
    bibtex-autokey-name-year-separator "_"
    bibtex-autokey-year-title-separator "_"))
 
+;;;;; Convert decorated text to HTML
+
+;; Currently this package is only used by Org-reveal to fontify source blocks.
+
+(use-package htmlize
+  :straight t
+  :commands (htmlize-file
+             htmlize-buffer
+             htmlize-region
+             htmlize-many-files
+             htmlize-many-files-dired
+             htmlize-region-save-screenshot))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
