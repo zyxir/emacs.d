@@ -2206,7 +2206,6 @@ Return what `zy/setup-font-faces' returns."
      (org-indent-mode nil org-indent)
      (outline-minor-mode nil outline)
      (pet-mode nil pet)
-     (projectile-mode " Prj" projectile)
      (projectile-git-autofetch-mode nil projectile-git-autofetch)
      (python-docstring-mode nil python-docstring)
      (smartparens-mode nil smartparens)
