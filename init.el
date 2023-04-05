@@ -2679,11 +2679,11 @@ Should be run again after theme switch."
                                      "(zy--rebuild-config)")))
 
   (general-def
-    "C-c , ," 'zy/open-config
-    "C-c , b" 'zy/rebuild-config
-    "C-c , t" 'zy/test-config
-    "C-c , q" 'zy/test-no-site-file
-    "C-c , R" 'restart-emacs))
+    "C-c e e" 'zy/open-config
+    "C-c e b" 'zy/rebuild-config
+    "C-c e t" 'zy/test-config
+    "C-c e q" 'zy/test-no-site-file
+    "C-c e R" 'restart-emacs))
 
 ;;;;; Bibliography management
 
