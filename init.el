@@ -1742,7 +1742,7 @@ faster `prin1'."
   :general
   (:keymaps 'ctl-x-map
             "g" 'magit-status
-            "C-g" 'magit-dispatch
+            "G" 'magit-dispatch
             "M-g" 'magit-file-dispatch)
   :init
   (setq!
