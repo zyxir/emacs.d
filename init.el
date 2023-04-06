@@ -3257,9 +3257,10 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
   :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest"
                             :fork (:repo "zyxir/emacs-python-pytest"
                                          :branch "dev" :protocol ssh))
-  :general
-  (:keymaps 'python-base-mode-map
-            "C-c C-t" 'python-pytest-dispatch))
+  :general (:keymaps 'python-mode-map
+                     ;; C-c C-t is the prefix for python-skeleton-* by default, but I
+                     ;; never use it (because I use Yasnippet), so I remap it to pytest.
+                     "C-c C-t" 'python-pytest-dispatch))
 
 ;; Pet, the Python executable tracker, which automatically detects a Python
 ;; virtual environment and apply it to various Python packages like
