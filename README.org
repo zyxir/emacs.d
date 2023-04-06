@@ -35,8 +35,18 @@ Run Eamcs with ~emacs --debug-init~, and third-party packages will be automatica
 These third-party programs enables additional functionalities of my configuration:
 
 - Fd :: Fast filesystem search.  Used by commands like ~project-find-file~.
-- Librime :: This is required to build and use the built-in Rime input method.  Also install ~librime-data~ if available.
+- OpenCC :: Provide Simplified/Traditional Chinese conversion.
 - Ripgrep :: Fast text search.  Used by commands like ~consult-ripgrep~ and ~rg~.
+
+Some features requiring additional setup are listed below.
+
+*** Rime
+
+~librime~ must be available for the built-in Rime input method to compile.  On Microsoft Windows, launch Emacs inside Mingw64 to compile it, and it will work afterwards even if no in Mingw64.
+
+*** Vterm
+
+~cmake~ and ~libtool~ must be available for the built-in terminal Vterm to compile.  Vterm is not available on Windows.  Just ~M-x vterm~ inside Emacs, and it compiles.
 
 ** Customization
 
