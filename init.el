@@ -2648,10 +2648,10 @@ Should be run again after theme switch."
 
   ;; Quickly open the config file.
   (defun zy/open-config (&rest _)
-    "Open Emacs configuration in another tab."
+    "Open Emacs configuration in another window."
     (interactive)
     (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
-      (find-file-other-tab init-file)))
+      (find-file-other-window init-file)))
 
   (defun zy--rebuild-config (&rest _)
     "Repull all packages and rebuilt them."
