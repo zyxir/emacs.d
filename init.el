@@ -2183,7 +2183,8 @@ Return what `zy/setup-font-faces' returns."
   :defer 1
   :config
   (dim-minor-names
-   '((buffer-face-mode nil face-remap)
+   '((auto-fill-mode nil simple)
+     (buffer-face-mode nil face-remap)
      (citar-embark-mode nil citar-embark)
      (docstr-mode nil docstr)
      (eldoc-mode nil eldoc)
@@ -2200,9 +2201,10 @@ Return what `zy/setup-font-faces' returns."
      (smartparens-mode nil smartparens)
      (subword-mode nil subword)
      (valign-mode nil valign)
-     (visual-line-mode " VL" simple)
-     (yas-minor-mode nil yasnippet)
-     (which-key-mode nil which-key))))
+     (visual-line-mode nil simple)
+     (with-editor-mode nil with-editor)
+     (which-key-mode nil which-key)
+     (yas-minor-mode nil yasnippet))))
 
 ;;;;; Configure in-buffer display
 
