@@ -1918,8 +1918,6 @@ faster `prin1'."
   :config
   (projectile-mode 1)
   (setq!
-   ;; Make the mode line indicator shorter.
-   projectile-mode-line-prefix " Prj"
    ;; Discover projects in these directories.
    projectile-project-search-path (append
                                    ;; My Zyprojects directory.
@@ -2164,47 +2162,17 @@ Return what `zy/setup-font-faces' returns."
 
 ;;;;; Configure the mode line
 
-;;;;;; Column and line number
+;; Use the fantastic Doom modeline.
 
-(use-package position-in-buffer
-  :defer t
-  :init
-  ;; Let column number be based on one.
-  (setq! column-number-indicator-zero-based nil)
-  ;; Display column and line number like this.
-  (setq! mode-line-position-column-line-format '(" %l:%c"))
-  ;; Enable column number display in the mode line.
-  (column-number-mode 1))
-
-;;;;;; Dim minor mode lighters
-
-(use-package dim
+(use-package doom-modeline
   :straight t
-  :defer 1
+  :demand t
   :config
-  (dim-minor-names
-   '((auto-fill-mode nil simple)
-     (buffer-face-mode nil face-remap)
-     (citar-embark-mode nil citar-embark)
-     (docstr-mode nil docstr)
-     (eldoc-mode nil eldoc)
-     (eldoc-box-hover-mode nil eldoc-box)
-     (eldoc-box-hover-at-point-mode nil eldoc-box)
-     (gcmh-mode nil gcmh)
-     (highlight-indent-guides-mode nil highlight-indent-guides)
-     (lsp-bridge-mode nil lsp-bridge)
-     (org-indent-mode nil org-indent)
-     (outline-minor-mode nil outline)
-     (pet-mode nil pet)
-     (projectile-git-autofetch-mode nil projectile-git-autofetch)
-     (python-docstring-mode nil python-docstring)
-     (smartparens-mode nil smartparens)
-     (subword-mode nil subword)
-     (valign-mode nil valign)
-     (visual-line-mode nil simple)
-     (with-editor-mode nil with-editor)
-     (which-key-mode nil which-key)
-     (yas-minor-mode nil yasnippet))))
+  ;; Tweak and enable the Doom modeline.
+  (setq doom-modeline-enable-word-count t)
+  (doom-modeline-mode 1)
+  ;; Additionally, enable column number mode.
+  (column-number-mode 1))
 
 ;;;;; Configure in-buffer display
 
@@ -2353,6 +2321,15 @@ Should be run again after theme switch."
    emojify-emoji-styles '(unicode)
    ;; Display emojis with Unicode fonts.
    emojify-display-style 'unicode))
+
+;;;;; Icons support
+
+;; This serves as an icon library for Emacs.  The fonts are usually installed during my PC
+;; setup stage.
+
+(use-package all-the-icons
+  :straight t
+  :when (display-graphic-p))
 
 ;;;;; No ringing the bell
 
