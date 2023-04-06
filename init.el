@@ -909,17 +909,6 @@ Automatically set when `zy~zybox-dir' is customized.")
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
-;; A universal key for testing.  Should be remap to specific test command per major mode.
-(defun zy/test (&rest _)
-  "Run major-mode specific test.
-
-This command does nothing at all.  Remap it to specific test
-command for every major mode."
-  (declare (completion ignore))
-  (interactive)
-  (message "No test command bound for %s" major-mode))
-(general-def "M-o t" 'zy/test)
-
 ;;;;; Load Zyutils, the other part of the configuration
 
 ;; I keep a lot of function definitions and extra utilities in lisp/zyutils.el,
@@ -3270,7 +3259,7 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
                                          :branch "dev" :protocol ssh))
   :general
   (:keymaps 'python-base-mode-map
-            [remap zy/test] 'python-pytest-dispatch))
+            "C-c C-t" 'python-pytest-dispatch))
 
 ;; Pet, the Python executable tracker, which automatically detects a Python
 ;; virtual environment and apply it to various Python packages like
