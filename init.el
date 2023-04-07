@@ -1540,6 +1540,12 @@ itself to `consult-recent-file', can finally call
         (apply fn rest)
         (when corfu-enabled-p (corfu-mode 1))))))
 
+;;;;; Iteractive align with Ialign
+
+(use-package ialign
+  :straight t
+  :general ("C-x l" 'ialign))
+
 ;;;; File, buffer, window, project management
 
 ;;;;; No auto save or backup files
