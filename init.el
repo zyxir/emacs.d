@@ -2163,16 +2163,26 @@ Return what `zy/setup-font-faces' returns."
 ;;;;; Configure the mode line
 
 ;; Use the fantastic Doom modeline.
-
 (use-package doom-modeline
   :straight t
   :demand t
   :config
   ;; Tweak and enable the Doom modeline.
-  (setq doom-modeline-enable-word-count t)
+  (setq doom-modeline-enable-word-count t
+        doom-modeline-display-misc-in-all-mode-lines nil)
   (doom-modeline-mode 1)
   ;; Additionally, enable column number mode.
   (column-number-mode 1))
+
+;; Show time.  This helps on fullscreen work sessions.
+(use-package time
+  :straight t
+  :demand t
+  :config
+  (setq!
+   ;; Use 24 hour format.
+   display-time-24hr-format t)
+  (display-time-mode 1))
 
 ;;;;; Configure in-buffer display
 
