@@ -1258,6 +1258,7 @@ itself to `consult-recent-file', can finally call
 
 ;;;;; Tweak cursor movement
 
+;; Use my own `zy/move-beginning-of-line'.
 (use-package zy-curmov
   :defer t
   :general
@@ -1265,6 +1266,20 @@ itself to `consult-recent-file', can finally call
   ;; not work when `visual-line-mode' is on (C-a is remapped in
   ;; `visual-line-mode' anyway).
   ([remap move-beginning-of-line] 'zy/move-beginning-of-line))
+
+;;;;;; Subword
+
+;; Enable subword movement (movement in camel case compartments) in some modes.
+(use-package subword
+  :hook (eshell-mode conf-mode prog-mode shell-mode minibuffer-mode))
+
+;;;;;; Avy (quick text jump)
+
+(use-package avy
+  :straight t
+  :general
+  ("M-z" 'avy-goto-char
+   "M-Z" 'avy-goto-char-2))
 
 ;;;;; Tweak indentation
 
@@ -1361,6 +1376,16 @@ itself to `consult-recent-file', can finally call
   (add-hook! (prog-mode text-mode conf-mode)
     (setq-local show-trailing-whitespace t)))
 
+;;;;; Manipulate word cases
+
+(use-package zy-cases
+  :defer t
+  :init
+  (general-def
+    [remap upcase-word] 'upcase-dwim
+    [remap downcase-word] 'downcase-dwim
+    [remap capitalize-word] 'capitalize-dwim))
+
 ;;;;; Word wrapping and visual lines
 
 ;; Word wrapping is often enabled by `visual-line-mode', so we defer loading of
@@ -1407,12 +1432,6 @@ itself to `consult-recent-file', can finally call
   :general
   ("C-c s" 'consult-yasnippet
    "C-c S" 'consult-yasnippet-visit-snippet-file))
-
-;;;;; Subword
-
-;; Enable subword movement (movement in camel case compartments) in some modes.
-(use-package subword
-  :hook (eshell-mode conf-mode prog-mode shell-mode minibuffer-mode))
 
 ;;;;; Smartparens (parenthesis automation)
 
@@ -1498,14 +1517,6 @@ itself to `consult-recent-file', can finally call
 
   ;; Turn on strict mode for Lisp buffers.
   (add-hook! (lisp-data-mode) (smartparens-strict-mode 1)))
-
-;;;;; Avy (quick text jump)
-
-(use-package avy
-  :straight t
-  :general
-  ("M-z" 'avy-goto-char
-   "M-Z" 'avy-goto-char-2))
 
 ;;;;; Mouse yank
 
