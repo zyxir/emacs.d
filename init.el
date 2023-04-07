@@ -2564,11 +2564,6 @@ Should be run again after theme switch."
 ;; Eshell is a consistent shell environment across platforms.
 (use-package eshell
   :commands eshell
-  :init
-  (setq!
-   ;; Keep the aliases file in version control.
-   eshell-aliases-file
-   (expand-file-name "etc/eshell/alias" user-emacs-directory))
   :config
   (setq!
    ;; Scroll to the cursor on input.
@@ -2583,6 +2578,14 @@ Should be run again after theme switch."
    eshell-prefer-lisp-functions nil
    ;; No need to keep the buffer after exit.
    eshell-destroy-buffer-when-process-dies t)
+
+  ;; Aliases.
+  (defalias 'eshell/e 'find-file)
+  (defalias 'eshell/edit 'find-file)
+  (defalias 'eshell/emacs 'find-file)
+  (defalias 'eshell/ff 'find-file)
+  (defalias 'eshell/ffow 'find-file-other-window)
+  (defalias 'eshell/ffof 'find-file-other-frame)
 
   ;; New command: clear.
   (declare-function eshell-send-input "eshell")
