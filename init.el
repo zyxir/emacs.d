@@ -1890,16 +1890,6 @@ faster `prin1'."
    ;; Create parent directories smartly.
    wdired-create-parent-directories t))
 
-;;;;; Search multiple files with Rg (ripgrep)
-
-;; Ripgrep is a super fast text searching program
-
-(use-package rg
-  :straight t
-  ;; In fact, Rg commands are autoloaded by Straight.  The next line is just to
-  ;; make sure it is lazy loaded.
-  :commands (rg rg-menu rg-project))
-
 ;;;;; Manage project with Projectile
 
 ;; I decide to switch to Projectile from the built-in Project.el.  Projectile is much more
