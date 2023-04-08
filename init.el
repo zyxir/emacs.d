@@ -1903,7 +1903,9 @@ faster `prin1'."
 ;; 2. Better integration with Ripgrep, Fd, Vterm and many things.  Better integration with
 ;; all kinds of VC system.
 ;;
-;; 3. Many extremely useful commands like `projectile-recentf' and `projectile-ibuffer'.
+;; 3. `projectile-find-file' and other commands put recent file at front.
+;;
+;; 4. Many extremely useful commands like `projectile-recentf' and `projectile-ibuffer'.
 ;;
 ;; In conclusion, Projectile provides too many killing feature that a modern code editor
 ;; should provide.  Project is just not as useful as it.  Though I am currently bound to
@@ -1917,6 +1919,8 @@ faster `prin1'."
   :commands (projectile-add-known-project
              projectile-discover-projects-in-directory
              projectile-discover-projects-in-search-path)
+  :hook zy-first-file
+  :defer 2
   :general
   ;; Disable shortcuts from the built-in Project.el. I'm so used to it that I have to
   ;; break my musle memory.
