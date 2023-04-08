@@ -1601,8 +1601,17 @@ VAL is the same as in `process-coding-system-alist'."
       (reverse result)))
   (declare-function zy-set-process-coding-system! "init.el")
 
-  ;; On Microsoft Windows, when the locale is Simplified Chinese (my mother tongue), GBK
-  ;; encoding is used for some processes.
+  ;; On Microsoft Windows, encoding is painful to deal with.  Emacs's default locale
+  ;; settings work sometimes, but not for every program.
+  ;;
+  ;; The bad thing is, some program use both GBK for input and output, like cmdproxy; some
+  ;; program use UTF-8 for input and GBK for output, like rg.  Some Emacs packages (like
+  ;; rg.el) call program through cmd, which add an extra layer of encoding, making
+  ;; encoding harder to detect and set.
+  ;;
+  ;; I read a lot of configuration online and came up with this.  The following
+  ;; configuration works with most external processes, but not with shell commands because
+  ;; they add another layer of complexity, as they run commands through cmd.exe.
   (when (and
          ;; The operating system is Microsoft Windows.
          (eq system-type 'windows-nt)
