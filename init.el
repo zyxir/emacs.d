@@ -1890,6 +1890,15 @@ faster `prin1'."
    ;; Create parent directories smartly.
    wdired-create-parent-directories t))
 
+;; Icon support for Dired.
+(use-package all-the-icons-dired
+  :straight t
+  :hook dired-mode
+  :config
+  (setq!
+   ;; Do not use monochrome icons.
+   all-the-icons-dired-monochrome nil))
+
 ;;;;; Manage project with Projectile
 
 ;; I decide to switch to Projectile from the built-in Project.el.  Projectile is much more
