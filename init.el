@@ -3314,7 +3314,9 @@ environment."
 ;; Python-docstring provides syntax highlighting and filling command for reStructuredText
 ;; and Epydoc docstrings.
 (use-package python-docstring
-  :straight t
+  :straight '(python-docstring :host github :repo "glyph/python-docstring-mode"
+                               :fork (:repo "zyxir/python-docstring-mode"
+                                            :branch "dev" :protocol ssh))
   :hook python-base-mode)
 
 ;;;;; Scala
