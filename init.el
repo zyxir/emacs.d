@@ -2672,7 +2672,7 @@ Should be run again after theme switch."
     "Open Emacs configuration in another window."
     (interactive)
     (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
-      (find-file-other-window init-file)))
+      (find-file init-file)))
 
   (defun zy--rebuild-config (&rest _)
     "Repull all packages and rebuilt them."
