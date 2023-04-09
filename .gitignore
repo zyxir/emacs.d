@@ -1,7 +1,6 @@
 # ZyEmacs specific files
 
 etc/zylatex.sty
-!eshell/alias
 
 # Ignore straight except for lockfiles
 

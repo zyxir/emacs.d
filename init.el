@@ -909,17 +909,6 @@ Automatically set when `zy~zybox-dir' is customized.")
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
-;; A universal key for testing.  Should be remap to specific test command per major mode.
-(defun zy/test (&rest _)
-  "Run major-mode specific test.
-
-This command does nothing at all.  Remap it to specific test
-command for every major mode."
-  (declare (completion ignore))
-  (interactive)
-  (message "No test command bound for %s" major-mode))
-(general-def "M-o t" 'zy/test)
-
 ;;;;; Load Zyutils, the other part of the configuration
 
 ;; I keep a lot of function definitions and extra utilities in lisp/zyutils.el,
@@ -1264,11 +1253,18 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after corfu
   :config
-  (dolist (backend '(cape-symbol cape-keyword cape-file))
-    (add-to-list 'completion-at-point-functions backend)))
+  (setq-hook! (conf-mode prog-mode)
+    completion-at-point-functions
+    (append '(cape-symbol cape-keyword cape-file)
+            completion-at-point-functions))
+  (setq-hook! (text-mode)
+    completion-at-point-functions
+    (append '(cape-symbol cape-file)
+            completion-at-point-functions)))
 
 ;;;;; Tweak cursor movement
 
+;; Use my own `zy/move-beginning-of-line'.
 (use-package zy-curmov
   :defer t
   :general
@@ -1276,6 +1272,20 @@ itself to `consult-recent-file', can finally call
   ;; not work when `visual-line-mode' is on (C-a is remapped in
   ;; `visual-line-mode' anyway).
   ([remap move-beginning-of-line] 'zy/move-beginning-of-line))
+
+;;;;;; Subword
+
+;; Enable subword movement (movement in camel case compartments) in some modes.
+(use-package subword
+  :hook (eshell-mode conf-mode prog-mode shell-mode minibuffer-mode))
+
+;;;;;; Avy (quick text jump)
+
+(use-package avy
+  :straight t
+  :general
+  ("M-z" 'avy-goto-char
+   "M-Z" 'avy-goto-char-2))
 
 ;;;;; Tweak indentation
 
@@ -1372,6 +1382,16 @@ itself to `consult-recent-file', can finally call
   (add-hook! (prog-mode text-mode conf-mode)
     (setq-local show-trailing-whitespace t)))
 
+;;;;; Manipulate word cases
+
+(use-package zy-cases
+  :defer t
+  :init
+  (general-def
+    [remap upcase-word] 'upcase-dwim
+    [remap downcase-word] 'downcase-dwim
+    [remap capitalize-word] 'capitalize-dwim))
+
 ;;;;; Word wrapping and visual lines
 
 ;; Word wrapping is often enabled by `visual-line-mode', so we defer loading of
@@ -1418,12 +1438,6 @@ itself to `consult-recent-file', can finally call
   :general
   ("C-c s" 'consult-yasnippet
    "C-c S" 'consult-yasnippet-visit-snippet-file))
-
-;;;;; Subword
-
-;; Enable subword movement (movement in camel case compartments) in some modes.
-(use-package subword
-  :hook (eshell-mode conf-mode prog-mode shell-mode minibuffer-mode))
 
 ;;;;; Smartparens (parenthesis automation)
 
@@ -1510,14 +1524,6 @@ itself to `consult-recent-file', can finally call
   ;; Turn on strict mode for Lisp buffers.
   (add-hook! (lisp-data-mode) (smartparens-strict-mode 1)))
 
-;;;;; Avy (quick text jump)
-
-(use-package avy
-  :straight t
-  :general
-  ("M-z" 'avy-goto-char
-   "M-Z" 'avy-goto-char-2))
-
 ;;;;; Mouse yank
 
 ;; Disable yanking with the middle mouse button.
@@ -1539,6 +1545,12 @@ itself to `consult-recent-file', can finally call
         (when corfu-enabled-p (corfu-mode -1))
         (apply fn rest)
         (when corfu-enabled-p (corfu-mode 1))))))
+
+;;;;; Iteractive align with Ialign
+
+(use-package ialign
+  :straight t
+  :general ("C-x l" 'ialign))
 
 ;;;; File, buffer, window, project management
 
@@ -1595,8 +1607,17 @@ VAL is the same as in `process-coding-system-alist'."
       (reverse result)))
   (declare-function zy-set-process-coding-system! "init.el")
 
-  ;; On Microsoft Windows, when the locale is Simplified Chinese (my mother tongue), GBK
-  ;; encoding is used for some processes.
+  ;; On Microsoft Windows, encoding is painful to deal with.  Emacs's default locale
+  ;; settings work sometimes, but not for every program.
+  ;;
+  ;; The bad thing is, some program use both GBK for input and output, like cmdproxy; some
+  ;; program use UTF-8 for input and GBK for output, like rg.  Some Emacs packages (like
+  ;; rg.el) call program through cmd, which add an extra layer of encoding, making
+  ;; encoding harder to detect and set.
+  ;;
+  ;; I read a lot of configuration online and came up with this.  The following
+  ;; configuration works with most external processes, but not with shell commands because
+  ;; they add another layer of complexity, as they run commands through cmd.exe.
   (when (and
          ;; The operating system is Microsoft Windows.
          (eq system-type 'windows-nt)
@@ -1753,7 +1774,7 @@ faster `prin1'."
   :general
   (:keymaps 'ctl-x-map
             "g" 'magit-status
-            "C-g" 'magit-dispatch
+            "G" 'magit-dispatch
             "M-g" 'magit-file-dispatch)
   :init
   (setq!
@@ -1875,15 +1896,14 @@ faster `prin1'."
    ;; Create parent directories smartly.
    wdired-create-parent-directories t))
 
-;;;;; Search multiple files with Rg (ripgrep)
-
-;; Ripgrep is a super fast text searching program
-
-(use-package rg
+;; Icon support for Dired.
+(use-package all-the-icons-dired
   :straight t
-  ;; In fact, Rg commands are autoloaded by Straight.  The next line is just to
-  ;; make sure it is lazy loaded.
-  :commands (rg rg-menu rg-project))
+  :hook dired-mode
+  :config
+  (setq!
+   ;; Do not use monochrome icons.
+   all-the-icons-dired-monochrome nil))
 
 ;;;;; Manage project with Projectile
 
@@ -1897,7 +1917,9 @@ faster `prin1'."
 ;; 2. Better integration with Ripgrep, Fd, Vterm and many things.  Better integration with
 ;; all kinds of VC system.
 ;;
-;; 3. Many extremely useful commands like `projectile-recentf' and `projectile-ibuffer'.
+;; 3. `projectile-find-file' and other commands put recent file at front.
+;;
+;; 4. Many extremely useful commands like `projectile-recentf' and `projectile-ibuffer'.
 ;;
 ;; In conclusion, Projectile provides too many killing feature that a modern code editor
 ;; should provide.  Project is just not as useful as it.  Though I am currently bound to
@@ -1911,6 +1933,8 @@ faster `prin1'."
   :commands (projectile-add-known-project
              projectile-discover-projects-in-directory
              projectile-discover-projects-in-search-path)
+  :hook zy-first-file
+  :defer 2
   :general
   ;; Disable shortcuts from the built-in Project.el. I'm so used to it that I have to
   ;; break my musle memory.
@@ -1929,8 +1953,6 @@ faster `prin1'."
   :config
   (projectile-mode 1)
   (setq!
-   ;; Make the mode line indicator shorter.
-   projectile-mode-line-prefix " Prj"
    ;; Discover projects in these directories.
    projectile-project-search-path (append
                                    ;; My Zyprojects directory.
@@ -2176,45 +2198,27 @@ Return what `zy/setup-font-faces' returns."
 
 ;;;;; Configure the mode line
 
-;;;;;; Column and line number
-
-(use-package position-in-buffer
-  :defer t
-  :init
-  ;; Let column number be based on one.
-  (setq! column-number-indicator-zero-based nil)
-  ;; Display column and line number like this.
-  (setq! mode-line-position-column-line-format '(" %l:%c"))
-  ;; Enable column number display in the mode line.
+;; Use the fantastic Doom modeline.
+(use-package doom-modeline
+  :straight t
+  :demand t
+  :config
+  ;; Tweak and enable the Doom modeline.
+  (setq doom-modeline-enable-word-count t
+        doom-modeline-display-misc-in-all-mode-lines nil)
+  (doom-modeline-mode 1)
+  ;; Additionally, enable column number mode.
   (column-number-mode 1))
 
-;;;;;; Dim minor mode lighters
-
-(use-package dim
+;; Show time.  This helps on fullscreen work sessions.
+(use-package time
   :straight t
-  :defer 1
+  :demand t
   :config
-  (dim-minor-names
-   '((buffer-face-mode nil face-remap)
-     (citar-embark-mode nil citar-embark)
-     (docstr-mode nil docstr)
-     (eldoc-mode nil eldoc)
-     (eldoc-box-hover-mode nil eldoc-box)
-     (eldoc-box-hover-at-point-mode nil eldoc-box)
-     (gcmh-mode nil gcmh)
-     (highlight-indent-guides-mode nil highlight-indent-guides)
-     (lsp-bridge-mode nil lsp-bridge)
-     (org-indent-mode nil org-indent)
-     (outline-minor-mode nil outline)
-     (pet-mode nil pet)
-     (projectile-git-autofetch-mode nil projectile-git-autofetch)
-     (python-docstring-mode nil python-docstring)
-     (smartparens-mode nil smartparens)
-     (subword-mode nil subword)
-     (valign-mode nil valign)
-     (visual-line-mode " VL" simple)
-     (yas-minor-mode nil yasnippet)
-     (which-key-mode nil which-key))))
+  (setq!
+   ;; Use 24 hour format.
+   display-time-24hr-format t)
+  (display-time-mode 1))
 
 ;;;;; Configure in-buffer display
 
@@ -2363,6 +2367,15 @@ Should be run again after theme switch."
    emojify-emoji-styles '(unicode)
    ;; Display emojis with Unicode fonts.
    emojify-display-style 'unicode))
+
+;;;;; Icons support
+
+;; This serves as an icon library for Emacs.  The fonts are usually installed during my PC
+;; setup stage.
+
+(use-package all-the-icons
+  :straight t
+  :when (display-graphic-p))
 
 ;;;;; No ringing the bell
 
@@ -2535,7 +2548,7 @@ Should be run again after theme switch."
   :init
   ;; Always ensure Eglot after everything else.
   (add-hook!
-      (cc-mode python-mode scala-mode verilog-mode)
+      (c-mode-common python-mode scala-mode)
     :depth 100
     'eglot-ensure)
 
@@ -2570,11 +2583,6 @@ Should be run again after theme switch."
 ;; Eshell is a consistent shell environment across platforms.
 (use-package eshell
   :commands eshell
-  :init
-  (setq!
-   ;; Keep the aliases file in version control.
-   eshell-aliases-file
-   (expand-file-name "etc/eshell/alias" user-emacs-directory))
   :config
   (setq!
    ;; Scroll to the cursor on input.
@@ -2589,6 +2597,14 @@ Should be run again after theme switch."
    eshell-prefer-lisp-functions nil
    ;; No need to keep the buffer after exit.
    eshell-destroy-buffer-when-process-dies t)
+
+  ;; Aliases.
+  (defalias 'eshell/e 'find-file)
+  (defalias 'eshell/edit 'find-file)
+  (defalias 'eshell/emacs 'find-file)
+  (defalias 'eshell/ff 'find-file)
+  (defalias 'eshell/ffow 'find-file-other-window)
+  (defalias 'eshell/ffof 'find-file-other-frame)
 
   ;; New command: clear.
   (declare-function eshell-send-input "eshell")
@@ -2660,10 +2676,10 @@ Should be run again after theme switch."
 
   ;; Quickly open the config file.
   (defun zy/open-config (&rest _)
-    "Open Emacs configuration in another tab."
+    "Open Emacs configuration in another window."
     (interactive)
     (let ((init-file (expand-file-name "init.el" user-emacs-directory)))
-      (find-file-other-tab init-file)))
+      (find-file init-file)))
 
   (defun zy--rebuild-config (&rest _)
     "Repull all packages and rebuilt them."
@@ -3269,9 +3285,10 @@ URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
   :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest"
                             :fork (:repo "zyxir/emacs-python-pytest"
                                          :branch "dev" :protocol ssh))
-  :general
-  (:keymaps 'python-base-mode-map
-            [remap zy/test] 'python-pytest-dispatch))
+  :general (:keymaps 'python-mode-map
+                     ;; C-c C-t is the prefix for python-skeleton-* by default, but I
+                     ;; never use it (because I use Yasnippet), so I remap it to pytest.
+                     "C-c C-t" 'python-pytest-dispatch))
 
 ;; Pet, the Python executable tracker, which automatically detects a Python
 ;; virtual environment and apply it to various Python packages like
@@ -3312,7 +3329,9 @@ environment."
 ;; Python-docstring provides syntax highlighting and filling command for reStructuredText
 ;; and Epydoc docstrings.
 (use-package python-docstring
-  :straight t
+  :straight '(python-docstring :host github :repo "glyph/python-docstring-mode"
+                               :fork (:repo "zyxir/python-docstring-mode"
+                                            :branch "dev" :protocol ssh))
   :hook python-base-mode)
 
 ;;;;; Scala
