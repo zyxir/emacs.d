@@ -1217,6 +1217,17 @@ itself to `consult-recent-file', can finally call
   (setq-hook! (text-mode shell-mode eshell-mode)
     corfu-auto nil)
 
+  ;; Insert additional RET in shell or eshell.  See URL
+  ;; `https://github.com/minad/corfu#completing-in-the-eshell-or-shell'.
+  (defun zy-corfu-send-shell (&rest _)
+    "Send completion candidate when inside comint/eshell."
+    (cond
+     ((and (derived-mode-p 'eshell-mode) (fboundp 'eshell-send-input))
+      (eshell-send-input))
+     ((and (derived-mode-p 'comint-mode) (fboundp 'comint-send-input))
+      (comint-send-input))))
+  (advice-add #'corfu-insert :after #'zy-corfu-send-shell)
+
   ;; Corfu extensions.
   ;; Select candidates using Avy-style keys.
   (general-def :keymaps 'corfu-map
