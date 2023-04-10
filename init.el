@@ -1253,8 +1253,14 @@ itself to `consult-recent-file', can finally call
   :straight t
   :after corfu
   :config
-  (dolist (backend '(cape-symbol cape-keyword cape-file))
-    (add-to-list 'completion-at-point-functions backend)))
+  (setq-hook! (conf-mode prog-mode)
+    completion-at-point-functions
+    (append '(cape-symbol cape-keyword cape-file)
+            completion-at-point-functions))
+  (setq-hook! (text-mode)
+    completion-at-point-functions
+    (append '(cape-symbol cape-file)
+            completion-at-point-functions)))
 
 ;;;;; Tweak cursor movement
 
@@ -2541,7 +2547,7 @@ Should be run again after theme switch."
   :init
   ;; Always ensure Eglot after everything else.
   (add-hook!
-      (cc-mode python-mode scala-mode verilog-mode)
+      (cc-mode python-mode scala-mode)
     :depth 100
     'eglot-ensure)
 
