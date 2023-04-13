@@ -1766,14 +1766,6 @@ faster `prin1'."
    ;; Default is 20, which is far from enough.
    recentf-max-saved-items 200)
 
-  (add-hook! '(zy-switch-window-hook write-file-functions)
-    (defun zy--recentf-touch-buffer-h ()
-      "Bump file in recent file list when it is switched to or written to."
-      (when buffer-file-name
-        (recentf-add-file buffer-file-name))
-      ;; Return nil for `write-file-functions'
-      nil))
-
   (add-hook! 'dired-mode-hook
     (defun zy--recentf-add-dired-directory-h ()
       "Add dired directories to recentf file list."
