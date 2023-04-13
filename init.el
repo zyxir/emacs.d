@@ -520,6 +520,17 @@ undefiner when testing advice (when combined with `rotate-text').
        (dolist (target (cdr targets))
          (advice-remove target #',symbol)))))
 
+;;;;;;; Operating system constants
+
+(defconst *windows* (eq system-type 'gnu/linux)
+  "Non-nil if running on Windows.")
+
+(defconst *posix* (if (memq system-type '(gnu/linux darwin)) t nil)
+  "Non-nil if running on a (mostly) POSIX-complaint system.")
+
+(defconst *wsl* (if (getenv "WSL_DISTRO_NAME") t nil)
+  "Non-nil if running on WSL (Windows subsystem for Linux).")
+
 ;;;;;; Custom hooks
 
 ;;;;;;; First user input hook
@@ -2807,6 +2818,23 @@ Automatically set when `zy~zybox-dir' is customized.")
              htmlize-many-files
              htmlize-many-files-dired
              htmlize-region-save-screenshot))
+
+;;;;; OS-specific configuration
+
+;;;;;; WSL (Windows subsystem for Linux)
+
+(use-package zy-wsl
+  :when *wsl*
+  :demand t
+  :no-require
+  :config
+  (defun zy/browse-url-explorer (url &rest _)
+    "Open URL with the \"explorer.exe\" command.
+Explorer.exe can call the default browser on the Windows system
+that hosts WSL."
+    (interactive)
+    (call-process "explorer.exe" nil 0 nil url))
+  (setq browse-url-browser-function 'zy/browse-url-explorer))
 
 ;;;; File type specific settings
 
