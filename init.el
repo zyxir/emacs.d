@@ -2726,9 +2726,9 @@ Should be run again after theme switch."
       (find-file init-file)))
 
   (defun zy--rebuild-config (&rest _)
-    "Repull all packages and rebuilt them."
-    (when (fboundp 'straight-pull-all)
-      (straight-pull-all))
+    "Thaw all packages and rebuild them."
+    (when (fboundp 'straight-thaw-versions)
+      (straight-thaw-versions))
     (when (fboundp 'straight-rebuild-all)
       (straight-rebuild-all)))
 

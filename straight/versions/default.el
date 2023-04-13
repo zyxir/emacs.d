@@ -1,4 +1,4 @@
-(("Emacs-wgrep" . "f9687c28bbc2e84f87a479b6ce04407bb97cfb23")
+(("Emacs-wgrep" . "3132abd3750b8c87cbcf6942db952acfab5edccd")
  ("all-the-icons-dired" . "4564bec6bd3fd02dd870e6d2cfed37fe38bbc93a")
  ("all-the-icons.el" . "d922aff57ac8308d3ed067f9151cc76d342855f2")
  ("auctex" . "2559248316b24fa5e8e7656f3894e4f71d18fc01")
@@ -46,6 +46,7 @@
  ("interactive-align" . "bc4d30d79f2f4b413288195ef19894ac0fd258b7")
  ("isearch-mb" . "40445951fbd1ff9b18662cc7374b524737c37b94")
  ("let-alist" . "021fc10df2e44faba4728d849ee767cf890aa51a")
+ ("lsp-bridge" . "03fa63d614e4355461fd24b34fa8c24080f57c9f")
  ("magit" . "d62e8fb8c4d34ffdfc71fe9998b61cc0f8c0fa4a")
  ("marginalia" . "3f1ab80fecc3aeb84248ab07c92edca4dce03f92")
  ("markdown-mode" . "fee1b0773b4f32bff82c6c9a33a7138c35dd452a")
