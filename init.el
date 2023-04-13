@@ -1563,6 +1563,12 @@ itself to `consult-recent-file', can finally call
   :straight t
   :general ("C-x l" 'ialign))
 
+;;;;; Wgrep -- writable grep buffer
+
+(use-package wgrep
+  :straight t
+  :defer t)
+
 ;;;; File, buffer, window, project management
 
 ;;;;; No auto save or backup files
