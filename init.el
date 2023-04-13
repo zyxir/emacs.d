@@ -920,6 +920,15 @@ Automatically set when `zy~zybox-dir' is customized.")
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
+(defcustom zy~use-lsp-bridge nil
+  "Non-nil means use Lsp-bridge instgead of Eglot.
+If this is non-nil, Corfu will be turned off, too.
+
+For Lsp-bridge to work, these additional Python packages have to
+be installed: epc orjson sexpdata six paramiko."
+  :group 'zyemacs
+  :type 'boolean)
+
 ;;;;; Load Zyutils, the other part of the configuration
 
 ;; I keep a lot of function definitions and extra utilities in lisp/zyutils.el,
@@ -1210,6 +1219,7 @@ itself to `consult-recent-file', can finally call
 
 (use-package corfu
   :straight '(corfu :files (:defaults "extensions/*.el"))
+  :unless zy~use-lsp-bridge
   :init
   (setq completion-cycle-threshold 3)
   (global-corfu-mode +1)
@@ -1272,6 +1282,7 @@ itself to `consult-recent-file', can finally call
 
 ;; Extra CAPFs (completion-at-point-function).
 (use-package cape
+  :unless zy~use-lsp-bridge
   :straight t
   :after corfu
   :config
@@ -2557,6 +2568,7 @@ Should be run again after theme switch."
 ;;;;; Language server protocol support via Eglot
 
 (use-package eglot
+  :unless zy~use-lsp-bridge
   :straight '(eglot :type built-in)
   :general
   (:keymaps 'eglot-mode-map
@@ -2586,6 +2598,18 @@ Should be run again after theme switch."
        :black (:enabled t)
        ;; Linting.
        :ruff (:enabled t))))))
+
+;;;;; Lsp-bridge (optional, another LSP client)
+
+(use-package lsp-bridge
+  :when zy~use-lsp-bridge
+  :straight '(lsp-bridge :repo "manateelazycat/lsp-bridge"
+                         :files (:defaults "*.py" "resources" "core" "acm"))
+  'posframe 'markdown-mode 'yasnippet
+  :hook (zy-first-file . global-lsp-bridge-mode)
+  :config
+  (setq!
+   lsp-bridge-python-lsp-server "pylsp"))
 
 ;;;;; Shell and terminal
 
