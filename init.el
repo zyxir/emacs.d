@@ -2610,11 +2610,42 @@ Should be run again after theme switch."
 (use-package lsp-bridge
   :when zy~use-lsp-bridge
   :straight '(lsp-bridge :repo "manateelazycat/lsp-bridge"
-                         :files (:defaults "*.py" "resources" "core" "acm"))
+                         :files (:defaults "*.py" "acm" "core"
+                                           "langserver" "multiserver"))
   'posframe 'markdown-mode 'yasnippet
   :hook (zy-first-file . global-lsp-bridge-mode)
+  :general
+  (:keymaps 'lsp-bridge-mode-map
+            ;; Definition finding, overwriting Xref keys.
+            "M-." 'lsp-bridge-find-def
+            "M-," 'lsp-bridge-find-def-return
+            "M-?" 'lsp-bridge-find-references
+            "C-x 4 ." 'lsp-bridge-find-def-other-window
+            ;; Documentation, overwriting Eldoc keys.
+            "C-h ." 'lsp-bridge-popup-documentation
+            ;; Diagnostics, overwirting Flymake or Flycheck keys.
+            "M-n" 'lsp-bridge-diagnostic-jump-next
+            "M-p" 'lsp-bridge-diagnostic-jump-prev
+            )
+  (:keymaps 'lsp-bridge-mode-map
+            ;; Identical keys as in Eglot, with a few additions.
+            :prefix "M-o"
+            "a" 'lsp-bridge-code-action
+            "f" 'lsp-bridge-code-format
+            "r" 'lsp-bridge-rename
+            "R" 'lsp-bridge-restart-process
+            "dl" 'lsp-bridge-diagnostic-list
+            "dc" 'lsp-bridge-diagnostic-copy
+            "di" 'lsp-bridge-diagnostic-ignore)
   :config
   (setq!
+   ;; Do not use TabNine.
+   acm-enable-tabnine nil
+   ;; Do not enable yasnippet completion.  I prefer `consult-yasnippet' or manual trigger.
+   acm-enable-yas nil
+   ;; Enable quick accessing candidates with M-<number>.
+   acm-enable-quick-access t
+   ;; Use Pylsp for Python.
    lsp-bridge-python-lsp-server "pylsp"))
 
 ;;;;; Shell and terminal
