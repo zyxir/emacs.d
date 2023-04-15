@@ -1782,12 +1782,6 @@ faster `prin1'."
    recentf-auto-cleanup (if (daemonp) 300)
    ;; Default is 20, which is far from enough.
    recentf-max-saved-items 200)
-
-  (add-hook! 'dired-mode-hook
-    (defun zy--recentf-add-dired-directory-h ()
-      "Add dired directories to recentf file list."
-      (recentf-add-file default-directory)))
-
   ;; Clean up recent files when quitting Emacs.
   (add-hook 'kill-emacs-hook #'recentf-cleanup))
 
