@@ -1540,9 +1540,15 @@ itself to `consult-recent-file', can finally call
   (:keymaps 'smartparens-mode-map
             :prefix "M-]"
             "i" 'sp-change-inner
-            "a" 'sp-splice-sexp-killing-around
-            "f" 'sp-splice-sexp-killing-forward
-            "b" 'sp-splice-sexp-killing-backward)
+            "s" 'sp-split-sexp
+            "j" 'sp-join-sexp
+            "ka" 'sp-splice-sexp-killing-around
+            "kf" 'sp-splice-sexp-killing-forward
+            "kb" 'sp-splice-sexp-killing-backward
+            "fb" 'sp-forward-barf-sexp
+            "bb" 'sp-backward-barf-sexp
+            "fs" 'sp-forward-slurp-sexp
+            "bs" 'sp-backward-slurp-sexp)
   :config
   (setq
    ;; Do not show overlays.
