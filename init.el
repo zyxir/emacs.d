@@ -2947,6 +2947,15 @@ that hosts WSL."
                   (default-toplevel-value
                    'elisp-flymake-byte-compile-load-path)))))
 
+;;;;; JavaScript / JSON
+
+(use-package js
+  :defer t
+  :config
+  (add-hook! js-base-mode
+    ;; Use 2 spaces to indent.
+    (setq! js-indent-level 2)))
+
 ;;;;; Markdown
 
 (use-package markdown-mode
