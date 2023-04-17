@@ -2640,7 +2640,11 @@ Should be run again after theme switch."
    ;; Enable quick accessing candidates with M-<number>.
    acm-enable-quick-access t
    ;; Use Pylsp for Python.
-   lsp-bridge-python-lsp-server "pylsp"))
+   lsp-bridge-python-lsp-server "pyright"
+   lsp-bridge-python-multi-lsp-server "pyright_ruff"
+   ;; Read user configuration.
+   lsp-bridge-user-langserver-dir (expand-file-name "etc/langserver"
+                                                    user-emacs-directory)))
 
 ;;;;; Shell and terminal
 
