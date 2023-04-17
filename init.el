@@ -1072,8 +1072,7 @@ be installed: epc orjson sexpdata six paramiko."
   ;; Enable the orderless completion style.
   (setq!
    ;; Use the orderless completion style.
-   completion-styles '(basic orderless)
-   completion-category-defaults nil
+   completion-styles '(orderless basic)
    completion-category-overrides '((file (styles . (partial-completion)))))
   :config
   ;; Custom Orderless dispatchers.  These are adapted from Protesilaus Stavrou's
