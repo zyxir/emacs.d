@@ -1331,13 +1331,15 @@ itself to `consult-recent-file', can finally call
 ;; Mode used to highlight indentation.
 (use-package highlight-indent-guides
   :straight t
-  :hook (prog-mode conf-mode)
+  :general
+  (:keymaps 'zy-toggle-map
+            "i" 'highlight-indent-guides-mode)
   :config
   (setq!
    ;; Use filling to indicate indentation.
    highlight-indent-guides-method 'fill
    ;; Highlight the current indentation.
-   highlight-indent-guides-responsive t))
+   highlight-indent-guides-responsive 'top))
 
 ;;;;; Tweak selection
 
