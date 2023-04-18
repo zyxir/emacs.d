@@ -1189,15 +1189,10 @@ itself to `consult-recent-file', can finally call
 `consult-recent-file'."
     (interactive)
     (recentf-mode 1)
-    (general-def [remap zy--first-consult-recent-file] 'consult-recent-file)
+    (general-def :keymaps 'ctl-x-map "R" 'consult-recent-file)
     (consult-recent-file))
   (general-def
-    :keymaps 'ctl-x-map
-    "R" #'zy--first-consult-recent-file)
-
-  :config
-  (consult-customize consult-recent-file
-                     :preview-key (kbd "M-.")))
+    :keymaps 'ctl-x-map "R" 'zy--first-consult-recent-file))
 
 
 ;;;;;; Embark (at-point dispatcher)
