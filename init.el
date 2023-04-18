@@ -1173,26 +1173,7 @@ ARGS are the arguments passed."
   ;; Search map commands (default prefix is M-s).
   (:keymaps 'search-map
             "g" 'consult-ripgrep
-            "l" 'consult-line)
-  :init
-  ;; Perform `completion-in-region' with Consult.
-  (setq! completion-in-region-function 'consult-completion-in-region)
-
-  ;; Little hack: Enable `recentf-mode' the first time `consult-recent-file' is
-  ;; called, without advising the function itself, as that would break
-  ;; `consult-customize'.
-  (defun zy--first-consult-recent-file ()
-    "Transient replacement for `consult-recent-file'.
-
-This function enables `recentf-mode', remaps the keybinding of
-itself to `consult-recent-file', can finally call
-`consult-recent-file'."
-    (interactive)
-    (recentf-mode 1)
-    (general-def :keymaps 'ctl-x-map "R" 'consult-recent-file)
-    (consult-recent-file))
-  (general-def
-    :keymaps 'ctl-x-map "R" 'zy--first-consult-recent-file))
+            "l" 'consult-line))
 
 
 ;;;;;; Embark (at-point dispatcher)
@@ -1765,13 +1746,9 @@ faster `prin1'."
 
 (use-package recentf
   :defer-incrementally easymenu tree-widget timer
-  :commands recentf-open-files
-  :init
-  ;; Enable `recentf-mode' before the first file visit or the first call to
-  ;; `recentf-open-files'.
-  (add-hook! zy-first-file (recentf-mode 1))
-  (add-transient-hook! `recentf-open-files (recentf-mode 1))
-
+  :general
+  (:keymaps 'ctl-x-map
+            "C-r" 'recentf)
   :config
   (setq!
    ;; Do not do auto cleanups except its a daemon session.
