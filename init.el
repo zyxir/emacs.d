@@ -3455,26 +3455,16 @@ environment."
    TeX-parse-self t
    ;; Do not ask the user to save the file.  Do it automatically.
    TeX-save-query nil
-   ;; I forget what this does.  Just keep it.
-   TeX-engine 'xetex
-   ;; Always use XeLaTeX to compile the document, as it supports Chinese well.
-   TeX-command-default "XeLaTeX")
-
-  ;; Always compile with XeLaTeX (which provides better Chinese support), and
-  ;; always compile with SyncTeX support.
-  (defvar TeX-command-list)
-  (add-to-list 'TeX-command-list
-               '("XeLaTeX"
-                 "%`xelatex%(mode)%' --synctex=1%(mode)%' %t"
-                 TeX-run-TeX nil t))
+   ;; TeX-engine decides what command "LaTeX" will run.  At most time I prefer the XeTeX
+   ;; engine as it handles CJK characters well.  However sometimes other engines should be
+   ;; used (for example, the IEEEtran document class should be compiled with the default
+   ;; engine), so this should be set at a per-file basis.
+   TeX-engine 'xetex)
 
   (declare-function TeX-source-correlate-mode 'tex)
   (add-hook! TeX-mode
     ;; Enable inverse search.
     'TeX-source-correlate-mode)
-  (setq-hook! TeX-mode
-    ;; Always use XeLeTeX by default.
-    TeX-command-default "XeLaTeX")
 
   ;; Revert document buffer after compilation.
   (declare-function TeX-revert-document-buffer "tex")
