@@ -2283,8 +2283,6 @@ Should be run again after theme switch."
 
 ;;;;;; Highlight current line with Hl-line-mode
 
-;; TODO: Replace this with Pulsar, a fantastic package by Protesilaus Stavrou
-
 (use-package hl-line
   :hook (prog-mode text-mode conf-mode org-agenda-mode)
   :config
