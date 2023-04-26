@@ -212,8 +212,10 @@ files."
        ((eq system-type 'gnu/linux)
         (mapc
          (lambda (fpath)
-           (let ((process-connection-type nil))
-             (start-process "" nil "xdg-open" fpath)))
+           (if (fboundp 'zy/open-file-with-explorer)
+               (zy/open-file-with-explorer fpath)
+             (let ((process-connection-type nil))
+               (start-process "" nil "xdg-open" fpath))))
          file-list))))))
 
 ;;;; File type specific settings

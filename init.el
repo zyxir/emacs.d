@@ -2915,7 +2915,23 @@ Explorer.exe can call the default browser on the Windows system
 that hosts WSL."
     (interactive)
     (call-process "explorer.exe" nil 0 nil url))
-  (setq browse-url-browser-function 'zy/browse-url-explorer))
+  (setq browse-url-browser-function 'zy/browse-url-explorer)
+  (defun zy/open-file-with-explorer (file &rest _)
+    "Open FILE with the \"explorer.exe\" command.
+Path is converted with the \"wslpath\" command."
+    (interactive)
+    (let* ((file-abs (expand-file-name file))
+           (wslpath-output (with-output-to-string
+                             (with-current-buffer standard-output
+                               (call-process "wslpath" nil standard-output
+                                             nil "-w" file-abs))))
+           (len (length wslpath-output))
+           (converted-path (cond
+                            ((and (> len 0) (eq (aref wslpath-output (- len 1)) ?\n))
+                             (substring wslpath-output 0 (- len 1)))
+                            (t wslpath-output))))
+      (message converted-path)
+      (call-process "explorer.exe" nil 0 nil converted-path))))
 
 ;;;; File type specific settings
 
