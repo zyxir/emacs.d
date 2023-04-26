@@ -2564,7 +2564,7 @@ Should be run again after theme switch."
 (use-package flycheck
   :straight t
   ;; Enable Flycheck only when there is no Eglot support.
-  :hook (emacs-lisp-mode TeX-mode verilog-mode)
+  :hook (emacs-lisp-mode sh-mode TeX-mode verilog-mode)
   :commands flycheck-mode
   :general
   (:keymaps 'flycheck-mode-map
