@@ -920,6 +920,13 @@ Automatically set when `zy~zybox-dir' is customized.")
 (fset 'zy-toggle-map zy-toggle-map)
 (general-def "C-c t" 'zy-toggle-map)
 
+(defvar zy-coding-map (make-sparse-keymap)
+  "Keymap for coding-related actions.")
+(fset 'zy-coding-map zy-coding-map)
+(general-def "M-o" 'zy-coding-map)
+(general-def :keymaps 'zy-coding-map
+  "c" 'compile)
+
 (defcustom zy~use-lsp-bridge nil
   "Non-nil means use Lsp-bridge instgead of Eglot.
 If this is non-nil, Corfu will be turned off, too.
@@ -2595,8 +2602,7 @@ Should be run again after theme switch."
   :unless zy~use-lsp-bridge
   :straight '(eglot :type built-in)
   :general
-  (:keymaps 'eglot-mode-map
-            :prefix "M-o"
+  (:keymaps 'zy-coding-map
             "a" 'eglot-code-actions
             "f" 'eglot-format
             "r" 'eglot-rename
@@ -2645,9 +2651,7 @@ Should be run again after theme switch."
             "M-n" 'lsp-bridge-diagnostic-jump-next
             "M-p" 'lsp-bridge-diagnostic-jump-prev
             )
-  (:keymaps 'lsp-bridge-mode-map
-            ;; Identical keys as in Eglot, with a few additions.
-            :prefix "M-o"
+  (:keymaps 'zy-coding-map
             "a" 'lsp-bridge-code-action
             "f" 'lsp-bridge-code-format
             "r" 'lsp-bridge-rename
