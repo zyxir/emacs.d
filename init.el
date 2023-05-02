@@ -1581,6 +1581,15 @@ ARGS are the arguments passed."
   :straight t
   :defer t)
 
+;;;;; Tree-sitter integration
+
+(use-package treesit-auto
+  :straight t
+  :demand t
+  :config
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode))
+
 ;;;; File, buffer, window, project management
 
 ;;;;; No auto save or backup files
