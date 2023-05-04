@@ -1277,6 +1277,12 @@ ARGS are the arguments passed."
     (append '(cape-symbol cape-file)
             completion-at-point-functions)))
 
+;; Corfu in Terminal.
+(use-package corfu-terminal
+  :straight (corfu-terminal :host codeberg :repo "akib/emacs-corfu-terminal")
+  :unless (display-graphic-p)
+  :hook (corfu-mode))
+
 ;;;;; Tweak cursor movement
 
 ;; Use my own `zy/move-beginning-of-line'.
