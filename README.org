@@ -5,7 +5,7 @@
 Lightweight Emacs configuration for my daily need.
 
 - *Supported Emacs version*: Emacs 28.1 or higher (but 29+ is recommended).
-- *Supported operation systems*:
+- *Supported operating systems*:
   - Windows (with MSYS2).
   - WSL (Windows subsystem for Linux), the distro is Ubuntu in my case.
   - Linux, Arch Linux in my case.
@@ -18,7 +18,7 @@ Lightweight Emacs configuration for my daily need.
 
 ** Screenshots
 
-The following screenshot was taken on a Ubuntu 22.04.2 LTS machine with Gnome Wayland.
+The following screenshot was taken on an Ubuntu 22.04.2 LTS machine with Gnome Wayland.
 
 [[file:etc/screenshots/zyemacs_20230307.png]]
 
@@ -30,9 +30,9 @@ Clone this repository, along with its submodules, to ~$HOME/.emacs.d~.
   git clone --recurse-submodules -j$(nproc) git@github.com:zyxir/emacs.d.git ~/.emacs.d
 #+end_src
 
-Run Eamcs with ~emacs --debug-init~, and third-party packages will be automatically installed.
+Run Emacs with ~emacs --debug-init~, and third-party packages will be automatically installed.
 
-These third-party programs enables additional functionalities of my configuration:
+These third-party programs enable additional functionalities of my configuration:
 
 - Fd :: Fast filesystem search.  Used by commands like ~project-find-file~.
 - OpenCC :: Provide Simplified/Traditional Chinese conversion.
@@ -50,7 +50,7 @@ Some features requiring additional setup are listed below.
 
 ** Customization
 
-Most behavior of this configuration is hard-coded.  That is because I am currently the only user of this configuration, and I can change any behavior by modifying the code.  However there are some machine-dependent settings that is not consistent in every computing environemnt of mine.  It is recommended to configure these settings via the ~customize~ UI:
+Most behavior of this configuration is hard-coded.  That is because I am currently the only user of this configuration, and I can change any behavior by modifying the code.  However, there are some machine-dependent settings that is not consistent in every computing environment of mine.  It is recommended to configure these settings via the ~customize~ UI:
 
 - ~zy~default-theme~ :: Default theme to use.  Must be one of the Doom Themes.
 - ~zy~font-size~ :: This determines the default font size.  Customize this according to the screen size of the computing device.
@@ -65,7 +65,7 @@ This configuration conforms to [[https://github.com/bbatsov/emacs-lisp-style-gui
 - ~zy-[-]NAME~ :: A non-interactive function, macro or variable.
 - ~zy/NAME~ :: A public command to be used interactively, via =M-x= or a keybinding.
 - ~zy~NAME~ :: A customization option that is defined via ~defcustom~.
-- ~zy-[-]NAME-a~ :: Function meant to be used (exclusively) as an advice for other functions.
+- ~zy-[-]NAME-a~ :: Function meant to be used (exclusively) as advice for other functions.
 - ~zy-[-]NAME-h~ :: Function meant to be used (exclusively) as a hook.
 - ~zy-[-]NAME-fn~ :: A strategy function.  A good rule of thumb for what makes a strategy function is: is it interchangeable? Can it be replaced with another function with a matching signature?
 - ~NAME!~ :: A public macro that is provided as a syntactic sugar.

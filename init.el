@@ -2619,7 +2619,7 @@ Should be run again after theme switch."
   :init
   ;; Always ensure Eglot after everything else.
   (add-hook!
-      (c-mode-common python-mode scala-mode)
+      (c-mode-common python-base-mode scala-mode)
     :depth 100
     'eglot-ensure)
 
