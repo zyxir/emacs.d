@@ -83,6 +83,7 @@
  ("tablist" . "5f7b71a92bfb25418d7da86ad9c45f14b149496f")
  ("themes" . "e4f0b006a516a35f53df2dce2ec116876c5cd7f9")
  ("transient" . "0ae0de43590b5b6984a83f9e044e7c426455ac6e")
+ ("treesit-auto" . "bac3b9d1d61a4d759f87c80de7be3b808d19cbf6")
  ("use-package" . "77945e002f11440eae72d8730d3de218163d551e")
  ("valign" . "c9d30a31002cd296f2ea7398ca86ae9f48553467")
  ("verilog-mode" . "5b68bb179ed998aa291fd2d78854b8a882c62a97")
