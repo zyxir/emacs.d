@@ -2343,7 +2343,7 @@ Should be run again after theme switch."
 
 (use-package rainbow-delimiters
   :straight t
-  :commands (rainbow-delimiters-mode))
+  :hook prog-mode)
 
 ;;;;;; Never lose the cursor with Pulsar
 
@@ -2957,14 +2957,6 @@ Path is converted with the \"wslpath\" command."
 ;; This section enhances Emacs on specific file types, mostly programming
 ;; languages.
 
-;;;;; C and similiar languages
-
-(use-package cc-mode
-  :defer t
-  :config
-  (add-hook! cc-mode
-    'rainbow-delimiters-mode))
-
 ;;;;; Emacs Lisp
 
 (use-package elisp-mode
@@ -2974,8 +2966,7 @@ Path is converted with the \"wslpath\" command."
             "C-c C-x" 'emacs-lisp-macroexpand)
   :config
   (add-hook! emacs-lisp-mode
-    'outline-minor-mode
-    'rainbow-delimiters-mode)
+    'outline-minor-mode)
   (setq-hook! emacs-lisp-mode
     ;; Emacs Lisp code tends to be wide, so use a bigger fill-column.
     fill-column 80)
@@ -3359,9 +3350,6 @@ The function works like `org-latex-export-to-pdf', except that
 (use-package python
   :defer t
   :init
-  (add-hook! python-mode
-    'rainbow-delimiters-mode)
-  :init
   ;; Automatically enable Python virtual environment in inferior shell.  The package Pet
   ;; can detect a lot of virtual environemnt already, and can configure a lot of Python
   ;; tools to use the detected environment, but it does not configure the inferior shell.
@@ -3505,8 +3493,6 @@ environment."
   :straight t
   :interpreter ("scala" . scala-mode)
   :config
-  (add-hook! scala-mode
-    'rainbow-delimiters-mode)
   (setq-hook! scala-mode
     fill-column 100))
 
@@ -3581,9 +3567,6 @@ environment."
   ;; suggested by the official repository.
   :straight t
   :magic ("\\.v" . verilog-mode)
-  :init
-  (add-hook! verilog-mode
-    'rainbow-delimiters-mode)
   :config
   (setq! verilog-auto-delete-trailing-whitespace t
          verilog-auto-newline nil
