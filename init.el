@@ -962,7 +962,10 @@ be installed: epc orjson sexpdata six paramiko."
    zy/shell-other-window
    zy/shell-other-frame
    ;; Org export to LaTeX
-   zy/update-zylatex-file))
+   zy/update-zylatex-file)
+  :general
+  (:keymaps 'ctl-x-x-map
+            "E" 'zy/open-externally))
 
 ;;;;; Start Emacs server
 
