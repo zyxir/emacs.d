@@ -2228,8 +2228,7 @@ Return what `zy/setup-font-faces' returns."
 
 ;; Use the fantastic Doom modeline.
 (use-package doom-modeline
-  :straight (doom-modeline :host github :repo "seagle0128/doom-modeline"
-                           :branch "feat/nerd-icons")
+  :straight t
   :demand t
   :config
   ;; Tweak and enable the Doom modeline.

@@ -13,7 +13,7 @@
  ("dash.el" . "c30c6bea49b79d966c92ce606fea53dea647b959")
  ("diff-hl" . "ed34450246598af02299053feb9d85d6675114dd")
  ("dired-hacks" . "1596e516835099b96cb65d1dc372cfbdff6aea96")
- ("doom-modeline" . "ef39b80359a0a9436c7cfd33aaf431f7adeeea4a")
+ ("doom-modeline" . "04cfd303c816478150124063ada92f59f932d897")
  ("ebib" . "5a03e4662dccbffe63605bb8e88bfb691ebe0afa")
  ("el-get" . "22c83206bab10100fdee03cb2d5b97c8c24eff0e")
  ("emacs-corfu-terminal" . "2dabbbc365d3e3b8d3f8314f6838ba1ed6c4311a")
