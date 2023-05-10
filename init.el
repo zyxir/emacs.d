@@ -1862,8 +1862,8 @@ faster `prin1'."
    ;; Command line switches used for ls.
    dired-listing-switches (eval-when-compile
                             (string-join
-                             '(;; Do not ignore dot files.
-                               "--all"
+                             '(;; No "." and "..".
+                               "--almost-all"
                                ;; No group names.
                                "--no-group"
                                ;; Append indicator to entries.
