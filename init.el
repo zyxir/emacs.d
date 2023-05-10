@@ -1205,6 +1205,11 @@ ARGS are the arguments passed."
 (use-package corfu
   :straight '(corfu :files (:defaults "extensions/*.el"))
   :unless zy~use-lsp-bridge
+  :general (:keymaps 'corfu-map
+                     ;; Do not interfere with global-mode keybindings except TAB.
+                     "RET" nil
+                     [remap previous-line] nil
+                     [remap next-line] nil)
   :init
   (setq completion-cycle-threshold 3)
   (global-corfu-mode +1)
