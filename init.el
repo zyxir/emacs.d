@@ -1208,6 +1208,8 @@ ARGS are the arguments passed."
   :general (:keymaps 'corfu-map
                      ;; Do not interfere with global-mode keybindings except TAB.
                      "RET" nil
+                     "<up>" nil
+                     "<down>" nil
                      [remap previous-line] nil
                      [remap next-line] nil)
   :init
