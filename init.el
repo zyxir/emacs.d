@@ -3210,7 +3210,8 @@ Automatically set when `zy~zybox-dir' is customized.")
 
   (unless (file-exists-p zy-zylatex-file)
     (condition-case-unless-debug e
-        (zy/update-zylatex-file)
+        (when (fboundp 'zy/update-zylatex-file)
+          (zy/update-zylatex-file))
       (error
        (message "Error fetching \"zylatex.sty\" because %s." e)
        (setq zy-zylatex-file nil))))

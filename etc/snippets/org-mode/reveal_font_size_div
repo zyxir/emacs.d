@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: reveal_font_size_div
+# key: <rfsd
+# --
+
+#+reveal_html: <div style="font-size: $1">
+$0
+#+reveal_html: </div>
