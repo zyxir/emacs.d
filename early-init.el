@@ -23,9 +23,7 @@
 
 ;;; Code:
 
-(setq default-frame-alist '(;; Maximize Emacs by default
-			    (fullscreen . maximized)
-			    ;; Disable menu bar.
+(setq default-frame-alist '(;; Disable menu bar.
                             (menu-bar-lines . nil)
                             ;; Disable scroll bars
                             (horizontal-scroll-bars . nil)
