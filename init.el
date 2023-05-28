@@ -3456,7 +3456,7 @@ This overrides `python-indent-dedent-line-backspace'."
   :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest"
                             :fork (:repo "zyxir/emacs-python-pytest"
                                          :branch "dev" :protocol ssh))
-  :general (:keymaps 'python-mode-map
+  :general (:keymaps 'python-base-mode-map
                      ;; C-c C-t is the prefix for python-skeleton-* by default, but I
                      ;; never use it (because I use Yasnippet), so I remap it to pytest.
                      "C-c C-t" 'python-pytest-dispatch))
@@ -3468,7 +3468,7 @@ This overrides `python-indent-dedent-line-backspace'."
 (use-package pet
   :straight '(pet :host github :repo "wyuenho/emacs-pet"
                   :fork (:repo "zyxir/emacs-pet" :branch "dev" :protocol ssh))
-  :hook (python-mode)
+  :hook (python-base-mode)
   :config
   ;; Let Eglot find LSP server executables with Pet.
   (with-eval-after-load 'eglot
