@@ -927,6 +927,13 @@ Automatically set when `zy~zybox-dir' is customized.")
 (general-def :keymaps 'zy-coding-map
   "c" 'compile)
 
+(defun zy/test (&rest _)
+  "Placeholder for code testing."
+  (interactive)
+  (message "No testing facility is implemented for this mode."))
+(general-def :keymaps 'zy-coding-map
+  "t" 'zy/test)
+
 (defcustom zy~use-lsp-bridge nil
   "Non-nil means use Lsp-bridge instgead of Eglot.
 If this is non-nil, Corfu will be turned off, too.
@@ -3458,9 +3465,7 @@ This overrides `python-indent-dedent-line-backspace'."
                             :fork (:repo "zyxir/emacs-python-pytest"
                                          :branch "dev" :protocol ssh))
   :general (:keymaps 'python-base-mode-map
-                     ;; C-c C-t is the prefix for python-skeleton-* by default, but I
-                     ;; never use it (because I use Yasnippet), so I remap it to pytest.
-                     "C-c C-t" 'python-pytest-dispatch))
+                     [remap zy/test] 'python-pytest-dispatch))
 
 ;; Pet, the Python executable tracker, which automatically detects a Python
 ;; virtual environment and apply it to various Python packages like
