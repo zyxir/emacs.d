@@ -21,7 +21,7 @@
  ("emacs-htmlize" . "dd27bc3f26efd728f2b1f01f9e4ac4f61f2ffbf9")
  ("emacs-libvterm" . "3e5a9b754b8e61850bb7d1b63b090b9fbf6687f3")
  ("emacs-opencc" . "8c539f72669ba9a99d8b5198db5ea930897ad1b9")
- ("emacs-pet" . "9d2d747b18c3f1d330bf9f09c9f64af9446c1268")
+ ("emacs-pet" . "edfef72a4933b9012124d387ef423a1091699b50")
  ("emacs-python-pytest" . "ba432590eca6a24b5eab05d40d9b5df61eb4c374")
  ("emacs-rime" . "6438abacace7d94f05fabc45b82d619677fc5fca")
  ("emacs-sbt-mode" . "9fe1e8807c22cc1dc56a6233e000969518907f4d")
