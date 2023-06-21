@@ -1610,8 +1610,8 @@ ARGS are the arguments passed."
   :straight t
   :demand t
   :config
-  (setq treesit-auto-install 'prompt
-        treesit-auto-langs '(c c++ python))
+  ;; Install language support manually.
+  (setq treesit-auto-langs '(c c++ python))
   (global-treesit-auto-mode))
 
 ;;;; File, buffer, window, project management
