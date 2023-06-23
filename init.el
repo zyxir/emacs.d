@@ -1611,7 +1611,7 @@ ARGS are the arguments passed."
   :demand t
   :config
   ;; Install language support manually.
-  (setq treesit-auto-langs '(c c++ python))
+  (setq treesit-auto-langs '(c python))
   (global-treesit-auto-mode))
 
 ;;;; File, buffer, window, project management
@@ -2011,6 +2011,7 @@ and this acts as a temporary fix."
 ;; Automatically run "git fetch" on Projectile projects.
 (use-package projectile-git-autofetch
   :straight t
+  :when (and *posix* (not *wsl*))
   :hook projectile-mode)
 
 ;;;;; Additional file operations
@@ -3583,6 +3584,11 @@ This overrides `python-indent-dedent-line-backspace'."
          verilog-indent-level-module 0
          ;; Lint with Icarus Verilog.
          verilog-linter "iverilog"))
+
+;;;;; Others
+
+(use-package yaml-mode
+  :straight t)
 
 ;;;; The end
 
