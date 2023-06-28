@@ -3038,6 +3038,10 @@ Path is converted with the \"wslpath\" command."
 
 ;;;;; Markdown
 
+(use-package edit-indirect
+  :straight t
+  :commands (edit-indirect-region))
+
 (use-package markdown-mode
   :straight t
   :magic ("\\.md\\|\\.markdown" . markdown-mode))
