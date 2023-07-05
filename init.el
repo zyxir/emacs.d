@@ -1975,7 +1975,8 @@ and this acts as a temporary fix."
   :straight t
   :commands (projectile-add-known-project
              projectile-discover-projects-in-directory
-             projectile-discover-projects-in-search-path)
+             projectile-discover-projects-in-search-path
+             projectile-reset-known-projects)
   :hook zy-first-file
   :defer 2
   :general
