@@ -3364,10 +3364,7 @@ The function works like `org-latex-export-to-pdf', except that
   :config
   (setq!
    ;; Use scaling to support HiDPI.
-   pdf-view-use-scaling t)
-  ;; Install PDF Tools.
-  (declare-function pdf-tools-install "pdf-tools")
-  (pdf-tools-install))
+   pdf-view-use-scaling t))
 
 ;;;;; PowerShell
 
