@@ -522,8 +522,11 @@ undefiner when testing advice (when combined with `rotate-text').
 
 ;;;;;;; Operating system constants
 
-(defconst *windows* (eq system-type 'gnu/linux)
+(defconst *windows* (eq system-type 'windows-nt)
   "Non-nil if running on Windows.")
+
+(defconst *linux* (eq system-type 'gnu/linux)
+  "Non-nil if running on GNU/Linux.")
 
 (defconst *posix* (if (memq system-type '(gnu/linux darwin)) t nil)
   "Non-nil if running on a (mostly) POSIX-complaint system.")
@@ -2535,6 +2538,23 @@ Should be run again after theme switch."
 
 ;;;;; Lingual
 
+;;;;;; Smart input source
+
+(use-package sis
+  :straight t
+  :init
+  (cond
+   ;; Emacs-native IM on WSL.
+   (*wsl* (sis-ism-lazyman-config nil "rime" 'native))
+   ;; Fcitx5 on Linux.
+   (*linux* (sis-ism-lazyman-config "1" "2" 'fcitx5))
+   ;; Native IM on Windows.
+   (*windows* (sis-ism-lazyman-config nil t 'w32)))
+  (setq!
+   sis-other-cursor-color "orange")
+  (sis-global-respect-mode 1)
+  (sis-global-cursor-color-mode 1))
+
 ;;;;;; Rime input method
 
 ;; Rime is my favorite input method for every platforms.  Fortunately it is
@@ -2567,26 +2587,7 @@ Should be run again after theme switch."
 
   ;; On Windows, the share directory has to be manually set.
   (when (eq system-type 'windows-nt)
-    (setq! rime-share-data-dir "c:/msys64/mingw64/share/rime-data"))
-
-  ;; Change cursor color based on current input method.
-  (defvar zy--default-cursor-color nil
-    "Default cursor color of the theme.")
-  (defun zy--setup-cursor-color-h ()
-    "Setup cursor color changing based on current input method."
-    (setq zy--default-cursor-color (frame-parameter nil 'cursor-color))
-    (add-hook
-     'post-command-hook
-     (defun zy--change-cursor-color-based-im-h ()
-       "Change cursor color based on current IM."
-       (set-frame-parameter nil 'cursor-color
-                            (if current-input-method
-                                ;; If input method is on, use this orange color.
-                                "orange"
-                              ;; Other wise, use the default color.
-                              zy--default-cursor-color)))))
-  (add-hook 'zy-load-theme-hook 'zy--setup-cursor-color-h)
-  (zy--setup-cursor-color-h))
+    (setq! rime-share-data-dir "c:/msys64/mingw64/share/rime-data")))
 
 ;;;;;; OpenCC (simplified/traditional chinese converter)
 
