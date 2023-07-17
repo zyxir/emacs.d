@@ -2670,7 +2670,9 @@ Should be run again after theme switch."
        ;; Code formatting.
        :black (:enabled t)
        ;; Linting.
-       :ruff (:enabled t))))))
+       :ruff (:enabled t)
+       ;; Imports sorting.
+       :pyls_isort (:enabled t))))))
 
 ;;;;; Lsp-bridge (optional, another LSP client)
 
