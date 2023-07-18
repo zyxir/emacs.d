@@ -2773,7 +2773,9 @@ Should be run again after theme switch."
 
 (use-package vterm
   :straight t
-  :commands vterm)
+  :commands vterm
+  :general (:keymaps 'vterm-mode-map
+                     "C-q" 'vterm-send-next-key))
 
 ;;;;;; Colorful Shell Output
 
@@ -3519,6 +3521,13 @@ This overrides `python-indent-dedent-line-backspace'."
    minibuffer-local-completion-map)
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
   (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+;;;;; Shell scripts
+
+(use-package sh-script
+  :config
+  (add-hook! sh-mode
+    'outline-minor-mode))
 
 ;;;;; TeX / LaTeX
 
