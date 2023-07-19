@@ -857,7 +857,9 @@ If this is a daemon session, load them all immediately instead."
 SYM is a symbol whose variable difinition stores the path of
 Zybox, and PATH is the path of Zybox.  Once the location of Zybox
 is determined, several other directories, like `org-directory',
-`org-journal-directory', is decided by this function as well."
+`org-journal-directory', is decided by this function as well.
+
+If PATH is nil, do not set any path."
   ;; Set the value of `sym' to `path'.
   (set sym path)
   ;; Set other directories only when `path' is a valid directory.
@@ -908,7 +910,7 @@ is determined, several other directories, like `org-directory',
 (defcustom zy~zybox-dir nil
   "The Zybox directory, my personal file center."
   :group 'zyxir-paths
-  :type 'directory
+  :type '(choice (const :tag "Not set" nil) directory)
   :set #'zy--set-zybox-path)
 
 (defvar zy-zyprojects-dir (expand-file-name "Zyprojects" "~")
