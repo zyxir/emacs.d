@@ -3385,66 +3385,6 @@ The function works like `org-latex-export-to-pdf', except that
 
 (use-package python
   :defer t
-  :init
-  ;; Automatically enable Python virtual environment in inferior shell.  The package Pet
-  ;; can detect a lot of virtual environemnt already, and can configure a lot of Python
-  ;; tools to use the detected environment, but it does not configure the inferior shell.
-  ;; Sometimes I have to install packages in shell, and an automatic activasion of virtual
-  ;; environment would be handy.
-  ;;
-  ;; However, this simple mechanism only support the built-in venv and third-party
-  ;; virtualenv.  I don't know how tools like Peotry and Pyenv work, so I didn't add
-  ;; support for them.
-  (defvar zy-python-venv-dirs '(".venv" "venv")
-    "Possible directory name for a Python virtual environment.")
-
-  (defun zy-python--venv-command (venv)
-    "Return a command that activates the Python virtual environment.
-VENV is the directory of the virtual environment.
-
-This function should only be run in a comint buffer, and the
-command is decided by the shell program name based on
-URL `https://docs.python.org/3/library/venv.html#how-venvs-work'."
-    (when-let ((proc (get-buffer-process (current-buffer)))
-               (command (process-command proc))
-               (shell-full-name (car command))
-               (shell-name (file-name-nondirectory shell-full-name))
-               (activate-relpath (pcase shell-name
-                                   ((or "bash" "zsh") "bin/activate")
-                                   ("fish" "bin/activate.fish")
-                                   ((or "csh" "tcsh") "bin/activate.csh")
-                                   ("pwsh" "bin/Activate.ps1")
-                                   ((or "PowerShell.exe" "pwsh.exe")
-                                    "Scripts/Activate.ps1")
-                                   ((or "cmd.exe" "cmdproxy.exe")
-                                    "Scripts/activate.bat")))
-               (command-part1 (if (or (string-suffix-p ".exe" shell-name)
-                                      (string= shell-name "pwsh"))
-                                  "" "source "))
-               (command-part2 (expand-file-name activate-relpath venv)))
-      (concat command-part1 command-part2)))
-
-  (declare-function zy-python--venv-command
-                    (expand-file-name "init.el" user-emacs-directory))
-  (declare-function comint-goto-process-mark 'comint)
-  (declare-function comint-send-input 'comint)
-  (add-hook! comint-exec
-    (defun zy-python--activate-venv (&rest _)
-      "Run a command to activate the Python virtual environment."
-      (when-let* ((venv (cl-some
-                         (lambda (dir) (and (file-directory-p dir) dir))
-                         zy-python-venv-dirs))
-                  (command (zy-python--venv-command venv))
-                  (proc (get-buffer-process (current-buffer))))
-        ;; Wait for a tiny bit of time for the prompt to show.
-        (sleep-for 0.1)
-        ;; Goto the end of the prompt.
-        (comint-goto-process-mark)
-        ;; Insert the command like a user does.
-        (insert command)
-        ;; Enter the command.
-        (comint-send-input))))
-
   :config
   (setq!
    ;; See the documentation.
@@ -3484,7 +3424,17 @@ This overrides `python-indent-dedent-line-backspace'."
 (use-package pet
   :straight '(pet :host github :repo "wyuenho/emacs-pet"
                   :fork (:repo "zyxir/emacs-pet" :branch "dev" :protocol ssh))
-  :hook (python-base-mode))
+  :hook (python-base-mode)
+  :config
+  ;; Set compile command.
+  (defadvice! zy-set-python-compile-command (&rest _)
+    "Set compile command to \"run the code\"."
+    :after 'pet-buffer-local-vars-setup
+    (setq-local compile-command (concat python-shell-interpreter " " (buffer-file-name))))
+  (defadvice! zy-unset-python-compile-command (&rest _)
+    "Unset compile command."
+    :after 'pet-buffer-local-vars-teardown
+    (kill-local-variable 'compile-command)))
 
 ;; Syntax highlight for requirements.txt.
 (use-package pip-requirements
