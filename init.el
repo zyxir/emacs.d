@@ -3367,11 +3367,9 @@ The function works like `org-latex-export-to-pdf', except that
 
 (use-package pdf-tools
   :straight t
-  :magic ("%PDF" . pdf-view-mode)
-  :config
-  (setq!
-   ;; Use scaling to support HiDPI.
-   pdf-view-use-scaling t))
+  :defer t
+  :init
+  (pdf-loader-install))
 
 ;;;;; PowerShell
 
