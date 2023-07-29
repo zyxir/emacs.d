@@ -929,8 +929,6 @@ Automatically set when `zy~zybox-dir' is customized.")
   "Keymap for coding-related actions.")
 (fset 'zy-coding-map zy-coding-map)
 (general-def "M-o" 'zy-coding-map)
-(general-def :keymaps 'zy-coding-map
-  "c" 'compile)
 
 (defun zy/test (&rest _)
   "Placeholder for code testing."
@@ -974,7 +972,9 @@ be installed: epc orjson sexpdata six paramiko."
    zy/shell-other-window
    zy/shell-other-frame
    ;; Org export to LaTeX
-   zy/update-zylatex-file)
+   zy/update-zylatex-file
+   ;; Python
+   zy/run-python-script)
   :general
   (:keymaps 'ctl-x-x-map
             "E" 'zy/open-externally))
@@ -1385,9 +1385,6 @@ ARGS are the arguments passed."
 
 ;; This controls how texts (paragraphs or comments) should be wrapped to a given
 ;; column count.
-
-(autoload 'zy/unfill-paragraph "zyutils" nil t)
-
 (use-package line-filling
   :defer t
   :general
@@ -3383,6 +3380,9 @@ The function works like `org-latex-export-to-pdf', except that
 
 (use-package python
   :defer t
+  :general
+  (:keymaps 'python-base-mode-map
+            "C-c C-a" 'zy/run-python-script)
   :config
   (setq!
    ;; See the documentation.
@@ -3422,17 +3422,7 @@ This overrides `python-indent-dedent-line-backspace'."
 (use-package pet
   :straight '(pet :host github :repo "wyuenho/emacs-pet"
                   :fork (:repo "zyxir/emacs-pet" :branch "dev" :protocol ssh))
-  :hook (python-base-mode)
-  :config
-  ;; Set compile command.
-  (defadvice! zy-set-python-compile-command (&rest _)
-    "Set compile command to \"run the code\"."
-    :after 'pet-buffer-local-vars-setup
-    (setq-local compile-command (concat python-shell-interpreter " " (buffer-file-name))))
-  (defadvice! zy-unset-python-compile-command (&rest _)
-    "Unset compile command."
-    :after 'pet-buffer-local-vars-teardown
-    (kill-local-variable 'compile-command)))
+  :hook (python-base-mode))
 
 ;; Syntax highlight for requirements.txt.
 (use-package pip-requirements
