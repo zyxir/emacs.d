@@ -255,6 +255,20 @@ files."
        zy-zylatex-file 'ok-if-already-exists)
       (message "\"zylatex.sty\" downloaded."))))
 
+;;;;; Python
+
+;;;###autoload
+(defun zy/run-python-script ()
+  "Run the current Python script with `python-shell-interpreter'."
+  (interactive)
+  (if (derived-mode-p 'python-base-mode)
+      (let* ((interpreter (if (boundp 'python-shell-interpreter)
+                              python-shell-interpreter
+                            "python"))
+             (file (or (buffer-file-name)
+                       (make-temp-file (buffer-name) nil nil (buffer-string)))))
+        (compile (concat interpreter " " file)))))
+
 ;;;; The end
 
 (provide 'zyutils)
