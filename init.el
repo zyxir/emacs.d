@@ -958,6 +958,7 @@ be installed: epc orjson sexpdata six paramiko."
    zy/scratch
    zy/scratch-elisp
    zy/scratch-org
+   zy/scratch-python
    ;; Cursor movement
    zy/move-beginning-of-line
    ;; Line filling
@@ -1703,7 +1704,8 @@ VAL is the same as in `process-coding-system-alist'."
 (general-def :keymaps 'ctl-x-x-map
   "k" 'zy/scratch
   "l" 'zy/scratch-elisp
-  "o" 'zy/scratch-org)
+  "o" 'zy/scratch-org
+  "p" 'zy/scratch-python)
 
 ;; This section enhances the basic text-editing capability of Emacs.
 

@@ -69,6 +69,15 @@ The buffer is automatically converted to Org mode."
     (switch-to-buffer buf)
     (org-mode)))
 
+;;;###autoload
+(defun zy/scratch-python ()
+  "Switch to or create the Python scratch buffer.
+The buffer is automatically converted to Python mode."
+  (interactive)
+  (let ((buf (get-buffer-create "*scratch-python*")))
+    (switch-to-buffer buf)
+    (python-mode)))
+
 ;;;; Text-editing
 
 ;;;;; Cursor movement
