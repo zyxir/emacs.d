@@ -3545,7 +3545,16 @@ This overrides `python-indent-dedent-line-backspace'."
 ;;;;; Others
 
 (use-package yaml-mode
-  :straight t)
+  :straight t
+  :commands yaml-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.\\(e?ya?\\|ra\\)ml\\'" . yaml-mode)))
+
+(use-package nginx-mode
+  :straight t
+  :commands nginx-mode
+  :init
+  (add-to-list 'auto-mode-alist '("/nginx/.+\\.conf\\'" . nginx-mode)))
 
 ;;;; The end
 
