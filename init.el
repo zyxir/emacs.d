@@ -3422,9 +3422,7 @@ This overrides `python-indent-dedent-line-backspace'."
 ;; python-pytest, python-isort and built-in project.el.  Pity it is not in
 ;; MELPA.
 (use-package pet
-  :straight '(pet :host github :repo "wyuenho/emacs-pet" :branch "eglot"
-                  ;; :fork (:repo "zyxir/emacs-pet" :branch "dev" :protocol ssh)
-                  )
+  :straight '(pet :host github :repo "wyuenho/emacs-pet")
   :hook (python-base-mode))
 
 ;; Syntax highlight for requirements.txt.
