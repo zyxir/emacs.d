@@ -2436,6 +2436,7 @@ Should be run again after theme switch."
 ;; Corfu support (together with Kind-icon).
 (use-package kind-icon
   :straight t
+  :unless *windows*
   :after corfu nerd-icons
   :config
   (setq!
