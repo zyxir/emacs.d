@@ -1932,15 +1932,7 @@ faster `prin1'."
             "TAB" 'dired-subtree-toggle
             [tab] 'dired-subtree-toggle
             "S-TAB" 'dired-subtree-remove
-            [backtab] 'dired-subtree-remove)
-  :config
-  (defadvice! zy--revert-dired-buffer-a (&rest _)
-    "Revert buffer to refresh icons after toggling subtree.
-
-Nerd-icons-dired doesn't show icons properly for subtree files,
-and this acts as a temporary fix."
-    :after 'dired-subtree-toggle
-    (revert-buffer)))
+            [backtab] 'dired-subtree-remove))
 
 ;; Editable Dired buffer.
 (use-package wdired
