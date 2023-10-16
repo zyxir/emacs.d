@@ -2539,11 +2539,9 @@ Should be run again after theme switch."
   :init
   (cond
    ;; Emacs-native IM on WSL.
-   (*wsl* (sis-ism-lazyman-config nil "rime" 'native))
+   ((or *wsl* *windows*) (sis-ism-lazyman-config nil "rime" 'native))
    ;; Fcitx5 on Linux.
-   (*linux* (sis-ism-lazyman-config "1" "2" 'fcitx5))
-   ;; Native IM on Windows.
-   (*windows* (sis-ism-lazyman-config nil t 'w32)))
+   (*linux* (sis-ism-lazyman-config "1" "2" 'fcitx5)))
   (setq!
    sis-other-cursor-color "orange")
   (sis-global-respect-mode 1)
