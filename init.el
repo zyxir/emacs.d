@@ -1058,7 +1058,7 @@ be installed: epc orjson sexpdata six paramiko."
  disabled-command-function nil
  ;; A informational frame title.  Besides, my AutoHotkey scripts recognize my Emacs window
  ;; by the \"ZyEmacs\" prefix.
- frame-title-format '("ZyEmacs@"
+ frame-title-format '((if *wsl* "ZyEmacsWSL@" "ZyEmacs@")
                       (:eval (or
                               (file-remote-p default-directory 'host)
                               system-name))
