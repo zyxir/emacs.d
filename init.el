@@ -3036,6 +3036,11 @@ Path is converted with the \"wslpath\" command."
     ;; Use 2 spaces to indent.
     (setq! js-indent-level 2)))
 
+;;;;; Lua
+
+(use-package lua-mode
+  :straight t)
+
 ;;;;; Markdown
 
 (use-package edit-indirect
