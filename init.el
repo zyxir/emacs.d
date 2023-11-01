@@ -3072,7 +3072,9 @@ Path is converted with the \"wslpath\" command."
   (add-hook! org-mode
     ;; Org is my main prose editor.  I prefer working with variable pitch fonts
     ;; when writing proses.
-    'variable-pitch-mode)
+    'variable-pitch-mode
+    ;; Turn off display-line-numbers-mode, as it breaks table display.
+    (display-line-numbers-mode -1))
 
   ;; GTD files.
   (defvar zy-gtd-inbox-file nil
