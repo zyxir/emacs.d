@@ -80,6 +80,7 @@
  ("queue" . "130c2d656cd5d7376552272fab9e50a7c37d0c4a")
  ("rainbow-delimiters" . "a32b39bdfe6c61c322c37226d66e1b6d4f107ed0")
  ("restart-emacs" . "1607da2bc657fe05ae01f7fdf26f716eafead02c")
+ ("rg.el" . "e9dc4ed342e0212d08fb82554dfd3c57fdfa5b1a")
  ("s.el" . "dda84d38fffdaf0c9b12837b504b402af910d01d")
  ("shrink-path.el" . "c14882c8599aec79a6e8ef2d06454254bb3e1e41")
  ("smartparens" . "5808ee62e9ca1b09dfd6938d4f14ecac1d42e309")
