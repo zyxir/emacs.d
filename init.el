@@ -1601,6 +1601,15 @@ ARGS are the arguments passed."
   :straight t
   :general ("C-x l" 'ialign))
 
+;;;;; Rg -- Ripgrep frontend
+
+(use-package rg
+  :straight t
+  :commands rg rg-menu rg-dwim
+  :general
+  (:keymaps 'isearch-mode-map
+            "M-s r" 'rg-isearch-menu))
+
 ;;;;; Wgrep -- writable grep buffer
 
 (use-package wgrep
