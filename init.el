@@ -3368,8 +3368,20 @@ The function works like `org-latex-export-to-pdf', except that
     "i" 'org-roam-node-insert
     "c" 'org-roam-capture
     "a" 'org-roam-alias-add
-    "l" 'org-roam-buffer-toggle)
+    "l" 'org-roam-buffer-toggle
+    "s" 'org-roam-db-sync)
   (org-roam-db-autosync-mode 1))
+
+(use-package org-roam-ui
+  :straight t
+  :after org-roam
+  :general
+  ("C-c r u" 'org-roam-ui-mode)
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
 
 ;;;;; PDF
 
