@@ -2515,14 +2515,12 @@ Should be run again after theme switch."
     "Turn off UI elements when entering Darkroom in a text mode buffer."
     :after 'darkroom--enter
     (when (derived-mode-p 'text-mode)
-      (hl-line-mode -1)
-      (display-line-numbers-mode 'toggle)))
+      (hl-line-mode -1)))
   (defadvice! zy--darkroom-leave-a (&rest _)
     "Turn on UI elements when leaving Darkroom in a text mode buffer."
     :after 'darkroom--leave
     (when (derived-mode-p 'text-mode)
-      (hl-line-mode 1)
-      (display-line-numbers-mode 'toggle))))
+      (hl-line-mode 1))))
 
 ;;;;; Configure font-lock (jit-lock)
 
