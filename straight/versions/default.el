@@ -56,6 +56,7 @@
  ("map" . "a776553a0787e239126ca16a3e74424488c7cf4f")
  ("marginalia" . "3f1ab80fecc3aeb84248ab07c92edca4dce03f92")
  ("markdown-mode" . "fee1b0773b4f32bff82c6c9a33a7138c35dd452a")
+ ("markdown-toc" . "3d724e518a897343b5ede0b976d6fb46c46bcc01")
  ("melpa" . "568355d42b9ad3c8aaf142b0d9b9aa77d3c9d54b")
  ("nerd-icons-dired" . "b7605208215194fb97da703dff8c1a71738a6533")
  ("nerd-icons.el" . "619a0382d2e159f3142c4200fe4cfc2e89247ef1")

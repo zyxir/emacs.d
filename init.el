@@ -3058,6 +3058,13 @@ Path is converted with the \"wslpath\" command."
   :straight t
   :magic ("\\.md\\|\\.markdown" . markdown-mode))
 
+(use-package markdown-toc
+  :straight t
+  :general
+  (:keymaps 'markdown-mode-map
+            "C-c C-r" 'markdown-toc-generate-or-refresh-toc
+            "C-c ." 'markdown-toc-follow-link-at-point))
+
 ;;;;; Org
 
 ;; This part of the configuration is very extensive.
