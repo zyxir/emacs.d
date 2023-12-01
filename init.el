@@ -2258,8 +2258,8 @@ Should be run again after theme switch."
   :hook (prog-mode text-mode conf-mode)
   :general
   (:keymaps 'hl-todo-mode-map
-            "M-P" 'hl-todo-previous
-            "M-N" 'hl-todo-next)
+            "C-c h p" 'hl-todo-previous
+            "C-c h n" 'hl-todo-next)
   :init
   (setq hl-todo-keyword-faces
         '(("TODO"   . "#FF0000")
