@@ -1472,13 +1472,30 @@ ARGS are the arguments passed."
   ("C-c s" 'consult-yasnippet
    "C-c S" 'consult-yasnippet-visit-snippet-file))
 
-;;;;; Parenthesis editing
+;;;;; Pair-editing
+
+;; There are a variety of packages dedicated to parenthesis editing, such as the classic
+;; Paredit, the powerful Smartparens, and the Tree-sitter-based Combobulate. However, a
+;; blogger disliked the idea of providing a complete parenthesis manipulation suite, and
+;; showed how to build a consistent structural editing interface based on repeat-mode and
+;; Smartparens, in his blog post (see URL below). It inspired my to construct my own
+;; consistent pair-editing interface.
+;;
+;; Blog URL:
+;;   https://karthinks.com/software/a-consistent-structural-editing-interface/
+
+;; TODO Implement the pair-editing interface based on the blog post.
 
 ;; Enable electric-pair-mode almost everywhere.
 (use-package elec-pair
   :hook ((conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
-         . electric-pair-mode))
+         . electric-pair-mode)
+  :init
+  (setq delete-pair-blink-delay 0)
+  :general ("M-)" 'delete-pair
+            "M-(" (lambda () (interactive) (delete-pair -1))))
 
+;; Combobulate is only for tree-sitter.
 (use-package combobulate
   :straight '(combobulate :host github :repo "mickeynp/combobulate")
   :preface
