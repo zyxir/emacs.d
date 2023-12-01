@@ -820,13 +820,17 @@ If this is a daemon session, load them all immediately instead."
                    forms)))
          (use-package-process-keywords name rest state))))))
 
-;;;;;; Bind keys with General
+;;;;;; Bind keys with General and Hydra
 
 (use-package general
   :straight t
   :demand t)
 (declare-function general-def "general")
 (declare-function general-unbind "general")
+
+(use-package hydra
+  :straight t
+  :commands defhydra)
 
 ;;;;; Load the custom file
 
@@ -1484,16 +1488,9 @@ ARGS are the arguments passed."
 ;; Blog URL:
 ;;   https://karthinks.com/software/a-consistent-structural-editing-interface/
 
-;; TODO Implement the pair-editing interface based on the blog post.
-
-;; Enable electric-pair-mode almost everywhere.
+;; Enable electric-pair-mode everywhere.
 (use-package elec-pair
-  :hook ((conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
-         . electric-pair-mode)
-  :init
-  (setq delete-pair-blink-delay 0)
-  :general ("M-)" 'delete-pair
-            "M-(" (lambda () (interactive) (delete-pair -1))))
+  :hook (emacs-startup-hook . electric-pair-mode))
 
 ;; Combobulate is only for tree-sitter.
 (use-package combobulate
@@ -1502,6 +1499,62 @@ ARGS are the arguments passed."
   (setq combobulate-key-prefix "C-c o")
   :hook ((python-ts-mode c-ts-mode c++-ts-mode c-or-c++-ts-mode)
          . combobulate-mode))
+(defvar combobulate-mode)
+
+;; Smartparens is for every other major mode.
+(use-package smartparens
+  :straight '(smartparens :host github :repo "Fuco1/smartparens")
+  :commands (sp-upwrap-sexp sp-backward-unwrap-sexp))
+
+;; Pair-editing action definer.
+(defun zy/action-not-supported ()
+  (message "Action not supported."))
+(defmacro zy/new-pair-action (symbol docstring &rest pairs)
+  "Define new pair-editing action SYMBOL.
+
+PAIRS are (PREDICATE . FN) pairs.  The action uses the first FN
+where PREDICATE is non-nil.  The final element of PAIRS can be a
+single FN, which will be used as the fallback function.
+
+DOCSTRING is used as the documentation string."
+  (declare (doc-string 2))
+  (let* ((result-sexp (reverse `(defun ,symbol (&rest _))))
+         (fn-sexp `(cond)))
+    ;; Optionally add docstring.
+    (when docstring (push docstring result-sexp))
+    ;; Add (interactive).
+    (push '(interactive) result-sexp)
+    ;; Make fn-sexp.
+    (dolist (pair pairs)
+      (if (consp pair)
+          (let* ((predicate (car pair))
+                 (fn (cdr pair))
+                 (sexp `((and (boundp ',predicate) ,predicate) ',fn)))
+            (push sexp fn-sexp))
+        (push `(t ',pair) fn-sexp)))
+    (unless (and (car-safe fn-sexp)
+                 (null (eq (car fn-sexp) 'cond))
+                 (eq (caar fn-sexp) 't))
+      (push `(t 'zy/action-not-supported) fn-sexp))
+    (push `(funcall ,(reverse fn-sexp)) result-sexp)
+    ;; Return the result in correct order.
+    (reverse result-sexp)))
+
+;; Define actions.
+(zy/new-pair-action zy/pe-unwrap-right
+  "Unwrap the sexp after point."
+  sp-unwrap-sexp)
+(zy/new-pair-action zy/pe-unwrap-left
+  "Unwrap the sexp before point."
+  sp-backward-unwrap-sexp)
+
+;; The hydra interface.
+(defhydra hydra-pair-edit (:foreign-keys run :hint nil)
+  "Pair Manipulation"
+  (">" zy/pe-unwrap-right "unwrap right" :column "Edit")
+  ("<" zy/pe-unwrap-left "unwrap left")
+  ("C-g" nil "exit" :color blue))
+(general-def "M-\"" 'hydra-pair-edit/body)
 
 ;;;;; Mouse yank
 
