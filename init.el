@@ -1567,16 +1567,14 @@ ARGS are the arguments passed."
     (dolist (grammar
              '((python "https://github.com/tree-sitter/tree-sitter-python")
                (c "https://github.com/tree-sitter/tree-sitter-c")
-               (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-               (scala "https://github.com/tree-sitter/tree-sitter-scala")))
+               (cpp "https://github.com/tree-sitter/tree-sitter-cpp")))
       (add-to-list 'treesit-language-source-alist grammar)
       (unless (treesit-language-available-p (car grammar))
         (treesit-install-language-grammar (car grammar))))
     (dolist (mapping '((python-mode . python-ts-mode)
                        (c-mode . c-ts-mode)
                        (c++-mode . c++-ts-mode)
-                       (c-or-c++-mode . c-or-c++-ts-mode)
-                       (scala-mode . scala-ts-mode)))
+                       (c-or-c++-mode . c-or-c++-ts-mode)))
       (add-to-list 'major-mode-remap-alist mapping)))
   :config
   (zy-treesit-install-grammars))
@@ -3441,13 +3439,6 @@ This overrides `python-indent-dedent-line-backspace'."
    minibuffer-local-completion-map)
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
   (setq sbt:program-options '("-Dsbt.supershell=false")))
-
-(use-package scala-ts-mode
-  :straight '(scala-ts-mode :type git :host github :repo "KaranAhlawat/scala-ts-mode")
-  :commands scala-ts-mode
-  :config
-  (setq-hook! scala-ts-mode
-    fill-column 100))
 
 ;;;;; Shell scripts
 
