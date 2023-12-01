@@ -1273,17 +1273,7 @@ ARGS are the arguments passed."
       (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
                   corfu-popupinfo-delay nil)
       (corfu-mode 1)))
-  (add-hook 'minibuffer-setup-hook #'zy-enable-corfu-in-minibuffer)
-
-  ;; Fix on C-g with `corfu-mode' and `smartparens-mode'.
-  ;;
-  ;; When `corfu-mode' and `smartparens-mode' are both on, sometimes you have to hit C-g
-  ;; twice to close the completion popup: the first hit calls
-  ;; `sp-remove-active-pair-overlay', and the second calls `corfu-quit'.
-  ;;
-  ;; This is simple to solve with an advice.
-  (with-eval-after-load 'smartparens
-    (advice-add 'sp-remove-active-pair-overlay :after 'corfu-quit)))
+  (add-hook 'minibuffer-setup-hook #'zy-enable-corfu-in-minibuffer))
 
 ;; Extra CAPFs (completion-at-point-function).
 (use-package cape
@@ -1482,96 +1472,19 @@ ARGS are the arguments passed."
   ("C-c s" 'consult-yasnippet
    "C-c S" 'consult-yasnippet-visit-snippet-file))
 
-;;;;; Smartparens (parenthesis automation)
+;;;;; Parenthesis editing
 
-(use-package smartparens
-  :straight '(smartparens :host github :repo "Fuco1/smartparens"
-                          :fork (:repo "zyxir/smartparens" :branch "dev" :protocol ssh))
-  :defer t
-  :hook (conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
-  :general
-  ;; Failed to get used to the default keybindings (which is actually Fuco1's
-  ;; keybindings), I ended up making my own keybindings.  My own keybindings have two
-  ;; advantages:
-  ;;
-  ;; First, keys are binded with `general-def', so that they can be overviewebbbd with
-  ;; `general-describe-keybindings'.
-  ;;
-  ;; Second, unlike Fuco1's config, my keybindings trys to preserve Emacs behavior, so no
-  ;; confusion is created.
-  ;;
-  ;; However, my keybindings indeed provide less feature than Fuco1's, so that my small
-  ;; brain can remember them, and bind them to my musle memory.
-  (:keymaps 'smartparens-mode-map
-            ;;
-            ;; --- Moving and marking ---
-            ;;
-            ;; Was `mark-sexp'.
-            "C-M-SPC" 'sp-mark-sexp
-            ;; Was `forward-sexp'.
-            "C-M-f" 'sp-forward-sexp
-            ;; Was `backward-sexp'.
-            "C-M-b" 'sp-backward-sexp
-            ;; Was an alias of `backward-sentence'.
-            "M-A" 'sp-begining-of-sexp
-            ;; Was an alias of `forward-sentence'.
-            "M-E" 'sp-end-of-sexp
-            ;; Was `down-list'.
-            "C-M-d" 'sp-down-sexp
-            ;; Was `backward-up-list'.
-            "C-M-u" 'sp-backward-up-sexp
-            ;; Was `backward-list'.
-            "C-M-p" 'sp-previous-sexp
-            ;; Was `forward-list'.
-            "C-M-n" 'sp-next-sexp
-            ;;
-            ;; --- Manipulation ---
-            ;;
-            ;; Was `kill-sexp'.
-            "C-M-k" 'sp-kill-sexp
-            ;; Was `backward-kill-sexp', inaccessible in terminal.
-            "C-M-<backspace>" 'sp-backward-kill-sexp
-            ;; Also was `backward-kill-sexp', accessible in terminal.
-            "C-M-<delete>" 'sp-backward-kill-sexp
-            ;; Was `insert-parentheses', which is useless as long as Smartparens is on.
-            "M-(" 'sp-backward-unwrap-sexp
-            ;; Was `move-past-close-and-reindent'.
-            "M-)" 'sp-unwrap-sexp
-            ;; Was `transpose-sexp'.
-            "C-M-t" 'sp-transpose-sexp
-            ;;
-            ;; --- Useful commands ---
-            ;;
-            ;; Was `indent-region', which can be achieved via <tab>.
-            "C-M-\\" 'sp-indent-defun
-            ;; Was nothing.
-            "M-\"" 'sp-rewrap-sexp)
-  ;; Extra Smartparens commands with the "M-]" prefix.
-  (:keymaps 'smartparens-mode-map
-            :prefix "M-]"
-            "i" 'sp-change-inner
-            "s" 'sp-split-sexp
-            "j" 'sp-join-sexp
-            "ka" 'sp-splice-sexp-killing-around
-            "kf" 'sp-splice-sexp-killing-forward
-            "kb" 'sp-splice-sexp-killing-backward
-            "fb" 'sp-forward-barf-sexp
-            "bb" 'sp-backward-barf-sexp
-            "fs" 'sp-forward-slurp-sexp
-            "bs" 'sp-backward-slurp-sexp)
-  :config
-  (setq
-   ;; Do not show overlays.
-   sp-highlight-pair-overlay nil
-   sp-highlight-wrap-overlay nil
-   ;; Do not auto insert colon for Python.
-   sp-python-insert-colon-in-function-definitions nil)
+;; Enable electric-pair-mode almost everywhere.
+(use-package elec-pair
+  :hook ((conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
+         . electric-pair-mode))
 
-  ;; Apply default config.
-  (require 'smartparens-config)
-
-  ;; Turn on strict mode for Lisp buffers.
-  (add-hook! (lisp-data-mode) (smartparens-strict-mode 1)))
+(use-package combobulate
+  :straight '(combobulate :host github :repo "mickeynp/combobulate")
+  :preface
+  (setq combobulate-key-prefix "C-c o")
+  :hook ((python-ts-mode c-ts-mode c++-ts-mode c-or-c++-ts-mode)
+         . combobulate-mode))
 
 ;;;;; Mouse yank
 
@@ -1618,13 +1531,38 @@ ARGS are the arguments passed."
 
 ;;;;; Tree-sitter integration
 
-(use-package treesit-auto
-  :straight t
-  :demand t
+;; (use-package treesit-auto
+;;   :straight t
+;;   :demand t
+;;   :config
+;;   ;; Install language support manually.
+;;   (setq treesit-auto-langs '(c python scala))
+;;   (global-treesit-auto-mode))
+
+(defvar zy-treesit-enabled-modes '(python c cpp scala)
+  "Enabled Tree-sitter modes.")
+
+(use-package treesit
+  :preface
+  (defun zy-treesit-install-grammars ()
+    "Install Tree-sitter grammars if absent."
+    (interactive)
+    (dolist (grammar
+             '((python "https://github.com/tree-sitter/tree-sitter-python")
+               (c "https://github.com/tree-sitter/tree-sitter-c")
+               (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+               (scala "https://github.com/tree-sitter/tree-sitter-scala")))
+      (add-to-list 'treesit-language-source-alist grammar)
+      (unless (treesit-language-available-p (car grammar))
+        (treesit-install-language-grammar (car grammar))))
+    (dolist (mapping '((python-mode . python-ts-mode)
+                       (c-mode . c-ts-mode)
+                       (c++-mode . c++-ts-mode)
+                       (c-or-c++-mode . c-or-c++-ts-mode)
+                       (scala-mode . scala-ts-mode)))
+      (add-to-list 'major-mode-remap-alist mapping)))
   :config
-  ;; Install language support manually.
-  (setq treesit-auto-langs '(c python))
-  (global-treesit-auto-mode))
+  (zy-treesit-install-grammars))
 
 ;;;; File, buffer, window, project management
 
@@ -3437,9 +3375,7 @@ This overrides `python-indent-dedent-line-backspace'."
 
 ;; Enable running Pytest with the `python-pytest' command.
 (use-package python-pytest
-  :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest"
-                            :fork (:repo "zyxir/emacs-python-pytest"
-                                         :branch "dev" :protocol ssh))
+  :straight '(python-pytest :host github :repo "wbolster/emacs-python-pytest")
   :general (:keymaps 'python-base-mode-map
                      [remap zy/test] 'python-pytest-dispatch))
 
@@ -3488,6 +3424,13 @@ This overrides `python-indent-dedent-line-backspace'."
    minibuffer-local-completion-map)
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
   (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+(use-package scala-ts-mode
+  :straight '(scala-ts-mode :type git :host github :repo "KaranAhlawat/scala-ts-mode")
+  :commands scala-ts-mode
+  :config
+  (setq-hook! scala-ts-mode
+    fill-column 100))
 
 ;;;;; Shell scripts
 
