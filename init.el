@@ -1490,7 +1490,8 @@ ARGS are the arguments passed."
 
 ;; Enable electric-pair-mode everywhere.
 (use-package elec-pair
-  :hook (emacs-startup-hook . electric-pair-mode))
+  :init
+  (add-hook! zy-first-buffer (electric-pair-mode 1)))
 
 ;; Combobulate is only for tree-sitter.
 (use-package combobulate
