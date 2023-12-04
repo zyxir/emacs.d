@@ -1519,7 +1519,7 @@ where PREDICATE is non-nil.  The final element of PAIRS can be a
 single FN, which will be used as the fallback function.
 
 DOCSTRING is used as the documentation string."
-  (declare (doc-string 2))
+  (declare (doc-string 2) (indent defun))
   (let* ((result-sexp (reverse `(defun ,symbol (&rest _))))
          (fn-sexp `(cond)))
     ;; Optionally add docstring.
@@ -1538,13 +1538,14 @@ DOCSTRING is used as the documentation string."
                  (null (eq (car fn-sexp) 'cond))
                  (eq (caar fn-sexp) 't))
       (push `(t 'zy/action-not-supported) fn-sexp))
-    (push `(funcall ,(reverse fn-sexp)) result-sexp)
+    (push `(call-interactively ,(reverse fn-sexp)) result-sexp)
     ;; Return the result in correct order.
     (reverse result-sexp)))
 
 ;; Declare function used in Smartparens.
 (declare-function sp-unwrap-sexp 'smartparens)
 (declare-function sp-backward-unwrap-sexp 'smartparens)
+(declare-function sp-rewrap-sexp 'smartparens)
 
 ;; Define actions.
 (zy/new-pair-action zy/pe-unwrap-right
@@ -1553,13 +1554,21 @@ DOCSTRING is used as the documentation string."
 (zy/new-pair-action zy/pe-unwrap-left
   "Unwrap the sexp before point."
   sp-backward-unwrap-sexp)
+(zy/new-pair-action zy/pe-rewrap
+  "Rewrap the current sexp."
+  sp-rewrap-sexp)
+
+;; The normal interface.
+(general-def
+  "M-(" 'zy/pe-unwrap-left
+  "M-)" 'zy/pe-unwrap-right)
 
 ;; The hydra interface.
 (with-no-warnings
   (defhydra hydra-pair-edit (:foreign-keys run :hint nil)
     "Pair Manipulation"
-    (">" zy/pe-unwrap-right "unwrap right" :column "Edit")
-    ("<" zy/pe-unwrap-left "unwrap left")
+    ("\"" zy/pe-rewrap "rewrap" :column "Edit")
+    ("M-\"" zy/pe-rewrap "rewrap")
     ("C-g" nil "exit" :color blue))
   (general-def "M-\"" 'hydra-pair-edit/body))
 
