@@ -830,7 +830,7 @@ If this is a daemon session, load them all immediately instead."
 
 (use-package hydra
   :straight t
-  :commands defhydra)
+  :demand t)
 
 ;;;;; Load the custom file
 
@@ -1505,10 +1505,11 @@ ARGS are the arguments passed."
 ;; Smartparens is for every other major mode.
 (use-package smartparens
   :straight '(smartparens :host github :repo "Fuco1/smartparens")
-  :commands (sp-upwrap-sexp sp-backward-unwrap-sexp))
+  :defer t)
 
 ;; Pair-editing action definer.
 (defun zy/action-not-supported ()
+  "Print a message about a unsupported action."
   (message "Action not supported."))
 (defmacro zy/new-pair-action (symbol docstring &rest pairs)
   "Define new pair-editing action SYMBOL.
@@ -1541,6 +1542,10 @@ DOCSTRING is used as the documentation string."
     ;; Return the result in correct order.
     (reverse result-sexp)))
 
+;; Declare function used in Smartparens.
+(declare-function sp-unwrap-sexp 'smartparens)
+(declare-function sp-backward-unwrap-sexp 'smartparens)
+
 ;; Define actions.
 (zy/new-pair-action zy/pe-unwrap-right
   "Unwrap the sexp after point."
@@ -1550,12 +1555,13 @@ DOCSTRING is used as the documentation string."
   sp-backward-unwrap-sexp)
 
 ;; The hydra interface.
-(defhydra hydra-pair-edit (:foreign-keys run :hint nil)
-  "Pair Manipulation"
-  (">" zy/pe-unwrap-right "unwrap right" :column "Edit")
-  ("<" zy/pe-unwrap-left "unwrap left")
-  ("C-g" nil "exit" :color blue))
-(general-def "M-\"" 'hydra-pair-edit/body)
+(with-no-warnings
+  (defhydra hydra-pair-edit (:foreign-keys run :hint nil)
+    "Pair Manipulation"
+    (">" zy/pe-unwrap-right "unwrap right" :column "Edit")
+    ("<" zy/pe-unwrap-left "unwrap left")
+    ("C-g" nil "exit" :color blue))
+  (general-def "M-\"" 'hydra-pair-edit/body))
 
 ;;;;; Mouse yank
 
