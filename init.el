@@ -2636,6 +2636,15 @@ Should be run again after theme switch."
                        (expand-file-name file opencc-path-prefix))
                      opencc-configuration-files)))))
 
+;;;;;; Eldoc (at-point documentation)
+
+;; `eldoc' is the built-in utility for at-point documentation.  This package makes `eldoc'
+;; display in a childframe.
+(use-package eldoc-box
+  :straight t
+  :after eldoc
+  :hook (eldoc-mode . eldoc-box-hover-at-point-mode))
+
 ;;;;; Syntax checker (Flymake and Flycheck)
 
 (use-package flycheck
