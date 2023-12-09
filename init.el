@@ -1476,101 +1476,100 @@ ARGS are the arguments passed."
   ("C-c s" 'consult-yasnippet
    "C-c S" 'consult-yasnippet-visit-snippet-file))
 
-;;;;; Pair-editing
+;;;;; Smartparens (parenthesis automation)
 
-;; There are a variety of packages dedicated to parenthesis editing, such as the classic
-;; Paredit, the powerful Smartparens, and the Tree-sitter-based Combobulate. However, a
-;; blogger disliked the idea of providing a complete parenthesis manipulation suite, and
-;; showed how to build a consistent structural editing interface based on repeat-mode and
-;; Smartparens, in his blog post (see URL below). It inspired my to construct my own
-;; consistent pair-editing interface.
-;;
-;; Blog URL:
-;;   https://karthinks.com/software/a-consistent-structural-editing-interface/
+;; I tried to replace Smartparens with a consistent pair-editing interface, but found it
+;; less efficient.  Smartparens may be buggy, but I decide to use it and try to fix the
+;; bugs now.
 
-;; Enable electric-pair-mode everywhere.
-(use-package elec-pair
-  :init
-  (add-hook! zy-first-buffer (electric-pair-mode 1)))
-
-;; Combobulate is only for tree-sitter.
-(use-package combobulate
-  :straight '(combobulate :host github :repo "mickeynp/combobulate")
-  :preface
-  (setq combobulate-key-prefix "C-c o")
-  :hook ((python-ts-mode c-ts-mode c++-ts-mode c-or-c++-ts-mode)
-         . combobulate-mode))
-(defvar combobulate-mode)
-
-;; Smartparens is for every other major mode.
 (use-package smartparens
-  :straight '(smartparens :host github :repo "Fuco1/smartparens")
-  :defer t)
+  :straight '(smartparens :host github :repo "Fuco1/smartparens"
+                          :fork (:repo "zyxir/smartparens" :branch "dev" :protocol ssh))
+  :defer t
+  :hook (conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
+  :general
+  ;; Failed to get used to the default keybindings (which is actually Fuco1's
+  ;; keybindings), I ended up making my own keybindings.  My own keybindings have two
+  ;; advantages:
+  ;;
+  ;; First, keys are binded with `general-def', so that they can be overviewebbbd with
+  ;; `general-describe-keybindings'.
+  ;;
+  ;; Second, unlike Fuco1's config, my keybindings trys to preserve Emacs behavior, so no
+  ;; confusion is created.
+  ;;
+  ;; However, my keybindings indeed provide less feature than Fuco1's, so that my small
+  ;; brain can remember them, and bind them to my musle memory.
+  (:keymaps 'smartparens-mode-map
+            ;;
+            ;; --- Moving and marking ---
+            ;;
+            ;; Was `mark-sexp'.
+            "C-M-SPC" 'sp-mark-sexp
+            ;; Was `forward-sexp'.
+            "C-M-f" 'sp-forward-sexp
+            ;; Was `backward-sexp'.
+            "C-M-b" 'sp-backward-sexp
+            ;; Was an alias of `backward-sentence'.
+            "M-A" 'sp-begining-of-sexp
+            ;; Was an alias of `forward-sentence'.
+            "M-E" 'sp-end-of-sexp
+            ;; Was `down-list'.
+            "C-M-d" 'sp-down-sexp
+            ;; Was `backward-up-list'.
+            "C-M-u" 'sp-backward-up-sexp
+            ;; Was `backward-list'.
+            "C-M-p" 'sp-previous-sexp
+            ;; Was `forward-list'.
+            "C-M-n" 'sp-next-sexp
+            ;;
+            ;; --- Manipulation ---
+            ;;
+            ;; Was `kill-sexp'.
+            "C-M-k" 'sp-kill-sexp
+            ;; Was `backward-kill-sexp', inaccessible in terminal.
+            "C-M-<backspace>" 'sp-backward-kill-sexp
+            ;; Also was `backward-kill-sexp', accessible in terminal.
+            "C-M-<delete>" 'sp-backward-kill-sexp
+            ;; Was `insert-parentheses', which is useless as long as Smartparens is on.
+            "M-(" 'sp-backward-unwrap-sexp
+            ;; Was `move-past-close-and-reindent'.
+            "M-)" 'sp-unwrap-sexp
+            ;; Was `transpose-sexp'.
+            "C-M-t" 'sp-transpose-sexp
+            ;;
+            ;; --- Useful commands ---
+            ;;
+            ;; Was `indent-region', which can be achieved via <tab>.
+            "C-M-\\" 'sp-indent-defun
+            ;; Was nothing.
+            "M-\"" 'sp-rewrap-sexp)
+  ;; Extra Smartparens commands with the "M-]" prefix.
+  (:keymaps 'smartparens-mode-map
+            :prefix "M-]"
+            "i" 'sp-change-inner
+            "s" 'sp-split-sexp
+            "j" 'sp-join-sexp
+            "ka" 'sp-splice-sexp-killing-around
+            "kf" 'sp-splice-sexp-killing-forward
+            "kb" 'sp-splice-sexp-killing-backward
+            "fb" 'sp-forward-barf-sexp
+            "bb" 'sp-backward-barf-sexp
+            "fs" 'sp-forward-slurp-sexp
+            "bs" 'sp-backward-slurp-sexp)
+  :config
+  (setq
+   ;; Do not show overlays.
+   sp-highlight-pair-overlay nil
+   sp-highlight-wrap-overlay nil
+   ;; Do not auto insert colon for Python.
+   sp-python-insert-colon-in-function-definitions nil)
 
-;; Pair-editing action definer.
-(defun zy/action-not-supported ()
-  "Print a message about a unsupported action."
-  (message "Action not supported."))
-(defmacro zy/new-pair-action (symbol docstring &rest pairs)
-  "Define new pair-editing action SYMBOL.
+  ;; Apply default config.
+  (require 'smartparens-config)
 
-PAIRS are (PREDICATE . FN) pairs.  The action uses the first FN
-where PREDICATE is non-nil.  The final element of PAIRS can be a
-single FN, which will be used as the fallback function.
-
-DOCSTRING is used as the documentation string."
-  (declare (doc-string 2) (indent defun))
-  (let* ((result-sexp (reverse `(defun ,symbol (&rest _))))
-         (fn-sexp `(cond)))
-    ;; Optionally add docstring.
-    (when docstring (push docstring result-sexp))
-    ;; Add (interactive).
-    (push '(interactive) result-sexp)
-    ;; Make fn-sexp.
-    (dolist (pair pairs)
-      (if (consp pair)
-          (let* ((predicate (car pair))
-                 (fn (cdr pair))
-                 (sexp `((and (boundp ',predicate) ,predicate) ',fn)))
-            (push sexp fn-sexp))
-        (push `(t ',pair) fn-sexp)))
-    (unless (and (car-safe fn-sexp)
-                 (null (eq (car fn-sexp) 'cond))
-                 (eq (caar fn-sexp) 't))
-      (push `(t 'zy/action-not-supported) fn-sexp))
-    (push `(call-interactively ,(reverse fn-sexp)) result-sexp)
-    ;; Return the result in correct order.
-    (reverse result-sexp)))
-
-;; Declare function used in Smartparens.
-(declare-function sp-unwrap-sexp 'smartparens)
-(declare-function sp-backward-unwrap-sexp 'smartparens)
-(declare-function sp-rewrap-sexp 'smartparens)
-
-;; Define actions.
-(zy/new-pair-action zy/pe-unwrap-right
-  "Unwrap the sexp after point."
-  sp-unwrap-sexp)
-(zy/new-pair-action zy/pe-unwrap-left
-  "Unwrap the sexp before point."
-  sp-backward-unwrap-sexp)
-(zy/new-pair-action zy/pe-rewrap
-  "Rewrap the current sexp."
-  sp-rewrap-sexp)
-
-;; The normal interface.
-(general-def
-  "M-(" 'zy/pe-unwrap-left
-  "M-)" 'zy/pe-unwrap-right)
-
-;; The hydra interface.
-(with-no-warnings
-  (defhydra hydra-pair-edit (:foreign-keys run :hint nil)
-    "Pair Manipulation"
-    ("\"" zy/pe-rewrap "rewrap" :column "Edit")
-    ("M-\"" zy/pe-rewrap "rewrap")
-    ("C-g" nil "exit" :color blue))
-  (general-def "M-\"" 'hydra-pair-edit/body))
+  ;; Turn on strict mode for Lisp buffers.
+  (add-hook! (lisp-data-mode) (smartparens-strict-mode 1)))
 
 ;;;;; Mouse yank
 
