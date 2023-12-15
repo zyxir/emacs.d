@@ -81,6 +81,7 @@
  ("popup-el" . "71cede0588c10526f88dd0375bce776ec2eed05e")
  ("posframe" . "b00f1386ca4e251a5c3d8985d313217e56e42a7e")
  ("powershell.el" . "f2da15857e430206e215a3c65289b4058ae3c976")
+ ("procress" . "6924f35e1624eb8449213244a9fc8464d5464a61")
  ("projectile" . "271007c6611fcb08ddd326d7de9727c2ad5ef265")
  ("projectile-git-autofetch" . "423ed5fa6508c4edc0a837bb585c7e77e99876be")
  ("pulsar" . "ce093b70c6e58961b1c80cf44fa23c726f7a9cef")

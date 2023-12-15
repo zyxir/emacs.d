@@ -2282,9 +2282,15 @@ Return what `zy/setup-font-faces' returns."
   :demand t
   :config
   ;; Tweak and enable the Doom modeline.
-  (setq doom-modeline-enable-word-count t
-        doom-modeline-display-misc-in-all-mode-lines nil
-        doom-modeline-icon (null *windows*))
+  (setq
+   ;; Make the mode line taller.
+   doom-modeline-height 32
+   ;; Enable word count.
+   doom-modeline-enable-word-count t
+   ;; Do not display the misc segment on all mode lines.
+   doom-modeline-display-misc-in-all-mode-lines nil
+   ;; Disable icons on Windows.
+   doom-modeline-icon (null *windows*))
   (doom-modeline-mode 1)
   ;; Additionally, enable column number mode.
   (column-number-mode 1))
@@ -2298,6 +2304,13 @@ Return what `zy/setup-font-faces' returns."
    ;; Use 24 hour format.
    display-time-24hr-format t)
   (display-time-mode 1))
+
+;; Show process progress.
+(use-package procress
+  :straight (:host github :repo "haji-ali/procress")
+  :hook (LaTeX-mode . procress-auctex-mode)
+  :config
+  (procress-load-default-svg-images))
 
 ;;;;; Configure in-buffer display
 
