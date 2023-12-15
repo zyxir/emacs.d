@@ -1974,6 +1974,13 @@ faster `prin1'."
    ;; Create parent directories smartly.
    wdired-create-parent-directories t))
 
+;; Ignore files that are to be ignored by git.
+(use-package dired-gitignore
+  :straight t
+  :general
+  (:keymaps 'dired-mode-map
+            "M-i" #'dired-gitignore-global-mode))
+
 ;;;;; Manage project with Projectile
 
 ;; I decide to switch to Projectile from the built-in Project.el.  Projectile is much more
@@ -2455,7 +2462,9 @@ Should be run again after theme switch."
     :straight (nerd-icons-dired :type git :host github
                                 :repo "rainstormstudio/nerd-icons-dired")
     :hook
-    (dired-mode . nerd-icons-dired-mode))
+    (dired-mode . nerd-icons-dired-mode)
+    :config
+    (advice-add 'dired-subtree-toggle :around #'nerd-icons-dired--refresh-advice))
 
   ;; Corfu support (together with Kind-icon).
   (use-package kind-icon
