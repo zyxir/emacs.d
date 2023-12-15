@@ -3119,15 +3119,6 @@ Path is converted with the \"wslpath\" command."
   org-list org-pcomplete org-src org-footnote org-macro ob org org-agenda
   org-capture
   :init
-  (setq!
-   ;; Indent sections by depth.
-   org-startup-indented t)
-  (add-hook! org-mode
-    ;; Org is my main prose editor.  I prefer working with variable pitch fonts
-    ;; when writing proses.
-    'variable-pitch-mode
-    ;; Turn off display-line-numbers-mode, as it breaks table display.
-    (display-line-numbers-mode -1))
 
   ;; GTD files.
   (defvar zy-gtd-inbox-file nil
@@ -3150,9 +3141,27 @@ Automatically set when `zy~zybox-dir' is customized.")
    "C-c c" 'org-capture)
   (:keymaps 'org-mode-map
             "M-g h" 'consult-org-heading)
+  :init
+  (setq!
+   ;; Indent sections by depth.
+   org-startup-indented t)
 
+  (add-hook! org-mode
+    ;; Org is my main prose editor.  I prefer working with variable pitch fonts
+    ;; when writing proses.
+    'variable-pitch-mode
+    ;; Turn off display-line-numbers-mode, as it breaks table display.
+    (display-line-numbers-mode -1))
   :config
   (setq!
+   ;; Make tags next to headlines.
+   org-auto-align-tags nil
+   org-tags-column 0
+   ;; Use special ctrl-a/e.
+   org-special-ctrl-a/e t
+   ;; Use prettier ellipsis.
+   org-ellipsis "\u2026"
+   ;; Setup agenda files.
    org-agenda-files (list zy-gtd-inbox-file zy-gtd-gtd-file)
    ;; My favorite attachment directory.
    org-attach-id-dir "_org-att"
@@ -3185,15 +3194,7 @@ Automatically set when `zy~zybox-dir' is customized.")
    org-todo-keyword-faces '(("TODO" . org-todo)
                             ("DOING" . (:foreground "#00bcff"))
                             ("DONE" . org-done)
-                            ("CANCELED" . shadow)))
-
-  ;; Setup faces.
-  (defun zy--setup-org-faces (&rest _)
-    "Setup faces for Org mode."
-    ;; Use monospaced font for code and blocks.
-    (set-face-attribute 'org-block nil :family "Sarasa Mono HC"))
-  (zy--setup-org-faces)
-  (add-hook 'zy-load-theme-hook 'zy--setup-org-faces))
+                            ("CANCELED" . shadow))))
 
 ;; Setup Org-babel with some additional languages.
 (use-package ob
@@ -3216,6 +3217,16 @@ Automatically set when `zy~zybox-dir' is customized.")
 (use-package org-appear
   :straight t
   :hook org-mode)
+
+;; Prettify Org buffers with Org-modern.
+(use-package org-modern
+  :straight t
+  :hook org-mode
+  :config
+
+  ;; Set some fonts.
+  (set-face-attribute 'org-block nil :family "Sarasa Mono HC")
+  (set-face-attribute 'org-modern-symbol nil :family "Sarasa Mono HC"))
 
 ;;;;;; Org export common settings
 

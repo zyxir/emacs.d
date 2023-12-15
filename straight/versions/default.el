@@ -69,6 +69,7 @@
  ("org" . "8dd1cc04d06d6f595f42c365c03148983ad97a4c")
  ("org-appear" . "eb9f9db40aa529fe4b977235d86494b115281d17")
  ("org-journal" . "18df4d5ae5e15580df42562c143d007c6d28d75f")
+ ("org-modern" . "418b1adeec936e42abe1e3151633951055909ea4")
  ("org-reveal" . "f55c851bf6aeb1bb2a7f6cf0f2b7bd0e79c4a5a0")
  ("org-roam" . "5c06471c3a11348342719fd9011486455adeb701")
  ("org-roam-ui" . "5ac74960231db0bf7783c2ba7a19a60f582e91ab")
