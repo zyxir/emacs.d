@@ -941,6 +941,17 @@ Automatically set when `zy~zybox-dir' is customized.")
 (general-def :keymaps 'zy-coding-map
   "t" 'zy/test)
 
+(defun zy/format (&rest _)
+  "Placeholder for code formatting."
+  (interactive)
+  (declare-function eglot-format 'eglot)
+  ;; If not implemented, use Eglot formatting by default.
+  (if (bound-and-true-p eglot--managed-mode)
+      (eglot-format)
+    (message "No formatting facility is implemented for this mode.")))
+(general-def :keymaps 'zy-coding-map
+  "f" 'zy/format)
+
 (defcustom zy~use-lsp-bridge nil
   "Non-nil means use Lsp-bridge instgead of Eglot.
 If this is non-nil, Corfu will be turned off, too.
@@ -2700,7 +2711,6 @@ Should be run again after theme switch."
   :general
   (:keymaps 'zy-coding-map
             "a" 'eglot-code-actions
-            "f" 'eglot-format
             "r" 'eglot-rename
             "R" 'eglot-reconnect)
   :init
@@ -3527,6 +3537,13 @@ This overrides `python-indent-dedent-line-backspace'."
                                :fork (:repo "zyxir/python-docstring-mode"
                                             :branch "dev" :protocol ssh))
   :hook python-base-mode)
+
+;; Python-black provides code formatting via Black.
+(use-package python-black
+  :straight t
+  :after python
+  :general (:keymaps 'python-base-mode-map
+                     [remap zy/format] 'python-black-buffer))
 
 ;;;;; Scala
 
