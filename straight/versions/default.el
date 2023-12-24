@@ -94,7 +94,7 @@
  ("rg.el" . "e9dc4ed342e0212d08fb82554dfd3c57fdfa5b1a")
  ("s.el" . "dda84d38fffdaf0c9b12837b504b402af910d01d")
  ("shrink-path.el" . "c14882c8599aec79a6e8ef2d06454254bb3e1e41")
- ("smartparens" . "b42e1b32dfefb0f9baa0d51b312464a0da3a9442")
+ ("smartparens" . "0778a8a84064cf2bc3a9857bd0e7a4619cc1e5c3")
  ("straight.el" . "3eca39dfc6797243ec7d1c6a7d45142407f73f88")
  ("string-inflection" . "50ad54970b3cc79b6b83979bde9889ad9a9e1a9c")
  ("sudo-edit" . "74eb1e6986461baed9a9269566ff838530b4379b")

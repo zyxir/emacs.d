@@ -1494,8 +1494,7 @@ ARGS are the arguments passed."
 ;; bugs now.
 
 (use-package smartparens
-  :straight '(smartparens :host github :repo "Fuco1/smartparens"
-                          :fork (:repo "zyxir/smartparens" :branch "dev" :protocol ssh))
+  :straight t
   :defer t
   :hook (conf-mode prog-mode text-mode comint-mode eshell-mode minibuffer-mode)
   :general
@@ -3533,9 +3532,7 @@ This overrides `python-indent-dedent-line-backspace'."
 ;; Python-docstring provides syntax highlighting and filling command for reStructuredText
 ;; and Epydoc docstrings.
 (use-package python-docstring
-  :straight '(python-docstring :host github :repo "glyph/python-docstring-mode"
-                               :fork (:repo "zyxir/python-docstring-mode"
-                                            :branch "dev" :protocol ssh))
+  :straight '(python-docstring :host github :repo "glyph/python-docstring-mode")
   :hook python-base-mode)
 
 ;; Python-black provides code formatting via Black.
