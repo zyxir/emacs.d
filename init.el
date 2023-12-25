@@ -3061,7 +3061,9 @@ Path is converted with the \"wslpath\" command."
   (setq devdocs-data-dir (expand-file-name "devdocs" user-emacs-directory))
   ;; Mode-specific devdocs.
   (setq-hook! python-base-mode
-    devdocs-current-docs '("python~3.11" "matplotlib~3.7")))
+    devdocs-current-docs '("python~3.11" "matplotlib~3.7"))
+  (setq-hook! scala-mode
+    devdocs-current-docs '("scala~2.13")))
 
 ;;;; File type specific settings
 
