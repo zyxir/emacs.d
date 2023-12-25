@@ -3052,6 +3052,17 @@ Path is converted with the \"wslpath\" command."
   ;;                     :height 150)
   )
 
+;;;;; View documentations from devdocs.io
+
+(use-package devdocs
+  :straight t
+  :general ("C-h D" 'devdocs-lookup)
+  :config
+  (setq devdocs-data-dir (expand-file-name "devdocs" user-emacs-directory))
+  ;; Mode-specific devdocs.
+  (setq-hook! python-base-mode
+    devdocs-current-docs '("python~3.11" "matplotlib~3.7")))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
