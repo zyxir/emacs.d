@@ -1345,18 +1345,11 @@ ARGS are the arguments passed."
    ;; Always use spaces.
    indent-tabs-mode nil))
 
-;; Mode used to highlight indentation.
-(use-package highlight-indent-guides
-  :straight t
-  :general
-  (:keymaps 'zy-toggle-map
-            "i" 'highlight-indent-guides-mode)
-  :config
-  (setq!
-   ;; Use filling to indicate indentation.
-   highlight-indent-guides-method 'fill
-   ;; Highlight the current indentation.
-   highlight-indent-guides-responsive 'top))
+;; Show indentation guides.
+(use-package indent-bars
+  :straight (indent-bars :host github :repo "jdtsmith/indent-bars")
+  ;; Only enable for some modes.
+  :hook (python-base-mode scala-mode))
 
 ;;;;; Tweak selection
 
@@ -3045,6 +3038,19 @@ Path is converted with the \"wslpath\" command."
                             (t wslpath-output))))
       (message converted-path)
       (call-process "explorer.exe" nil 0 nil converted-path))))
+
+;;;;; Visual undo
+
+(use-package vundo
+  :straight t
+  :commands vundo
+  ;; :config
+  ;; (setq! vundo-glyph-alist vundo-unicode-symbols)
+  ;; (set-face-attribute 'vundo-default nil :family (pcase system-type
+  ;;                                                  ('windows-nt "Segoe UI Symbol")
+  ;;                                                  ('gnu/linux "Noto Sans Symbol"))
+  ;;                     :height 150)
+  )
 
 ;;;; File type specific settings
 
