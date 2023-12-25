@@ -11,7 +11,6 @@
  ("corfu" . "e8f17874a81735881b3ab93f13a9ebe5d2e577e6")
  ("darkroom" . "27b928a6e91c3207742180f7e209bae754c9c1fe")
  ("dash.el" . "6db80c711ce947f6c6fa11e5c2257fff2c79d139")
- ("devdocs.el" . "f0436bc0e2077683438e838acdfc425337898175")
  ("diff-hl" . "ed34450246598af02299053feb9d85d6675114dd")
  ("dired-gitignore.el" . "b6e804c212b497d5502600bd4df10196e44d2bf7")
  ("dired-hacks" . "1596e516835099b96cb65d1dc372cfbdff6aea96")

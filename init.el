@@ -3043,27 +3043,7 @@ Path is converted with the \"wslpath\" command."
 
 (use-package vundo
   :straight t
-  :commands vundo
-  ;; :config
-  ;; (setq! vundo-glyph-alist vundo-unicode-symbols)
-  ;; (set-face-attribute 'vundo-default nil :family (pcase system-type
-  ;;                                                  ('windows-nt "Segoe UI Symbol")
-  ;;                                                  ('gnu/linux "Noto Sans Symbol"))
-  ;;                     :height 150)
-  )
-
-;;;;; View documentations from devdocs.io
-
-(use-package devdocs
-  :straight t
-  :general ("C-h D" 'devdocs-lookup)
-  :config
-  (setq devdocs-data-dir (expand-file-name "devdocs" user-emacs-directory))
-  ;; Mode-specific devdocs.
-  (setq-hook! python-base-mode
-    devdocs-current-docs '("python~3.11" "matplotlib~3.7"))
-  (setq-hook! scala-mode
-    devdocs-current-docs '("scala~2.13")))
+  :commands vundo)
 
 ;;;; File type specific settings
 

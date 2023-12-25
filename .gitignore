@@ -16,7 +16,6 @@ straight/*
 auto-save-list
 bookmarks
 custom.el
-devdocs
 dirvish
 eln-cache
 emacs_backtrace.txt
