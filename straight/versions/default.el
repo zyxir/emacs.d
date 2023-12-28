@@ -47,6 +47,7 @@
  ("general.el" . "7ce8db297e3de258ec43802269438ac7f1918707")
  ("git-timemachine" . "d8ffd0d7cc4ab3dd7de494c9ea36dfd99e2744fa")
  ("gnu-elpa-mirror" . "dcae75cb069e4826d9ad2199dec6eca3a7977eff")
+ ("goggles" . "4a22853a4ff18c1c1a2149945de9a5ed0a23a2c9")
  ("hl-todo" . "a627d33214e60fc5a2fe6164411d908e1afdba59")
  ("ht.el" . "3c1677f1bf2ded2ab07edffb7d17def5d2b5b6f6")
  ("hydra" . "317e1de33086637579a7aeb60f77ed0405bf359b")

@@ -2448,6 +2448,14 @@ Should be run again after theme switch."
                             'pulsar-cyan)))
         (funcall fn)))))
 
+;;;;;; Highlight regions with Goggles
+
+(use-package goggles
+  :straight t
+  :hook ((conf-mode prog-mode text-mode) . goggles-mode)
+  :config
+  (setq-default goggles-pulse t))
+
 ;;;;; Emoji support
 
 ;; Displaying and inserting emojis.
