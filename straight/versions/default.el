@@ -20,6 +20,7 @@
  ("el-get" . "22c83206bab10100fdee03cb2d5b97c8c24eff0e")
  ("eldoc-box" . "c36f31074b09930e8425963f39d5508da6d2c32d")
  ("emacs-corfu-terminal" . "2dabbbc365d3e3b8d3f8314f6838ba1ed6c4311a")
+ ("emacs-dotenv-mode" . "e3701bf739bde44f6484eb7753deadaf691b73fb")
  ("emacs-emojify" . "1b726412f19896abf5e4857d4c32220e33400b55")
  ("emacs-htmlize" . "dd27bc3f26efd728f2b1f01f9e4ac4f61f2ffbf9")
  ("emacs-libvterm" . "3e5a9b754b8e61850bb7d1b63b090b9fbf6687f3")

@@ -3662,6 +3662,12 @@ This overrides `python-indent-dedent-line-backspace'."
   :init
   (add-to-list 'auto-mode-alist '("/nginx/.+\\.conf\\'" . nginx-mode)))
 
+(use-package dotenv-mode
+  :straight t
+  :commands dotenv-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.env\\..*\\'" . dotenv-mode)))
+
 ;;;; The end
 
 (provide 'init)
