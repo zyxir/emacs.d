@@ -3447,6 +3447,11 @@ The function works like `org-latex-export-to-pdf', except that
   :general
   ("C-c r f" 'org-roam-node-find)
   :config
+  ;; Ignore all headlines with the ATTACH tag.
+  (setq org-roam-db-node-include-function
+        (lambda ()
+          (not (member "ATTACH" (org-get-tag)))))
+
   (general-def
     :prefix "C-c r"
     "i" 'org-roam-node-insert
