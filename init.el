@@ -3450,7 +3450,7 @@ The function works like `org-latex-export-to-pdf', except that
   ;; Ignore all headlines with the ATTACH tag.
   (setq org-roam-db-node-include-function
         (lambda ()
-          (not (member "ATTACH" (org-get-tag)))))
+          (not (member "ATTACH" (org-get-tags)))))
 
   (general-def
     :prefix "C-c r"
