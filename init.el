@@ -3065,6 +3065,12 @@ Path is converted with the \"wslpath\" command."
   :straight t
   :commands vundo)
 
+;;;;; Editorconfig support
+
+(use-package editorconfig
+  :straight t
+  :hook (zy-first-file . editorconfig-mode))
+
 ;;;; File type specific settings
 
 ;; This section enhances Emacs on specific file types, mostly programming
