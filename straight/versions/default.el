@@ -17,6 +17,7 @@
  ("doom-modeline" . "04cfd303c816478150124063ada92f59f932d897")
  ("ebib" . "5a03e4662dccbffe63605bb8e88bfb691ebe0afa")
  ("edit-indirect" . "f80f63822ffae78de38dbe72cacaeb1aaa96c732")
+ ("editorconfig-emacs" . "9780a07648afe0c12c7f7cd8f1cdfe1be4fc8684")
  ("el-get" . "22c83206bab10100fdee03cb2d5b97c8c24eff0e")
  ("eldoc-box" . "c36f31074b09930e8425963f39d5508da6d2c32d")
  ("emacs-corfu-terminal" . "2dabbbc365d3e3b8d3f8314f6838ba1ed6c4311a")
