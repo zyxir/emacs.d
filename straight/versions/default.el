@@ -55,6 +55,7 @@
  ("indent-bars" . "9cf88e14030cd6c95a7192269cf2a224e6f19763")
  ("interactive-align" . "bc4d30d79f2f4b413288195ef19894ac0fd258b7")
  ("isearch-mb" . "40445951fbd1ff9b18662cc7374b524737c37b94")
+ ("jinx" . "03efb689ca134127c186b8da5a2a91b04889ea2b")
  ("kind-icon" . "a9ab2efcd8a726652412b60bdd5a3064c9908669")
  ("let-alist" . "021fc10df2e44faba4728d849ee767cf890aa51a")
  ("lsp-bridge" . "03fa63d614e4355461fd24b34fa8c24080f57c9f")

@@ -2668,7 +2668,19 @@ Should be run again after theme switch."
                        (expand-file-name file opencc-path-prefix))
                      opencc-configuration-files)))))
 
-;;;;;; Eldoc (at-point documentation)
+;;;;;; Jinx --- Spell checker powered by enchant
+
+(use-package jinx
+  :straight t
+  :commands jinx-mode
+  :general
+  (:keymaps 'jinx-mode-map
+            "M-$" #'jinx-correct
+            "C-M-$" #'jinx-languages
+            "M-p" #'jinx-previous
+            "M-n" #'jinx-next))
+
+;;;;; Eldoc (at-point documentation)
 
 ;; `eldoc' is the built-in utility for at-point documentation.  This package makes `eldoc'
 ;; display in a childframe.
