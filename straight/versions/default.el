@@ -2,6 +2,7 @@
  ("auctex" . "2559248316b24fa5e8e7656f3894e4f71d18fc01")
  ("avy" . "d9634efe2631b608cb28c420f54d6e6689805cf7")
  ("biblio.el" . "ee52f6cda82ea6fbc3b400e7b12132595cc0374c")
+ ("bufferlo" . "90ba743101424b7dd98dc773aedcfc3ee08df05a")
  ("cape" . "2d6c5f6dabf476776c8af944203289bbf3693ba4")
  ("citar" . "747d9083e07b57209f652949f4807ef9cec541da")
  ("citeproc-el" . "290320fc579f886255f00d7268600df7fa5cc7e8")

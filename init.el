@@ -2119,6 +2119,46 @@ This is an :around advice, and FN is the adviced function."
   :straight t
   :commands 'sudo-edit)
 
+;;;;; Tab-based isolated workspaces
+
+(use-package tab-bar
+  :defer t
+  :config
+  ;; Tab name with more paddings.
+  ;; (defun zy--tab-bar-tab-name-format (tab &optional _i)
+  ;;   "Fucntion to produce centered tab name."
+  ;;   (propertize
+  ;;    (concat "  " (alist-get 'name tab) "  ")
+  ;;    'face (funcall tab-bar-tab-face-function tab)))
+  ;; (setq! tab-bar-tab-name-format-function 'zy--tab-bar-tab-name-format)
+
+  ;; Use bold font for the current tab.
+  (set-face-attribute 'tab-bar-tab nil :weight 'bold))
+
+;; Isolated tabs with Bufferlo.
+(use-package bufferlo
+  :straight (:host github :repo "florommel/bufferlo")
+  :after tab-bar
+  :config
+  ;; Enable Bufferlo.
+  (bufferlo-mode 1)
+  ;; Scratch buffer for new tabs.
+  (setq tab-bar-new-tab-choice #'bufferlo-create-local-scratch-buffer
+        tab-bar-close-button-show t)
+  ;; Only show local buffers in consult.
+  (setq consult--source-buffer
+        `(:name "Local Buffers"
+                :narrow   ?l
+                :category buffer
+                :face     consult-buffer
+                :history  buffer-name-history
+                :state    ,#'consult--buffer-state
+                :default  t
+                :items ,(lambda () (consult--buffer-query
+                                    :predicate #'bufferlo-local-buffer-p
+                                    :sort 'visibility
+                                    :as #'buffer-name)))))
+
 ;;;; User interface
 
 ;; This sections concentrates on improving the user interface of GNU Emacs,
