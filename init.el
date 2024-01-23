@@ -2982,7 +2982,6 @@ Automatically set when `zy~zybox-dir' is customized.")
 
 ;; Inserting and managing citations with Citar.  Related directories are set
 ;; when `zy~zybox-dir' is customized.
-
 (use-package citar
   :straight t
   :general
@@ -2994,7 +2993,6 @@ Automatically set when `zy~zybox-dir' is customized.")
 
 ;; Load Citar-embark when Embark is loaded, so that BibTeX keys can be
 ;; recognized.
-
 (use-package citar-embark
   :straight t
   :after embark
@@ -3004,7 +3002,6 @@ Automatically set when `zy~zybox-dir' is customized.")
 
 ;; Manage bibliography database in Emacs with Ebib.  Related directories are set
 ;; when `zy~zybox-dir' is customized.
-
 (use-package ebib
   :straight t
   :general
@@ -3026,7 +3023,6 @@ Automatically set when `zy~zybox-dir' is customized.")
      ("ps" . zy/open-externally))))
 
 ;; Import entry with DOI via Biblio.
-
 (use-package biblio
   :straight t
   :general
@@ -3040,7 +3036,6 @@ Automatically set when `zy~zybox-dir' is customized.")
    biblio-bibtex-use-autokey t))
 
 ;; Automatic key generation with bibtex.
-
 (use-package bibtex
   :defer t
   :config
@@ -3051,7 +3046,20 @@ Automatically set when `zy~zybox-dir' is customized.")
    bibtex-autokey-year-length 4
    bibtex-autokey-titlewords 2
    bibtex-autokey-name-year-separator "_"
-   bibtex-autokey-year-title-separator "_"))
+   bibtex-autokey-year-title-separator "_"
+   ;; Add a "entrysubtype" field for "Book" entries, so that the "Standard" type of GB/T
+   ;; 7714-2015 can be supported by biblatex.
+   bibtex-biblatex-entry-alist
+   (mapcar (lambda (entry)
+             (if (string= (car entry) "Book")
+                 (let ((modified-entry entry)
+                       (optionals (nth 4 entry)))
+                   (unless (member '("entrysubtype") optionals)
+                     (push '("entrysubtype") optionals)
+                     (setf (nth 4 modified-entry) optionals))
+                   modified-entry)
+               entry))
+           bibtex-biblatex-entry-alist)))
 
 ;;;;; Convert decorated text to HTML
 
