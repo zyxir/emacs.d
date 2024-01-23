@@ -3000,8 +3000,8 @@ Automatically set when `zy~zybox-dir' is customized.")
   :config
   (citar-embark-mode))
 
-;; Manage bibliography database in Emacs with Ebib.  Related directories are set
-;; when `zy~zybox-dir' is customized.
+;; Manage bibliography database in Emacs with Ebib.  Related directories are set when
+;; `zy~zybox-dir' is customized.
 (use-package ebib
   :straight t
   :general
@@ -3020,7 +3020,9 @@ Automatically set when `zy~zybox-dir' is customized.")
    ebib-file-associations
    `(("caj" . zy/open-externally)
      ("pdf" . zy/open-externally)
-     ("ps" . zy/open-externally))))
+     ("ps" . zy/open-externally)))
+  ;; When on WSL, import file from the Windows host by default.
+  (when *wsl* (setq ebib-import-directory "/mnt/c/Users/zyxir/Downloads/")))
 
 ;; Import entry with DOI via Biblio.
 (use-package biblio
