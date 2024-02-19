@@ -1398,11 +1398,9 @@ ARGS are the arguments passed."
    ;; unless when paid to write lines of code shorter than 80 characters.
    fill-column 80
    ;; These settings are adapted from Protesilaus Stavrou's configuration.
-   sentence-end-double-space t
+   sentence-end-double-space nil
    sentence-end-without-period nil
-   colon-double-space nil
-   use-hard-newlines nil
-   adaptive-fill-mode t))
+   colon-double-space nil))
 
 ;;;;; Whitespaces
 
