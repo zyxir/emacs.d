@@ -3739,6 +3739,12 @@ This overrides `python-indent-dedent-line-backspace'."
   :init
   (add-to-list 'auto-mode-alist '("\\.env\\..*\\'" . dotenv-mode)))
 
+(use-package csv-mode
+  :straight t
+  :commands csv-mode
+  :init
+  (add-to-list 'auto-mode-alist '("\\.csv\\'" . csv-mode)))
+
 ;;;; The end
 
 (provide 'init)

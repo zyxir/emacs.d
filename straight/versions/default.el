@@ -10,6 +10,7 @@
  ("consult" . "1eb5894aa29f39b4444a8b9b589d4d3a39d77db3")
  ("consult-yasnippet" . "ae0450889484f23dc4ec37518852a2c61b89f184")
  ("corfu" . "e8f17874a81735881b3ab93f13a9ebe5d2e577e6")
+ ("csv-mode" . "81c1a9febd2adf79cfbdf939081ef7bf3a41ffd6")
  ("darkroom" . "27b928a6e91c3207742180f7e209bae754c9c1fe")
  ("dash.el" . "6db80c711ce947f6c6fa11e5c2257fff2c79d139")
  ("diff-hl" . "ed34450246598af02299053feb9d85d6675114dd")
