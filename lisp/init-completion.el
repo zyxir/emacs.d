@@ -9,6 +9,9 @@
 (require-package 'orderless)
 (require-package 'vertico)
 (require-package 'marginalia)
+(require-package 'corfu)
+(require-vc-package '(corfu-terminal
+                      :url "https://codeberg.org/akib/emacs-corfu-terminal"))
 
 
 ;; Completion Styles
@@ -84,5 +87,36 @@ ARGS are the arguments passed."
 
 ;; Show candidate info with Marginalia.
 (marginalia-mode 1)
+
+
+;; Text Completion
+
+(add-hook! prog-mode #'corfu-mode)
+ ;; Enable auto completion.
+(setq corfu-auto t)
+(general-def
+  :keymaps 'corfu-map
+  ;; Do not intefere with cursor movement keys.
+  "RET" nil
+  "<up>" nil
+  "<down>" nil
+  [remap previous-line] nil
+  [remap next-line] nil)
+
+;; Remember completion history.
+(corfu-history-mode 1)
+
+;; Enable Corfu in the minibuffer.
+(defun zy/enable-corfu-in-minibuffer ()
+  "Enable Corfu in the minibuffer if `completion-at-point' is bound."
+  (when (where-is-internal #'completion-at-point (list (current-local-map)))
+    ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
+    (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
+                corfu-popupinfo-delay nil)
+    (corfu-mode 1)))
+(add-hook 'minibuffer-setup-hook #'zy/enable-corfu-in-minibuffer)
+
+;; Enable Corfu-terminal if running in a terminal.
+(corfu-terminal-mode 1)
 
 ;;; init-completion.el ends here

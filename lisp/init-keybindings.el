@@ -8,13 +8,15 @@
 
 (require-package 'evil)
 (require-package 'evil-collection)
+(require-package 'evil-terminal-cursor-changer)
 (require-package 'general)
 (require-package 'consult)
 (require-package 'embark)
 (require-package 'embark-consult)
 (require-package 'which-key)
 
-;; Setup Evil.
+
+;; Setup Evil
 (setq
  ;; Delete back to indentation with C-u in insert state.
  evil-want-C-u-delete t
@@ -30,9 +32,17 @@
 (evil-mode 1)
 
 ;; Setup Evil in many other modes.
-(evil-collection-init '(dired
-                        magit
-                        wdired))
+(evil-collection-init)
+
+;; Also change Evil cursor in terminal.
+(evil-terminal-cursor-changer-activate)
+
+
+;; Setup Keybindings
+
+;; Single key commands.
+(general-def
+  "M-m" #'embark-act)
 
 ;; The leader key.
 (general-create-definer zy/leader-def
@@ -41,17 +51,17 @@
   :prefix "SPC"
   :non-normal-prefix "M-SPC")
 
-;; Single key commands.
+;; Leader commands.
 (zy/leader-def
   "0" #'delete-window
-  "1" #'delete-other-window
+  "1" #'delete-other-windows
   ;; TODO remap 2 and 3 to other more useful commands.
   "2" #'split-window-below
   "3" #'split-window-right
   "4" #'other-window-prefix
   "5" #'other-frame-prefix
-  "SPC" #'embark-act
   "b" #'consult-buffer
+  "k" #'kill-buffer
   "s" #'save-buffer)
 
 ;; "<leader> f" for file-related operations.

@@ -2,21 +2,22 @@
 ;;; Commentary:
 ;;; Code:
 
-;;;; Preparations
+
+;; Preparations
 
 ;; Check Emacs version.
 (let ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Emacs %s or higher is required to run Zyxir's config." minver)))
 
-;; Determine the operating system.
-(defvar zy/os-wsl-p (file-exists-p "/etc/wsl.conf")
+;; Determine the running environment.
+(defvar zy/wsl-p (file-exists-p "/etc/wsl.conf")
   "If Emacs is running on WSL.")
 (defvar zy/os
   (cond ((member system-type '(ms-dos windows-nt cygwin))
 	 windows)
 	((eq system-type 'gnu/linux)
-	 (if zy/os-wsl-p 'wsl 'linux))
+	 (if zy/wsl-p 'wsl 'linux))
 	(t 'unsupported))
   "The operating system Emacs is running on.
 Possible values:
@@ -25,7 +26,8 @@ Possible values:
   `linux'       a Linux distribution
   `unsupported' an unsupported system")
 
-;;;; Load modules.
+
+;; Load modules.
 
 (defconst zy/lisp-dir (expand-file-name "lisp" user-emacs-directory)
   "Directory containing modules of Zyxir's Emacs config.")

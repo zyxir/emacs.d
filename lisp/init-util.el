@@ -10,7 +10,8 @@
 (unless (package-installed-p 'zylib)
   (package-install-file (expand-file-name "zylib.el" zy/lisp-dir)))
 
-;;;;; Symbol manipulation
+
+;; Symbol manipulation
 
 (defun zy/unquote (exp)
   "Return EXP unquoted."
@@ -19,7 +20,8 @@
     (setq exp (cadr exp)))
   exp)
 
-;;;;; Hook management
+
+;; Hook management
 
 (defun zy/-resolve-hook-forms (hooks)
   "Convert a list of modes into a list of hook symbols.

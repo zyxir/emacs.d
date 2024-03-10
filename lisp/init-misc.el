@@ -74,6 +74,9 @@
 ;; Always save buffer locations.
 (save-place-mode 1)
 
+;; Enable mouse support in a terminal.
+(xterm-mouse-mode 1)
+
 ;; Display line numbers in most modes.
 (setq-default
  ;; Explicitly define a width to reduce the cost of on-the-fly computation. 4 is
