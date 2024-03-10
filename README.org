@@ -1,0 +1,57 @@
+#+html: <div align="center">
+* Zyxir's Emacs config
+#+html: </div>
+
+Fast and lightweight Emacs configuration tailored for my daily usage.
+
+- Support **Emacs 29.1+** on **WSL** (Windows Subsystem for Linux).
+- Use Vim keybindings (via Evil).
+- Works in terminal.
+- Tailored for development in: Python, Scala.
+- Org-mode powered PKM (personal knowledge management) system.
+
+** Philosophy
+
+- Efficiency :: Being fast and productive is the utmost goal.
+- Minimal :: Stick to a simple, text-based UI. No fancy graphics or bloated
+  packages.
+
+*** Why Evil
+
+I sticked to Emacs keybindings for years before switching to Evil, because of
+several problems:
+
+- **Key availability**: As I assign more keys to different functionalities, the
+  keybindings have been a mess. I do not hate the Ctrl key, but it is often hard
+  for my muscle memory to distinguish between =C-x= and =C-c=. Evil's modal
+  keybindings are more mnemonic and provide more free keys.
+- **Efficiency**: Vim keys are easier to press correctly. Killer features like
+  Evil-surround can be implemented without mess up the keybindings.
+
+** Installation
+
+Clone this repository to =~/.emacs.d= and run emacs. All packages should be
+installed automatically.
+
+These third-party programs enable additional functionalities of my
+configuration:
+
+- Fd :: Fast filesystem search. Used by commands like ~project-find-file~.
+- Ripgrep :: Fast text search. Used by commands like ~rg~.
+
+** Customization
+
+Most behavior of this configuration is hard-coded. That is because I am
+currently the only user of this configuration, and I can change any behavior by
+modifying the source code. However, there are some machine-dependent settings
+that is not consistent in every device of mine. It is recommended to configure
+these settings via the ~customize~ UI:
+
+- ~zy~font-size~ :: This determines the default font size. Customize this
+  according to the screen size of the device.
+
+** Tips
+
+*** Profiling startup time (by ~init-elpa.el~)
+
+Powered by [[https://github.com/jschaf/esup][ESUP]], You can profile startup time via ~M-x esup~.

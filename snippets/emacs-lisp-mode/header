@@ -1,0 +1,17 @@
+# -*- mode: snippet; -*-
+# contributor: zyxir <https://www.github.com/zyxir>
+# name: File header
+# key: fheader
+# --
+;;; ${1:name}.el --- ${2:summary}  -*- lexical-binding: t -*-
+;;; Commentary:
+
+;; ${3:commentary}
+
+;;; Code:
+
+${4:(message "Hello World!")}
+
+(provide '$1)
+
+;;; $1.el ends here
