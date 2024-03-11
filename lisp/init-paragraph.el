@@ -5,8 +5,8 @@
 
 ;;; Code:
 
-(require-vc-package '(indent-bars
-		      :url "https://github.com/jdtsmith/indent-bars"))
+(require-package '(indent-bars
+                   :url "https://github.com/jdtsmith/indent-bars"))
 
 (setq-default
  ;; Use 80 characters as the global line length standard (recommended by

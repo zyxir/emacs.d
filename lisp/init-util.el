@@ -7,8 +7,7 @@
 ;;; Code:
 
 ;; Load zylib.el.
-(unless (package-installed-p 'zylib)
-  (package-install-file (expand-file-name "zylib.el" zy/lisp-dir)))
+(require-package '(zylib "zylib.el"))
 
 
 ;; Symbol manipulation

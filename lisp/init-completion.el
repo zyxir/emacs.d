@@ -10,8 +10,8 @@
 (require-package 'vertico)
 (require-package 'marginalia)
 (require-package 'corfu)
-(require-vc-package '(corfu-terminal
-                      :url "https://codeberg.org/akib/emacs-corfu-terminal"))
+(require-package '(corfu-terminal
+                   :url "https://codeberg.org/akib/emacs-corfu-terminal"))
 
 
 ;; Completion Styles
@@ -92,8 +92,11 @@ ARGS are the arguments passed."
 ;; Text Completion
 
 (add-hook! prog-mode #'corfu-mode)
+(setq
  ;; Enable auto completion.
-(setq corfu-auto t)
+ corfu-auto t
+ ;; No delay for auto completion.
+ corfu-auto-delay 0)
 (general-def
   :keymaps 'corfu-map
   ;; Do not intefere with cursor movement keys.
@@ -116,7 +119,10 @@ ARGS are the arguments passed."
     (corfu-mode 1)))
 (add-hook 'minibuffer-setup-hook #'zy/enable-corfu-in-minibuffer)
 
-;; Enable Corfu-terminal if running in a terminal.
+;; Echo info of candidates in the echo area after a short delay.
+(corfu-echo-mode 1)
+
+;; Enable terminal support.
 (corfu-terminal-mode 1)
 
 ;;; init-completion.el ends here

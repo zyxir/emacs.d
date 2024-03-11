@@ -31,7 +31,14 @@
  evil-want-keybinding nil)
 (evil-mode 1)
 
-;; Setup Evil in many other modes.
+;; The leader key and the local leader key.
+(defconst zy/leader-key "SPC"
+  "The leader key used as a common shortcut prefix.")
+(defconst zy/local-leader-key ","
+  "The local leader key used as a mode-specific shortcut prefix.")
+
+;; Setup Evil in many other modes, but do not override my leader keys.
+(setq evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
 (evil-collection-init)
 
 ;; Also change Evil cursor in terminal.

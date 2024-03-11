@@ -12,18 +12,75 @@
 (setq package-archives
       '(("gnu" . "https://mirrors.ustc.edu.cn/elpa/gnu/")
         ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")
-	("melpa-stable" . "https://mirrors.ustc.edu.cn/elpa/stable-melpa/")
+        ("melpa-stable" . "https://mirrors.ustc.edu.cn/elpa/stable-melpa/")
         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 
-;; On-demand installation of packages.
+(defvar required-packages '()
+  "Packages required by `require-package'.")
+
 (defun require-package (package &optional min-version)
   "Make sure that PACKAGE is installed with MIN-VERSION.
-If NO-REFRESH is nil, `package-refresh-contents' is called."
-  (unless (package-installed-p package min-version)
-    (unless (assoc package package-archive-contents)
-      (message "Missing package: %s" package)
-      (package-refresh-contents))
-    (package-install package)))
+
+If PACKAGE is a symbol, it is installed with `package-install'
+from one of the `package-archives'.
+
+If PACKAGE has the form (NAME . SPEC), where SPEC is a plist
+describing a package from a VC source as described
+in `(emacs)Fetching Package Sources', it is installed with
+`package-vc-install'.
+
+If PACKAGE has the form (NAME . PATH) or (NAME PATH), where PATH
+is a filesystem path, it is installed with
+`package-install-file'. If PATH is relative, it is interpreted
+based on `zy/lisp-dir' or `zy/site-lisp-dir'.
+
+Anyway, if the package is installed, it is added to
+`required-packages'."
+  (let* ((name (if (consp package) (car package) package))
+         (spec-or-path (cdr-safe package))
+         (path (if (stringp spec-or-path)
+                   spec-or-path
+                 (when (and (consp spec-or-path)
+                            (stringp (car-safe spec-or-path)))
+                   (car spec-or-path))))
+         (spec (when (plistp spec-or-path) spec-or-path)))
+    (unless (package-installed-p name min-version)
+      (cond
+       ;; A package symbol.
+       ((null spec-or-path)
+        (let* ((known (cdr (assoc package package-archive-contents)))
+               (best (car (sort known (lambda (a b)
+                                        (version-list-<=
+                                         (package-desc-version b)
+                                         (package-desc-version a)))))))
+          (if (and best (version-list-<= min-version
+                                         (package-desc-version best)))
+              (package-install best)
+            (error "No version of %s >= %S is available" package min-version))))
+       ;; A VC package.
+       (spec
+        (package-vc-install package))
+       ;; A local package.
+       (path
+        (let* ((relative-p (null (file-name-absolute-p path)))
+               (lisp-dir-path
+                (when relative-p
+                  (expand-file-name path zy/lisp-dir)))
+               (site-lisp-dir-path
+                (when relative-p
+                  (expand-file-name path zy/site-lisp-dir)))
+               (path-choices (if relative-p
+                                 `(,lisp-dir-path ,site-lisp-dir-path)
+                               `(,path)))
+               (final-path (map-some #'file-exists-p path-choices)))
+          (if final-path
+              (package-install-file final-path)
+            (error "Cannot find an existing path from %s." path-choices))))
+       ;; Unknown cases.
+       (t
+        (error "%s does not describe a valid package." package))))
+    (add-to-list 'required-packages package)
+    package))
 
 ;; On-demand installation of packages via VC.
 (defun require-vc-package (package &optional rev backend)

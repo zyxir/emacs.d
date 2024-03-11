@@ -45,7 +45,9 @@
  ;; me so many time!
  save-interprogram-paste-before-kill t
  ;; Uniquify buffer names in a saner way.
- uniquify-buffer-name-style 'forward)
+ uniquify-buffer-name-style 'forward
+ ;; Do not use GUI dialog boxes (they cause questions on WSLg).
+ use-dialog-box nil)
 
 ;; Always delete selection like other editors do.
 (delete-selection-mode 1)
