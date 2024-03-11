@@ -12,6 +12,8 @@
 (require-package 'corfu)
 (require-package '(corfu-terminal
                    :url "https://codeberg.org/akib/emacs-corfu-terminal"))
+(require-package 'cape)
+(require-package 'consult-yasnippet)
 
 
 ;; Completion Styles
@@ -124,5 +126,11 @@ ARGS are the arguments passed."
 
 ;; Enable terminal support.
 (corfu-terminal-mode 1)
+
+;; Use many CAPFs (`completion-at-point-functions's) with C-v.
+(zy/C-v-def
+ "C-f" #'cape-file
+ "C-e" #'cape-emoji
+ "C-s" #'consult-yasnippet)
 
 ;;; init-completion.el ends here

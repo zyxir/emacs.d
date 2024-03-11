@@ -47,13 +47,17 @@
 
 ;; Setup Keybindings
 
-;; Single key commands.
+;; Embark keys in all states.
 (general-def
-  "M-m" #'embark-act)
+  :states '(normal visual)
+  ";" #'embark-act)
+(general-def
+  :maps 'global-map
+  "M-;" #'embark-act)
 
 ;; The leader key.
 (general-create-definer zy/leader-def
-  :keymaps '(normal insert emacs)
+  :keymaps '(normal insert visual)
   :prefix-map 'zy/leader-map
   :prefix "SPC"
   :non-normal-prefix "M-SPC")
@@ -69,7 +73,8 @@
   "5" #'other-frame-prefix
   "b" #'consult-buffer
   "k" #'kill-buffer
-  "s" #'save-buffer)
+  "s" #'save-buffer
+  ";" #'comment-dwim)
 
 ;; "<leader> f" for file-related operations.
 (general-create-definer zy/leader-f-def
@@ -80,10 +85,46 @@
   "b" #'switch-to-buffer
   "D" #'zy/delete-file-and-buffer
   "f" #'find-file
+  "g" #'revert-buffer-quick
   "r" #'consult-recent-file
   "R" #'zy/rename-file-and-buffer
   "s" #'save-some-buffers
   "w" #'write-file)
+
+;; "<leader> q" for quitting-related operations.
+(general-create-definer zy/leader-q-def
+  :keymaps 'zy/leader-map
+  :prefix-map 'zy/leader-q-map
+  :prefix "q")
+(zy/leader-q-def
+ "q" #'kill-emacs
+ "r" #'restart-emacs)
+
+;; Insert or complete many things with "C-v" in insert state. More commands are
+;; defined in other files.
+(general-create-definer zy/C-v-def
+  :keymaps 'insert
+  :prefix-map 'zy/C-v-map
+  :prefix "C-v")
+(zy/C-v-def
+ "8" #'insert-char)
+
+;; The omnipotent "C-g".
+(defun zy/C-g (&rest _)
+  "Do \"C-g\" action depending on the context."
+  (interactive)
+  (cond
+   (;; While completing with Corfu, quit the completion.
+    (or corfu--frame corfu-terminal--popon)
+    (corfu-quit))
+   (;; While in insert state, go to normal state.
+    (eq evil-state 'insert)
+    (evil-force-normal-state))
+   (;; In other cases, do `keyboard-quit'.
+    t (keyboard-quit))))
+(general-def
+  :states '(insert normal)
+  "C-g" #'zy/C-g)
 
 ;; Show key hints with Which-key.
 (setq which-key-idle-delay 0.5)

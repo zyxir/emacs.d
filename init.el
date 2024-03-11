@@ -53,7 +53,10 @@ Possible values:
   (require-init 'init-paragraph)
   (require-init 'init-snippet)
   (require-init 'init-completion)
+  (require-init 'init-search)
   (require-init 'init-vc)
+  (require-init 'init-treesit)
+  (require-init 'init-project)
 
   ;; Look and feel.
   (require-init 'init-theme)

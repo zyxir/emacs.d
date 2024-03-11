@@ -20,8 +20,14 @@
 (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
 (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 (global-diff-hl-mode 1)
+;; Diff on the fly.
+(diff-hl-flydiff-mode 1)
 ;; Use the left margin to show diff, which supports terminal.
 (diff-hl-margin-mode 1)
+;; Allow mouse interaction in the fringe.
+(diff-hl-show-hunk-mouse-mode)
+;; Also diff Dired buffers.
+(add-hook! dired-mode (diff-hl-dired-mode 1))
 
 ;; "<leader> g" for git operations.
 (general-create-definer zy/leader-g-def
@@ -31,7 +37,6 @@
 (zy/leader-g-def
   "f" #'magit-file-dispatch
   "g" #'magit-status
-  "G" #'magit-dispatch
   "t" #'git-timemachine
   "s" #'diff-hl-stage-dwim
   "h" #'diff-hl-show-hunk
@@ -41,6 +46,8 @@
   "n" #'diff-hl-next-hunk
   "P" #'diff-hl-show-hunk-previous
   "N" #'diff-hl-show-hunk-next)
+(zy/leader-def
+  "G" #'magit-dispatch)
 
 (provide 'init-vc)
 
