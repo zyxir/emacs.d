@@ -1,7 +1,7 @@
 ;;; init-misc.el --- Miscellaneous setup.  -*- lexical-binding: t -*-
 ;;; Commentary:
 
-;; This file includes simple settings that is hard to categorize.
+;; This file includes miscellaneous settings that is hard to categorize.
 
 ;;; Code:
 

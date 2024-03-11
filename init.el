@@ -15,7 +15,7 @@
   "If Emacs is running on WSL.")
 (defvar zy/os
   (cond ((member system-type '(ms-dos windows-nt cygwin))
-	 windows)
+	 'windows)
 	((eq system-type 'gnu/linux)
 	 (if zy/wsl-p 'wsl 'linux))
 	(t 'unsupported))
@@ -57,6 +57,8 @@ Possible values:
   (require-init 'init-vc)
   (require-init 'init-treesit)
   (require-init 'init-project)
+  (require-init 'init-highlight)
+  (require-init 'init-check)
 
   ;; Look and feel.
   (require-init 'init-theme)
@@ -66,3 +68,5 @@ Possible values:
   (require-init 'init-python))
 
 (provide 'init)
+
+;;; init.el ends here

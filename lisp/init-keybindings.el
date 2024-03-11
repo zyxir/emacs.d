@@ -23,8 +23,6 @@
  ;; Scroll with C-u/d in normal state.
  evil-want-C-u-scroll t
  evil-want-C-d-scroll t
- ;; Use Evil's own interactive search.
- evil-search-module 'evil-search
  ;; Respect visual lines.
  evil-respect-visual-line-mode t
  ;; Load Evil keybindings for several other modes as well.
@@ -37,8 +35,12 @@
 (defconst zy/local-leader-key ","
   "The local leader key used as a mode-specific shortcut prefix.")
 
-;; Setup Evil in many other modes, but do not override my leader keys.
-(setq evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
+;; Setup Evil in many other modes.
+(setq
+ ;; Do not bind my leader key.
+ evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key)
+ ;; Do not bind unimpaired keys.
+ evil-collection-want-unimpaired-p nil)
 (evil-collection-init)
 
 ;; Also change Evil cursor in terminal.
@@ -97,8 +99,12 @@
   :prefix-map 'zy/leader-q-map
   :prefix "q")
 (zy/leader-q-def
- "q" #'kill-emacs
+ "q" #'save-buffers-kill-terminal
  "r" #'restart-emacs)
+
+;; "<leader> h" for help.
+(zy/leader-def
+  "h" help-map)
 
 ;; Insert or complete many things with "C-v" in insert state. More commands are
 ;; defined in other files.
@@ -107,7 +113,11 @@
   :prefix-map 'zy/C-v-map
   :prefix "C-v")
 (zy/C-v-def
- "8" #'insert-char)
+  "8" #'insert-char
+  "0" (defun zy/insert-zwsp ()
+        "Insert a zero-width space."
+        (interactive)
+        (insert #x200B)))
 
 ;; The omnipotent "C-g".
 (defun zy/C-g (&rest _)
