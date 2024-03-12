@@ -32,6 +32,9 @@ Possible values:
 (defconst zy/lisp-dir (expand-file-name "lisp" user-emacs-directory)
   "Directory containing modules of Zyxir's Emacs config.")
 
+(defconst zy/site-lisp-dir (expand-file-name "site-lisp" user-emacs-directory)
+  "Directory containing third-party Lisp code of Zyxir's Emacs config.")
+
 (defun require-init (module)
   "Load MODULE of Zyxir's config."
   (load (expand-file-name (symbol-name module) zy/lisp-dir)

@@ -72,7 +72,8 @@ Anyway, if the package is installed, it is added to
                (path-choices (if relative-p
                                  `(,lisp-dir-path ,site-lisp-dir-path)
                                `(,path)))
-               (final-path (map-some #'file-exists-p path-choices)))
+               (final-path (cl-some (lambda (path) (when (file-exists-p path) path))
+				    path-choices)))
           (if final-path
               (package-install-file final-path)
             (error "Cannot find an existing path from %s." path-choices))))
@@ -99,6 +100,10 @@ REV and BACKEND work similarly as in `pacakge-vc-install'."
 ;; Start package.el.
 (setq package-native-compile t)
 (package-initialize)
+
+;; Refresh package archives at first install.
+(unless (file-exists-p package-user-dir)
+  (package-refresh-contents))
 
 ;; Require some popular Emacs Lisp libraries.
 (require-package 'dash)
