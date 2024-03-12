@@ -10,6 +10,7 @@
 (require-package 'evil-collection)
 (require-package 'evil-terminal-cursor-changer)
 (require-package 'general)
+(require-package 'avy)
 (require-package 'consult)
 (require-package 'embark)
 (require-package 'embark-consult)
@@ -47,7 +48,7 @@
 (evil-terminal-cursor-changer-activate)
 
 
-;; Setup Embark
+;; Setup Keybindings
 
 ;; Embark keys in all states.
 (general-def
@@ -57,8 +58,11 @@
   :maps 'global-map
   "M-'" #'embark-act)
 
-
-;; Setup Keybindings
+;; Remap `evil-find-char' to Avy.
+(general-def
+  :states 'motion
+  "f" #'avy-goto-char
+  "F" #'avy-goto-char-timer)
 
 ;; Remap (or cancel) some "goto" keys.
 (general-def
