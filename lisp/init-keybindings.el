@@ -121,8 +121,8 @@
   "b" #'switch-to-buffer
   "D" #'zy/delete-file-and-buffer
   "f" #'find-file
-  "g" #'revert-buffer-quick
-  "r" #'consult-recent-file
+  "r" #'revert-buffer-quick
+  "R" #'consult-recent-file
   "R" #'zy/rename-file-and-buffer
   "s" #'save-some-buffers
   "w" #'write-file)

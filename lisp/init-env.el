@@ -5,11 +5,15 @@
 
 ;;; Code:
 
-(require-package 'direnv)
+(require-package 'envrc)
 (require-package 'editorconfig)
 
-;; Load Direnv mode.
-(direnv-mode 1)
+;; Manage Direnv with the Envrc package.
+(envrc-global-mode 1)
+
+;; "<leader> e" for environment-related operations.
+(zy/leader-def
+  "e" #'envrc-command-map)
 
 ;; Load EditorConfig mode.
 (editorconfig-mode 1)

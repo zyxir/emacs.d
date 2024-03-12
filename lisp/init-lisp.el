@@ -10,6 +10,7 @@
   :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
   "e" #'eval-last-sexp
   "E" #'elisp-eval-region-or-buffer
+  "d" #'eval-defun
   "x" #'pp-macroexpand-last-sexp)
 
 (provide 'init-lisp)

@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require-package 'scala-ts-mode)
+(require-package 'sbt-mode)
 
 (provide 'init-scala)
 
