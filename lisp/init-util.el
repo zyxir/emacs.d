@@ -10,7 +10,7 @@
 (require-package '(zylib "zylib.el"))
 
 
-;; Symbol manipulation
+;; Symbol Manipulation
 
 (defun zy/unquote (exp)
   "Return EXP unquoted."
@@ -20,7 +20,7 @@
   exp)
 
 
-;; Hook management
+;; Hook Management
 
 (defun zy/-resolve-hook-forms (hooks)
   "Convert a list of modes into a list of hook symbols.
@@ -105,5 +105,56 @@ This function is based on `remove-hook!' of Doom Emacs."
   `(add-hook! ,hooks (setq-local ,@rest)))
 
 (provide 'init-util)
+
+
+;; Advice Management
+
+(defmacro defadvice! (symbol arglist &optional docstring &rest body)
+  "Define an advice called SYMBOL and add it to PLACES.
+
+ARGLIST is as in `defun'.  WHERE is a keyword as passed to
+`advice-add', and PLACE is the function to which to add the
+advice, like in `advice-add'.  DOCSTRING and BODY are as in
+`defun'.
+
+\(fn SYMBOL ARGLIST &optional DOCSTRING \
+&rest [WHERE PLACES...] BODY)
+
+This function is based on `defadvice!' of Doom Emacs."
+  (declare (doc-string 3) (indent defun))
+  (unless (stringp docstring)
+    (push docstring body)
+    (setq docstring nil))
+  (let (where-alist)
+    (while (keywordp (car body))
+      (push `(cons ,(pop body) (ensure-list ,(pop body)))
+            where-alist))
+    `(progn
+       (defun ,symbol ,arglist ,docstring ,@body)
+       (dolist (targets (list ,@(nreverse where-alist)))
+         (dolist (target (cdr targets))
+           (advice-add target (car targets) ',symbol))))))
+
+;; This is copied from Doom Emacs.
+(defmacro undefadvice! (symbol _arglist &optional docstring &rest body)
+  "Undefine an advice called SYMBOL.
+
+This has the same signature as `defadvice!' an exists as an easy
+undefiner when testing advice (when combined with `rotate-text').
+
+\(fn SYMBOL ARGLIST &optional DOCSTRING \
+&rest [WHERE PLACES...] BODY)
+
+This function is based on `undefadvice!' of Doom Emacs."
+  (declare (doc-string 3) (indent defun))
+  (let (where-alist)
+    (unless (stringp docstring)
+      (push docstring body))
+    (while (keywordp (car body))
+      (push `(cons ,(pop body) (ensure-list ,(pop body)))
+            where-alist))
+    `(dolist (targets (list ,@(nreverse where-alist)))
+       (dolist (target (cdr targets))
+         (advice-remove target #',symbol)))))
 
 ;;; init-util.el ends here

@@ -29,6 +29,7 @@
   :prefix "o")
 (zy/leader-o-def
   "a" #'eglot-code-actions
+  "f" #'eglot-format
   "r" #'eglot-rename
   "R" #'eglot-reconnect)
 
