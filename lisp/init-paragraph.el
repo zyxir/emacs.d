@@ -28,6 +28,11 @@
     (call-interactively 'fill-paragraph)))
 (bind-key "M-Q" #'zy/unfill-paragraph)
 
+;; Display indentation bars for all prog-modes except the Lisp modes.
+(add-hook! prog-mode
+  (unless (derived-mode-p 'lisp-data-mode)
+    (indent-bars-mode 1)))
+
 ;; Display a `fill-column' indicator.
 (add-hook! prog-mode #'display-fill-column-indicator-mode)
 
