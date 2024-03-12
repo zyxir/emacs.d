@@ -28,10 +28,21 @@
     (call-interactively 'fill-paragraph)))
 (bind-key "M-Q" #'zy/unfill-paragraph)
 
-;; Display indentation bars for all prog-modes except the Lisp modes.
+;; Customize indent bars.
 (setq
- ;; Do not display for empty lines.
+ ;; Minimal colorpop style.
+ indent-bars-color '(highlight :face-bg t :blend 0.15)
+ indent-bars-pattern "."
+ indent-bars-width-frac 0.1
+ indent-bars-pad-frac 0.1
+ indent-bars-zigzag nil
+ indent-bars-color-by-depth '(:regexp "outline-\\([0-9]+\\)" :blend 1)
+ indent-bars-highlight-current-depth '(:blend 0.5)
+ ;; Start from column 0, like VS Code does.
+ indent-bars-starting-column 0
+ ;; Do not show on blank lines, like VS Code does.
  indent-bars-display-on-blank-lines nil)
+;; Display indent bars for all prog-modes except the Lisp modes.
 (add-hook! prog-mode
   (unless (derived-mode-p 'lisp-data-mode)
     (indent-bars-mode 1)))

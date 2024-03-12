@@ -144,4 +144,6 @@ ARGS are the arguments passed."
  "C-e" #'cape-emoji
  "C-s" #'consult-yasnippet)
 
+(provide 'init-completion)
+
 ;;; init-completion.el ends here
