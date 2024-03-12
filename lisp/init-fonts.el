@@ -1,7 +1,12 @@
 ;;; init-fonts.el --- Font settings.  -*- lexical-binding: t -*-
 ;;; Commentary:
 
-;; This file sets font for various faces and multiple character sets.
+;; This file sets font for various faces and multiple character sets. A
+;; objective of these settings is to make the width of one Chinese character
+;; equal that of two Latin characters, so that these two lines could align:
+;;
+;; 這句話一共由十三個漢字組成
+;; abcdefghijklmnopqrstuvwxyz
 
 ;;; Code:
 
