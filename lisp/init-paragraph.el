@@ -29,6 +29,9 @@
 (bind-key "M-Q" #'zy/unfill-paragraph)
 
 ;; Display indentation bars for all prog-modes except the Lisp modes.
+(setq
+ ;; Do not display for empty lines.
+ indent-bars-display-on-blank-lines nil)
 (add-hook! prog-mode
   (unless (derived-mode-p 'lisp-data-mode)
     (indent-bars-mode 1)))
