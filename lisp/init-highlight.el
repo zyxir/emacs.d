@@ -6,7 +6,7 @@
 (require-package 'consult-todo)
 
 ;; Highlight todo and similar keywords.
-(hl-todo-mode 1)
+(global-hl-todo-mode 1)
 
 ;; Jump between keywords.
 (general-def

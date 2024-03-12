@@ -98,6 +98,7 @@
   "4" #'other-window-prefix
   "5" #'other-frame-prefix
   "b" #'consult-buffer
+  "B" #'list-buffers
   "k" #'kill-buffer
   "s" #'save-buffer
   "," #'embark-dwim)

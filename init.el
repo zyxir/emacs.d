@@ -71,7 +71,8 @@ Possible values:
 
   ;; File type specific.
   (require-init 'init-lisp)
-  (require-init 'init-python))
+  (require-init 'init-python)
+  (require-init 'init-scala))
 
 (provide 'init)
 
