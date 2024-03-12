@@ -2,14 +2,22 @@
 ;;; Commentary:
 ;;; Code:
 
+(require-package 'hl-todo)
+(require-package 'consult-todo)
+
 ;; Highlight todo and similar keywords.
 (hl-todo-mode 1)
 
-;; Jump between highlighted keywords.
+;; Jump between keywords.
 (general-def
   :states 'normal
   "[t" #'hl-todo-previous
   "]t" #'hl-todo-next)
+
+;; Jump to keywords with consult.
+(general-def
+  :states 'motion
+  "g k" #'consult-todo)
 
 (provide 'init-highlight)
 

@@ -20,6 +20,15 @@
  modus-themes-mixed-fonts t
  modus-themes-variable-pitch-ui t)
 
+;; Configure Modus theme faces.
+(with-eval-after-load 'modus-themes
+  (set-face-attribute 'modus-themes-lang-error
+                      nil :inherit 'modus-themes-prominent-error)
+  (set-face-attribute 'modus-themes-lang-warning
+                      nil :inherit 'modus-themes-prominent-warning)
+  (set-face-attribute 'modus-themes-lang-note
+                      nil :inherit 'modus-themes-prominent-note))
+
 ;; Enable Modus Operandi Tinted or the user-preferred theme.
 (dolist (theme (or custom-enabled-themes '(modus-operandi-tinted)))
   (load-theme theme 'no-confirm))

@@ -74,7 +74,7 @@
 (vertico-mode 1)
 
 ;; Indicator for completing-read-multiple.
-(defun crm-indicator (args)
+(defun zy/crm-indicator (args)
   "Indicator for `completing-read-multiple'.
 
 ARGS are the arguments passed."
@@ -85,7 +85,7 @@ ARGS are the arguments passed."
                  crm-separator)
                 (car args))
         (cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+(advice-add #'completing-read-multiple :filter-args #'zy/crm-indicator)
 
 ;; Show candidate info with Marginalia.
 (marginalia-mode 1)
@@ -126,6 +126,12 @@ ARGS are the arguments passed."
 
 ;; Enable terminal support.
 (corfu-terminal-mode 1)
+
+;; Bind some Consult commands to "g".
+(general-def
+  :states 'motion
+  "g o" #'consult-outline
+  "g j" #'consult-imenu)
 
 ;; Use many CAPFs (`completion-at-point-functions's) with C-v.
 (zy/C-v-def

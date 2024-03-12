@@ -47,15 +47,23 @@
 (evil-terminal-cursor-changer-activate)
 
 
-;; Setup Keybindings
+;; Setup Embark
 
 ;; Embark keys in all states.
 (general-def
   :states '(normal visual)
-  ";" #'embark-act)
+  "'" #'embark-act)
 (general-def
   :maps 'global-map
-  "M-;" #'embark-act)
+  "M-'" #'embark-act)
+
+
+;; Setup Keybindings
+
+;; Remap (or cancel) some "goto" keys.
+(general-def
+  :states 'motion
+  "g c" #'evil-goto-char)
 
 ;; The leader key.
 (general-create-definer zy/leader-def
@@ -76,7 +84,7 @@
   "b" #'consult-buffer
   "k" #'kill-buffer
   "s" #'save-buffer
-  ";" #'comment-dwim)
+  ";" #'embark-dwim)
 
 ;; "<leader> f" for file-related operations.
 (general-create-definer zy/leader-f-def
