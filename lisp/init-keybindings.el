@@ -24,10 +24,14 @@
  ;; Scroll with C-u/d in normal state.
  evil-want-C-u-scroll t
  evil-want-C-d-scroll t
+ ;; Use C-h as a quicker backspace.
+ evil-want-C-h-delete t
  ;; Respect visual lines.
  evil-respect-visual-line-mode t
  ;; Load Evil keybindings for several other modes as well.
- evil-want-keybinding nil)
+ evil-want-keybinding nil
+ ;; Use built-in `undo-redo' for redo.
+ evil-redo-function #'undo-redo)
 (evil-mode 1)
 
 ;; The leader key and the local leader key.
@@ -53,6 +57,11 @@
 
 
 ;; Setup Keybindings
+
+;; Extra insert state customization.
+(general-def
+  :states 'insert
+  "C-d" #'evil-delete-char)
 
 ;; Embark keys in all states.
 (general-def
