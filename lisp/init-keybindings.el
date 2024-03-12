@@ -33,8 +33,12 @@
 ;; The leader key and the local leader key.
 (defconst zy/leader-key "SPC"
   "The leader key used as a common shortcut prefix.")
-(defconst zy/local-leader-key ","
+(defconst zy/leader-key-insert "M-SPC"
+  "The leader key in insert state.")
+(defconst zy/local-leader-key "SPC m"
   "The local leader key used as a mode-specific shortcut prefix.")
+(defconst zy/local-leader-key-insert "M-SPC m"
+  "The local leader key in insert state.")
 
 ;; Setup Evil in many other modes.
 (setq
@@ -53,10 +57,10 @@
 ;; Embark keys in all states.
 (general-def
   :states '(normal visual)
-  "'" #'embark-act)
+  "," #'embark-act)
 (general-def
   :maps 'global-map
-  "M-'" #'embark-act)
+  "M-," #'embark-act)
 
 ;; Remap `evil-find-char' to Avy.
 (general-def
@@ -69,15 +73,23 @@
   :states 'motion
   "g c" #'evil-goto-char)
 
-;; The leader key.
+;; The leader definer.
 (general-create-definer zy/leader-def
-  :keymaps '(normal insert visual)
+  :states '(normal insert visual)
   :prefix-map 'zy/leader-map
-  :prefix "SPC"
-  :non-normal-prefix "M-SPC")
+  :prefix zy/leader-key
+  :non-normal-prefix zy/leader-key-insert)
+
+;; The local leader definer.
+(general-create-definer zy/local-leader-def
+  :states '(normal insert visual)
+  :prefix-map 'zy/local-leader-map
+  :prefix zy/local-leader-key
+  :non-normal-prefix zy/local-leader-key-insert)
 
 ;; Leader commands.
 (zy/leader-def
+  "SPC" #'execute-extended-command
   "0" #'delete-window
   "1" #'delete-other-windows
   ;; TODO remap 2 and 3 to other more useful commands.
@@ -88,7 +100,7 @@
   "b" #'consult-buffer
   "k" #'kill-buffer
   "s" #'save-buffer
-  ";" #'embark-dwim)
+  "," #'embark-dwim)
 
 ;; "<leader> f" for file-related operations.
 (general-create-definer zy/leader-f-def
@@ -112,7 +124,8 @@
   :prefix "q")
 (zy/leader-q-def
  "q" #'save-buffers-kill-terminal
- "r" #'restart-emacs)
+ "r" #'restart-emacs
+ "z" #'suspend-emacs)
 
 ;; "<leader> h" for help.
 (zy/leader-def

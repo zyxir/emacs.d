@@ -8,7 +8,7 @@
 ;; Check Emacs version.
 (let ((minver "29.1"))
   (when (version< emacs-version minver)
-    (error "Emacs %s or higher is required to run Zyxir's config." minver)))
+    (error "Emacs %s or higher is required to run Zyxir's config" minver)))
 
 ;; Determine the running environment.
 (defvar zy/wsl-p (file-exists-p "/etc/wsl.conf")
@@ -59,12 +59,14 @@ Possible values:
   (require-init 'init-project)
   (require-init 'init-highlight)
   (require-init 'init-check)
+  (require-init 'init-lsp)
 
   ;; Look and feel.
   (require-init 'init-theme)
   (require-init 'init-fonts)
 
   ;; File type specific.
+  (require-init 'init-lisp)
   (require-init 'init-python))
 
 (provide 'init)

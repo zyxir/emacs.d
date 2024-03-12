@@ -15,4 +15,4 @@
 
 (provide 'init-snippet)
 
-;;; init-snippet ends here
+;;; init-snippet.el ends here

@@ -25,8 +25,8 @@ If PACKAGE is a symbol, it is installed with `package-install'
 from one of the `package-archives'.
 
 If PACKAGE has the form (NAME . SPEC), where SPEC is a plist
-describing a package from a VC source as described
-in `(emacs)Fetching Package Sources', it is installed with
+describing a package from a VC source as described in Info
+node `(emacs)Fetching Package Sources', it is installed with
 `package-vc-install'.
 
 If PACKAGE has the form (NAME . PATH) or (NAME PATH), where PATH

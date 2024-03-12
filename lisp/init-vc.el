@@ -16,6 +16,9 @@
  ;; Show commit time in the status buffer.
  magit-status-margin '(t age magit-log-margin-width nil 18))
 
+;; Recover leader key in Magit.
+(general-unbind :keymaps 'magit-mode-map "SPC")
+
 ;; Highlight file changes with Diff-hl.
 (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
 (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)

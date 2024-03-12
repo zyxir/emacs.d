@@ -73,6 +73,11 @@
 ;; Use Vertico for minibuffer completion.
 (vertico-mode 1)
 
+;; Use "C-j" for force exit since "M-RET" is occupied in Windows Terminal.
+(general-def
+  :keymaps 'vertico-map
+  "C-j" #'vertico-exit-input)
+
 ;; Indicator for completing-read-multiple.
 (defun zy/crm-indicator (args)
   "Indicator for `completing-read-multiple'.
