@@ -23,6 +23,18 @@
 (add-to-list 'global-treesit-auto-modes 'scala-mode)
 (add-to-list 'global-treesit-auto-modes 'scala-ts-mode)
 
+;; HACK add Nix to the list until it is officially added.
+(add-to-list 'treesit-auto-langs 'nix)
+(add-to-list 'treesit-auto-recipe-list
+             (make-treesit-auto-recipe
+              :lang 'nix
+              :ts-mode 'nix-ts-mode
+              :remap 'nix-mode
+              :url "https://github.com/nix-community/tree-sitter-nix"
+              :ext "\\.nix\\'"))
+(add-to-list 'global-treesit-auto-modes 'nix-mode)
+(add-to-list 'global-treesit-auto-modes 'nix-ts-mode)
+
 ;; Enable Treesit-auto.
 (treesit-auto-add-to-auto-mode-alist 'all)
 (global-treesit-auto-mode 1)
