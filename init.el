@@ -60,6 +60,7 @@ Possible values:
   (require-init 'init-highlight)
   (require-init 'init-check)
   (require-init 'init-lsp)
+  (require-init 'init-env)
 
   ;; Look and feel.
   (require-init 'init-theme)
