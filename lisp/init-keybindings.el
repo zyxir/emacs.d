@@ -17,7 +17,8 @@
 (require-package 'which-key)
 
 
-;; Setup Evil
+;;;; Setup Evil
+
 (setq
  ;; Delete back to indentation with C-u in insert state.
  evil-want-C-u-delete t
@@ -39,9 +40,9 @@
   "The leader key used as a common shortcut prefix.")
 (defconst zy/leader-key-insert "M-SPC"
   "The leader key in insert state.")
-(defconst zy/local-leader-key "SPC m"
+(defconst zy/local-leader-key ";"
   "The local leader key used as a mode-specific shortcut prefix.")
-(defconst zy/local-leader-key-insert "M-SPC m"
+(defconst zy/local-leader-key-insert "M-;"
   "The local leader key in insert state.")
 
 ;; Setup Evil in many other modes.
@@ -54,7 +55,7 @@
 (evil-terminal-cursor-changer-activate)
 
 
-;; Tweak Evil Keybindings
+;;;; Tweak Evil Keybindings
 
 ;; Extra insert state customization.
 (general-def
@@ -75,10 +76,11 @@
   "f" #'avy-goto-char
   "F" #'avy-goto-char-timer)
 
-;; Disable "q" in normal mode. I mispressed them a lot!
+;; Remap "q" and "Q" to Emacs-style macro.
 (general-def
   :states 'normal
-  "q" #'ignore)
+  "Q" #'kmacro-start-macro-or-insert-counter
+  "q" #'kmacro-end-or-call-macro)
 
 ;; Remap (or cancel) some "goto" keys.
 (general-def
@@ -116,7 +118,7 @@
   "C-g" #'zy/C-g)
 
 
-;; Setup Leader Keys
+;;;; Setup Leader Keys
 
 ;; The leader definer.
 (general-create-definer zy/leader-def
@@ -229,7 +231,7 @@ If `eglot-managed-p' returns non-nil, call `%s' instead."
   "x" (zy/create-action "extract" #'eglot-code-action-extract)
   "f" (zy/create-action "format" #'eglot-format)
   "i" (zy/create-action "inline" #'eglot-code-action-inline)
-  "I" (zy/create-action "organize-imports" #'eglot-code-action-organize-imports)
+  "o" (zy/create-action "organize-imports" #'eglot-code-action-organize-imports)
   "q" (zy/create-action "quickfix" #'eglot-code-action-quickfix)
   "r" (zy/create-action "rename" #'eglot-rename)
   "R" (zy/create-action "rewrite" #'eglot-code-action-rewrite))
