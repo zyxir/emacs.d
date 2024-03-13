@@ -31,8 +31,8 @@
  evil-respect-visual-line-mode t
  ;; Load Evil keybindings for several other modes as well.
  evil-want-keybinding nil
- ;; Use built-in `undo-redo' for redo.
- evil-redo-function #'undo-redo)
+ ;; Use the built-in `undo-redo' system.
+ evil-undo-system 'undo-redo)
 (evil-mode 1)
 
 ;; The leader key and the local leader key.

@@ -5,6 +5,9 @@
 (require-package 'scala-ts-mode)
 (require-package 'sbt-mode)
 
+(add-hook! scala-mode
+  (setq-local fill-column 100))
+
 (provide 'init-scala)
 
 ;;; init-scala.el ends here

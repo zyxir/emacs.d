@@ -10,6 +10,7 @@
 (require-package 'vertico)
 (require-package 'marginalia)
 (require-package 'corfu)
+(require-package 'popon)
 (require-package '(corfu-terminal
                    :url "https://codeberg.org/akib/emacs-corfu-terminal"))
 (require-package 'cape)
