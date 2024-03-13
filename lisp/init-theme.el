@@ -43,8 +43,6 @@
 (setq
  ;; Use project.el for projects.
  dashboard-projects-backend 'project-el
- ;; Show dashboard for Emacs clients.
- initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
  ;; Center the dashboard.
  dashboard-center-content t
  ;; Customize dashboard items.
@@ -52,6 +50,11 @@
                    (recents . 5)
                    (bookmarks . 5)))
 (dashboard-setup-startup-hook)
+
+;; Also load the dashboard for clients in daemon mode.
+(when (daemonp)
+  (setq initial-buffer-choice
+        (lambda () (get-buffer-create "*dashboard*"))))
 
 (provide 'init-theme)
 
