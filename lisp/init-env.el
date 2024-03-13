@@ -11,8 +11,8 @@
 ;; Manage Direnv with the Envrc package.
 (envrc-global-mode 1)
 
-;; "<leader> e" for environment-related operations.
-(zy/leader-def
+;; "<leader> c e" for environment-related operations.
+(zy/leader-c-def
   "e" #'envrc-command-map)
 
 ;; Load EditorConfig mode.

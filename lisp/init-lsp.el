@@ -22,15 +22,6 @@
  ;; Do not require confirmation on code actions.
  eglot-confirm-server-initiated-edits nil)
 
-;; "<leader> o" for Eglot operations.
-(general-create-definer zy/leader-o-def
-  :keymaps 'zy/leader-map
-  :prefix-map 'zy/leader-o-map
-  :prefix "o")
-(zy/leader-o-def
-  "a" #'eglot-code-actions
-  "f" #'eglot-format
-  "r" #'eglot-rename
-  "R" #'eglot-reconnect)
+;; Most LSP keybindings have been defined in `init-keybindings' as code actions.
 
 ;;; init-eglot.el ends here

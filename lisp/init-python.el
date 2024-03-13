@@ -22,7 +22,13 @@ Always use the Black profile."
     (interactive)
     (if (python--do-isort "--profile" "black")
         (message "Sorted imports")
-      (message "(No changes in Python imports needed)"))))
+      (message "(No changes in Python imports needed)")))
+
+  ;; Remap some code actions in Python mode
+  (add-hook! python-base-mode
+    (general-def
+      :keymaps 'local
+      [remap zy/do-organize-imports] #'python-sort-imports)))
 
 (provide 'init-python)
 
