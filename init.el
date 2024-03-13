@@ -72,6 +72,7 @@ Possible values:
   ;; File type specific.
   (require-init 'init-lisp)
   (require-init 'init-nix)
+  (require-init 'init-pdf)
   (require-init 'init-python)
   (require-init 'init-scala)
   (require-init 'init-other-modes))

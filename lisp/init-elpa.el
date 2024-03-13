@@ -76,26 +76,16 @@ Anyway, if the package is installed, it is added to
 				    path-choices)))
           (if final-path
               (package-install-file final-path)
-            (error "Cannot find an existing path from %s." path-choices))))
+            (error "Cannot find an existing path from %s" path-choices))))
        ;; Unknown cases.
        (t
-        (error "%s does not describe a valid package." package))))
+        (error "%s does not describe a valid package" package))))
+    ;; Add the package symbol to `package-selected-packages' to prevent it from
+    ;; being auto-removed.
+    (add-to-list 'package-selected-packages name)
+    ;; Track explicitly required packages.
     (add-to-list 'required-packages package)
     package))
-
-;; On-demand installation of packages via VC.
-(defun require-vc-package (package &optional rev backend)
-  "Make sure that PACKAGE is installed with REV.
-PACKAGE is of the form (NAME . SPEC), where NAME is a symbol
-designating the package and SPEC is a property list describing a
-package specification as in the Info node `(emacs)Fetching
-Package Sources'.
-
-REV and BACKEND work similarly as in `pacakge-vc-install'."
-  (require 'package-vc)
-  (unless (package-installed-p (car package))
-    (package-vc-install package rev backend)))
-
 
 ;; Start package.el.
 (setq package-native-compile t)

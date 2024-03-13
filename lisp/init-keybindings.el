@@ -51,6 +51,9 @@
  evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
 (evil-collection-init)
 
+;; Set proper initial states of some modes.
+(evil-set-initial-state 'compilation-mode 'normal)
+
 ;; Also change Evil cursor in terminal.
 (evil-terminal-cursor-changer-activate)
 
@@ -114,7 +117,7 @@
    (;; In other cases, do `keyboard-quit'.
     t (keyboard-quit))))
 (general-def
-  :states '(insert normal)
+  :states '(insert normal visual)
   "C-g" #'zy/C-g)
 
 

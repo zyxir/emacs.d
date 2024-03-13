@@ -8,6 +8,7 @@
 
 (require-package 'csv-mode)
 (require-package 'nginx-mode)
+(require-package 'pdf-tools)
 (require-package 'powershell)
 (require-package 'verilog-ts-mode)
 
