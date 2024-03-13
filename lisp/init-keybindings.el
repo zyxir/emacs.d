@@ -47,16 +47,14 @@
 ;; Setup Evil in many other modes.
 (setq
  ;; Do not bind my leader key.
- evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key)
- ;; Do not bind unimpaired keys.
- evil-collection-want-unimpaired-p nil)
+ evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
 (evil-collection-init)
 
 ;; Also change Evil cursor in terminal.
 (evil-terminal-cursor-changer-activate)
 
 
-;; Setup Keybindings
+;; Tweak Evil Keybindings
 
 ;; Extra insert state customization.
 (general-def
@@ -77,10 +75,48 @@
   "f" #'avy-goto-char
   "F" #'avy-goto-char-timer)
 
+;; Disable "q" in normal mode. I mispressed them a lot!
+(general-def
+  :states 'normal
+  "q" #'ignore)
+
 ;; Remap (or cancel) some "goto" keys.
 (general-def
   :states 'motion
   "g c" #'evil-goto-char)
+
+;; Insert or complete many things with "C-v" in insert state. More commands are
+;; defined in other files.
+(general-create-definer zy/C-v-def
+  :keymaps 'insert
+  :prefix-map 'zy/C-v-map
+  :prefix "C-v")
+(zy/C-v-def
+  "8" #'insert-char
+  "0" (defun zy/insert-zwsp ()
+        "Insert a zero-width space."
+        (interactive)
+        (insert #x200B)))
+
+;; The omnipotent "C-g".
+(defun zy/C-g (&rest _)
+  "Do \\`C-g' action depending on the context."
+  (interactive)
+  (cond
+   (;; While completing with Corfu, quit the completion.
+    (or corfu--frame corfu-terminal--popon)
+    (corfu-quit))
+   (;; While in insert state, go to normal state.
+    (eq evil-state 'insert)
+    (evil-force-normal-state))
+   (;; In other cases, do `keyboard-quit'.
+    t (keyboard-quit))))
+(general-def
+  :states '(insert normal)
+  "C-g" #'zy/C-g)
+
+
+;; Setup Leader Keys
 
 ;; The leader definer.
 (general-create-definer zy/leader-def
@@ -112,6 +148,7 @@
   "s" #'save-buffer
   "," #'embark-dwim)
 
+
 ;; "<leader> f" for file-related operations.
 (general-create-definer zy/leader-f-def
   :keymaps 'zy/leader-map
@@ -122,11 +159,29 @@
   "D" #'zy/delete-file-and-buffer
   "f" #'find-file
   "r" #'revert-buffer-quick
-  "R" #'consult-recent-file
-  "R" #'zy/rename-file-and-buffer
+  "c" #'consult-recent-file
+  "R" #'rename-visited-file
   "s" #'save-some-buffers
+  "v" #'find-alternate-file
+  "V" #'zy/echo-filename
   "w" #'write-file)
+(defun zy/echo-filename ()
+  "Echo `buffer-file-name'."
+  (interactive)
+  (message buffer-file-name))
 
+
+;; "<leader> t" for toggling many switches.
+(general-create-definer zy/leader-t-def
+  :keymaps 'zy/leader-map
+  :prefix-map 'zy/leader-t-map
+  :prefix "t")
+(zy/leader-t-def
+  "c" #'corfu-mode
+  "l" #'display-line-numbers-mode
+  "o" #'outline-minor-mode)
+
+
 ;; "<leader> q" for quitting-related operations.
 (general-create-definer zy/leader-q-def
   :keymaps 'zy/leader-map
@@ -137,39 +192,16 @@
  "r" #'restart-emacs
  "z" #'suspend-emacs)
 
+
 ;; "<leader> h" for help.
 (zy/leader-def
   "h" help-map)
-
-;; Insert or complete many things with "C-v" in insert state. More commands are
-;; defined in other files.
-(general-create-definer zy/C-v-def
-  :keymaps 'insert
-  :prefix-map 'zy/C-v-map
-  :prefix "C-v")
-(zy/C-v-def
-  "8" #'insert-char
-  "0" (defun zy/insert-zwsp ()
-        "Insert a zero-width space."
-        (interactive)
-        (insert #x200B)))
-
-;; The omnipotent "C-g".
-(defun zy/C-g (&rest _)
-  "Do \"C-g\" action depending on the context."
-  (interactive)
-  (cond
-   (;; While completing with Corfu, quit the completion.
-    (or corfu--frame corfu-terminal--popon)
-    (corfu-quit))
-   (;; While in insert state, go to normal state.
-    (eq evil-state 'insert)
-    (evil-force-normal-state))
-   (;; In other cases, do `keyboard-quit'.
-    t (keyboard-quit))))
 (general-def
-  :states '(insert normal)
-  "C-g" #'zy/C-g)
+  :keymaps 'help-map
+  "M" #'describe-keymap)
+
+
+;; Other Tweaks
 
 ;; Show key hints with Which-key.
 (setq which-key-idle-delay 0.5)

@@ -3,17 +3,13 @@
 ;;; Code:
 
 (require-package 'flycheck)
+(require-package 'flycheck-eglot)
 
 ;; Enable Flycheck everywhere.
 (global-flycheck-mode 1)
 
-;; Jump between errors.
-(general-def
-  :states 'normal
-  "]q" 'flycheck-next-error
-  "[q" 'flycheck-previous-error
-  "[Q" 'flycheck-first-error
-  "]Q" 'flycheck-list-errors)
+;; Use Flycheck rather than Flymake with Eglot.
+(global-flycheck-eglot-mode 1)
 
 (provide 'init-check)
 

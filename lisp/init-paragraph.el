@@ -50,6 +50,9 @@
 ;; Display a `fill-column' indicator.
 (add-hook! prog-mode #'display-fill-column-indicator-mode)
 
+;; Always show a button when using outline.
+(setq outline-minor-mode-use-buttons t)
+
 (provide 'init-paragraph)
 
 ;;; init-paragraph.el ends here

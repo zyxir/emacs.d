@@ -49,6 +49,13 @@
  ;; Do not use GUI dialog boxes (they cause questions on WSLg).
  use-dialog-box nil)
 
+;; Don't grep in these directories and files.
+(with-eval-after-load 'grep
+  (setq grep-find-ignored-directories
+        (append grep-find-ignored-directories '("elpa"))
+        grep-find-ignored-files
+        (append grep-find-ignored-files '("history"))))
+
 ;; Always delete selection like other editors do.
 (delete-selection-mode 1)
 

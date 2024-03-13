@@ -17,7 +17,8 @@
 ;; Jump to keywords with consult.
 (general-def
   :states 'motion
-  "g k" #'consult-todo)
+  "g k" #'consult-todo
+  "g K" #'consult-todo-project)
 
 (provide 'init-highlight)
 
