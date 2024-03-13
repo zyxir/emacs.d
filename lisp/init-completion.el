@@ -133,6 +133,15 @@ ARGS are the arguments passed."
 ;; Enable terminal support.
 (corfu-terminal-mode 1)
 
+;; Close the completion UI whenever C-g or ESC is pressed.
+(defun zy/quit-corfu-a (&rest _)
+  "Advice function used to call `corfu-quit'."
+  :before #'evil-force-normal-state
+  (when (fboundp 'corfu-quit) (corfu-quit)))
+(advice-add 'evil-force-normal-state :before #'zy/quit-corfu-a)
+(advice-add 'keyboard-quit :before #'zy/quit-corfu-a)
+(general-unbind :keymaps 'corfu-map "C-g")
+
 ;; Bind some Consult commands to "g".
 (general-def
   :states 'motion
