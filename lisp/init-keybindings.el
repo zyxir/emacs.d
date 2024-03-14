@@ -54,7 +54,7 @@
 (evil-collection-init)
 
 ;; Set proper initial states of some modes.
-(evil-set-initial-state 'compilation-mode 'normal)
+(evil-set-initial-state 'comint-mode 'normal)
 
 ;; Also change Evil cursor in terminal.
 (evil-terminal-cursor-changer-activate)
