@@ -9,7 +9,8 @@
 (global-flycheck-mode 1)
 
 ;; Use Flycheck rather than Flymake with Eglot.
-(global-flycheck-eglot-mode 1)
+(with-eval-after-load 'eglot
+  (global-flycheck-eglot-mode 1))
 
 (provide 'init-check)
 
