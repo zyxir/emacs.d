@@ -63,7 +63,8 @@
 ;; Extra insert state customization.
 (general-def
   :states 'insert
-  "C-d" #'evil-delete-char)
+  "C-d" #'evil-delete-char
+  "C-g" #'evil-force-normal-state)
 
 ;; Embark keys in all states.
 (general-def
@@ -89,11 +90,6 @@
 (general-def
   :states 'motion
   "g c" #'evil-goto-char)
-
-;; Use C-g as an alternative to ESC in insert state.
-(general-def
-  :states 'insert
-  "C-g" #'evil-force-normal-state)
 
 ;; Insert or complete many things with "C-v" in insert state. More commands are
 ;; defined in other files.

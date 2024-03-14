@@ -20,15 +20,6 @@
  modus-themes-mixed-fonts t
  modus-themes-variable-pitch-ui t)
 
-;; Configure Modus theme faces.
-(with-eval-after-load 'modus-themes
-  (set-face-attribute 'modus-themes-lang-error
-                      nil :inherit 'modus-themes-prominent-error)
-  (set-face-attribute 'modus-themes-lang-warning
-                      nil :inherit 'modus-themes-prominent-warning)
-  (set-face-attribute 'modus-themes-lang-note
-                      nil :inherit 'modus-themes-prominent-note))
-
 ;; Enable Modus Operandi Tinted or the user-preferred theme.
 (dolist (theme (or custom-enabled-themes '(modus-operandi-tinted)))
   (load-theme theme 'no-confirm))
@@ -45,10 +36,20 @@
  dashboard-projects-backend 'project-el
  ;; Center the dashboard.
  dashboard-center-content t
+ ;; Use the alternate banner, and show no banner title.
+ dashboard-startup-banner 'logo
+ dashboard-banner-logo-title nil
+ ;; Use ancient Chinese quotes as footer messages.
+ dashboard-footer-messages
+ '("學如逆水行舟，不進則退"
+   "不積跬步，無以致千里；不積小流，無以成江海"
+   "博觀而約取，厚積而薄發"
+   "業精於勤，荒於嬉；行成於思，毀於隨"
+   "欲窮千里目，更上一層樓")
  ;; Customize dashboard items.
- dashboard-items '((projects . 8)
+ dashboard-items '((projects . 5)
                    (recents . 5)
-                   (bookmarks . 5)))
+                   (bookmarks . 3)))
 (dashboard-setup-startup-hook)
 
 ;; Also load the dashboard for clients in daemon mode.

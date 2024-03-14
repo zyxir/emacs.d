@@ -22,8 +22,8 @@
                        (font . "-*-Sarasa Mono HC-*-*-*-*-16-*-*-*-*-*-*-1")
                        (x-compose-font-name)
                        ;; A reasonable default frame size.
-                       (width . 100)
-                       (height . 45))
+                       (width . 110)
+                       (height . 40))
  ;; These modes should also be `nil' to correspond to their actual states.
  menu-bar-mode nil
  scroll-bar-mode nil
