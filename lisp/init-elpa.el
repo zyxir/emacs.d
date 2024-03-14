@@ -15,15 +15,19 @@
         ("melpa-stable" . "https://mirrors.ustc.edu.cn/elpa/stable-melpa/")
         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 
+
+;;;; On-Demand Installation of Packages
+
+;; This is a handy system based on Purcell's config.
+
 (defvar required-packages '()
   "Packages required by `require-package'.")
 
-(defun require-package-symbol (package &optional min-version no-refresh)
+(defun zy/-require-symbol-package (package &optional min-version no-refresh)
   "Install given PACKAGE, optionally requiring MIN-VERSION.
-If NO-REFRESH is non-nil, the available package lists will not be
-re-downloaded in order to locate PACKAGE.
 
-Do not use this directly. Use `require-package' instead."
+If NO-REFRESH is non-nil, the available package lists will not be
+re-downloaded in order to correctly install PACKAGE."
   (when (stringp min-version)
     (setq min-version (version-to-list min-version)))
   (or (package-installed-p package min-version)
@@ -33,12 +37,39 @@ Do not use this directly. Use `require-package' instead."
                                 (version-list-<= (package-desc-version b)
                                                  (package-desc-version a)))))))
         (if (and best (version-list-<= min-version (package-desc-version best)))
-            (package-install best)
+            ;; Even if there is a best pacakge, there might be `file-error'
+            ;; thrown while trying to fetch its dependencies. Try to refresh
+            ;; the package contents to solve this.
+            (if no-refresh
+                (package-install package)
+              (condition-case nil
+                  (package-install package)
+                (file-error
+                 (package-refresh-contents)
+                 (zy/-require-symbol-package package min-version t))))
           (if no-refresh
               (error "No version of %s >= %S is available" package min-version)
             (package-refresh-contents)
-            (require-package-symbol package min-version t)))
+            (zy/-require-symbol-package package min-version t)))
         (package-installed-p package min-version))))
+
+(defun zy/-require-local-package (path)
+  "Install package from local file/directory PATH."
+  (let* ((relative-p (null (file-name-absolute-p path)))
+         (lisp-dir-path
+          (when relative-p
+            (expand-file-name path zy/lisp-dir)))
+         (site-lisp-dir-path
+          (when relative-p
+            (expand-file-name path zy/site-lisp-dir)))
+         (path-choices (if relative-p
+                           `(,lisp-dir-path ,site-lisp-dir-path)
+                         `(,path)))
+         (final-path (cl-some (lambda (path) (when (file-exists-p path) path))
+                              path-choices)))
+    (if final-path
+        (package-install-file final-path)
+      (error "Cannot find an existing path from %s" path-choices))))
 
 (defun require-package (package &optional min-version)
   "Make sure that PACKAGE is installed with MIN-VERSION.
@@ -69,33 +100,16 @@ Anyway, if the package is installed, it is added to
     (unless (package-installed-p name min-version)
       (cond
        ;; A package symbol.
-       ((null spec-or-path)
-        (require-package-symbol name min-version))
+       ((null spec-or-path) (zy/-require-symbol-package name min-version))
        ;; A VC package.
-       (spec
-        (package-vc-install package))
+       (spec (package-vc-install package))
        ;; A local package.
-       (path
-        (let* ((relative-p (null (file-name-absolute-p path)))
-               (lisp-dir-path
-                (when relative-p
-                  (expand-file-name path zy/lisp-dir)))
-               (site-lisp-dir-path
-                (when relative-p
-                  (expand-file-name path zy/site-lisp-dir)))
-               (path-choices (if relative-p
-                                 `(,lisp-dir-path ,site-lisp-dir-path)
-                               `(,path)))
-               (final-path (cl-some (lambda (path) (when (file-exists-p path) path))
-				    path-choices)))
-          (if final-path
-              (package-install-file final-path)
-            (error "Cannot find an existing path from %s" path-choices))))
+       (path (zy/-require-local-package path))
        ;; Unknown cases.
-       (t
-        (error "%s does not describe a valid package" package))))
+       (t (error "%s does not describe a valid package" package))))
     ;; Add the package symbol to `package-selected-packages' to prevent it from
-    ;; being auto-removed.
+    ;; being auto-removed. Normally this shouldn't be done manually, but we do
+    ;; this just in case the list is unexpectedly modified.
     (add-to-list 'package-selected-packages name)
     ;; Track explicitly required packages.
     (add-to-list 'required-packages package)
