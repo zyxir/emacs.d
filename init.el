@@ -67,6 +67,7 @@ Possible values:
 
   ;; Look and feel.
   (require-init 'init-theme)
+  (require-init 'init-modeline)
   (require-init 'init-fonts)
 
   ;; File type specific.
