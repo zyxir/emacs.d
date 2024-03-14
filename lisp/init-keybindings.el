@@ -9,6 +9,8 @@
 (require-package 'evil)
 (require-package 'evil-collection)
 (require-package 'evil-terminal-cursor-changer)
+(require-package 'evil-surround)
+(require-package 'evil-lion)
 (require-package 'general)
 (require-package 'avy)
 (require-package 'consult)
@@ -56,6 +58,12 @@
 
 ;; Also change Evil cursor in terminal.
 (evil-terminal-cursor-changer-activate)
+
+;; Enable Evil-surround (for pair-editing, very powerful).
+(global-evil-surround-mode 1)
+
+;; Enable Evil-lion (use gl or gL for aligning).
+(evil-lion-mode 1)
 
 
 ;;;; Tweak Evil Keybindings
