@@ -41,7 +41,7 @@ Each entry is a LANG-ID string returned by
 
 (defadvice! zy/-try-to-ensure-eglot-a (&rest _)
   "Try to ensure Eglot if possible."
-  :after #'envrc--update
+  :after #'envrc--apply
   (zy/-try-to-ensure-eglot-h))
 
 (provide 'init-lsp)
