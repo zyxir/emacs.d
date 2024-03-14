@@ -43,6 +43,11 @@
   (when (string-suffix-p "=" word)
     `(orderless-literal . ,(substring word 0 -1))))
 
+(defun zy/orderless-prefix (word _index _total)
+  "Read WORD^ as a prefix."
+  (when (string-suffix-p "^" word)
+    `(orderless-regexp . ,(format "^%s" (substring word 0 -1)))))
+
 (defun zy/orderless-file-ext (word _index _total)
   "Expand WORD. to a file suffix when completing file names."
   (when (and minibuffer-completing-file-name
@@ -51,6 +56,7 @@
 
 (setq orderless-matching-styles '(orderless-prefixes orderless-regexp)
       orderless-style-dispatchers '(zy/orderless-literal
+                                    zy/orderless-prefix
                                     zy/orderless-file-ext))
 
 

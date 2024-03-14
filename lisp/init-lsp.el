@@ -1,13 +1,15 @@
-;;; init-eglot.el --- Language server protocol.  -*- lexical-binding: t -*-
+;;; init-lsp.el --- Language server protocol.  -*- lexical-binding: t -*-
 ;;; Commentary:
 
 ;; Most LSP keybindings have been defined in `init-keybindings' as code actions.
 
 ;;; Code:
 
-(provide 'init-eglot)
-
 (with-eval-after-load 'eglot
+  (setq
+   ;; Do not require confirmation on code actions.
+   eglot-confirm-server-initiated-edits nil)
+
   ;; HACK Fix Scala language server association.
   (when-let* ((old-entry (assoc 'scala-mode eglot-server-programs))
               (new-entry `((scala-mode scala-ts-mode) . ,(cdr old-entry))))
@@ -15,28 +17,33 @@
     (setq eglot-server-programs
           (remove old-entry eglot-server-programs)
           eglot-server-programs
-          (cons new-entry eglot-server-programs)))
+          (cons new-entry eglot-server-programs))))
 
-  (setq
-   ;; Do not require confirmation on code actions.
-   eglot-confirm-server-initiated-edits nil))
+;; Try to enable Eglot for all prog-modes if possible, unless explicitly
+;; blacklisted.
 
-;; Ensure Eglot only when the corresponding executable is available.
-(dolist (pair
-         '((c-mode-common-hook . "ccls")
-           (python-base-mode-hook . "pyright")
-           ((scala-mode-hook scala-ts-mode-hook) . "metals")))
-  (let* ((hook (car pair))
-         (exec (cdr pair))
-         (hooks (if (listp hook) hook (list hook))))
-    (dolist (h hooks)
-      (add-hook h
-                `(lambda ()
-                   (when (executable-find ,exec)
-                     (eglot-ensure)))))))
+(defcustom zy/eglot-blacklist '()
+  "Don't activate Eglot for these languages.
+Each entry is a LANG-ID string returned by
+`eglot--guess-contact'."
+  :type '(repeat string))
 
-(setq
- ;; Do not require confirmation on code actions.
- eglot-confirm-server-initiated-edits nil)
+(add-hook! prog-mode
+  (defun zy/-try-to-ensure-eglot-h (&rest _)
+    "Try to ensure Eglot if possible."
+    (require 'eglot)
+    (let* ((contact (ignore-errors (eglot--guess-contact)))
+           (managed-mode (nth 0 contact))
+           (lang-id (nth 4 contact)))
+      (when (and managed-mode
+                 (not (member lang-id zy/eglot-blacklist)))
+        (eglot-ensure)))))
 
-;;; init-eglot.el ends here
+(defadvice! zy/-try-to-ensure-eglot-a (&rest _)
+  "Try to ensure Eglot if possible."
+  :after #'envrc--update
+  (zy/-try-to-ensure-eglot-h))
+
+(provide 'init-lsp)
+
+;;; init-lsp.el ends here
