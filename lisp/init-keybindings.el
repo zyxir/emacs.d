@@ -53,8 +53,10 @@
  evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
 (evil-collection-init)
 
-;; Set proper initial states of some modes.
+;; Use normal state, rather than insert state, for these modes.
 (evil-set-initial-state 'comint-mode 'normal)
+(evil-set-initial-state 'shell-mode 'normal)
+(evil-set-initial-state 'eshell-mode 'normal)
 
 ;; Also change Evil cursor in terminal.
 (evil-terminal-cursor-changer-activate)
