@@ -35,6 +35,8 @@
  ;; I usually use a Hybrid font like Sarasa Gothic, which contains tremendous
  ;; amout of CJK glyphs. Disable compacting of font makes redisplay faster.
  inhibit-compacting-font-caches t
+ ;; Do not show the startup screen.
+ inhibit-startup-screen t
  ;; Do not report native compilation warnings and errors. Those do not matter in
  ;; most occasions.
  native-comp-async-report-warnings-errors nil
