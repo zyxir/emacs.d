@@ -38,7 +38,7 @@
 ;; The leader key and the local leader key.
 (defconst zy/leader-key "SPC"
   "The leader key used as a common shortcut prefix.")
-(defconst zy/leader-key-insert "M-SPC"
+(defconst zy/leader-key-insert "M-m"
   "The leader key in insert state.")
 (defconst zy/local-leader-key ";"
   "The local leader key used as a mode-specific shortcut prefix.")
@@ -90,6 +90,11 @@
   :states 'motion
   "g c" #'evil-goto-char)
 
+;; Use C-g as an alternative to ESC in insert state.
+(general-def
+  :states 'insert
+  "C-g" #'evil-force-normal-state)
+
 ;; Insert or complete many things with "C-v" in insert state. More commands are
 ;; defined in other files.
 (general-create-definer zy/C-v-def
@@ -102,23 +107,6 @@
         "Insert a zero-width space."
         (interactive)
         (insert #x200B)))
-
-;; The omnipotent "C-g".
-(defun zy/C-g (&rest _)
-  "Do \\`C-g' action depending on the context."
-  (interactive)
-  (cond
-   (;; While completing with Corfu, quit the completion.
-    (or corfu--frame corfu-terminal--popon)
-    (corfu-quit))
-   (;; While in insert state, go to normal state.
-    (eq evil-state 'insert)
-    (evil-force-normal-state))
-   (;; In other cases, do `keyboard-quit'.
-    t (keyboard-quit))))
-(general-def
-  :states '(insert normal visual)
-  "C-g" #'zy/C-g)
 
 
 ;;;; Setup Leader Keys
