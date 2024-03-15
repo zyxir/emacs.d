@@ -37,11 +37,11 @@ re-downloaded in order to correctly install PACKAGE."
                                 (version-list-<= (package-desc-version b)
                                                  (package-desc-version a)))))))
         (if (and best (version-list-<= min-version (package-desc-version best)))
-            ;; Even if there is a best pacakge, there might be `file-error'
-            ;; thrown while trying to fetch its dependencies. Try to refresh
-            ;; the package contents to solve this.
             (if no-refresh
                 (package-install package)
+              ;; Even if there is a best pacakge, there might be `file-error'
+              ;; thrown while trying to fetch its dependencies. Try to refresh
+              ;; the package contents to solve this.
               (condition-case nil
                   (package-install package)
                 (file-error
@@ -55,15 +55,12 @@ re-downloaded in order to correctly install PACKAGE."
 
 (defun zy/-require-local-package (path)
   "Install package from local file/directory PATH."
+  (defvar zy/module-dir)
   (let* ((relative-p (null (file-name-absolute-p path)))
-         (lisp-dir-path
-          (when relative-p
-            (expand-file-name path zy/lisp-dir)))
-         (site-lisp-dir-path
-          (when relative-p
-            (expand-file-name path zy/site-lisp-dir)))
+         (expanded-by-module-dir
+          (when relative-p (expand-file-name path zy/module-dir)))
          (path-choices (if relative-p
-                           `(,lisp-dir-path ,site-lisp-dir-path)
+                           `(,expanded-by-module-dir)
                          `(,path)))
          (final-path (cl-some (lambda (path) (when (file-exists-p path) path))
                               path-choices)))

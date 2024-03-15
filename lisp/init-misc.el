@@ -5,10 +5,14 @@
 
 ;;; Code:
 
+(require 'init-util)
+
 (require-package 'gcmh)
 
 ;; Enable GCMH to reduce GC lags.
 (gcmh-mode 1)
+
+(defvar native-comp-async-report-warnings-errors)
 
 (setq
  ;; Do not create auto save or backup files.
@@ -52,7 +56,9 @@
  use-dialog-box nil)
 
 ;; Don't grep in these directories and files.
-(with-eval-after-load 'grep
+(after! 'grep
+  (defvar grep-find-ignored-directories)
+  (defvar grep-find-ignored-files)
   (setq grep-find-ignored-directories
         (append grep-find-ignored-directories '("elpa"))
         grep-find-ignored-files
@@ -74,12 +80,14 @@
 (recentf-mode 1)
 
 ;; Always persist variables across sessions.
-(setq savehist-additional-variables '(kill-ring
-                                      register-alist
-                                      mark-ring
-                                      global-mark-ring
-                                      search-ring
-                                      regexp-search-ring))
+(after! 'savehist
+  (defvar savehist-additional-variables)
+  (setq savehist-additional-variables '(kill-ring
+                                        register-alist
+                                        mark-ring
+                                        global-mark-ring
+                                        search-ring
+                                        regexp-search-ring)))
 (savehist-mode 1)
 
 ;; Always save buffer locations.

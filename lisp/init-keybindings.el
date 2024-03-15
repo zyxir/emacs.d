@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(require 'init-misc)
+
 (require-package 'evil)
 (require-package 'evil-collection)
 (require-package 'evil-terminal-cursor-changer)

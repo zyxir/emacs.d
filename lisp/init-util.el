@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(require 'init-elpa)
+
 ;; Load zylib.el.
 (require-package '(zylib "zylib.el"))
 
@@ -156,5 +158,38 @@ This function is based on `undefadvice!' of Doom Emacs."
     `(dolist (targets (list ,@(nreverse where-alist)))
        (dolist (target (cdr targets))
          (advice-remove target #',symbol)))))
+
+
+;;;; More Lazy Loading Macros
+
+(defun zy/require-after-load (features body)
+  "Generate `eval-after-load' statements to represent FEATURES.
+FEATURES is a list containing keywords `:and' and `:all', where
+no keyword implies `:all'. BODY is the body to be lady loaded."
+  (cond
+   ((and features (symbolp features))
+    `((eval-after-load ',features ',(macroexp-progn body))))
+   ((and (consp features)
+         (memq (car features) '(:or :any)))
+    (cl-mapcan #'(lambda (x) (zy/require-after-load x body))
+               (cdr features)))
+   ((and (consp features)
+         (memq (car features) '(:and :all)))
+    (cl-dolist (next (cdr features))
+      (setq body (zy/require-after-load next body)))
+    body)
+   ((listp features)
+    (zy/require-after-load (cons :all features) body))))
+
+(defmacro after! (features &rest body)
+  "Evaluate BODY after FEATURES are available.
+FEATURES is a list containing keywords `:and' and `:all', where
+no keyword implies `:all'."
+  (declare (indent 1) (debug (form def-body)))
+  (let* ((features (if (and (consp features)
+                            (eq (car features) 'quote))
+                       (cdr features)
+                     features)))
+    (macroexp-progn (zy/require-after-load features body))))
 
 ;;; init-util.el ends here

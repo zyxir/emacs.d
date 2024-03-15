@@ -29,18 +29,19 @@ Possible values:
 
 ;; Load modules.
 
-(defconst zy/lisp-dir (expand-file-name "lisp" user-emacs-directory)
-  "Directory containing modules of Zyxir's Emacs config.")
+(defvar zy/module-dir (expand-file-name "lisp" user-emacs-directory)
+  "Directory containing modules of Zyxir's Emacs configuration.")
 
-(defconst zy/site-lisp-dir (expand-file-name "site-lisp" user-emacs-directory)
-  "Directory containing third-party Lisp code of Zyxir's Emacs config.")
+(add-to-list 'load-path zy/module-dir)
 
+;; Module loader.
 (defun require-init (module)
-  "Load MODULE of Zyxir's config."
-  (load (expand-file-name (symbol-name module) zy/lisp-dir)
-	'noerror 'nomessage))
+  "Load module MODULE of the configuration."
+  (load (expand-file-name (symbol-name module) zy/module-dir)
+        'noerror 'nomessage))
 
-(let ((file-name-handler-alist nil))
+;; Clear the file name handler to make loading faster.
+(let* ((file-name-handler-alist nil))
 
   ;; Load the custom file first.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
