@@ -32,17 +32,32 @@ Each entry is a LANG-ID string returned by
   (defun zy/-try-to-ensure-eglot-h (&rest _)
     "Try to ensure Eglot if possible."
     (require 'eglot)
-    (let* ((contact (ignore-errors (eglot--guess-contact)))
-           (managed-mode (nth 0 contact))
-           (lang-id (nth 4 contact)))
-      (when (and managed-mode
-                 (not (member lang-id zy/eglot-blacklist)))
-        (eglot-ensure)))))
+    (when-let* ((guessed (ignore-errors (eglot--guess-contact)))
+                (managed-mode (nth 0 guessed))
+                (lang-id (nth 4 guessed))
+                ;; According to the docstring of `eglot-server-programs', there
+                ;; are several possible forms of `contact'. Here we only deal
+                ;; with the most basic type: a list starting with a string
+                ;; PROGRAM. Personally this covers 100% of my use case, but this
+                ;; may not work (or break) in some cases.
+                (contact (nth 3 guessed))
+                (program (and (stringp (car contact))
+                              (car contact)))
+                (exists (executable-find program)))
+      (eglot-ensure))))
 
-(defadvice! zy/-try-to-ensure-eglot-a (&rest _)
-  "Try to ensure Eglot if possible."
+(defadvice! zy/-try-to-ensure-eglot-a (buf result)
+  "Try to ensure Eglot when Direnv updates.
+This is an advice for `envrc--apply' and only when RESULT is a
+list, which indicates a successful update as indicated by the
+source code. BUF is used as the current buffer."
   :after #'envrc--apply
-  (zy/-try-to-ensure-eglot-h))
+  (when (and result
+             (listp result)
+             (not (memq result '(none error))))
+    (with-current-buffer buf
+      (message "TRY TO ENSURE EGLOT!")
+      (zy/-try-to-ensure-eglot-h))))
 
 (provide 'init-lsp)
 
