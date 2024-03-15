@@ -8,6 +8,10 @@
 
 ;;; Code:
 
+;; Use a larger GC cons threshold to speed up startup. Once the GCMH package has
+;; been loaded it will take over GC.
+(setq gc-cons-threshold (* 1024 1024 1024))
+
 ;; Configure features here to speed up loading.
 (setq
  ;; Turn off menu bar, scroll bars, and tool bar.
@@ -32,10 +36,6 @@
  frame-resize-pixelwise t
  ;; Disable package.el.
  package-enable-at-startup nil)
-
-;; Use a larger GC cons threshold to speed up startup. Once the GCMH package has
-;; been loaded it will take over GC.
-(setq gc-cons-threshold (* 1024 1024 1024))
 
 (provide 'early-init)
 

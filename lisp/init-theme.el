@@ -24,6 +24,22 @@
 (dolist (theme (or custom-enabled-themes '(modus-operandi-tinted)))
   (load-theme theme 'no-confirm))
 
+;; Use more prominent faces for errors/warnings/notes on terminal since
+;; underlines cannot be colored there.
+(defun zy/-setup-terminal-err-faces-h (&rest _)
+  "Setup more prominent error faces for FRAME.
+Only works for non-graphical frames."
+  (when-let* ((frame (selected-frame)))
+    (unless (display-graphic-p frame)
+      (set-face-attribute 'modus-themes-lang-error frame
+                          :inherit 'error)
+      (set-face-attribute 'modus-themes-lang-warning frame
+                          :inherit 'warning)
+      (set-face-attribute 'modus-themes-lang-note frame
+                          :inherit 'note))))
+(add-hook 'window-setup-hook #'zy/-setup-terminal-err-faces-h)
+(add-to-list 'after-make-frame-functions #'zy/-setup-terminal-err-faces-h)
+
 ;; Enable Solaire mode to distinguish between file and non-file buffers.
 (solaire-global-mode 1)
 
