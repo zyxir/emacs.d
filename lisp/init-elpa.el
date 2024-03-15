@@ -2,6 +2,24 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-when-compile (require 'cl-lib))
+
+;; Determine the running environment.
+(defvar zy/wsl-p (file-exists-p "/etc/wsl.conf")
+  "If Emacs is running on WSL.")
+(defvar zy/os
+  (cond ((member system-type '(ms-dos windows-nt cygwin))
+	 'windows)
+	((eq system-type 'gnu/linux)
+	 (if zy/wsl-p 'wsl 'linux))
+	(t 'unsupported))
+  "The operating system Emacs is running on.
+Possible values:
+  `windows'     Microsoft Windows
+  `wsl'         Windows subsystem for Linux
+  `linux'       a Linux distribution
+  `unsupported' an unsupported system")
+
 ;; Install packages into separate directories for each Emacs version to prevent
 ;; byte code incompatibility.
 (setq package-user-dir
@@ -15,7 +33,6 @@
         ("melpa-stable" . "https://mirrors.ustc.edu.cn/elpa/stable-melpa/")
         ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")))
 
-
 ;;;; On-Demand Installation of Packages
 
 ;; This is a handy system based on Purcell's config.
@@ -126,6 +143,10 @@ Anyway, if the package is installed, it is added to
 
 ;; Require ESUP, the Emacs startup profiler.
 (require-package 'esup)
+
+;; Enable GCMH to reduce GC lags.
+(require-package 'gcmh)
+(gcmh-mode 1)
 
 (provide 'init-elpa)
 

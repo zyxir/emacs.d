@@ -6,7 +6,7 @@
 
 ;;; Code:
 
-(require 'init-misc)
+(require 'init-util)
 
 (require-package 'evil)
 (require-package 'evil-collection)
@@ -20,10 +20,25 @@
 (require-package 'embark-consult)
 (require-package 'which-key)
 
-
+;; Rewrite `general-create-definer' to silence warnings.
+(defmacro zy/create-definer (name &rest defaults)
+  "Create definer NAME with DEFAULTS.
+This is the simplified version of `general-create-definer', and
+it silences warnings."
+  (declare (indent defun))
+  (let ((defaults (cl-loop for (key val) on defaults by 'cddr
+                           unless (eq key :wrapping)
+                           collect key
+                           and collect val)))
+    `(eval-when-compile
+       (defmacro ,name (&rest args)
+         "A wrapper for `general-def'."
+         (declare (indent defun))
+         `(general-def ,@args ,@',defaults)))))
+
 ;;;; Setup Evil
 
-(setq
+(setq-default
  ;; Delete back to indentation with C-u in insert state.
  evil-want-C-u-delete t
  ;; Scroll with C-u/d in normal state.
@@ -37,7 +52,6 @@
  evil-want-keybinding nil
  ;; Use the built-in `undo-redo' system.
  evil-undo-system 'undo-redo)
-(evil-mode 1)
 
 ;; The leader key and the local leader key.
 (defconst zy/leader-key "SPC"
@@ -49,63 +63,67 @@
 (defconst zy/local-leader-key-insert "M-;"
   "The local leader key in insert state.")
 
-;; Setup Evil in many other modes.
-(setq
- ;; Do not bind my leader key.
- evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
-(evil-collection-init)
+(when (featurep 'evil) (message "Evil has been mysteriously loaded"))
+(defer-and-after! 'evil
+  ;; Activate Evil mode.
+  (evil-mode 1)
 
-;; Use normal state, rather than insert state, for these modes.
-(evil-set-initial-state 'comint-mode 'normal)
-(evil-set-initial-state 'shell-mode 'normal)
-(evil-set-initial-state 'eshell-mode 'normal)
+  ;; Setup Evil in many other modes.
+  (setq-default
+   ;; Do not bind my leader key.
+   evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
+  (evil-collection-init)
 
-;; Also change Evil cursor in terminal.
-(evil-terminal-cursor-changer-activate)
+  ;; Use normal state, rather than insert state, for these modes.
+  (evil-set-initial-state 'comint-mode 'normal)
+  (evil-set-initial-state 'shell-mode 'normal)
+  (evil-set-initial-state 'eshell-mode 'normal)
 
-;; Enable Evil-surround (for pair-editing, very powerful).
-(global-evil-surround-mode 1)
+  ;; Also change Evil cursor in terminal.
+  (evil-terminal-cursor-changer-activate)
 
-;; Enable Evil-lion (use gl or gL for aligning).
-(evil-lion-mode 1)
+  ;; Enable Evil-surround (for pair-editing, very powerful).
+  (global-evil-surround-mode 1)
 
-
-;;;; Tweak Evil Keybindings
+  ;; Enable Evil-lion (use gl or gL for aligning).
+  (evil-lion-mode 1)
 
-;; Extra insert state customization.
-(general-def
-  :states 'insert
-  "C-d" #'evil-delete-char
-  "C-g" #'evil-force-normal-state)
+  ;; Insert state customization.
+  (general-def
+    :states 'insert
+    "C-d" #'evil-delete-char
+    "C-g" #'evil-force-normal-state)
 
-;; Embark keys in all states.
-(general-def
-  :states '(normal visual)
-  "," #'embark-act)
-(general-def
-  :maps 'global-map
-  "M-," #'embark-act)
+  ;; Motion state customization.
+  (general-def
+    :states 'motion
+    "f" #'avy-goto-char
+    "F" #'avy-goto-char-timer
+    "g c" #'evil-goto-char)
 
-;; Remap `evil-find-char' to Avy.
-(general-def
-  :states 'motion
-  "f" #'avy-goto-char
-  "F" #'avy-goto-char-timer)
+  ;; Normal state customization.
+  (general-def
+    :states 'normal
+    "Q" #'kmacro-start-macro-or-insert-counter
+    "q" #'kmacro-end-or-call-macro)
 
-;; Remap "q" and "Q" to Emacs-style macro.
-(general-def
-  :states 'normal
-  "Q" #'kmacro-start-macro-or-insert-counter
-  "q" #'kmacro-end-or-call-macro)
+  ;; Embark keys in all states.
+  (general-def
+    :states '(normal visual)
+    "," #'embark-act)
+  (general-def
+    :maps 'global-map
+    "M-," #'embark-act)
 
-;; Remap (or cancel) some "goto" keys.
-(general-def
-  :states 'motion
-  "g c" #'evil-goto-char)
+  (message "Evil loaded."))
+
+(message "Evil should not be loaded yet")
+
+;;;; Setup Keymaps
 
 ;; Insert or complete many things with "C-v" in insert state. More commands are
 ;; defined in other files.
-(general-create-definer zy/C-v-def
+(zy/create-definer zy/C-v-def
   :keymaps 'insert
   :prefix-map 'zy/C-v-map
   :prefix "C-v")
@@ -116,18 +134,15 @@
         (interactive)
         (insert #x200B)))
 
-
-;;;; Setup Leader Keys
-
 ;; The leader definer.
-(general-create-definer zy/leader-def
+(zy/create-definer zy/leader-def
   :states '(normal insert visual)
   :prefix-map 'zy/leader-map
   :prefix zy/leader-key
   :non-normal-prefix zy/leader-key-insert)
 
 ;; The local leader definer.
-(general-create-definer zy/local-leader-def
+(zy/create-definer zy/local-leader-def
   :states '(normal insert visual)
   :prefix-map 'zy/local-leader-map
   :prefix zy/local-leader-key
@@ -138,7 +153,6 @@
   "SPC" #'execute-extended-command
   "0" #'delete-window
   "1" #'delete-other-windows
-  ;; TODO remap 2 and 3 to other more useful commands.
   "2" #'split-window-below
   "3" #'split-window-right
   "4" #'other-window-prefix
@@ -149,9 +163,8 @@
   "s" #'save-buffer
   "," #'embark-dwim)
 
-
 ;; "<leader> f" for file-related operations.
-(general-create-definer zy/leader-f-def
+(zy/create-definer zy/leader-f-def
   :keymaps 'zy/leader-map
   :prefix-map 'zy/leader-f-map
   :prefix "f")
@@ -167,13 +180,12 @@
   "V" #'zy/echo-filename
   "w" #'write-file)
 (defun zy/echo-filename ()
-  "Echo `buffer-file-name'."
+  "Echo the value of the variable `buffer-file-name'."
   (interactive)
   (message buffer-file-name))
 
-
 ;; "<leader> t" for toggling many switches.
-(general-create-definer zy/leader-t-def
+(zy/create-definer zy/leader-t-def
   :keymaps 'zy/leader-map
   :prefix-map 'zy/leader-t-map
   :prefix "t")
@@ -182,9 +194,8 @@
   "l" #'display-line-numbers-mode
   "o" #'outline-minor-mode)
 
-
 ;; "<leader> q" for quitting-related operations.
-(general-create-definer zy/leader-q-def
+(zy/create-definer zy/leader-q-def
   :keymaps 'zy/leader-map
   :prefix-map 'zy/leader-q-map
   :prefix "q")
@@ -193,7 +204,6 @@
  "r" #'restart-emacs
  "z" #'suspend-emacs)
 
-
 ;; "<leader> h" for help.
 (zy/leader-def
   "h" help-map)
@@ -201,9 +211,8 @@
   :keymaps 'help-map
   "M" #'describe-keymap)
 
-
 ;; "<leader> c" for generic code actions.
-(general-create-definer zy/leader-c-def
+(zy/create-definer zy/leader-c-def
   :keymaps 'zy/leader-map
   :prefix-map 'zy/leader-c-map
   :prefix "c")
@@ -214,33 +223,37 @@
 ACTION must be a string. If EGLOT-ACTION is non-nil and is a
 command, call it if Eglot is available."
   (declare (indent defun))
-  (let* ((fn-name (intern (format "zy/do-%s" action))))
+  (let* ((fn-name (intern (format "zy/do-%s" action)))
+         (eglot-action (zy/unquote eglot-action)))
+    ;; Validate EGLOT-ACTION at compile time.
+    (when eglot-action
+      (require 'eglot)
+      (unless (fboundp eglot-action)
+        (error "`%s' is not a valid Eglot command" eglot-action)))
     `(defun ,fn-name (&rest _)
        ,(format
-         "A placeholder command for action \"%s\".
-
-If `eglot-managed-p' returns non-nil, call `%s' instead."
-         action eglot-action)
+         "A placeholder command for action \"%s\"."
+         action)
        (interactive)
        (if (eglot-managed-p)
-           (call-interactively ,eglot-action))
+           (call-interactively ',eglot-action))
        (message ,(format "Action \"%s\" is not implemented." action)))))
 
 (zy/leader-c-def
-  "x" (zy/create-action "extract" #'eglot-code-action-extract)
-  "f" (zy/create-action "format" #'eglot-format)
-  "i" (zy/create-action "inline" #'eglot-code-action-inline)
-  "o" (zy/create-action "organize-imports" #'eglot-code-action-organize-imports)
-  "q" (zy/create-action "quickfix" #'eglot-code-action-quickfix)
-  "r" (zy/create-action "rename" #'eglot-rename)
-  "R" (zy/create-action "rewrite" #'eglot-code-action-rewrite))
+  "x" (zy/create-action "extract" 'eglot-code-action-extract)
+  "f" (zy/create-action "format" 'eglot-format)
+  "i" (zy/create-action "inline" 'eglot-code-action-inline)
+  "o" (zy/create-action "organize-imports" 'eglot-code-action-organize-imports)
+  "q" (zy/create-action "quickfix" 'eglot-code-action-quickfix)
+  "r" (zy/create-action "rename" 'eglot-rename)
+  "R" (zy/create-action "rewrite" 'eglot-code-action-rewrite))
 
-
-;; Other Tweaks
+;;;; Other Tweaks
 
 ;; Show key hints with Which-key.
-(setq which-key-idle-delay 0.5)
-(which-key-mode 1)
+(defer-and-after! 'which-key
+  (which-key-mode 1)
+  (setq which-key-idle-delay 0.5))
 
 (provide 'init-keybindings)
 

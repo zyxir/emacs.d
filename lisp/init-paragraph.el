@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(require 'init-keybindings)
+
 (require-package '(indent-bars
                    :url "https://github.com/jdtsmith/indent-bars"))
 
@@ -29,7 +31,7 @@
 (bind-key "M-Q" #'zy/unfill-paragraph)
 
 ;; Customize indent bars.
-(setq
+(setq-default
  ;; Minimal colorpop style.
  indent-bars-color '(highlight :face-bg t :blend 0.15)
  indent-bars-pattern "."
@@ -51,7 +53,8 @@
 (add-hook! prog-mode #'display-fill-column-indicator-mode)
 
 ;; Always show a button when using outline.
-(setq outline-minor-mode-use-buttons t)
+(after! 'outline
+  (setq outline-minor-mode-use-buttons t))
 
 (provide 'init-paragraph)
 

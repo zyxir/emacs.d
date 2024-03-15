@@ -33,7 +33,7 @@
 (add-hook! dired-mode (diff-hl-dired-mode 1))
 
 ;; "<leader> g" for git operations.
-(general-create-definer zy/leader-g-def
+(zy/create-definer zy/leader-g-def
   :keymaps 'zy/leader-map
   :prefix-map 'zy/leader-g-map
   :prefix "g")

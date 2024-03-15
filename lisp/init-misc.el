@@ -5,14 +5,7 @@
 
 ;;; Code:
 
-(require 'init-util)
-
-(require-package 'gcmh)
-
-;; Enable GCMH to reduce GC lags.
-(gcmh-mode 1)
-
-(defvar native-comp-async-report-warnings-errors)
+(require 'init-basic)
 
 (setq
  ;; Do not create auto save or backup files.
@@ -57,8 +50,6 @@
 
 ;; Don't grep in these directories and files.
 (after! 'grep
-  (defvar grep-find-ignored-directories)
-  (defvar grep-find-ignored-files)
   (setq grep-find-ignored-directories
         (append grep-find-ignored-directories '("elpa"))
         grep-find-ignored-files
@@ -81,7 +72,6 @@
 
 ;; Always persist variables across sessions.
 (after! 'savehist
-  (defvar savehist-additional-variables)
   (setq savehist-additional-variables '(kill-ring
                                         register-alist
                                         mark-ring

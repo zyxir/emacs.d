@@ -10,7 +10,6 @@
 
 ;;; Code:
 
-
 ;;;; Font Setting Utility
 
 (defvar zy/-fontset-cnt 0
@@ -76,7 +75,6 @@ function provides a simpler interface that just work."
       (when unspecified-p
         (set-face-attribute face frame :fontset fontset)))))
 
-
 ;;;; The Actual Setup
 
 ;; I used to write very flexible font configuration codes that defines a tons of

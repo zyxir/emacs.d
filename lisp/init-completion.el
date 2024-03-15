@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(require 'init-basic)
+
 (require-package 'orderless)
 (require-package 'vertico)
 (require-package 'marginalia)
@@ -16,8 +18,7 @@
 (require-package 'cape)
 (require-package 'consult-yasnippet)
 
-
-;; Completion Styles
+;;;; Completion Styles
 
 ;; Setup general completion styles.
 (setq
@@ -59,7 +60,6 @@
                                     zy/orderless-prefix
                                     zy/orderless-file-ext))
 
-
 ;; Minibuffer
 
 ;; Allow minibuffer commands while in the minibuffer.
@@ -102,7 +102,6 @@ ARGS are the arguments passed."
 ;; Show candidate info with Marginalia.
 (marginalia-mode 1)
 
-
 ;; Text Completion
 
 (add-hook! prog-mode #'corfu-mode)

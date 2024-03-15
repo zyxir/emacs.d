@@ -8,11 +8,10 @@
 
 (require 'init-elpa)
 
-;; Load zylib.el.
+;; Load Zylib.
 (require-package '(zylib "zylib.el"))
 
-
-;; Symbol Manipulation
+;;;; Symbol Manipulation
 
 (defun zy/unquote (exp)
   "Return EXP unquoted."
@@ -21,8 +20,7 @@
     (setq exp (cadr exp)))
   exp)
 
-
-;; Hook Management
+;;;; Hook Management
 
 (defun zy/-resolve-hook-forms (hooks)
   "Convert a list of modes into a list of hook symbols.
@@ -108,7 +106,6 @@ This function is based on `remove-hook!' of Doom Emacs."
 
 (provide 'init-util)
 
-
 ;; Advice Management
 
 (defmacro defadvice! (symbol arglist &optional docstring &rest body)
@@ -159,37 +156,77 @@ This function is based on `undefadvice!' of Doom Emacs."
        (dolist (target (cdr targets))
          (advice-remove target #',symbol)))))
 
-
 ;;;; More Lazy Loading Macros
 
-(defun zy/require-after-load (features body)
+(defun zy/-gen-after-load (features body)
   "Generate `eval-after-load' statements to represent FEATURES.
-FEATURES is a list containing keywords `:and' and `:all', where
-no keyword implies `:all'. BODY is the body to be lady loaded."
-  (cond
-   ((and features (symbolp features))
-    `((eval-after-load ',features ',(macroexp-progn body))))
-   ((and (consp features)
-         (memq (car features) '(:or :any)))
-    (cl-mapcan #'(lambda (x) (zy/require-after-load x body))
-               (cdr features)))
-   ((and (consp features)
-         (memq (car features) '(:and :all)))
-    (cl-dolist (next (cdr features))
-      (setq body (zy/require-after-load next body)))
-    body)
-   ((listp features)
-    (zy/require-after-load (cons :all features) body))))
+FEATURES is a list of feature symbols and BODY is the body to be
+lazy loaded.
+
+ALl features will be required at compile time to silence compiler
+warnings."
+  (let* ((require-sexp `(eval-and-compile
+                          ,@(mapcar #'(lambda (x) `(require ',x))
+                                    features)))
+         (body `(lambda () ,require-sexp ,@body)))
+    (dolist (feature features)
+      (setq body `(eval-after-load ',feature ,body)))
+    body))
+
+(defun zy/-normalize-features (features)
+  "Normalize FEATURES for macro expansion.
+FEATURES can be:
+
+- A quoted list of symbols.
+- An unquoted list of symbols.
+- A quoted symbol.
+- An unquoted symbol.
+
+This function always returns an unquoted list."
+  (setq features (zy/unquote features))
+  (if (listp features) features (list features)))
 
 (defmacro after! (features &rest body)
   "Evaluate BODY after FEATURES are available.
-FEATURES is a list containing keywords `:and' and `:all', where
-no keyword implies `:all'."
+
+FEATURES can be a symbol or a list of symbols. It can be quoted
+or unquoted."
   (declare (indent 1) (debug (form def-body)))
-  (let* ((features (if (and (consp features)
-                            (eq (car features) 'quote))
-                       (cdr features)
-                     features)))
-    (macroexp-progn (zy/require-after-load features body))))
+  (zy/-gen-after-load (zy/-normalize-features features) body))
+
+(defun zy/-gen-defer (features)
+  "Generate deferred loading statements for FEATURES.
+FEATURES is a list of feature symbols.
+
+If `daemonp' returns non-nil, FEATURES will be loaded right now.
+Otherwise, they will be executed at `window-setup-hook'."
+  (let* ((loading-sexps (mapcar
+                         (lambda (x) `(require ',(zy/unquote x)))
+                         features)))
+    `(if (daemonp)
+         ,(macroexp-progn loading-sexps)
+       (add-hook 'window-setup-hook
+                 (lambda () ,@loading-sexps)))))
+
+(defmacro defer! (&rest features)
+  "Defer the loading of FEATURES after startup.
+Each element of FEATURES is a feature symbol.
+
+If `daemonp' returns non-nil, FEATURES will be loaded right now.
+Otherwise, they will be executed at `window-setup-hook'.
+
+Deferred loading makes the UI loads up faster."
+  (zy/-gen-defer features))
+
+(defmacro defer-and-after! (features &rest body)
+  "Defer FEATURES, and evaluate BODY after them.
+
+This is like `after!', but the features are loaded in a deferred
+manner by `defer!'."
+  (declare (indent 1) (debug (form def-body)))
+  (let ((features (zy/-normalize-features features)))
+    `(progn
+       ,(zy/-gen-defer features)
+       ,(zy/-gen-after-load features body))))
 
 ;;; init-util.el ends here
