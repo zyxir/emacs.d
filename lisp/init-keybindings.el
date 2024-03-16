@@ -49,6 +49,8 @@ it silences warnings."
  evil-want-C-h-delete t
  ;; Respect visual lines.
  evil-respect-visual-line-mode t
+ ;; Allow moving beyond EOL.
+ evil-move-beyond-eol t
  ;; Load Evil keybindings for several other modes as well.
  evil-want-keybinding nil
  ;; Use the built-in `undo-redo' system.

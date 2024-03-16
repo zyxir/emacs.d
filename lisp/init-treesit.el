@@ -5,8 +5,9 @@
 (eval-and-compile (require 'init-basic))
 
 (require-package 'treesit-auto)
+(require-package 'evil-textobj-tree-sitter)
 
-;; Fontify everything.
+;; Fontify everything with tree-sitter.
 (after! 'treesit
   (setq treesit-font-lock-level 4))
 
@@ -41,6 +42,17 @@
 ;; Enable Treesit-auto.
 (treesit-auto-add-to-auto-mode-alist 'all)
 (global-treesit-auto-mode 1)
+
+;; Override some text objects from Evil-cleverparens, and provide more, by
+;; Evil-textobj-tree-sitter.
+(with-no-warnings
+  (general-def
+    :keymaps 'evil-inner-text-objects-map
+    "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+  (general-def
+    :keymaps 'evil-outer-text-objects-map
+    "f" (evil-textobj-tree-sitter-get-textobj "function.outer")
+    "a" (evil-textobj-tree-sitter-get-textobj "conditional.outer")))
 
 (provide 'init-treesit)
 
