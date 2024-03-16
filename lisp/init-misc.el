@@ -104,6 +104,14 @@
  display-line-numbers-width-start 60)
 (add-hook! (prog-mode text-mode conf-mode) (display-line-numbers-mode 1))
 
+;; Configure Eldoc.
+(after! eldoc
+  ;; Display multiple Eldoc sources simultaneously, and display each source as
+  ;; long as it's ready.
+  (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)
+  ;; Show Eldoc in a dedicated buffer with SPC h <period>, just like Eglot does.
+  (general-def :keymaps 'help-map "." #'eldoc-doc-buffer))
+
 (provide 'init-misc)
 
 ;;; init-misc.el ends here

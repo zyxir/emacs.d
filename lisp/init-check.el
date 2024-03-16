@@ -40,9 +40,6 @@
   ;; Display Flycheck errors with Eldoc.
   (add-hook 'eldoc-documentation-functions #'zy/-flycheck-eldoc)
   (setq
-   ;; Display multiple Eldoc sources eagerly so that Flycheck errors are shown
-   ;; together with other documentation.
-   eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly
    ;; Override Flycheck's default echoing function, which breaks Eldoc.
    flycheck-display-errors-function nil))
 
