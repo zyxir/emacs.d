@@ -194,7 +194,7 @@ or unquoted."
   (declare (indent 1) (debug (form def-body)))
   (zy/-gen-after-load (zy/-normalize-features features) body))
 
-(defun zy/-gen-defer (features)
+(defun zy/-gen-deferred-features (features)
   "Generate deferred loading statements for FEATURES.
 FEATURES is a list of feature symbols.
 
@@ -208,25 +208,24 @@ Otherwise, they will be executed at `window-setup-hook'."
        (add-hook 'window-setup-hook
                  (lambda () ,@loading-sexps)))))
 
-(defmacro defer! (&rest features)
-  "Defer the loading of FEATURES after startup.
-Each element of FEATURES is a feature symbol.
-
-If `daemonp' returns non-nil, FEATURES will be loaded right now.
-Otherwise, they will be executed at `window-setup-hook'.
-
-Deferred loading makes the UI loads up faster."
-  (zy/-gen-defer features))
-
-(defmacro defer-and-after! (features &rest body)
+(defmacro after-deferred! (features &rest body)
   "Defer FEATURES, and evaluate BODY after them.
 
 This is like `after!', but the features are loaded in a deferred
-manner by `defer!'."
+manner as `defer!' do."
   (declare (indent 1) (debug (form def-body)))
   (let ((features (zy/-normalize-features features)))
     `(progn
-       ,(zy/-gen-defer features)
+       ,(zy/-gen-deferred-features features)
        ,(zy/-gen-after-load features body))))
+
+(defmacro defer! (&rest body)
+  "Run BODY at `window-setup-hook'.
+If running in daemon mode, run them now."
+  (declare (indent 0) (debug (form def-body)))
+  `(if (daemonp)
+       ,(macroexp-progn body)
+     (add-hook 'window-setup-hook
+               (lambda () ,@body))))
 
 ;;; init-util.el ends here

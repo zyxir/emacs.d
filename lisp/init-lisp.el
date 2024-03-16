@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (after! 'flycheck
   ;; Check syntax using the load-path populated by the init file.
   (defvar flycheck-emacs-lisp-load-path)
@@ -16,7 +18,8 @@
   "e" #'eval-last-sexp
   "E" #'elisp-eval-region-or-buffer
   "d" #'eval-defun
-  "x" #'pp-macroexpand-last-sexp)
+  "x" #'pp-macroexpand-last-sexp
+  "C" #'emacs-lisp-byte-compile)
 
 (provide 'init-lisp)
 

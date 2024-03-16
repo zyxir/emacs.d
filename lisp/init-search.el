@@ -2,9 +2,12 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 ;; Use Ripgrep for xref if possible.
-(when (executable-find "rg")
-  (setq xref-search-program 'ripgrep))
+(after! 'xref
+  (when (executable-find "rg")
+    (setq xref-search-program 'ripgrep)))
 
 (provide 'init-search)
 

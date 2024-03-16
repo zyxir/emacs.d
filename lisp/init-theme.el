@@ -5,6 +5,8 @@
 
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 ;; Although Modus Themes are included in Emacs 29, the MELPA version has more
 ;; features and variants.
 (require-package 'modus-themes)
@@ -12,33 +14,54 @@
 (require-package 'rainbow-delimiters)
 (require-package 'dashboard)
 
+(defcustom zy/theme 'modus-operandi-tinted
+  "The theme to use for Emacs.
+
+Set theme with this variable instead of `custom-enabled-themes'
+to make the loading of themes more deterministic."
+  :type '(choice (const modus-operandi)
+                 (const modus-vivendi)
+                 (const modus-operandi-tinted)
+                 (const modus-vivendi-tinted)
+                 (const modus-operandi-tritanopia)
+                 (const modus-vivendi-tritanopia)
+                 (const modus-operandi-deuteranopia)
+                 (const modus-vivendi-deuteranopia))
+  :group 'emacs)
+
+;; Enable the theme of choice.
+(cond
+ ((string-prefix-p "modus-" (symbol-name zy/theme))
+  (require 'modus-themes))
+ (t nil))
+(load-theme zy/theme 'no-confirm)
+
 ;; Configure Modus Themes.
-(setq
- ;; Use more variants to enhance distinguishability.
- modus-themes-italic-constructs t
- modus-themes-bold-constructs t
- modus-themes-mixed-fonts t
- modus-themes-variable-pitch-ui t)
+(after! 'modus-themes
+  (setq
+   ;; Use more variants to enhance distinguishability.
+   modus-themes-italic-constructs t
+   modus-themes-bold-constructs t
+   modus-themes-mixed-fonts t
+   modus-themes-variable-pitch-ui t)
 
-;; Enable Modus Operandi Tinted or the user-preferred theme.
-(dolist (theme (or custom-enabled-themes '(modus-operandi-tinted)))
-  (load-theme theme 'no-confirm))
-
-;; Use more prominent faces for errors/warnings/notes on terminal since
-;; underlines cannot be colored there.
-(defun zy/-setup-terminal-err-faces-h (&rest _)
-  "Setup more prominent error faces for FRAME.
+  ;; Use more prominent faces for errors/warnings/notes on terminal since
+  ;; underlines cannot be colored there.
+  (eval-and-compile
+    (defun zy/-setup-terminal-err-faces-h (&rest _)
+      "Setup more prominent error faces for FRAME.
 Only works for non-graphical frames."
-  (when-let* ((frame (selected-frame)))
-    (unless (display-graphic-p frame)
-      (set-face-attribute 'modus-themes-lang-error frame
-                          :inherit 'error)
-      (set-face-attribute 'modus-themes-lang-warning frame
-                          :inherit 'warning)
-      (set-face-attribute 'modus-themes-lang-note frame
-                          :inherit 'note))))
-(add-hook 'window-setup-hook #'zy/-setup-terminal-err-faces-h)
-(add-to-list 'after-make-frame-functions #'zy/-setup-terminal-err-faces-h)
+      (when-let* ((frame (selected-frame)))
+        (unless (display-graphic-p frame)
+          (set-face-attribute 'modus-themes-lang-error frame
+                              :inherit 'error)
+          (set-face-attribute 'modus-themes-lang-warning frame
+                              :inherit 'warning)
+          (set-face-attribute 'modus-themes-lang-note frame
+                              :inherit 'note)))))
+
+  (add-hook 'window-setup-hook #'zy/-setup-terminal-err-faces-h)
+  (add-to-list 'after-make-frame-functions #'zy/-setup-terminal-err-faces-h))
 
 ;; Enable Solaire mode to distinguish between file and non-file buffers.
 (solaire-global-mode 1)
@@ -47,7 +70,7 @@ Only works for non-graphical frames."
 (add-hook! prog-mode #'rainbow-delimiters-mode)
 
 ;; Show a beautiful dashboard on entry.
-(setq
+(setq-default
  ;; Use project.el for projects.
  dashboard-projects-backend 'project-el
  ;; Center the dashboard.
@@ -66,6 +89,7 @@ Only works for non-graphical frames."
  dashboard-items '((projects . 5)
                    (recents . 5)
                    (bookmarks . 3)))
+
 (dashboard-setup-startup-hook)
 
 ;; Also load the dashboard for clients in daemon mode.

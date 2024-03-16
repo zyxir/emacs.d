@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (require-package 'scala-ts-mode)
 (require-package 'sbt-mode)
 

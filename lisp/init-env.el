@@ -5,18 +5,24 @@
 
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
+(declare-function zy/leader-c-def 'init-keybindings)
+
 (require-package 'envrc)
 (require-package 'editorconfig)
 
 ;; Manage Direnv with the Envrc package.
-(envrc-global-mode 1)
+(after-deferred! 'envrc
+  (envrc-global-mode 1)
 
-;; "<leader> c e" for environment-related operations.
-(zy/leader-c-def
-  "e" #'envrc-command-map)
+  ;; "<leader> c e" for environment-related operations.
+  (zy/leader-c-def
+    "e" #'envrc-command-map))
 
 ;; Load EditorConfig mode.
-(editorconfig-mode 1)
+(after-deferred! 'editorconfig
+  (editorconfig-mode 1))
 
 (provide 'init-env)
 

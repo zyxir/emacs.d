@@ -5,7 +5,7 @@
 
 ;;; Code:
 
-(require 'init-basic)
+(eval-and-compile (require 'init-basic))
 
 (setq
  ;; Do not create auto save or backup files.
@@ -34,9 +34,6 @@
  inhibit-compacting-font-caches t
  ;; Do not show the startup screen.
  inhibit-startup-screen t
- ;; Do not report native compilation warnings and errors. Those do not matter in
- ;; most occasions.
- native-comp-async-report-warnings-errors nil
  ;; The default (4 kB) is too low considering some language server responses are
  ;; in 800 kB to 3 MB. So it is set to 1 MB as suggested by Lsp-mode.
  read-process-output-max (* 1024 1024)
@@ -48,6 +45,11 @@
  ;; Do not use GUI dialog boxes (they cause questions on WSLg).
  use-dialog-box nil)
 
+;; Do not report native compilation warnings and errors. Those do not matter in
+;; most occasions.
+(when (featurep 'native-compile)
+  (setq-default native-comp-async-report-warnings-errors nil))
+
 ;; Don't grep in these directories and files.
 (after! 'grep
   (setq grep-find-ignored-directories
@@ -55,36 +57,40 @@
         grep-find-ignored-files
         (append grep-find-ignored-files '("history"))))
 
-;; Always delete selection like other editors do.
-(delete-selection-mode 1)
+(defer!
+  ;; Always delete selection like other editors do.
+  (delete-selection-mode 1)
 
-;; Always use subword movement (move between camel case words).
-(global-subword-mode 1)
+  ;; Always use subword movement (move between camel case words).
+  (global-subword-mode 1)
 
-;; Always match parenthesis.
-(electric-pair-mode 1)
+  ;; Always match parenthesis.
+  (electric-pair-mode 1)
 
-;; Always show matching parenthesis.
-(show-paren-mode 1)
+  ;; Always show matching parenthesis.
+  (show-paren-mode 1)
 
-;; Always record recent files.
-(recentf-mode 1)
+  ;; Enable mouse support in a terminal.
+  (xterm-mouse-mode 1)
+
+  ;; Enable visual lines.
+  (global-visual-line-mode 1)
+
+  ;; Always record recent files.
+  (recentf-mode 1))
 
 ;; Always persist variables across sessions.
-(after! 'savehist
+(after-deferred! 'savehist
+  (savehist-mode 1)
   (setq savehist-additional-variables '(kill-ring
                                         register-alist
                                         mark-ring
                                         global-mark-ring
                                         search-ring
                                         regexp-search-ring)))
-(savehist-mode 1)
 
 ;; Always save buffer locations.
 (save-place-mode 1)
-
-;; Enable mouse support in a terminal.
-(xterm-mouse-mode 1)
 
 ;; Display line numbers in most modes.
 (setq-default

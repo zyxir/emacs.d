@@ -6,6 +6,8 @@
 
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (require-package 'csv-mode)
 (require-package 'markdown-mode)
 (require-package 'nginx-mode)

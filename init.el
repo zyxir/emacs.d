@@ -17,17 +17,45 @@
 (add-to-list 'load-path zy/module-dir)
 
 (defun require-init (module)
-  "Load module MODULE of the configuration."
+  "Load module MODULE of the configuration.
+Always try to load the compiled version of MODULE (if not
+compiled yet, compile it now), unless `init-file-debug' is
+non-nil. In that case, load the uncompiled version with \".el\"
+suffix.
+
+Compilation optimizes load speed and ensures proper loading
+order (otherwise some features might be loaded early by macro
+expansion).
+
+Yes, compiling the init file might introduce more issues than it
+solves. However, as a perfectionist, I prefer eliminating all
+Flycheck warnings of my config, since a warning might stand for a
+potential bug. I am willing to invest time to ensure the byte
+code compatibility of my config."
   (let* ((base (expand-file-name (symbol-name module) zy/module-dir))
          (source (concat base ".el"))
          (compiled (concat base ".elc"))
-         (should-compile (file-newer-than-file-p source compiled)))
-    (when should-compile
-      (byte-compile-file source)
-      (when (and (fboundp 'native-comp-available-p)
-                 (native-comp-available-p))
-        (native-compile-async compiled nil 'load)))
-    (load compiled 'noerror 'nomessage 'nosuffix)))
+         (outdated (file-newer-than-file-p source compiled)))
+    (if init-file-debug
+        ;; Load the uncompiled version if `init-file-debug' is non-nil.
+        (load source 'noerror 'nomessage 'nosuffix)
+      (when outdated
+        ;; Byte compile the file, and ignore warnings while doing it, since all
+        ;; actual warnings should be eliminated while writting the code, and
+        ;; only the compiled byte code matters to the user (for example, Evil
+        ;; will warn that some variable is set after Evil is loaded, but Evil is
+        ;; only loaded early in compile time in order to supress warnings in
+        ;; `eval-after-load' blocks, therefore the warning does not matter at
+        ;; runtime).
+        (let ((byte-compile-warnings nil))
+          (byte-compile-file source))
+        ;; Additionally, if native compilation is available, native-compile the
+        ;; byte code.
+        (when (and (fboundp 'native-comp-available-p)
+                   (native-comp-available-p))
+          (native-compile-async source nil 'load)))
+      ;; Load the compiled byte code.
+      (load compiled 'noerror 'nomessage 'nosuffix))))
 
 ;; Clear the file name handler to make loading faster.
 (let* ((file-name-handler-alist nil))

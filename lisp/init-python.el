@@ -2,9 +2,21 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (require-package 'python-black)
 
-(with-eval-after-load 'python
+;; Wrap some commands to mimic `eglot-format'.
+(defun zy/python-format (&optional beg end)
+  "Format region BEG END.
+This uses `python-black-buffer' or `python-black-region'."
+  (interactive (and (region-active-p)
+                    (list (region-beginning) (region-end))))
+  (if beg
+      (python-black-region beg end)
+    (python-black-buffer)))
+
+(after! 'python
   ;; Use the Black profile for Isort.
   (defadvice! zy/python-sort-imports-a ()
     "Sort Python imports in the current buffer.
@@ -15,26 +27,18 @@ Always use the Black profile."
         (message "Sorted imports")
       (message "(No changes in Python imports needed)")))
 
-  ;; Wrap some commands to mimic `eglot-format'.
-  (defun zy/python-format (&optional beg end)
-    "Format region BEG END.
-This uses `python-black-buffer' or `python-black-region'."
-    (interactive (and (region-active-p)
-                      (list (region-beginning) (region-end))))
-    (if beg
-        (python-black-region beg end)
-      (python-black-buffer)))
-
-  (defun zy/switch-to-python-shell ()
-    "Switch to inferior Python process buffer.
+  ;; Start and switch to the Python shell.
+  (eval-and-compile
+    (defun zy/switch-to-python-shell ()
+      "Switch to inferior Python process buffer.
 When there is no Python process running, start one before
 switching to it."
-    (interactive)
-    (let ((proc (python-shell-get-process)))
-      (unless proc
-        (run-python)
-        (setq proc (python-shell-get-process)))
-      (pop-to-buffer (process-buffer proc))))
+      (interactive)
+      (when-let ((proc (python-shell-get-process)))
+        (unless proc
+          (run-python)
+          (setq proc (python-shell-get-process)))
+        (pop-to-buffer (process-buffer proc)))))
 
   ;; Local keys.
   (zy/local-leader-def

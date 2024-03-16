@@ -5,7 +5,9 @@
 
 ;;; Code:
 
-(with-eval-after-load 'eglot
+(eval-and-compile (require 'init-basic))
+
+(after! 'eglot
   (setq
    ;; Do not require confirmation on code actions.
    eglot-confirm-server-initiated-edits nil)
@@ -26,7 +28,8 @@
   "Don't activate Eglot for these languages.
 Each entry is a LANG-ID string returned by
 `eglot--guess-contact'."
-  :type '(repeat string))
+  :type '(repeat string)
+  :group 'emacs)
 
 (add-hook! prog-mode
   (defun zy/-try-to-ensure-eglot-h (&rest _)
@@ -46,18 +49,18 @@ Each entry is a LANG-ID string returned by
                 (exists (executable-find program)))
       (eglot-ensure))))
 
-(defadvice! zy/-try-to-ensure-eglot-a (buf result)
-  "Try to ensure Eglot when Direnv updates.
+(after! 'envrc
+  (defadvice! zy/-try-to-ensure-eglot-a (buf result)
+    "Try to ensure Eglot when Direnv updates.
 This is an advice for `envrc--apply' and only when RESULT is a
 list, which indicates a successful update as indicated by the
 source code. BUF is used as the current buffer."
-  :after #'envrc--apply
-  (when (and result
-             (listp result)
-             (not (memq result '(none error))))
-    (with-current-buffer buf
-      (message "TRY TO ENSURE EGLOT!")
-      (zy/-try-to-ensure-eglot-h))))
+    :after #'envrc--apply
+    (when (and result
+               (listp result)
+               (not (memq result '(none error))))
+      (with-current-buffer buf
+        (zy/-try-to-ensure-eglot-h)))))
 
 (provide 'init-lsp)
 

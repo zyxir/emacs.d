@@ -6,7 +6,7 @@
 
 ;;; Code:
 
-(require 'init-basic)
+(eval-and-compile (require 'init-basic))
 
 (require-package 'orderless)
 (require-package 'vertico)
@@ -15,8 +15,6 @@
 (require-package 'popon)
 (require-package '(corfu-terminal
                    :url "https://codeberg.org/akib/emacs-corfu-terminal"))
-(require-package 'cape)
-(require-package 'consult-yasnippet)
 
 ;;;; Completion Styles
 
@@ -39,26 +37,33 @@
  read-buffer-completion-ignore-case t
  read-file-name-completion-ignore-case t)
 
-(defun zy/orderless-literal (word _index _total)
-  "Read WORD= as a literal string."
-  (when (string-suffix-p "=" word)
-    `(orderless-literal . ,(substring word 0 -1))))
+(after! 'orderless
+  (defun zy/orderless-literal (word _index _total)
+    "Read WORD= as a literal string."
+    (when (string-suffix-p "=" word)
+      `(orderless-literal . ,(substring word 0 -1))))
 
-(defun zy/orderless-prefix (word _index _total)
-  "Read WORD^ as a prefix."
-  (when (string-suffix-p "^" word)
-    `(orderless-regexp . ,(format "^%s" (substring word 0 -1)))))
+  (defun zy/orderless-prefix (word _index _total)
+    "Read WORD^ as a prefix."
+    (when (string-suffix-p "^" word)
+      `(orderless-regexp . ,(format "^%s" (substring word 0 -1)))))
 
-(defun zy/orderless-file-ext (word _index _total)
-  "Expand WORD. to a file suffix when completing file names."
-  (when (and minibuffer-completing-file-name
-             (string-suffix-p "." word))
-    `(orderless-regexp . ,(format "\\.%s\\'" (substring word 0 -1)))))
+  (defun zy/orderless-initialism (word _index _total)
+    "Read WORD% as an initialism."
+    (when (string-suffix-p "%" word)
+      `(orderless-initialism . ,(substring word 0 -1))))
 
-(setq orderless-matching-styles '(orderless-prefixes orderless-regexp)
-      orderless-style-dispatchers '(zy/orderless-literal
-                                    zy/orderless-prefix
-                                    zy/orderless-file-ext))
+  (defun zy/orderless-file-ext (word _index _total)
+    "Expand WORD. to a file suffix when completing file names."
+    (when (and minibuffer-completing-file-name
+               (string-suffix-p "." word))
+      `(orderless-regexp . ,(format "\\.%s\\'" (substring word 0 -1)))))
+
+  (setq orderless-matching-styles '(orderless-prefixes orderless-regexp)
+        orderless-style-dispatchers '(zy/orderless-literal
+                                      zy/orderless-prefix
+                                      zy/orderless-initialism
+                                      zy/orderless-file-ext)))
 
 ;; Minibuffer
 
@@ -78,49 +83,60 @@
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
 ;; Use Vertico for minibuffer completion.
-(vertico-mode 1)
+(after-deferred! 'vertico
+  ;; Enable Vertico.
+  (vertico-mode 1)
 
-;; Use "C-j" for force exit since "M-RET" is occupied in Windows Terminal.
-(general-def
-  :keymaps 'vertico-map
-  "C-j" #'vertico-exit-input)
+  ;; Use "C-j" for force exit since "M-RET" is occupied in Windows Terminal.
+  (general-def
+    :keymaps 'vertico-map
+    "C-j" #'vertico-exit-input)
 
-;; Indicator for completing-read-multiple.
-(defun zy/crm-indicator (args)
-  "Indicator for `completing-read-multiple'.
+  ;; Indicator for completing-read-multiple.
+  (eval-and-compile
+    (defun zy/crm-indicator (args)
+      "Indicator for `completing-read-multiple'.
 
 ARGS are the arguments passed."
-  (defvar crm-separator)
-  (cons (format "[CRM%s] %s"
-                (replace-regexp-in-string
-                 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                 crm-separator)
-                (car args))
-        (cdr args)))
-(advice-add #'completing-read-multiple :filter-args #'zy/crm-indicator)
+      (defvar crm-separator)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args))))
 
-;; Show candidate info with Marginalia.
-(marginalia-mode 1)
+  ;; Show candidate info with Marginalia.
+  (marginalia-mode 1)
+
+  (advice-add #'completing-read-multiple :filter-args #'zy/crm-indicator))
 
 ;; Text Completion
 
 (add-hook! prog-mode #'corfu-mode)
-(setq
- ;; Enable auto completion.
- corfu-auto t
- ;; No delay for auto completion.
- corfu-auto-delay 0)
-(general-def
-  :keymaps 'corfu-map
-  ;; Do not intefere with cursor movement keys.
-  "RET" nil
-  "<up>" nil
-  "<down>" nil
-  [remap previous-line] nil
-  [remap next-line] nil)
+(after! 'corfu
+  (setq
+   ;; Enable auto completion.
+   corfu-auto t
+   ;; No delay for auto completion.
+   corfu-auto-delay 0)
+  (general-def
+    :keymaps 'corfu-map
+    ;; Do not intefere with cursor movement keys.
+    "RET" nil
+    "<up>" nil
+    "<down>" nil
+    [remap previous-line] nil
+    [remap next-line] nil)
 
-;; Remember completion history.
-(corfu-history-mode 1)
+  ;; Remember completion history.
+  (corfu-history-mode 1)
+
+  ;; Echo info of candidates in the echo area after a short delay.
+  (corfu-echo-mode 1)
+
+  ;; Enable terminal support.
+  (corfu-terminal-mode 1))
 
 ;; Enable Corfu in the minibuffer.
 (defun zy/enable-corfu-in-minibuffer ()
@@ -132,12 +148,6 @@ ARGS are the arguments passed."
     (corfu-mode 1)))
 (add-hook 'minibuffer-setup-hook #'zy/enable-corfu-in-minibuffer)
 
-;; Echo info of candidates in the echo area after a short delay.
-(corfu-echo-mode 1)
-
-;; Enable terminal support.
-(corfu-terminal-mode 1)
-
 ;; Close the completion UI whenever C-g or ESC is pressed.
 (defun zy/quit-corfu-a (&rest _)
   "Advice function used to call `corfu-quit'."
@@ -146,18 +156,6 @@ ARGS are the arguments passed."
 (advice-add 'evil-force-normal-state :before #'zy/quit-corfu-a)
 (advice-add 'keyboard-quit :before #'zy/quit-corfu-a)
 (general-unbind :keymaps 'corfu-map "C-g")
-
-;; Bind some Consult commands to "g".
-(general-def
-  :states 'motion
-  "g o" #'consult-outline
-  "g j" #'consult-imenu)
-
-;; Use many CAPFs (`completion-at-point-functions's) with C-v.
-(zy/C-v-def
- "C-f" #'cape-file
- "C-e" #'cape-emoji
- "C-s" #'consult-yasnippet)
 
 (provide 'init-completion)
 

@@ -10,6 +10,8 @@
 
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 ;;;; Font Setting Utility
 
 (defvar zy/-fontset-cnt 0

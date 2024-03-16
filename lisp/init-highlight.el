@@ -2,6 +2,8 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (require-package 'hl-todo)
 (require-package 'consult-todo)
 

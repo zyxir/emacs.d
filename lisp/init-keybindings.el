@@ -16,6 +16,8 @@
 (require-package 'general)
 (require-package 'avy)
 (require-package 'consult)
+(require-package 'cape)
+(require-package 'consult-yasnippet)
 (require-package 'embark)
 (require-package 'embark-consult)
 (require-package 'which-key)
@@ -30,11 +32,10 @@ it silences warnings."
                            unless (eq key :wrapping)
                            collect key
                            and collect val)))
-    `(eval-when-compile
-       (defmacro ,name (&rest args)
-         "A wrapper for `general-def'."
-         (declare (indent defun))
-         `(general-def ,@args ,@',defaults)))))
+    `(defmacro ,name (&rest args)
+       "A wrapper for `general-def'."
+       (declare (indent defun))
+       `(general-def ,@args ,@',defaults))))
 
 ;;;; Setup Evil
 
@@ -63,8 +64,10 @@ it silences warnings."
 (defconst zy/local-leader-key-insert "M-;"
   "The local leader key in insert state.")
 
-(when (featurep 'evil) (message "Evil has been mysteriously loaded"))
-(defer-and-after! 'evil
+;; Silence "`evil-want-keybinding' was set to nil but not before loading evil".
+(eval-when-compile (setq-default evil-want-keybinding nil))
+
+(after-deferred! 'evil
   ;; Activate Evil mode.
   (evil-mode 1)
 
@@ -86,11 +89,7 @@ it silences warnings."
   (global-evil-surround-mode 1)
 
   ;; Enable Evil-lion (use gl or gL for aligning).
-  (evil-lion-mode 1)
-
-  (message "Evil loaded."))
-
-(message "Evil should not be loaded yet")
+  (evil-lion-mode 1))
 
 ;;;; Setup Keybindings
 
@@ -105,7 +104,9 @@ it silences warnings."
   :states 'motion
   "f" #'avy-goto-char
   "F" #'avy-goto-char-timer
-  "g c" #'evil-goto-char)
+  "g c" #'evil-goto-char
+  "g o" #'consult-outline
+  "g j" #'consult-imenu)
 
 ;; Normal state customization.
 (general-def
@@ -132,7 +133,10 @@ it silences warnings."
   "0" (defun zy/insert-zwsp ()
         "Insert a zero-width space."
         (interactive)
-        (insert #x200B)))
+        (insert #x200B))
+  "C-f" #'cape-file
+  "C-e" #'cape-emoji
+  "C-s" #'consult-yasnippet)
 
 ;; The leader definer.
 (zy/create-definer zy/leader-def
@@ -251,7 +255,7 @@ command, call it if Eglot is available."
 ;;;; Other Tweaks
 
 ;; Show key hints with Which-key.
-(defer-and-after! 'which-key
+(after-deferred! 'which-key
   (which-key-mode 1)
   (setq which-key-idle-delay 0.5))
 

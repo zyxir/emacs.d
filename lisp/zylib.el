@@ -31,36 +31,6 @@ If TRASH is non-nil, move the file to trash."
           (message "Deleted file %s" filename)
           (kill-buffer))))))
 
-;;;###autoload
-(defun zy/rename-file-and-buffer ()
-  "Rename current buffer and if the buffer is visiting a file, rename it too."
-  (interactive)
-  (when-let* ((filename (buffer-file-name))
-              (new-name (or (read-file-name "New name: "
-                                            (file-name-directory filename)
-                                            nil 'confirm)))
-              (containing-dir (file-name-directory new-name)))
-    ;; Make sure the current buffer is saved and backed by some file.
-    (when (or (buffer-modified-p) (not (file-exists-p filename)))
-      (when (y-or-n-p "You have to save it before moving it. Save now? ")
-        (save-buffer)))
-    (if (get-file-buffer new-name)
-        (message "There is already a buffer named %s" new-name)
-      (progn
-        (make-directory containing-dir t)
-        (cond
-         ((vc-backend filename)
-          (let ((vc-filename (if (tramp-tramp-file-p filename)
-                                 (tramp-file-local-name filename)
-                               filename))
-                (vc-new-name (if (tramp-tramp-file-p new-name)
-                                 (tramp-file-local-name filename)
-                               new-name)))
-            (vc-rename-file vc-filename vc-new-name)))
-         (t
-          (rename-file filename new-name t)
-          (set-visited-file-name new-name t t)))))))
-
 (provide 'zylib)
 
 ;;; zylib.el ends here

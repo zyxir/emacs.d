@@ -2,13 +2,13 @@
 ;;; Commentary:
 ;;; Code:
 
-(require 'init-basic)
+(eval-and-compile (require 'init-basic))
 
 (require-package 'yasnippet)
 (require-package 'yasnippet-snippets)
 
 ;; Enable snippets.
-(defer-and-after! 'yasnippet
+(after-deferred! 'yasnippet
   (yas-global-mode 1))
 
 (provide 'init-snippet)

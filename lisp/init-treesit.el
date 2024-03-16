@@ -2,10 +2,13 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (require-package 'treesit-auto)
 
 ;; Fontify everything.
-(setq treesit-font-lock-level 4)
+(after! 'treesit
+  (setq treesit-font-lock-level 4))
 
 ;; Manage tree-sitter grammars and modes with Treesit-auto.
 (require 'treesit-auto)

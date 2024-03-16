@@ -2,7 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 
+(eval-and-compile (require 'init-basic))
+
 (require-package 'doom-modeline)
+
+(require 'doom-modeline)
 
 ;; Customize the mode line with Doom-modeline.
 (setq
@@ -23,7 +27,9 @@
 ;; HACK Add some padding at the right side to prevent cutoff. This tweak is not
 ;; clean, expect problems to happen if `doom-modeline' is updated.
 (defun zy/-doom-modeline-set-right-padding (sym val)
-  "Set the right padding of the Doom mode line."
+  "Set the right padding of the Doom mode line.
+SYM is intended to be `zy/doom-modeline-right-padding', and VAL
+is a string representing the padding."
   (set-default-toplevel-value sym val)
   (doom-modeline-def-modeline 'main
     '( eldoc bar workspace-name window-number modals matches follow
@@ -33,11 +39,13 @@
        irc mu4e gnus github debug repl lsp minor-modes input-method
        indent-info buffer-encoding major-mode process vcs check time
        ,val)))
+
 (defcustom zy/doom-modeline-right-padding "    "
   "The padding added at the right of the Doom mode line.
 Adjsut it according to the actual display of the device."
   :type 'string
-  :set #'zy/-doom-modeline-set-right-padding)
+  :set #'zy/-doom-modeline-set-right-padding
+  :group 'emacs)
 
 ;; Enable column number display.
 (column-number-mode 1)
