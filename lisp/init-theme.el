@@ -29,12 +29,11 @@ to make the loading of themes more deterministic."
                  (const modus-vivendi-deuteranopia))
   :group 'emacs)
 
-;; Enable the theme of choice.
+;; Require and configure the user-specified theme.
 (cond
  ((string-prefix-p "modus-" (symbol-name zy/theme))
   (require 'modus-themes))
  (t nil))
-(load-theme zy/theme 'no-confirm)
 
 ;; Configure Modus Themes.
 (after! 'modus-themes
@@ -62,6 +61,9 @@ Only works for non-graphical frames."
 
   (add-hook 'window-setup-hook #'zy/-setup-terminal-err-faces-h)
   (add-to-list 'after-make-frame-functions #'zy/-setup-terminal-err-faces-h))
+
+;; Load the theme.
+(load-theme zy/theme 'no-confirm)
 
 ;; Enable Solaire mode to distinguish between file and non-file buffers.
 (solaire-global-mode 1)
