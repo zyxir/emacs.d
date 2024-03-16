@@ -88,43 +88,43 @@ it silences warnings."
   ;; Enable Evil-lion (use gl or gL for aligning).
   (evil-lion-mode 1)
 
-  ;; Insert state customization.
-  (general-def
-    :states 'insert
-    "C-d" #'evil-delete-char
-    "C-g" #'evil-force-normal-state)
-
-  ;; Motion state customization.
-  (general-def
-    :states 'motion
-    "f" #'avy-goto-char
-    "F" #'avy-goto-char-timer
-    "g c" #'evil-goto-char)
-
-  ;; Normal state customization.
-  (general-def
-    :states 'normal
-    "Q" #'kmacro-start-macro-or-insert-counter
-    "q" #'kmacro-end-or-call-macro)
-
-  ;; Embark keys in all states.
-  (general-def
-    :states '(normal visual)
-    "," #'embark-act)
-  (general-def
-    :maps 'global-map
-    "M-," #'embark-act)
-
   (message "Evil loaded."))
 
 (message "Evil should not be loaded yet")
 
-;;;; Setup Keymaps
+;;;; Setup Keybindings
+
+;; Insert state customization.
+(general-def
+  :states 'insert
+  "C-d" #'evil-delete-char
+  "C-g" #'evil-force-normal-state)
+
+;; Motion state customization.
+(general-def
+  :states 'motion
+  "f" #'avy-goto-char
+  "F" #'avy-goto-char-timer
+  "g c" #'evil-goto-char)
+
+;; Normal state customization.
+(general-def
+  :states 'normal
+  "Q" #'kmacro-start-macro-or-insert-counter
+  "q" #'kmacro-end-or-call-macro)
+
+;; Embark keys in all states.
+(general-def
+  :states '(normal visual)
+  "," #'embark-act)
+(general-def
+  :maps 'global-map
+  "M-," #'embark-act)
 
 ;; Insert or complete many things with "C-v" in insert state. More commands are
 ;; defined in other files.
 (zy/create-definer zy/C-v-def
-  :keymaps 'insert
+  :states 'insert
   :prefix-map 'zy/C-v-map
   :prefix "C-v")
 (zy/C-v-def

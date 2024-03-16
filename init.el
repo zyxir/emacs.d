@@ -16,11 +16,18 @@
 
 (add-to-list 'load-path zy/module-dir)
 
-;; Module loader.
 (defun require-init (module)
   "Load module MODULE of the configuration."
-  (load (expand-file-name (symbol-name module) zy/module-dir)
-        'noerror 'nomessage))
+  (let* ((base (expand-file-name (symbol-name module) zy/module-dir))
+         (source (concat base ".el"))
+         (compiled (concat base ".elc"))
+         (should-compile (file-newer-than-file-p source compiled)))
+    (when should-compile
+      (byte-compile-file source)
+      (when (and (fboundp 'native-comp-available-p)
+                 (native-comp-available-p))
+        (native-compile-async compiled nil 'load)))
+    (load compiled 'noerror 'nomessage 'nosuffix)))
 
 ;; Clear the file name handler to make loading faster.
 (let* ((file-name-handler-alist nil))
