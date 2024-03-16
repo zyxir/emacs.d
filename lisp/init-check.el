@@ -10,8 +10,44 @@
 ;; Enable Flycheck everywhere.
 (global-flycheck-mode 1)
 
+(after! 'flycheck
+  ;; From URL `https://www.masteringemacs.org/article/seamlessly-merge-multiple-documentation-sources-eldoc'.
+  (eval-and-compile
+    (defun zy/-flycheck-eldoc (callback &rest _)
+      "Print Flycheck messages at point by calling CALLBACK."
+      (when-let ((flycheck-errors (and flycheck-mode
+                                       (flycheck-overlay-errors-at (point)))))
+        (mapc
+         (lambda (err)
+           (funcall callback
+                    (format
+                     "%s: %s"
+                     (let ((level (flycheck-error-level err)))
+                       (pcase level
+                         ('info (propertize "I" 'face
+                                            'flycheck-error-list-info))
+                         ('error (propertize "E" 'face
+                                             'flycheck-error-list-error))
+                         ('warning (propertize "W" 'face
+                                               'flycheck-error-list-warning))
+                         (_ level)))
+                     (flycheck-error-message err))
+                    :thing (or (flycheck-error-id err)
+                               (flycheck-error-group err))
+                    :face 'font-lock-doc-face))
+         flycheck-errors))))
+
+  ;; Display Flycheck errors with Eldoc.
+  (add-hook 'eldoc-documentation-functions #'zy/-flycheck-eldoc)
+  (setq
+   ;; Display multiple Eldoc sources eagerly so that Flycheck errors are shown
+   ;; together with other documentation.
+   eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly
+   ;; Override Flycheck's default echoing function, which breaks Eldoc.
+   flycheck-display-errors-function nil))
+
 ;; Use Flycheck rather than Flymake with Eglot.
-(with-eval-after-load 'eglot
+(after! 'eglot
   (global-flycheck-eglot-mode 1))
 
 (provide 'init-check)
