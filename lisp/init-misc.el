@@ -43,7 +43,9 @@
  ;; Uniquify buffer names in a saner way.
  uniquify-buffer-name-style 'forward
  ;; Do not use GUI dialog boxes (they cause questions on WSLg).
- use-dialog-box nil)
+ use-dialog-box nil
+ ;; Wrap word by category (allow breaking after CJK characters).
+ word-wrap-by-category t)
 
 ;; Do not report native compilation warnings and errors. Those do not matter in
 ;; most occasions.
@@ -70,13 +72,17 @@
   ;; Always show matching parenthesis.
   (show-paren-mode 1)
 
-  ;; Enable mouse support in a terminal.
-  (xterm-mouse-mode 1)
+  ;; Enable mouse support in terminal.
+  (xterm-mouse-mode 1))
 
-  ;; Enable visual lines.
-  (global-visual-line-mode 1)
-
-  ;; Always record recent files.
+;; Always record recent files.
+(after-deferred! recentf
+  (setq
+   ;; Save more recent files (default is 20).
+   recentf-max-saved-items 200
+   ;; Do periodic cleanup when running in daemon mode, otherwise cleanup only
+   ;; when turning the mode on.
+   recentf-auto-cleanup (if (daemonp) 300 'mode))
   (recentf-mode 1))
 
 ;; Always persist variables across sessions.

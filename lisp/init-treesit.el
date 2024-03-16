@@ -45,14 +45,16 @@
 
 ;; Override some text objects from Evil-cleverparens, and provide more, by
 ;; Evil-textobj-tree-sitter.
-(with-no-warnings
-  (general-def
-    :keymaps 'evil-inner-text-objects-map
-    "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
-  (general-def
-    :keymaps 'evil-outer-text-objects-map
-    "f" (evil-textobj-tree-sitter-get-textobj "function.outer")
-    "a" (evil-textobj-tree-sitter-get-textobj "conditional.outer")))
+(after! 'evil
+  (require 'evil-textobj-tree-sitter)
+  (with-no-warnings
+    (general-def
+      :keymaps 'evil-inner-text-objects-map
+      "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+    (general-def
+      :keymaps 'evil-outer-text-objects-map
+      "f" (evil-textobj-tree-sitter-get-textobj "function.outer")
+      "a" (evil-textobj-tree-sitter-get-textobj "conditional.outer"))))
 
 (provide 'init-treesit)
 

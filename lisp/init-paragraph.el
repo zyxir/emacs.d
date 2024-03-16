@@ -28,7 +28,7 @@
   (interactive)
   (dlet ((fill-column most-positive-fixnum))
     (call-interactively 'fill-paragraph)))
-(bind-key "M-Q" #'zy/unfill-paragraph)
+(general-def "M-Q" #'zy/unfill-paragraph)
 
 ;; Customize indent bars.
 (setq-default
@@ -55,6 +55,9 @@
 ;; Always show a button when using outline.
 (after! 'outline
   (setq outline-minor-mode-use-buttons t))
+
+;; Always enable visual line mode.
+(global-visual-line-mode 1)
 
 (provide 'init-paragraph)
 

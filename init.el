@@ -19,9 +19,7 @@
 (defun require-init (module)
   "Load module MODULE of the configuration.
 Always try to load the compiled version of MODULE (if not
-compiled yet, compile it now), unless `init-file-debug' is
-non-nil. In that case, load the uncompiled version with \".el\"
-suffix.
+compiled yet, compile it now).
 
 Compilation optimizes load speed and ensures proper loading
 order (otherwise some features might be loaded early by macro
@@ -36,8 +34,10 @@ code compatibility of my config."
          (source (concat base ".el"))
          (compiled (concat base ".elc"))
          (outdated (file-newer-than-file-p source compiled)))
-    (if init-file-debug
+    (if nil
         ;; Load the uncompiled version if `init-file-debug' is non-nil.
+        ;; Currently this branch will never be executed. It is left for
+        ;; convenience.
         (load source 'noerror 'nomessage 'nosuffix)
       (when outdated
         ;; Byte compile the file, and ignore warnings while doing it, since all
