@@ -71,7 +71,8 @@ it silences warnings."
   ;; Activate Evil mode.
   (evil-mode 1)
 
-  ;; Setup Evil in many other modes.
+  ;; Setup Evil in many other modes with Evil-collection.
+  ;; (eval-and-compile (require 'evil-collection))
   (setq-default
    ;; Do not bind my leader key.
    evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
@@ -106,7 +107,7 @@ it silences warnings."
   "F" #'avy-goto-char-timer
   "g c" #'evil-goto-char
   "g o" #'consult-outline
-  "g j" #'consult-imenu)
+  "g '" #'consult-imenu)
 
 ;; Normal state customization.
 (general-def

@@ -16,12 +16,6 @@
   "[t" #'hl-todo-previous
   "]t" #'hl-todo-next)
 
-;; Jump to keywords with consult.
-(general-def
-  :states 'motion
-  "g k" #'consult-todo
-  "g K" #'consult-todo-project)
-
 (provide 'init-highlight)
 
 ;;; init-highlight.el ends here
