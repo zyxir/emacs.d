@@ -78,13 +78,6 @@ This function set the value of FONT-SYM to FONT-VAL, and run
   :group 'zyemacs
   :set #'zy/-set-font)
 
-(defun zy/font-alternatives (&rest fonts)
-  "Return the first available font in FONTS.
-If no font is available, returns nil."
-  (cl-some (lambda (font)
-             (if (x-list-fonts font) font nil))
-           fonts))
-
 (defmacro zy/define-font (name font docstring)
   "Define a customizable font variable NAME.
 FONT is its default value, and DOCSTRING is the documentation
@@ -96,20 +89,13 @@ string. The defined customizable variable will have the
      :group 'emacs
      :set 'zy/-set-font))
 
-(zy/define-font zy/font-default
-  (zy/font-alternatives "Sarasa Mono HC")
+(zy/define-font zy/font-default "Sarasa Mono HC"
   "Font for the `default' face.")
-
-(zy/define-font zy/font-default-cjk
-  (zy/font-alternatives "Sarasa Mono HC")
+(zy/define-font zy/font-default-cjk "Sarasa Mono HC"
   "CJK font for the `default' face.")
-
-(zy/define-font zy/font-varpitch
-  (zy/font-alternatives "Noto Sans")
+(zy/define-font zy/font-varpitch "Noto Sans"
   "Font for the `variable-pitch' face.")
-
-(zy/define-font zy/font-varpitch-cjk
-  (zy/font-alternatives "Noto Sans CJK TC")
+(zy/define-font zy/font-varpitch-cjk "Noto Sans CJK TC"
   "CJK font for the `variable-pitch' face.")
 
 ;;;; The Actual Setup
@@ -122,58 +108,61 @@ string. The defined customizable variable will have the
 ;; Anyway this is just my personal configuration, I can change the code at any
 ;; time.
 
-(defun zy/-setup-font-faces-now ()
+(defun zy/-setup-font-faces-now (frame)
   "Setup font faces according to font variables.
-Does not work without GUI.
 
-For interactive use, use `zy/setup-font-faces' instead."
-  (let ((height (round (* zy/font-size 7.5))))
-    ;; Default face and global font size.
-    (if zy/font-default
-        (set-face-attribute 'default nil
-                            :family zy/font-default
-                            :height height)
+This is used in `after-make-frame-functions', and arugment
+FRAME makes sure that the validness of the fonts can be correctly
+checked.
+
+This should be only used when FRAME is an X frame. For
+interactive use, use `zy/setup-font-faces' instead."
+  (let ((available-fonts (font-family-list frame))
+        (height (round (* zy/font-size 7.5))))
+    ;; Default face, fixed-pitch face and global font size.
+    (if (member zy/font-default available-fonts)
+        (progn
+          (set-face-attribute 'default nil
+                              :family zy/font-default
+                              :height height)
+          (set-face-attribute 'fixed-pitch nil
+                              :family zy/font-default))
       (set-face-attribute 'default nil
                           :height height))
-    (when zy/font-default-cjk
+    (when (member zy/font-default-cjk available-fonts)
       (zy/set-face-charset-font 'default nil
-                                zy/cjk-charsets zy/font-default-cjk))
-    ;; Fixed-pitch face mirrors the default.
-    (when zy/font-default
-      (set-face-attribute 'fixed-pitch nil
-                          :family zy/font-default))
-    (when zy/font-default-cjk
+                                zy/cjk-charsets zy/font-default-cjk)
       (zy/set-face-charset-font 'fixed-pitch nil
                                 zy/cjk-charsets zy/font-default-cjk))
     ;; Variable-pitch face.
-    (when zy/font-varpitch
+    (when (member zy/font-varpitch available-fonts)
       (set-face-attribute 'variable-pitch nil
                           :family zy/font-varpitch))
-    (when zy/font-varpitch-cjk
+    (when (member zy/font-varpitch-cjk available-fonts)
       (zy/set-face-charset-font 'variable-pitch nil
                                 zy/cjk-charsets zy/font-varpitch-cjk))))
 
-(defun zy/setup-font-faces (&rest _)
+(defun zy/setup-font-faces (&optional frame)
   "Try to setup font faces.
 
 If GUI is not available currently, add itself to
 `after-make-frame-functions', so that it can be run again the
-next time a frame is created.
+next time a frame is created. When run from
+`after-make-frame-functions', FRAME is used to determine if GUI
+is available.
 
 If GUI is available, setup font with `zy/setup-font-faces', and
 remove itself from `after-make-frame-functions' if it is there.
 Return what `zy/setup-font-faces' returns."
   (interactive)
-  (if (display-graphic-p)
-      (prog1
-          (condition-case e
-              (zy/-setup-font-faces-now)
-            (error (lwarn 'font :warning "%s: %s" (car e) (cdr e))))
-        (remove-hook! '(after-make-frame-functions
-                        server-after-make-frame-hook)
-          #'zy/setup-font-faces))
-    (add-hook! '(after-make-frame-functions
-                 server-after-make-frame-hook)
+  (if (display-graphic-p frame)
+      (progn
+        (remove-hook! '(after-make-frame-functions)
+          #'zy/setup-font-faces)
+        (condition-case e
+            (zy/-setup-font-faces-now frame)
+          (error (lwarn 'font :warning "%s: %s" (car e) (cdr e)))))
+    (add-hook! '(after-make-frame-functions)
       #'zy/setup-font-faces)))
 
 (zy/setup-font-faces)

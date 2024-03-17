@@ -160,10 +160,11 @@ it silences warnings."
   "SPC" #'execute-extended-command
   "0" #'delete-window
   "1" #'delete-other-windows
-  "2" #'split-window-below
-  "3" #'split-window-right
-  "4" #'other-window-prefix
-  "5" #'other-frame-prefix
+  "2" #'other-window-prefix
+  "3" #'other-tab-prefix
+  "4" #'ctl-x-4-prefix
+  "5" #'ctl-x-5-prefix
+  "TAB" tab-prefix-map
   "b" #'consult-buffer
   "B" #'list-buffers
   "k" #'kill-buffer
