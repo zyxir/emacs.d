@@ -22,9 +22,6 @@
                        (vertical-scroll-bars . nil)
                        ;; Disable tool bar.
                        (tool-bar-lines . 0)
-                       ;; Set the font early.
-                       (font . "-*-Sarasa Mono HC-*-*-*-*-16-*-*-*-*-*-*-1")
-                       (x-compose-font-name)
                        ;; A reasonable default frame size.
                        (width . 110)
                        (height . 40))

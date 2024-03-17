@@ -27,7 +27,7 @@ to make the loading of themes more deterministic."
                  (const modus-vivendi-tritanopia)
                  (const modus-operandi-deuteranopia)
                  (const modus-vivendi-deuteranopia))
-  :group 'emacs)
+  :group 'zyemacs)
 
 ;; Require and configure the user-specified theme.
 (cond

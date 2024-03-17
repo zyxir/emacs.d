@@ -29,7 +29,7 @@
 Each entry is a LANG-ID string returned by
 `eglot--guess-contact'."
   :type '(repeat string)
-  :group 'emacs)
+  :group 'zyemacs)
 
 (add-hook! prog-mode
   (defun zy/-try-to-ensure-eglot-h (&rest _)

@@ -45,7 +45,7 @@ is a string representing the padding."
 Adjsut it according to the actual display of the device."
   :type 'string
   :set #'zy/-doom-modeline-set-right-padding
-  :group 'emacs)
+  :group 'zyemacs)
 
 ;; Enable column number display.
 (column-number-mode 1)
