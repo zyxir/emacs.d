@@ -98,6 +98,7 @@ code compatibility of my config."
   (require-init 'init-pdf)
   (require-init 'init-python)
   (require-init 'init-scala)
+  (require-init 'init-tex)
   (require-init 'init-other-modes))
 
 (provide 'init)

@@ -151,7 +151,6 @@ it silences warnings."
 ;; The local leader definer.
 (zy/create-definer zy/local-leader-def
   :states '(normal insert visual)
-  :prefix-map 'zy/local-leader-map
   :prefix zy/local-leader-key
   :non-normal-prefix zy/local-leader-key-insert)
 
