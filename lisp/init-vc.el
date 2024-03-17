@@ -41,12 +41,23 @@
   (global-diff-hl-mode 1)
   ;; Diff on the fly.
   (diff-hl-flydiff-mode 1)
-  ;; Use the left margin to show diff, which supports terminal.
-  (diff-hl-margin-mode 1)
   ;; Allow mouse interaction in the fringe.
   (diff-hl-show-hunk-mouse-mode)
   ;; Also diff Dired buffers.
   (add-hook! dired-mode (diff-hl-dired-mode 1))
+
+  ;; Turn on `diff-hl-margin-mode' in terminal frames. It is worth noting that
+  ;; `diff-hl-margin-mode' is global and it's very hard, if not impossible, to
+  ;; make it window-local or frame-local. So manually toggle it if this behavior
+  ;; causes trouble.
+  (add-hook! diff-hl-mode
+    (defun zy/-maybe-turn-on-margin-for-diff-hl-h ()
+      (unless (display-graphic-p)
+        (diff-hl-margin-mode 1))))
+
+  (zy/leader-t-def
+    "d" #'diff-hl-mode
+    "D" #'diff-hl-margin-mode)
 
   (zy/leader-g-def
     "s" #'diff-hl-stage-dwim

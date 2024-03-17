@@ -41,7 +41,10 @@
   (add-hook 'eldoc-documentation-functions #'zy/-flycheck-eldoc)
   (setq
    ;; Override Flycheck's default echoing function, which breaks Eldoc.
-   flycheck-display-errors-function nil))
+   flycheck-display-errors-function nil
+   ;; Don't show Flycheck markers. They are useless and don't work well with
+   ;; other packages.
+   flycheck-indication-mode nil))
 
 ;; Use Flycheck rather than Flymake with Eglot.
 (after! 'eglot
