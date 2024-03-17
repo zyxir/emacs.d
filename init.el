@@ -85,6 +85,7 @@ code compatibility of my config."
   (require-init 'init-check)
   (require-init 'init-lsp)
   (require-init 'init-env)
+  (require-init 'init-prose)
 
   ;; Look and feel.
   (require-init 'init-theme)
