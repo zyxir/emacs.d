@@ -12,6 +12,8 @@
 
 (eval-and-compile (require 'init-basic))
 
+(require-package 'ligature)
+
 ;;;; Font Setting Utility
 
 (defconst zy/cjk-charsets '(han cjk-misc bopomofo kana hangul)
@@ -143,6 +145,26 @@ interactive use, use `zy/setup-font-faces' instead."
                                 zy/cjk-charsets zy/font-varpitch-cjk))))
 
 (after-gui! (zy/-setup-font-faces-now frame))
+
+;;;; Ligatures
+
+(after-gui!
+  (require 'ligature)
+  (ligature-set-ligatures
+   'prog-mode
+   ;; These ligatures are for Iosevka and also apply to Sarasa Gothic.
+   '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
+     "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
+     "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
+     "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
+     "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
+     "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
+     ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
+     "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
+     "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
+     "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
+     "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
+  (global-ligature-mode 1))
 
 (provide 'init-fonts)
 
