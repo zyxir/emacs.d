@@ -16,7 +16,31 @@
 
 (add-to-list 'load-path zy/module-dir)
 
-(defun require-init (module)
+(defvar zy/modules '()
+  "All modules of Zyxir's Emacs configuration.
+They are placed in a reverse chronological order.")
+
+(defun zy/compile-file (file)
+  "Compile FILE in all ways possible.
+MODULE-FILE is a `.el' file. This function byte-compile it, and
+natively compile it asynchronously, if native compilation is
+available."
+  ;; Byte compile the file, and ignore warnings while doing it, since all actual
+  ;; warnings should be eliminated while writting the code, and only the
+  ;; compiled byte code matters to the user (for example, Evil will warn that
+  ;; some variable is set after Evil is loaded, but Evil is only loaded early in
+  ;; compile time in order to supress warnings in `eval-after-load' blocks,
+  ;; therefore the warning does not matter at runtime).
+  (defvar byte-compile-warnings)
+  (let ((byte-compile-warnings nil))
+    (byte-compile-file file))
+  ;; Additionally, if native compilation is available, native-compile the
+  ;; byte code.
+  (when (and (fboundp 'native-comp-available-p)
+             (native-comp-available-p))
+    (native-compile-async file nil 'load)))
+
+(defun zy/require-init (module)
   "Load module MODULE of the configuration.
 Always try to load the compiled version of MODULE (if not
 compiled yet, compile it now).
@@ -35,28 +59,26 @@ code compatibility of my config."
          (compiled (concat base ".elc"))
          (outdated (file-newer-than-file-p source compiled)))
     (if nil
-        ;; Load the uncompiled version if `init-file-debug' is non-nil.
         ;; Currently this branch will never be executed. It is left for
         ;; convenience.
         (load source 'noerror 'nomessage 'nosuffix)
-      (when outdated
-        ;; Byte compile the file, and ignore warnings while doing it, since all
-        ;; actual warnings should be eliminated while writting the code, and
-        ;; only the compiled byte code matters to the user (for example, Evil
-        ;; will warn that some variable is set after Evil is loaded, but Evil is
-        ;; only loaded early in compile time in order to supress warnings in
-        ;; `eval-after-load' blocks, therefore the warning does not matter at
-        ;; runtime).
-        (defvar byte-compile-warnings)
-        (let ((byte-compile-warnings nil))
-          (byte-compile-file source))
-        ;; Additionally, if native compilation is available, native-compile the
-        ;; byte code.
-        (when (and (fboundp 'native-comp-available-p)
-                   (native-comp-available-p))
-          (native-compile-async source nil 'load)))
+      ;; Compile the source file if the byte code is outdated.
+      (when outdated (zy/compile-file source))
       ;; Load the compiled byte code.
-      (load compiled 'noerror 'nomessage 'nosuffix))))
+      (load compiled 'noerror 'nomessage 'nosuffix))
+    ;; Push the module to the list.
+    (setq zy/modules (cons module zy/modules))))
+
+(defun zy/compile-all ()
+  "Re-compile all modules of Zyxir's Emacs configuration.
+A clean re-compilation helps reduce errors introduced by byte
+code inconsistency."
+  (interactive)
+  (dolist (module (reverse zy/modules))
+    (let* ((file (expand-file-name (concat (symbol-name module) ".el")
+                                   zy/module-dir)))
+      (zy/compile-file file))))
+(defalias 'zy/recompile-all #'zy/compile-all)
 
 ;; Clear the file name handler to make loading faster.
 (let* ((file-name-handler-alist nil))
@@ -66,44 +88,44 @@ code compatibility of my config."
   (load custom-file 'noerror 'nomessage)
 
   ;; Basic modules.
-  (require-init 'init-elpa)
-  (require-init 'init-util)
-  (require-init 'init-keybindings)
+  (zy/require-init 'init-elpa)
+  (zy/require-init 'init-util)
+  (zy/require-init 'init-keybindings)
 
   ;; A placeholder module which ensures every basic module has been loaded.
-  (require-init 'init-basic)
+  (zy/require-init 'init-basic)
 
   ;; Text-editing and coding.
-  (require-init 'init-misc)
-  (require-init 'init-paragraph)
-  (require-init 'init-snippet)
-  (require-init 'init-completion)
-  (require-init 'init-search)
-  (require-init 'init-vc)
-  (require-init 'init-treesit)
-  (require-init 'init-project)
-  (require-init 'init-highlight)
-  (require-init 'init-check)
-  (require-init 'init-lsp)
-  (require-init 'init-env)
-  (require-init 'init-prose)
+  (zy/require-init 'init-misc)
+  (zy/require-init 'init-paragraph)
+  (zy/require-init 'init-snippet)
+  (zy/require-init 'init-completion)
+  (zy/require-init 'init-search)
+  (zy/require-init 'init-vc)
+  (zy/require-init 'init-treesit)
+  (zy/require-init 'init-project)
+  (zy/require-init 'init-highlight)
+  (zy/require-init 'init-check)
+  (zy/require-init 'init-lsp)
+  (zy/require-init 'init-env)
+  (zy/require-init 'init-prose)
 
   ;; Look and feel.
-  (require-init 'init-theme)
-  (require-init 'init-modeline)
-  (require-init 'init-fonts)
+  (zy/require-init 'init-theme)
+  (zy/require-init 'init-modeline)
+  (zy/require-init 'init-fonts)
 
   ;; Applications.
-  (require-init 'init-lingual)
+  (zy/require-init 'init-lingual)
 
   ;; File type specific.
-  (require-init 'init-lisp)
-  (require-init 'init-nix)
-  (require-init 'init-pdf)
-  (require-init 'init-python)
-  (require-init 'init-scala)
-  (require-init 'init-tex)
-  (require-init 'init-other-modes))
+  (zy/require-init 'init-lisp)
+  (zy/require-init 'init-nix)
+  (zy/require-init 'init-pdf)
+  (zy/require-init 'init-python)
+  (zy/require-init 'init-scala)
+  (zy/require-init 'init-tex)
+  (zy/require-init 'init-other-modes))
 
 (provide 'init)
 

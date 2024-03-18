@@ -21,7 +21,7 @@
    rime-posframe-properties '(:internal-border-width 2)))
 
 ;; Indicate input method with different cursor color.
-(defer!
+(after-gui!
   (eval-and-compile (require 'color))
   (defvar zy/theme)
   (cl-flet ((im-p ()
@@ -45,9 +45,8 @@
                                       (nth 1 inverted-rgb)
                                       (nth 2 inverted-rgb)
                                       2))))))
-    (let* ((cursor-color-default (frame-parameter nil 'cursor-color))
+    (let* ((cursor-color-default (frame-parameter frame 'cursor-color))
            (cursor-color-im (alternate-color cursor-color-default)))
-      (message "default: %s, im: %s" cursor-color-default cursor-color-im)
       (add-hook! 'post-command-hook
         (defun zy/-im-change-cursor-color ()
           "Set cursor color depending on input method."

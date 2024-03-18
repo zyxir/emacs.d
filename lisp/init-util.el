@@ -228,6 +228,25 @@ If running in daemon mode, run them now."
      (add-hook 'window-setup-hook
                (lambda () ,@body))))
 
+(defmacro after-gui! (&rest body)
+  "Run BODY when GUI is ready.
+In BODY, one can use the variable FRAME, which is bound to the
+newly created GUI frame."
+  (declare (indent 0) (debug (form def-body)))
+  (let* ((fn-name (intern (format "after-gui-%s" (cl-gensym))))
+         (fn-form `(defun ,fn-name (&optional frame)
+                     (if (display-graphic-p frame)
+                         ;; When GUI is ready, remove the hook function and
+                         ;; execute BODY.
+                         (progn
+                           (remove-hook 'after-make-frame-functions
+                                        ',fn-name)
+                           ,@body)
+                       ;; Otherwise, add itself to the hook.
+                       (add-hook 'after-make-frame-functions
+                                 ',fn-name)))))
+    `(progn ,fn-form (,fn-name))))
+
 ;;;; Filesystem
 
 (defun zy/first-existing-path (&rest paths)

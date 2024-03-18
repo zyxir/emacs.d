@@ -142,30 +142,7 @@ interactive use, use `zy/setup-font-faces' instead."
       (zy/set-face-charset-font 'variable-pitch nil
                                 zy/cjk-charsets zy/font-varpitch-cjk))))
 
-(defun zy/setup-font-faces (&optional frame)
-  "Try to setup font faces.
-
-If GUI is not available currently, add itself to
-`after-make-frame-functions', so that it can be run again the
-next time a frame is created. When run from
-`after-make-frame-functions', FRAME is used to determine if GUI
-is available.
-
-If GUI is available, setup font with `zy/setup-font-faces', and
-remove itself from `after-make-frame-functions' if it is there.
-Return what `zy/setup-font-faces' returns."
-  (interactive)
-  (if (display-graphic-p frame)
-      (progn
-        (remove-hook! '(after-make-frame-functions)
-          #'zy/setup-font-faces)
-        (condition-case e
-            (zy/-setup-font-faces-now frame)
-          (error (lwarn 'font :warning "%s: %s" (car e) (cdr e)))))
-    (add-hook! '(after-make-frame-functions)
-      #'zy/setup-font-faces)))
-
-(zy/setup-font-faces)
+(after-gui! (zy/-setup-font-faces-now frame))
 
 (provide 'init-fonts)
 
