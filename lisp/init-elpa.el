@@ -131,7 +131,8 @@ Anyway, if the package is installed, it is added to
 
 ;; Start package.el.
 (setq package-native-compile t)
-(package-initialize)
+(unless (bound-and-true-p package--initialized)
+  (package-initialize))
 
 ;; Refresh package archives at first install.
 (unless (file-exists-p package-user-dir)

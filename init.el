@@ -47,6 +47,7 @@ code compatibility of my config."
         ;; only loaded early in compile time in order to supress warnings in
         ;; `eval-after-load' blocks, therefore the warning does not matter at
         ;; runtime).
+        (defvar byte-compile-warnings)
         (let ((byte-compile-warnings nil))
           (byte-compile-file source))
         ;; Additionally, if native compilation is available, native-compile the
