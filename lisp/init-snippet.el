@@ -10,9 +10,9 @@
 ;; Enable snippets.
 (after-deferred! 'yasnippet
   ;; Enable Yasnippet without annoying messages.
-  (defadvice! zy/-silence-yas-a (&rest _) :override #'yas--message)
-  (yas-global-mode 1)
-  (advice-remove #'yas--message 'zy/-silence-yas-a))
+  (cl-letf (((symbol-function #'yas--message)
+             (symbol-function #'ignore)))
+    (yas-global-mode 1)))
 
 (provide 'init-snippet)
 

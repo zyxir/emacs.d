@@ -228,4 +228,12 @@ If running in daemon mode, run them now."
      (add-hook 'window-setup-hook
                (lambda () ,@body))))
 
+;;;; Filesystem
+
+(defun zy/first-existing-path (&rest paths)
+  "Return the first existing path in PATHS."
+  (cl-some (lambda (path)
+             (if (file-exists-p path) path nil))
+           paths))
+
 ;;; init-util.el ends here

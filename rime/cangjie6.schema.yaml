@@ -52,7 +52,13 @@ engine:
     - script_translator@pinyin_lookup
   filters:
     - simplifier@simplify
-    - charset_filter@extended_char
+    #
+    # 2024-03-18: 在 Nix 版 Emacs 上編譯動態模塊很難；但在使用預編譯版的
+    # emacs-rime 時，可能是由於版本問題，只要開啓這一行就會報錯（charset
+    # parameter is unsupported by basic charset_filter），並且 CPU 使用率爆增。
+    # 因此暫時關掉它。
+    #
+    # - charset_filter@extended_char
     - uniquifier
     - reverse_lookup_filter@pinyin_reverse_lookup
 
