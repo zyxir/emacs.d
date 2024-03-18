@@ -93,6 +93,9 @@ code compatibility of my config."
   (require-init 'init-modeline)
   (require-init 'init-fonts)
 
+  ;; Applications.
+  (require-init 'init-lingual)
+
   ;; File type specific.
   (require-init 'init-lisp)
   (require-init 'init-nix)
