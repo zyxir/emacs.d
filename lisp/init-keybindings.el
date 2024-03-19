@@ -49,8 +49,6 @@ it silences warnings."
  evil-want-C-h-delete t
  ;; Respect visual lines.
  evil-respect-visual-line-mode t
- ;; Allow moving beyond EOL.
- evil-move-beyond-eol t
  ;; Load Evil keybindings for several other modes as well.
  evil-want-keybinding nil
  ;; Use the built-in `undo-redo' system.
@@ -200,6 +198,14 @@ it silences warnings."
   "c" #'corfu-mode
   "l" #'display-line-numbers-mode
   "o" #'outline-minor-mode)
+
+;; "<leader> d" for sidebar-related operations.
+(zy/create-definer zy/leader-d-def
+  :keymaps 'zy/leader-map
+  :prefix-map 'zy/leader-d-map
+  :prefix "d")
+(zy/leader-d-def
+  "D" #'dired)
 
 ;; "<leader> q" for quitting-related operations.
 (zy/create-definer zy/leader-q-def

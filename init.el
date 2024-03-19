@@ -115,8 +115,10 @@ code inconsistency."
   (zy/require-init 'init-modeline)
   (zy/require-init 'init-fonts)
 
-  ;; Applications.
+  ;; Applications and features.
+  (zy/require-init 'init-dired)
   (zy/require-init 'init-lingual)
+  (zy/require-init 'init-os)
 
   ;; File type specific.
   (zy/require-init 'init-lisp)

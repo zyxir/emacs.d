@@ -20,6 +20,8 @@
  ;; Also kill buffers which have a running process without confirmation.
  kill-buffer-query-functions (delq 'process-kill-buffer-query-function
 				   kill-buffer-query-functions)
+ ;; Always use the system's trash can if possible.
+ delete-by-moving-to-trash t
  ;; As an experienced Emacs user, I don't want any command disabled.
  disabled-command-function nil
  ;; A informational frame title. Besides, my AutoHotkey scripts recognize my
