@@ -95,6 +95,12 @@ code inconsistency."
   ;; A placeholder module which ensures every basic module has been loaded.
   (zy/require-init 'init-basic)
 
+  ;; Applications and features.
+  (zy/require-init 'init-personal)
+  (zy/require-init 'init-dired)
+  (zy/require-init 'init-lingual)
+  (zy/require-init 'init-os)
+
   ;; Text-editing and coding.
   (zy/require-init 'init-misc)
   (zy/require-init 'init-paragraph)
@@ -115,14 +121,10 @@ code inconsistency."
   (zy/require-init 'init-modeline)
   (zy/require-init 'init-fonts)
 
-  ;; Applications and features.
-  (zy/require-init 'init-dired)
-  (zy/require-init 'init-lingual)
-  (zy/require-init 'init-os)
-
   ;; File type specific.
   (zy/require-init 'init-lisp)
   (zy/require-init 'init-nix)
+  (zy/require-init 'init-org)
   (zy/require-init 'init-pdf)
   (zy/require-init 'init-python)
   (zy/require-init 'init-scala)

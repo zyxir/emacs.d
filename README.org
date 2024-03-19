@@ -52,6 +52,6 @@ these settings via the ~customize~ UI:
 
 ** Tips
 
-*** Profiling startup time (by ~init-elpa.el~)
+*** Profiling startup time
 
 Powered by [[https://github.com/jschaf/esup][ESUP]], You can profile startup time via ~M-x esup~.
