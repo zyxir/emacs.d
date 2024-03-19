@@ -7,7 +7,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(after! 'flycheck
+(after-or-now! 'flycheck
   ;; Check syntax using the load-path populated by the init file.
   (defvar flycheck-emacs-lisp-load-path)
   (setq flycheck-emacs-lisp-load-path 'inherit))

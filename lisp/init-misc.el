@@ -55,7 +55,7 @@
   (setq-default native-comp-async-report-warnings-errors nil))
 
 ;; Don't grep in these directories and files.
-(after! 'grep
+(after-or-now! 'grep
   (setq grep-find-ignored-directories
         (append grep-find-ignored-directories '("elpa"))
         grep-find-ignored-files
@@ -113,7 +113,7 @@
 (add-hook! (prog-mode text-mode conf-mode) (display-line-numbers-mode 1))
 
 ;; Configure Eldoc.
-(after! eldoc
+(after-or-now! eldoc
   ;; Display multiple Eldoc sources simultaneously, and display each source as
   ;; long as it's ready.
   (setq eldoc-documentation-strategy #'eldoc-documentation-compose-eagerly)

@@ -5,7 +5,7 @@
 (eval-and-compile (require 'init-basic))
 
 ;; Use Ripgrep for xref if possible.
-(after! 'xref
+(after-or-now! 'xref
   (when (executable-find "rg")
     (setq xref-search-program 'ripgrep)))
 

@@ -210,13 +210,43 @@ Otherwise, they will be executed at `window-setup-hook'."
 
 (defmacro after-deferred! (features &rest body)
   "Defer FEATURES, and evaluate BODY after them.
+If running in daemon mode, require FEATURES now, and BODY will be
+evaluated subsequently; otherwise require FEATURES at
+`window-setup-hook'.
 
-This is like `after!', but the features are loaded in a deferred
-manner as `defer!' do."
+FEATURES can be a symbol or a list of symbols. It can be quoted
+or unquoted."
   (declare (indent 1) (debug (form def-body)))
   (let ((features (zy/-normalize-features features)))
     `(progn
        ,(zy/-gen-deferred-features features)
+       ,(zy/-gen-after-load features body))))
+
+(defun zy/-gen-maybe-required-features (features)
+  "Generate maybe required statements for FEATURES.
+FEATURES is a list of feature symbols.
+
+If `daemonp' returns non-nil, FEATURES will be loaded right now.
+Otherwise, do nothing."
+  (let* ((loading-sexps (mapcar
+                         (lambda (x) `(require ',(zy/unquote x)))
+                         features)))
+    `(when (daemonp) ,(macroexp-progn loading-sexps))))
+
+(defmacro after-or-now! (features &rest body)
+  "Evaluate BODY after FEATURES are available.
+If running in daemon mode, require FEATURES now, and BODY will be
+evaluated subsequently.
+
+FEATURES can be a symbol or a list of symbols. It can be quoted
+or unquoted.
+
+This is similar to `after-deferred!', but FEATURES will not be
+automatically required if not in daemon mode."
+  (declare (indent 1) (debug (form def-body)))
+  (let ((features (zy/-normalize-features features)))
+    `(progn
+       ,(zy/-gen-maybe-required-features features)
        ,(zy/-gen-after-load features body))))
 
 (defmacro defer! (&rest body)

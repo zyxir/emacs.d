@@ -7,7 +7,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(after! 'eglot
+(after-or-now! 'eglot
   (setq
    ;; Do not require confirmation on code actions.
    eglot-confirm-server-initiated-edits nil)
@@ -49,7 +49,7 @@ Each entry is a LANG-ID string returned by
                 (exists (executable-find program)))
       (eglot-ensure))))
 
-(after! 'envrc
+(after-or-now! 'envrc
   (defadvice! zy/-try-to-ensure-eglot-a (buf result)
     "Try to ensure Eglot when Direnv updates.
 This is an advice for `envrc--apply' and only when RESULT is a

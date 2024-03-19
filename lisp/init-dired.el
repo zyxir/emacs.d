@@ -10,7 +10,7 @@
   "d" #'dired-sidebar-toggle-sidebar)
 
 ;; Configure Dired.
-(after! 'dired
+(after-or-now! 'dired
   (setq
    ;; Revert Dired buffers if the directory has changed.
    dired-auto-revert-buffer 'dired-directory-changed-p
@@ -47,7 +47,7 @@
         (auto-revert-mode 1)))))
 
 ;; Configure Dired-sidebar.
-(after! 'dired-sidebar)
+(after-or-now! 'dired-sidebar)
 
 (provide 'init-dired)
 

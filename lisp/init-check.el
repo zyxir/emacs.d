@@ -10,7 +10,7 @@
 ;; Enable Flycheck everywhere.
 (global-flycheck-mode 1)
 
-(after! 'flycheck
+(after-or-now! 'flycheck
   ;; From URL `https://www.masteringemacs.org/article/seamlessly-merge-multiple-documentation-sources-eldoc'.
   (eval-and-compile
     (defun zy/-flycheck-eldoc (callback &rest _)
@@ -47,7 +47,7 @@
    flycheck-indication-mode nil))
 
 ;; Use Flycheck rather than Flymake with Eglot.
-(after! 'eglot
+(after-or-now! 'eglot
   (global-flycheck-eglot-mode 1))
 
 (provide 'init-check)

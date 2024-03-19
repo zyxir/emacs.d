@@ -53,7 +53,7 @@
 (add-hook! prog-mode #'display-fill-column-indicator-mode)
 
 ;; Always show a button when using outline.
-(after! 'outline
+(after-or-now! 'outline
   (setq outline-minor-mode-use-buttons t))
 
 ;; Always enable visual line mode.

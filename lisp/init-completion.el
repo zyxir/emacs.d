@@ -37,7 +37,7 @@
  read-buffer-completion-ignore-case t
  read-file-name-completion-ignore-case t)
 
-(after! 'orderless
+(after-or-now! 'orderless
   (defun zy/orderless-literal (word _index _total)
     "Read WORD= as a literal string."
     (when (string-suffix-p "=" word)
@@ -114,7 +114,7 @@ ARGS are the arguments passed."
 ;; Text Completion
 
 (add-hook! prog-mode #'corfu-mode)
-(after! 'corfu
+(after-or-now! 'corfu
   (setq
    ;; Enable auto completion.
    corfu-auto t

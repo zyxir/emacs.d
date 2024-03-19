@@ -11,7 +11,7 @@
   "/" #'project-find-regexp)
 (zy/leader-def "p" project-prefix-map)
 
-(after! project
+(after-or-now! project
   (setq
    ;; Customized commands upon switching to another project.
    project-switch-commands '((project-find-file "Find file")

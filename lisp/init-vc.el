@@ -24,7 +24,7 @@
   "t" #'git-timemachine)
 
 ;; Configure Magit.
-(after! 'magit
+(after-or-now! 'magit
   (setq
    ;; Do not bind keys automatically.
    magit-define-global-key-bindings nil

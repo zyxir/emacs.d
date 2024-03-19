@@ -8,7 +8,7 @@
 (require-package 'evil-textobj-tree-sitter)
 
 ;; Fontify everything with tree-sitter.
-(after! 'treesit
+(after-or-now! 'treesit
   (setq treesit-font-lock-level 4))
 
 ;; Manage tree-sitter grammars and modes with Treesit-auto.
