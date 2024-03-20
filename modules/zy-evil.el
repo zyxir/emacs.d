@@ -41,7 +41,7 @@
 (after! 'evil
   ;; Define the space key as the leader key, like some popular editor
   ;; configurations do, including SpaceVim, Spacemacs, and Doom Emacs.
-  (evil-set-leader '(normal visual motion) (kbd "SPC"))
+  (evil-set-leader '(normal visual motion operator) (kbd "SPC"))
 
   ;; Some modes activate insert state by default, but I am so accustomed to
   ;; being in normal state by default, that I always accidentally press "i" or
@@ -75,7 +75,7 @@
   ;; Restore several keys to default Emacs bindings. In my opinion these keys
   ;; are more useful than default Evil keys and allow moving around easier
   ;; without switching states. Besides, my muscle memory needs them!
-  (evil-define-key 'insert global-map
+  (keybind! 'insert global-map
     "C-d" #'delete-char
     "C-e" #'end-of-visual-line
     "C-a" #'beginning-of-visual-line
@@ -85,7 +85,7 @@
     "C-n" #'next-line)
 
   ;; Provide more motions via Avy and Consult.
-  (evil-define-key 'motion global-map
+  (keybind! 'motion global-map
     "f" #'avy-goto-char
     "F" #'avy-goto-char-timer
     "g c" #'evil-goto-char
@@ -95,7 +95,7 @@
   ;; I am not used to the Vim way of defining labeled macros, and I constantly
   ;; mispress "q" in order to quit a window. Remapping "q" and "Q" to the Emacs
   ;; way of defining macros makes sense to me.
-  (evil-define-key 'normal global-map
+  (keybind! 'normal global-map
     "Q" #'kmacro-start-macro-or-insert-counter
     "q" #'kmacro-end-or-call-macro))
 

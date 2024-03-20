@@ -8,13 +8,16 @@
     (error "Emacs %s or higher is required to run Zyxir's config" minver)))
 
 ;; Make these directories available to Emacs. They contain most files of this
-;; configuration.
+;; configuration. Although all Lisp libraries and modules are loaded with their
+;; full path in this file, populating `load-path' ensures correct dependency
+;; management in byte compilation.
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
 ;; Enable/disable modules here.
-(defconst zy-modules '(;; Vim-like modal editing with Evil.
+(defconst zy-modules '(;; Setup Evil and the leader key.
                        evil
+                       leader
                        ;; Text-editing and coding.
                        quickins)
   "Enabled modules of Zyxir's Emacs configuration.")
@@ -42,10 +45,12 @@ file (init.el)."
       ;; TODO: mention a way to sync the configuration.
       (load-prefer-newer nil))
 
-  ;; Load all components of Zylib manually, which defines utility functions
-  ;; and macros that most parts of this configuration depend on.
+  ;; Load all components of Zylib manually, which defines utility functions and
+  ;; macros that most parts of this configuration depend on. Load them by path
+  ;; manually reduces the tiny bit of time used to locate them in `load-path'.
   (zy-load-rel "lisp/zylib-core")
   (zy-load-rel "lisp/zylib-pkg")
+  (zy-load-rel "lisp/zylib-key")
   (zy-load-rel "lisp/zylib")
 
   ;; Load all modules in order.

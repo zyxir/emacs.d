@@ -1,7 +1,7 @@
 ;;; zylib-pkg.el --- Package management. -*- lexical-binding: t -*-
 ;;; Commentary:
 
-;; This file defines the package management framework for the configuration. It
+;; This file defines the package management framework of the configuration. It
 ;; provides a simple yet feature-rich macro, `pkg!', to require packages on
 ;; demand.
 
