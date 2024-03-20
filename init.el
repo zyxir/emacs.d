@@ -11,10 +11,10 @@
 
 ;;;; Load modules.
 
-(defvar zy/module-dir (expand-file-name "lisp" user-emacs-directory)
+(defvar zy/modules-dir (expand-file-name "modules" user-emacs-directory)
   "Directory containing modules of Zyxir's Emacs configuration.")
 
-(add-to-list 'load-path zy/module-dir)
+(add-to-list 'load-path zy/modules-dir)
 
 (defvar zy/modules '()
   "All modules of Zyxir's Emacs configuration.
@@ -54,7 +54,7 @@ solves. However, as a perfectionist, I prefer eliminating all
 Flycheck warnings of my config, since a warning might stand for a
 potential bug. I am willing to invest time to ensure the byte
 code compatibility of my config."
-  (let* ((base (expand-file-name (symbol-name module) zy/module-dir))
+  (let* ((base (expand-file-name (symbol-name module) zy/modules-dir))
          (source (concat base ".el"))
          (compiled (concat base ".elc"))
          (outdated (file-newer-than-file-p source compiled)))
@@ -76,7 +76,7 @@ code inconsistency."
   (interactive)
   (dolist (module (reverse zy/modules))
     (let* ((file (expand-file-name (concat (symbol-name module) ".el")
-                                   zy/module-dir)))
+                                   zy/modules-dir)))
       (zy/compile-file file))))
 (defalias 'zy/recompile-all #'zy/compile-all)
 

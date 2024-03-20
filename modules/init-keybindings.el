@@ -204,8 +204,7 @@ it silences warnings."
   :keymaps 'zy/leader-map
   :prefix-map 'zy/leader-d-map
   :prefix "d")
-(zy/leader-d-def
-  "D" #'dired)
+(zy/leader-def "D" #'dired)
 
 ;; "<leader> q" for quitting-related operations.
 (zy/create-definer zy/leader-q-def

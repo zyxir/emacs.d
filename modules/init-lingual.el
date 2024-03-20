@@ -3,6 +3,7 @@
 ;;; Code:
 
 (eval-and-compile (require 'init-basic))
+(eval-and-compile (require 'init-theme))
 
 (require-package 'rime)
 (require-package 'sis)
@@ -23,7 +24,6 @@
 ;; Indicate input method with different cursor color.
 (after-gui!
   (eval-and-compile (require 'color))
-  (defvar zy/theme)
   (cl-flet ((im-p ()
               "Return non-nil if input method is active."
               (if (featurep 'rime)

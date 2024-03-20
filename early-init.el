@@ -8,11 +8,26 @@
 
 ;;; Code:
 
-;; Use a larger GC cons threshold to speed up startup. Once the GCMH package has
-;; been loaded it will take over GC.
-(setq gc-cons-threshold (* 1024 1024 1024))
+;; Garbage collection reduces startup time. This line inhibits GC during
+;; startup. Once the GCMH package is loaded it will take over GC.
+(setq gc-cons-threshold most-positive-fixnum)
 
-;; Configure features here to speed up loading.
+;; Don't check modified time on Emacs Lisp byte code during an interactive
+;; startup. TODO: mention a way to recompile the config.
+(setq load-prefer-newer noninteractive)
+
+;; Respect the DEBUG environment variable as an alternative to "--debug-init".
+(when (getenv-internal "DEBUG")
+  (setq init-file-debug t
+        debug-on-error t))
+
+;; Turn off the automatic call to `package-initialize' so that we can decide
+;; when exactly package.el is loaded.
+(setq package-enable-at-startup nil)
+
+;; Configure GUI features here to speed up loading. It will be much more
+;; expensive to configure the GUI once it has been started, as the frame may be
+;; resized and redrawn multiple times.
 (setq
  ;; Turn off menu bar, scroll bars, and tool bar.
  default-frame-alist '(;; Disable menu bar.
@@ -30,9 +45,7 @@
  scroll-bar-mode nil
  tool-bar-mode nil
  ;; Resize frames pixelwise instead of character-wise to prevent startup delay.
- frame-resize-pixelwise t
- ;; Disable package.el.
- package-enable-at-startup nil)
+ frame-resize-pixelwise t)
 
 (provide 'early-init)
 
