@@ -1,0 +1,21 @@
+# -*- mode: snippet; -*-
+# contributor: zyxir <https://www.github.com/zyxir>
+# name: module header of ZyEmacs
+# key: mheader
+# --
+;;; zy-${1:name}.el --- ${2:summary} -*- lexical-binding: t -*-
+
+;;; Commentary:
+
+;; This file provides the `$1' module of Zyxir's Emacs configuration.
+
+;; ${3:commentary}
+
+;;; Code:
+
+(require 'zylib)
+$0
+
+(provide 'zy-$1)
+
+;;; zy-$1.el ends here

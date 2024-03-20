@@ -39,21 +39,6 @@ it silences warnings."
 
 ;;;; Setup Evil
 
-(setq-default
- ;; Delete back to indentation with C-u in insert state.
- evil-want-C-u-delete t
- ;; Scroll with C-u/d in normal state.
- evil-want-C-u-scroll t
- evil-want-C-d-scroll t
- ;; Use C-h as a quicker backspace.
- evil-want-C-h-delete t
- ;; Respect visual lines.
- evil-respect-visual-line-mode t
- ;; Load Evil keybindings for several other modes as well.
- evil-want-keybinding nil
- ;; Use the built-in `undo-redo' system.
- evil-undo-system 'undo-redo)
-
 ;; The leader key and the local leader key.
 (defconst zy/leader-key "SPC"
   "The leader key used as a common shortcut prefix.")
@@ -63,34 +48,6 @@ it silences warnings."
   "The local leader key used as a mode-specific shortcut prefix.")
 (defconst zy/local-leader-key-insert "M-;"
   "The local leader key in insert state.")
-
-;; Silence "`evil-want-keybinding' was set to nil but not before loading evil".
-(eval-when-compile (setq-default evil-want-keybinding nil))
-
-(after-deferred! 'evil
-  ;; Activate Evil mode.
-  (evil-mode 1)
-
-  ;; Setup Evil in many other modes with Evil-collection.
-  ;; (eval-and-compile (require 'evil-collection))
-  (setq-default
-   ;; Do not bind my leader key.
-   evil-collection-key-blacklist `(,zy/leader-key ,zy/local-leader-key))
-  (evil-collection-init)
-
-  ;; Use normal state, rather than insert state, for these modes.
-  (evil-set-initial-state 'comint-mode 'normal)
-  (evil-set-initial-state 'shell-mode 'normal)
-  (evil-set-initial-state 'eshell-mode 'normal)
-
-  ;; Also change Evil cursor in terminal.
-  (evil-terminal-cursor-changer-activate)
-
-  ;; Enable Evil-surround (for pair-editing, very powerful).
-  (global-evil-surround-mode 1)
-
-  ;; Enable Evil-lion (use gl or gL for aligning).
-  (evil-lion-mode 1))
 
 ;;;; Setup Keybindings
 

@@ -13,6 +13,7 @@
 
 (require 'zylib-core)
 (require 'zylib-pkg)
+(require 'zylib-keybind)
 
 (provide 'zylib)
 

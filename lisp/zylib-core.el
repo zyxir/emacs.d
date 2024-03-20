@@ -183,14 +183,19 @@ warnings."
   "Normalize FEATURES for macro expansion.
 FEATURES can be:
 
-- A quoted list of symbols.
-- An unquoted list of symbols.
+- A quoted list of quoted symbols.
+- A quoted list of unquoted symbols.
+- An unquoted list of quoted symbols.
+- An unquoted list of unquoted symbols.
 - A quoted symbol.
 - An unquoted symbol.
 
-This function always returns an unquoted list."
+This function always returns an unquoted list of unquoted
+symbols."
   (setq features (unquote! features))
-  (if (listp features) features (list features)))
+  (if (listp features)
+      (mapcar #'unquote! features)
+    (list features)))
 
 (defmacro after! (features &rest body)
   "Evaluate BODY after FEATURES are available.
@@ -214,6 +219,7 @@ Otherwise, they will be executed at `window-setup-hook'."
        (add-hook 'window-setup-hook
                  (lambda () ,@loading-sexps)))))
 
+;; TODO: This should eventually be removed.
 (defmacro after-deferred! (features &rest body)
   "Defer FEATURES, and evaluate BODY after them.
 If running in daemon mode, require FEATURES now, and BODY will be
@@ -239,6 +245,7 @@ Otherwise, do nothing."
                          features)))
     `(when (daemonp) ,(macroexp-progn loading-sexps))))
 
+;; TODO: This should eventually be removed.
 (defmacro after-or-now! (features &rest body)
   "Evaluate BODY after FEATURES are available.
 If running in daemon mode, require FEATURES now, and BODY will be
@@ -255,6 +262,7 @@ automatically required if not in daemon mode."
        ,(zy--gen-maybe-required-features features)
        ,(zy--gen-after-load features body))))
 
+;; TODO: This should eventually be removed.
 (defmacro defer! (&rest body)
   "Run BODY at `window-setup-hook'.
 If running in daemon mode, run them now."
@@ -282,6 +290,17 @@ newly created GUI frame."
                        (add-hook 'after-make-frame-functions
                                  ',fn-name)))))
     `(progn ,fn-form (,fn-name))))
+
+(defmacro daemon-require! (&rest features)
+  "Require FEATURES if running as a daemon.
+Each FEATURE in FEATURES is a quoted feature symbol.
+
+\(fn [FEATURE] ...)"
+  (let* ((require-forms
+          (mapcar (lambda (feature)
+                    `(require ',(unquote! feature)))
+                  features)))
+    `(when (daemonp) ,@require-forms)))
 
 ;;;; Filesystem
 

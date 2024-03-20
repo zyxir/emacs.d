@@ -12,6 +12,25 @@
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
+;; Enable/disable modules here.
+(defconst zy-modules '(;; Vim-like modal editing with Evil.
+                       evil
+                       ;; Text-editing and coding.
+                       quickins)
+  "Enabled modules of Zyxir's Emacs configuration.")
+
+(defun zy-load-rel (relpath &rest args)
+  "Load the file in relative path RELPATH.
+RELPATH is relative to `user-emacs-directory', and is formatted
+with ARGS like `format' does.
+
+This function is and should only be used in the initialization
+file (init.el)."
+  (load (expand-file-name (apply #'format relpath args)
+                          user-emacs-directory)
+        ;; Announce the loading while debugging.
+        nil (not init-file-debug) nil 'must-suffix))
+
 (let (;; `file-name-handler-alist' is consulted each time a file is loaded.
       ;; Unsetting it speeds up startup notably.
       (file-name-handler-alist nil)
@@ -19,14 +38,19 @@
       ;; Temporarily dropping ".so" from the list reduces the permutations
       ;; needed to load the correct files during startup.
       (load-suffixes '(".elc" ".el"))
-      ;; Don't spend precious time checking modified time during startup. TODO:
-      ;; mention a way to sync the configuration.
+      ;; Don't spend precious time checking modified time during startup.
+      ;; TODO: mention a way to sync the configuration.
       (load-prefer-newer nil))
 
-  ;; Load zylib.el, which defines utility functions and macros that most parts
-  ;; of this configuration depend on.
-  (load (expand-file-name "lisp/zylib" user-emacs-directory)
-        nil (not init-file-debug) nil 'must-suffix))
+  ;; Load all components of Zylib manually, which defines utility functions
+  ;; and macros that most parts of this configuration depend on.
+  (zy-load-rel "lisp/zylib-core")
+  (zy-load-rel "lisp/zylib-pkg")
+  (zy-load-rel "lisp/zylib")
+
+  ;; Load all modules in order.
+  (dolist (module zy-modules)
+    (zy-load-rel "modules/zy-%s" module)))
 
 ;;;; Load modules.
 
@@ -100,55 +124,55 @@ code inconsistency."
 (defalias 'zy/recompile-all #'zy/compile-all)
 
 ;; Clear the file name handler to make loading faster.
-(let* ((file-name-handler-alist nil))
+;; (let* ((file-name-handler-alist nil))
 
-  ;; Load the custom file first.
-  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (load custom-file 'noerror 'nomessage)
+;;   ;; Load the custom file first.
+;;   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+;;   (load custom-file 'noerror 'nomessage)
 
-  ;; Basic modules.
-  ;; (zy/require-init 'init-elpa)
-  ;; (zy/require-init 'init-util)
-  (zy/require-init 'init-keybindings)
+;;   ;; Basic modules.
+;;   ;; (zy/require-init 'init-elpa)
+;;   ;; (zy/require-init 'init-util)
+;;   ;; (zy/require-init 'init-keybindings)
 
-  ;; A placeholder module which ensures every basic module has been loaded.
-  (zy/require-init 'init-basic)
+;;   ;; A placeholder module which ensures every basic module has been loaded.
+;;   (zy/require-init 'init-basic)
 
-  ;; Applications and features.
-  (zy/require-init 'init-personal)
-  (zy/require-init 'init-dired)
-  (zy/require-init 'init-lingual)
-  (zy/require-init 'init-os)
+;;   ;; Applications and features.
+;;   (zy/require-init 'init-personal)
+;;   (zy/require-init 'init-dired)
+;;   (zy/require-init 'init-lingual)
+;;   (zy/require-init 'init-os)
 
-  ;; Text-editing and coding.
-  (zy/require-init 'init-misc)
-  (zy/require-init 'init-paragraph)
-  (zy/require-init 'init-snippet)
-  (zy/require-init 'init-completion)
-  (zy/require-init 'init-search)
-  (zy/require-init 'init-vc)
-  (zy/require-init 'init-treesit)
-  (zy/require-init 'init-project)
-  (zy/require-init 'init-highlight)
-  (zy/require-init 'init-check)
-  (zy/require-init 'init-lsp)
-  (zy/require-init 'init-env)
-  (zy/require-init 'init-prose)
+;;   ;; Text-editing and coding.
+;;   (zy/require-init 'init-misc)
+;;   (zy/require-init 'init-paragraph)
+;;   (zy/require-init 'init-snippet)
+;;   (zy/require-init 'init-completion)
+;;   (zy/require-init 'init-search)
+;;   (zy/require-init 'init-vc)
+;;   (zy/require-init 'init-treesit)
+;;   (zy/require-init 'init-project)
+;;   (zy/require-init 'init-highlight)
+;;   (zy/require-init 'init-check)
+;;   (zy/require-init 'init-lsp)
+;;   (zy/require-init 'init-env)
+;;   (zy/require-init 'init-prose)
 
-  ;; Look and feel.
-  (zy/require-init 'init-theme)
-  (zy/require-init 'init-modeline)
-  (zy/require-init 'init-fonts)
+;;   ;; Look and feel.
+;;   (zy/require-init 'init-theme)
+;;   (zy/require-init 'init-modeline)
+;;   (zy/require-init 'init-fonts)
 
-  ;; File type specific.
-  (zy/require-init 'init-lisp)
-  (zy/require-init 'init-nix)
-  (zy/require-init 'init-org)
-  (zy/require-init 'init-pdf)
-  (zy/require-init 'init-python)
-  (zy/require-init 'init-scala)
-  (zy/require-init 'init-tex)
-  (zy/require-init 'init-other-modes))
+;;   ;; File type specific.
+;;   (zy/require-init 'init-lisp)
+;;   (zy/require-init 'init-nix)
+;;   (zy/require-init 'init-org)
+;;   (zy/require-init 'init-pdf)
+;;   (zy/require-init 'init-python)
+;;   (zy/require-init 'init-scala)
+;;   (zy/require-init 'init-tex)
+;;   (zy/require-init 'init-other-modes))
 
 (provide 'init)
 
