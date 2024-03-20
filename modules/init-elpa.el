@@ -7,7 +7,7 @@
 ;; Determine the running environment.
 (defvar zy/wsl-p (file-exists-p "/etc/wsl.conf")
   "If Emacs is running on WSL.")
-(defvar zy/os
+(defvar zy-platform
   (cond ((member system-type '(ms-dos windows-nt cygwin))
 	 'windows)
 	((eq system-type 'gnu/linux)
@@ -72,10 +72,10 @@ re-downloaded in order to correctly install PACKAGE."
 
 (defun zy/-require-local-package (path)
   "Install package from local file/directory PATH."
-  (defvar zy/module-dir)
+  (defvar zy/modules-dir)
   (let* ((relative-p (null (file-name-absolute-p path)))
          (expanded-by-module-dir
-          (when relative-p (expand-file-name path zy/module-dir)))
+          (when relative-p (expand-file-name path zy/modules-dir)))
          (path-choices (if relative-p
                            `(,expanded-by-module-dir)
                          `(,path)))
@@ -139,14 +139,14 @@ Anyway, if the package is installed, it is added to
   (package-refresh-contents))
 
 ;; Require some popular Emacs Lisp libraries.
-(require-package 'dash)
-(require-package 'f)
+(pkg! 'dash)
+(pkg! 'f)
 
 ;; Require ESUP, the Emacs startup profiler.
-(require-package 'esup)
+(pkg! 'esup)
 
 ;; Enable GCMH to reduce GC lags.
-(require-package 'gcmh)
+(pkg! 'gcmh)
 (gcmh-mode 1)
 
 (provide 'init-elpa)

@@ -8,7 +8,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'auctex)
+(pkg! 'auctex)
 
 (after! 'tex
   (setq-default

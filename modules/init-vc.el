@@ -4,9 +4,9 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'magit)
-(require-package 'diff-hl)
-(require-package 'git-timemachine)
+(pkg! 'magit)
+(pkg! 'diff-hl)
+(pkg! 'git-timemachine)
 
 ;; Visit symbolic links automatically.
 (setq vc-follow-symlinks t)

@@ -4,7 +4,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'nix-ts-mode)
+(pkg! 'nix-ts-mode)
 
 (provide 'init-nix)
 

@@ -12,7 +12,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'ligature)
+(pkg! 'ligature)
 
 ;;;; Font Setting Utility
 

@@ -64,7 +64,7 @@ Org-journal, Org-roam, and many more."
     (when zy/user-is-zyxir
       (lwarn 'zyemacs :warning "Zybox path is not valid."))))
 
-(defcustom zy/zybox-path (or (zy/first-existing-path
+(defcustom zy/zybox-path (or (some-path!
                               "~/Zybox"
                               "/mnt/c/Users/zyxir/Zybox")
                              "/path/to/Zybox")

@@ -47,10 +47,12 @@ Powered by [[https://github.com/jschaf/esup][ESUP]], You can profile startup tim
 
 This configuration conforms to [[https://github.com/bbatsov/emacs-lisp-style-guide][The Emacs Lisp Style Guide]] by Bozhidar Bastov. Symbol names in this configuration follow the following conventions:
 
-- =abc!= :: A public function or macro that should be defined all the time. Such function or macro is often defined in =zy-lib.el=.
+- =abc!= :: A public function or macro that should be defined all the time. Such function or macro is often defined in =zylib.el=.
 - =zy/NAME= or =+MODULE/NAME= :: A command designed to be used interactively.
-- =zy-[-]NAME-h= or =MODULE-[-]NAME-h= :: A hook function.
-- =zy-[-]NAME-a= or =MODULE-[0]NAME-a= :: An advice function.
+- =zy-[-]NAME= or =+MODULE-[-]NAME= :: A non-interactive function or variable.
+- =zy-[-]NAME-h= or =+MODULE-[-]NAME-h= :: A hook function.
+- =zy-[-]NAME-a= or =+MODULE-[-]NAME-a= :: An advice function.
+- =zy-[-]NAME-fn= or =+MODULE-[-]NAME-fn= :: A strategy (replaceable) function.
 
 It is worth noting that most of these conventions are learned from Doom Emacs.
 

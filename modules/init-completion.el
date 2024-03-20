@@ -8,13 +8,12 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'orderless)
-(require-package 'vertico)
-(require-package 'marginalia)
-(require-package 'corfu)
-(require-package 'popon)
-(require-package '(corfu-terminal
-                   :url "https://codeberg.org/akib/emacs-corfu-terminal"))
+(pkg! 'orderless)
+(pkg! 'vertico)
+(pkg! 'marginalia)
+(pkg! 'corfu)
+(pkg! 'popon)
+(pkg! corfu-terminal "https://codeberg.org/akib/emacs-corfu-terminal")
 
 ;;;; Completion Styles
 

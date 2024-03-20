@@ -9,10 +9,10 @@
 
 ;; Although Modus Themes are included in Emacs 29, the MELPA version has more
 ;; features and variants.
-(require-package 'modus-themes)
-(require-package 'solaire-mode)
-(require-package 'rainbow-delimiters)
-(require-package 'dashboard)
+(pkg! 'modus-themes)
+(pkg! 'solaire-mode)
+(pkg! 'rainbow-delimiters)
+(pkg! 'dashboard)
 
 (defcustom zy/theme 'modus-operandi-tinted
   "The theme to use for Emacs.

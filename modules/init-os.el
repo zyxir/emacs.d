@@ -5,7 +5,7 @@
 (eval-and-compile (require 'init-basic))
 
 ;; Windows Subsystem for Linux.
-(when (eq zy/os 'wsl)
+(when (eq zy-platform 'wsl)
   ;; Browse URL with explorer.
   (setq browse-url-browser-function
         (defun zy/wsl-browse-url (url &rest _)

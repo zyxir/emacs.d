@@ -1,12 +1,28 @@
-;;; init-util.el --- Lisp utility.  -*- lexical-binding: t -*-
+;;; zylib-core.el --- Emacs Lisp syntax sugars. -*- lexical-binding: t -*-
 ;;; Commentary:
 
-;; This file contains useful Lisp functions and macros which will be further
-;; used in the config.
+;; This file provides syntax sugars for writting Emacs Lisp code. Many
+;; variables, functions and macros of this file are either copied or adapted
+;; from famous repositories like Doom Emacs.
 
 ;;; Code:
 
-(require 'init-elpa)
+(eval-when-compile (require 'cl-lib))
+
+;;;; Platform Detection
+
+(defvar zy-platform
+  (cond ((memq system-type '(ms-dos windows-nt cygwin))
+	 'windows)
+	((eq system-type 'gnu/linux)
+	 (if (getenv "WSL_DISTRO_NAME") 'wsl 'linux))
+	(t 'unsupported))
+  "The platform (operating system) Emacs is running on.
+Possible values:
+  `windows'     Microsoft Windows
+  `wsl'         Windows subsystem for Linux
+  `linux'       a Linux distribution
+  `unsupported' an unsupported platform")
 
 ;;;; Symbol Manipulation
 
@@ -19,7 +35,7 @@
 
 ;;;; Hook Management
 
-(defun zy/-resolve-hook-forms (hooks)
+(defun zy--resolve-hook-forms (hooks)
   "Convert a list of modes into a list of hook symbols.
 
 HOOKS is either an unquoted mode, an unquoted list of modes, a
@@ -51,7 +67,7 @@ in a lambda).
 
 This function was adapted from Doom Emacs."
   (declare (indent 1) (debug t))
-  (let* ((hook-forms (zy/-resolve-hook-forms hooks))
+  (let* ((hook-forms (zy--resolve-hook-forms hooks))
          (func-forms ())
          (defn-forms ())
          append-p local-p remove-p depth)
@@ -96,14 +112,8 @@ This function is based on `remove-hook!' of Doom Emacs."
   (declare (indent defun) (debug t))
   `(add-hook! ,hooks :remove ,@rest))
 
-(defmacro setq-hook! (hooks &rest rest)
-  "Use `setq-local' on REST after HOOKS."
-  (declare (indent 1) (debug t))
-  `(add-hook! ,hooks (setq-local ,@rest)))
-
-(provide 'init-util)
-
-;; Advice Management
+;;;; Advice Management
+;; TODO: This section should be removed. All `defadvice!' should be rewritten.
 
 (defmacro defadvice! (symbol arglist &optional docstring &rest body)
   "Define an advice called SYMBOL and add it to PLACES.
@@ -131,7 +141,6 @@ This function is based on `defadvice!' of Doom Emacs."
          (dolist (target (cdr targets))
            (advice-add target (car targets) ',symbol))))))
 
-;; This is copied from Doom Emacs.
 (defmacro undefadvice! (symbol _arglist &optional docstring &rest body)
   "Undefine an advice called SYMBOL.
 
@@ -153,9 +162,9 @@ This function is based on `undefadvice!' of Doom Emacs."
        (dolist (target (cdr targets))
          (advice-remove target #',symbol)))))
 
-;;;; More Lazy Loading Macros
+;;;; Lazy Loading Macros
 
-(defun zy/-gen-after-load (features body)
+(defun zy--gen-after-load (features body)
   "Generate `eval-after-load' statements to represent FEATURES.
 FEATURES is a list of feature symbols and BODY is the body to be
 lazy loaded.
@@ -170,7 +179,7 @@ warnings."
       (setq body `(eval-after-load ',feature ,body)))
     body))
 
-(defun zy/-normalize-features (features)
+(defun zy--normalize-features (features)
   "Normalize FEATURES for macro expansion.
 FEATURES can be:
 
@@ -189,9 +198,9 @@ This function always returns an unquoted list."
 FEATURES can be a symbol or a list of symbols. It can be quoted
 or unquoted."
   (declare (indent 1) (debug (form def-body)))
-  (zy/-gen-after-load (zy/-normalize-features features) body))
+  (zy--gen-after-load (zy--normalize-features features) body))
 
-(defun zy/-gen-deferred-features (features)
+(defun zy--gen-deferred-features (features)
   "Generate deferred loading statements for FEATURES.
 FEATURES is a list of feature symbols.
 
@@ -214,12 +223,12 @@ evaluated subsequently; otherwise require FEATURES at
 FEATURES can be a symbol or a list of symbols. It can be quoted
 or unquoted."
   (declare (indent 1) (debug (form def-body)))
-  (let ((features (zy/-normalize-features features)))
+  (let ((features (zy--normalize-features features)))
     `(progn
-       ,(zy/-gen-deferred-features features)
-       ,(zy/-gen-after-load features body))))
+       ,(zy--gen-deferred-features features)
+       ,(zy--gen-after-load features body))))
 
-(defun zy/-gen-maybe-required-features (features)
+(defun zy--gen-maybe-required-features (features)
   "Generate maybe required statements for FEATURES.
 FEATURES is a list of feature symbols.
 
@@ -241,10 +250,10 @@ or unquoted.
 This is similar to `after-deferred!', but FEATURES will not be
 automatically required if not in daemon mode."
   (declare (indent 1) (debug (form def-body)))
-  (let ((features (zy/-normalize-features features)))
+  (let ((features (zy--normalize-features features)))
     `(progn
-       ,(zy/-gen-maybe-required-features features)
-       ,(zy/-gen-after-load features body))))
+       ,(zy--gen-maybe-required-features features)
+       ,(zy--gen-after-load features body))))
 
 (defmacro defer! (&rest body)
   "Run BODY at `window-setup-hook'.
@@ -282,4 +291,6 @@ newly created GUI frame."
              (if (file-exists-p path) path nil))
            paths))
 
-;;; init-util.el ends here
+(provide 'zylib-core)
+
+;;; zylib-core.el ends here

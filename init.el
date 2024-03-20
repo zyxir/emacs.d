@@ -1,13 +1,32 @@
-;;; init.el --- Boostrap config modules.  -*- lexical-binding: t -*-
+;;; init.el --- Boostrap config modules.  -*- lexical-binding: t; no-byte-compile: t -*-
 ;;; Commentary:
 ;;; Code:
-
-;;;; Preparations
 
 ;; Check Emacs version.
 (let ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Emacs %s or higher is required to run Zyxir's config" minver)))
+
+;; Make these directories available to Emacs. They contain most files of this
+;; configuration.
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
+
+(let (;; `file-name-handler-alist' is consulted each time a file is loaded.
+      ;; Unsetting it speeds up startup notably.
+      (file-name-handler-alist nil)
+      ;; Each suffix of `load-suffixes' is tried while loading a file.
+      ;; Temporarily dropping ".so" from the list reduces the permutations
+      ;; needed to load the correct files during startup.
+      (load-suffixes '(".elc" ".el"))
+      ;; Don't spend precious time checking modified time during startup. TODO:
+      ;; mention a way to sync the configuration.
+      (load-prefer-newer nil))
+
+  ;; Load zylib.el, which defines utility functions and macros that most parts
+  ;; of this configuration depend on.
+  (load (expand-file-name "lisp/zylib" user-emacs-directory)
+        nil (not init-file-debug) nil 'must-suffix))
 
 ;;;; Load modules.
 
@@ -58,7 +77,7 @@ code compatibility of my config."
          (source (concat base ".el"))
          (compiled (concat base ".elc"))
          (outdated (file-newer-than-file-p source compiled)))
-    (if nil
+    (if t
         ;; Currently this branch will never be executed. It is left for
         ;; convenience.
         (load source 'noerror 'nomessage 'nosuffix)
@@ -88,8 +107,8 @@ code inconsistency."
   (load custom-file 'noerror 'nomessage)
 
   ;; Basic modules.
-  (zy/require-init 'init-elpa)
-  (zy/require-init 'init-util)
+  ;; (zy/require-init 'init-elpa)
+  ;; (zy/require-init 'init-util)
   (zy/require-init 'init-keybindings)
 
   ;; A placeholder module which ensures every basic module has been loaded.

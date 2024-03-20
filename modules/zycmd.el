@@ -1,4 +1,4 @@
-;;; zylib.el --- Useful commands.  -*- lexical-binding: t -*-
+;;; zycmd.el --- Useful commands.  -*- lexical-binding: t -*-
 
 ;; Author: Eric Zhuo Chen <zyxirchen@outlook.com>
 ;; Maintainer: Eric Zhuo Chen
@@ -80,12 +80,12 @@ files."
                       t
                     (y-or-n-p "Open more than 5 files? "))))
     (when do-it-p
-      (pcase zy/os
+      (pcase zy-platform
        ('windows (mapc #'zy/-windows-open file-list))
        ('linux (mapc #'zy/-linux-open file-list))
        ('wsl (mapc #'zy/-wsl-open file-list))
        ('unsupported (message "Not supported on this OS."))))))
 
-(provide 'zylib)
+(provide 'zycmd)
 
-;;; zylib.el ends here
+;;; zycmd.el ends here

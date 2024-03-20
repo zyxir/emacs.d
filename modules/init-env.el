@@ -9,8 +9,8 @@
 
 (declare-function zy/leader-c-def 'init-keybindings)
 
-(require-package 'envrc)
-(require-package 'editorconfig)
+(pkg! 'envrc)
+(pkg! 'editorconfig)
 
 ;; Manage Direnv with the Envrc package.
 (after-deferred! 'envrc

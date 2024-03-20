@@ -4,7 +4,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'pdf-tools)
+(pkg! 'pdf-tools)
 
 ;; Load PDF Tools.
 (when (fboundp 'pdf-loader-install)

@@ -4,7 +4,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'python-black)
+(pkg! 'python-black)
 
 ;; Wrap some commands to mimic `eglot-format'.
 (defun zy/python-format (&optional beg end)

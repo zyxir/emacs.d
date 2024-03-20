@@ -4,8 +4,8 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'yasnippet)
-(require-package 'yasnippet-snippets)
+(pkg! 'yasnippet)
+(pkg! 'yasnippet-snippets)
 
 ;; Enable snippets.
 (after-deferred! 'yasnippet

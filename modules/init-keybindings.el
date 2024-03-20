@@ -6,21 +6,21 @@
 
 ;;; Code:
 
-(require 'init-util)
+(require 'zylib)
 
-(require-package 'evil)
-(require-package 'evil-collection)
-(require-package 'evil-terminal-cursor-changer)
-(require-package 'evil-surround)
-(require-package 'evil-lion)
-(require-package 'general)
-(require-package 'avy)
-(require-package 'consult)
-(require-package 'cape)
-(require-package 'consult-yasnippet)
-(require-package 'embark)
-(require-package 'embark-consult)
-(require-package 'which-key)
+(pkg! 'evil)
+(pkg! 'evil-collection)
+(pkg! 'evil-terminal-cursor-changer)
+(pkg! 'evil-surround)
+(pkg! 'evil-lion)
+(pkg! 'general)
+(pkg! 'avy)
+(pkg! 'consult)
+(pkg! 'cape)
+(pkg! 'consult-yasnippet)
+(pkg! 'embark)
+(pkg! 'embark-consult)
+(pkg! 'which-key)
 
 ;; Rewrite `general-create-definer' to silence warnings.
 (defmacro zy/create-definer (name &rest defaults)
@@ -236,7 +236,7 @@ ACTION must be a string. If EGLOT-ACTION is non-nil and is a
 command, call it if Eglot is available."
   (declare (indent defun))
   (let* ((fn-name (intern (format "zy/do-%s" action)))
-         (eglot-action (zy/unquote eglot-action)))
+         (eglot-action (unquote! eglot-action)))
     ;; Validate EGLOT-ACTION at compile time.
     (when eglot-action
       (require 'eglot)

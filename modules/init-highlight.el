@@ -4,8 +4,8 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'hl-todo)
-(require-package 'consult-todo)
+(pkg! 'hl-todo)
+(pkg! 'consult-todo)
 
 ;; Highlight todo and similar keywords.
 (global-hl-todo-mode 1)

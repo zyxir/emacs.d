@@ -7,8 +7,7 @@
 
 (require 'init-keybindings)
 
-(require-package '(indent-bars
-                   :url "https://github.com/jdtsmith/indent-bars"))
+(pkg! indent-bars "https://github.com/jdtsmith/indent-bars")
 
 (setq-default
  ;; Use 80 characters as the global line length standard (recommended by

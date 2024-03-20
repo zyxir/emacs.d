@@ -4,8 +4,8 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'scala-ts-mode)
-(require-package 'sbt-mode)
+(pkg! 'scala-ts-mode)
+(pkg! 'sbt-mode)
 
 (add-hook! (scala-mode scala-ts-mode)
   (setq-local fill-column 100))

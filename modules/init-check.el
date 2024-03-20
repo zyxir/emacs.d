@@ -4,8 +4,8 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'flycheck)
-(require-package 'flycheck-eglot)
+(pkg! 'flycheck)
+(pkg! 'flycheck-eglot)
 
 ;; Enable Flycheck everywhere.
 (global-flycheck-mode 1)

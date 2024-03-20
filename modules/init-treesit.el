@@ -4,8 +4,8 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'treesit-auto)
-(require-package 'evil-textobj-tree-sitter)
+(pkg! 'treesit-auto)
+(pkg! 'evil-textobj-tree-sitter)
 
 ;; Fontify everything with tree-sitter.
 (after-or-now! 'treesit

@@ -8,8 +8,8 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'org)
-(require-package 'org-modern)
+(pkg! 'org)
+(pkg! 'org-modern)
 
 ;;;; Custom Files and Directories.
 

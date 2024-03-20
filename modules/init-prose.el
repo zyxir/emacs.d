@@ -7,7 +7,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'olivetti)
+(pkg! 'olivetti)
 
 ;;;; Distraction Free Mode
 

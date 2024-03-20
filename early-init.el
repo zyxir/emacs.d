@@ -1,20 +1,15 @@
-;;; early-init.el --- Emacs 27+ pre-initialization config.  -*- lexical-binding: t no-byte-compile: t; -*-
+;;; early-init.el --- pre-initialization config.  -*- lexical-binding: t; no-byte-compile: t -*-
 ;;; Commentary:
 ;;; Code:
 
-;; Emacs 27+ loads this file before (normally) calling
-;; `package-initialize'.  We use this file to suppress that automatic
-;; behaviour so that startup is consistent across Emacs versions.
+;; Emacs 27+ loads this file before calling `package-initialize' and
+;; initializing GUI.
 
 ;;; Code:
 
 ;; Garbage collection reduces startup time. This line inhibits GC during
 ;; startup. Once the GCMH package is loaded it will take over GC.
 (setq gc-cons-threshold most-positive-fixnum)
-
-;; Don't check modified time on Emacs Lisp byte code during an interactive
-;; startup. TODO: mention a way to recompile the config.
-(setq load-prefer-newer noninteractive)
 
 ;; Respect the DEBUG environment variable as an alternative to "--debug-init".
 (when (getenv-internal "DEBUG")

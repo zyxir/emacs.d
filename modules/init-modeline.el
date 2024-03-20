@@ -4,7 +4,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'doom-modeline)
+(pkg! 'doom-modeline)
 
 (require 'doom-modeline)
 

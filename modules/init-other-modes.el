@@ -8,12 +8,12 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'csv-mode)
-(require-package 'markdown-mode)
-(require-package 'nginx-mode)
-(require-package 'pdf-tools)
-(require-package 'powershell)
-(require-package 'verilog-ts-mode)
+(pkg! 'csv-mode)
+(pkg! 'markdown-mode)
+(pkg! 'nginx-mode)
+(pkg! 'pdf-tools)
+(pkg! 'powershell)
+(pkg! 'verilog-ts-mode)
 
 (provide 'init-other-modes)
 

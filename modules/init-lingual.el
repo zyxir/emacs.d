@@ -3,10 +3,10 @@
 ;;; Code:
 
 (eval-and-compile (require 'init-basic))
-(eval-and-compile (require 'init-theme))
+;; (eval-and-compile (require 'init-theme))
 
-(require-package 'rime)
-(require-package 'sis)
+(pkg! 'rime)
+(pkg! 'sis)
 
 ;; Use integrated Rime as the input method.
 (setq-default default-input-method "rime")

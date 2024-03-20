@@ -4,7 +4,7 @@
 
 (eval-and-compile (require 'init-basic))
 
-(require-package 'dired-sidebar)
+(pkg! 'dired-sidebar)
 
 (zy/leader-d-def
   "d" #'dired-sidebar-toggle-sidebar)
