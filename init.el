@@ -29,6 +29,7 @@
                        +orderless
                        +minibuffer
                        ;; Text-editing and coding.
+                       +corfu
                        +paragraph
                        +outline
                        +quickins

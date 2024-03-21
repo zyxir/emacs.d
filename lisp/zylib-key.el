@@ -28,9 +28,8 @@ KEYMAP is a keymap to define the binding in. If KEYMAP is the
 quoted symbol `global', the global evil keymap corresponding to
 the state(s) is used.
 
-KEY and DEF are like those in `define-key', except that KEY is a
-human-readable string which can be converted to a sequence of
-keystrokes via the `kbd' function.
+KEY and DEF are like those in `define-key', except that if KEY is
+a string, it is always wrapped in `kbd' before being used.
 
 It is possible to specify multiple KEY and DEF pairs in BINDINGS.
 
@@ -40,10 +39,13 @@ It is possible to specify multiple KEY and DEF pairs in BINDINGS.
          (index 0)
          (cur nil)
          (wrapped-bindings '()))
-    ;; Wrap all keys in `bindings' with `kbd'.
+    ;; Wrap all string keys in `bindings' with `kbd'.
     (while bindings
       (setq cur (pop bindings))
-      (push (if (eq (% index 2) 0) `(kbd ,cur) cur) wrapped-bindings)
+      (push (if (and (eq (% index 2) 0)
+                     (stringp cur))
+                `(kbd ,cur) cur)
+            wrapped-bindings)
       (setq index (+ index 1)))
     (setq wrapped-bindings (reverse wrapped-bindings))
     `(eval-after-load 'evil
@@ -57,7 +59,8 @@ A new sparse keymap is stored as COMMAND's function definition
 and its value. NAME is the menu name string for the map.
 
 Bind this prefix command to KEY in STATE and KEYMAP as per
-`keybind!'.
+`keybind!'. If KEY is a string, it will be wrapped in `kbd'
+before being used to bind the key.
 
 You may continue to define keybindings using KEY and DEF pairs as
 per `keybind!' in BINDINGS."
@@ -70,46 +73,39 @@ per `keybind!' in BINDINGS."
                         `(keybind! nil ,command ,@bindings))))
     (append form `(,keybind-form))))
 
-(defun zy--other-place-command (action map &optional prompt)
-  "Make a \"other place\" command based on MAP.
+(defmacro other-windowed! (command map)
+  "Define COMMAND as the \"other window\" version of MAP.
+MAP is a keymap and COMMAND is an interactive command. Calling
+COMMAND is like triggering MAP, but the buffer of the subsequent
+command is displayed in another window. For instance, if MAP is
+`project-prefix-map', COMMAND will act like
+`project-other-window-map'."
+  (declare (indent defun))
+  `(let* ((hint (if (stringp (nth 2 ,map)) (nth 2 ,map) "Options"))
+          (message (format "%s: %%k" hint)))
+     (defun ,command ()
+       ,(format "The \"other window\" version of `%s'" map)
+       (interactive)
+       (let ((inhibit-message t))
+         (other-window-prefix))
+       (set-transient-map ,map nil nil message))))
 
-ACTION is used to override `display-buffer-overriding-action' so
-that MAP can be executed in \"other place\".
-
-If optional argument PROMPT is given, it is displayed while
-waiting for the key sequence."
-  (let* ((key (read-key-sequence-vector prompt t))
-         (cmd (lookup-key map key))
-         (switch-to-buffer-obey-display-actions t)
-         (display-buffer-overriding-action action))
-    (if cmd
-        (call-interactively cmd)
-      (user-error "%s is undefined" (key-description key)))))
-
-(defmacro other-windowed! (map &optional prompt)
-  "Produce a (DESC . CMD) pair from MAP.
-
-DESC is the menu name string of MAP, appended by \"in Other
-Window\". If MAP does not have a menu map string, only produce
-NEW-MAP itself.
-
-CMD is a command that read the same key sequences as MAP, but
-display the buffer of the corresponding command in a new window,
-as if it is prefixed by `other-window-prefix'.
-
-If optional argument PROMPT is given, it is displayed while
-waiting for the key sequence."
-  (let* ((old-name (symbol-name map))
-         (new-name (concat old-name "-other-windowed"))
-         (new-symbol (intern new-name)))
-    `(let* ((desc-base (cl-some (lambda (x) (when (stringp x) x)) ,map))
-            (desc (when desc-base (concat desc-base " in Other Window"))))
-       (defun ,new-symbol ()
-         ,(format "Like `%s', but in other window." old-name)
-         (interactive)
-         (zy--other-place-command '((display-buffer-pop-up-window))
-                                  ,map ,prompt))
-       (if desc (cons desc #',new-symbol) #',new-symbol))))
+(defmacro other-tabbed! (command map)
+  "Define COMMAND as the \"other tab\" version of MAP.
+MAP is a keymap and COMMAND is an interactive command. Calling
+COMMAND is like triggering MAP, but the buffer of the subsequent
+command is displayed in another tab. For instance, if MAP is
+`project-prefix-map', COMMAND will act like
+`project-other-tab-map'."
+  (declare (indent defun))
+  `(let* ((hint (if (stringp (nth 2 ,map)) (nth 2 ,map) "Options"))
+          (message (format "%s: %%k" hint)))
+     (defun ,command ()
+       ,(format "The \"other window\" version of `%s'" map)
+       (interactive)
+       (let ((inhibit-message t))
+         (other-tab-prefix))
+       (set-transient-map ,map nil nil message))))
 
 (provide 'zylib-key)
 

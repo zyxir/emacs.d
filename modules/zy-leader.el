@@ -72,8 +72,8 @@
             '(motion insert) 'global "<leader>"
   ;; Quick commands with leader plus a single key.
   "<leader>" '("Execute..." . execute-extended-command)
-  "b" '("Switch to Thing" . consult-buffer)
-  "B" '("Switch to Buffer" . switch-to-buffer)
+  "b" '("Switch to Buffer" . consult-buffer)
+  "B" '("Switch to Buffer*" . switch-to-buffer)
   "C-b" '("List Buffers" . list-buffers)
   "d" '("Dired" . dired)
   "s" '("Save Buffer" . save-buffer)
@@ -119,17 +119,28 @@
   "r" '("Restart" . restart-emacs)
   "z" '("Suspend" . suspend-emacs))
 
+(other-tabbed! +leader-p-other-tab-map +leader-p-map)
+
 (defprefix! +leader-t-map "Tab"
             nil +leader-map "t"
-  "[" '("Prev" . tab-previous)
-  "]" '("Next" . tab-next)
-  "n" '("New" . tab-new)
-  "t" '("Other Tab..." . other-tab-prefix))
+  "n" '("New Tab" . tab-new)
+  "t" '("Other Tab Prefix" . other-tab-prefix)
+  "c" '("Close Tab" . tab-close)
+  "b" '("Buffer" . consult-buffer-other-tab)
+  "d" '("Dired" . dired-other-tab)
+  "f" '("File" . find-file-other-tab)
+  "p" '("Project" . +leader-p-other-tab-map))
+
+(other-windowed! +leader-p-other-window-map +leader-p-map)
 
 (defprefix! +leader-w-map "Other Window..."
             nil +leader-map "w"
+  "c" '("Close Window" . delete-window)
+  "w" '("Other Window Prefix" . other-window-prefix)
+  "b" '("Buffer" . consult-buffer-other-window)
+  "d" '("Dired" . dired-other-window)
   "f" '("File" . find-file-other-window)
-  "p" (other-windowed! +leader-p-map "Project Command: [bdfpv]"))
+  "p" '("Project" . +leader-p-other-window-map))
 
 (defprefix! +leader-y-map "Toggle..."
             nil +leader-map "y"

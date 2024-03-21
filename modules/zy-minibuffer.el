@@ -46,7 +46,7 @@
 
   ;; Indicator for completing-read-multiple.
   (eval-and-compile
-    (defun zy/crm-indicator (args)
+    (defun +minibuffer-crm-indicator (args)
       "Indicator for `completing-read-multiple'.
 
 ARGS are the arguments passed."
@@ -61,7 +61,8 @@ ARGS are the arguments passed."
   ;; Show candidate info with Marginalia.
   (marginalia-mode 1)
 
-  (advice-add #'completing-read-multiple :filter-args #'zy/crm-indicator))
+  (advice-add #'completing-read-multiple :filter-args
+              #'+minibuffer-crm-indicator))
 
 (provide 'zy-minibuffer)
 
