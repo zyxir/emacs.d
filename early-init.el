@@ -11,6 +11,16 @@
 ;; startup. Once the GCMH package is loaded it will take over GC.
 (setq gc-cons-threshold most-positive-fixnum)
 
+;; However, if the GCMH mode is not activated after startup for some reason, set
+;; the threshold to a appropriate value, otherwise Emacs might crash. This
+;; should be a rare case, possibly due to some accidental code edits, therefore
+;; these lines only serve as the last resort.
+(add-hook 'emacs-startup-hook
+          (defun zy-emergency-fix-gc-h (&rest _)
+            "Fix GC if GCMH is not loaded."
+            (unless (bound-and-true-p gcmh-mode)
+              (setq gc-cons-threshold (* 16 1024 1024)))))
+
 ;; Respect the DEBUG environment variable as an alternative to "--debug-init".
 (when (getenv-internal "DEBUG")
   (setq init-file-debug t

@@ -1,8 +1,18 @@
-;;; init-check.el --- Syntax and spell checking.  -*- lexical-binding: t -*-
+;;; zy-syncheck.el --- Syntax checking. -*- lexical-binding: t -*-
+
 ;;; Commentary:
+
+;; This file provides the `+syncheck' module of the configuration.
+
+;; Flycheck is configured as the default syntax checker rather than the built-in
+;; Flymake, because it is much more feature-rich and does not provide any
+;; drawback. However, Eglot, the built-in LSP client, uses Flymake by default.
+;; The Flycheck-eglot package overrides that behavior and make Flycheck work
+;; with Eglot.
+
 ;;; Code:
 
-(eval-and-compile (require 'init-basic))
+(require 'zylib)
 
 (pkg! 'flycheck)
 (pkg! 'flycheck-eglot)
@@ -10,10 +20,12 @@
 ;; Enable Flycheck everywhere.
 (global-flycheck-mode 1)
 
-(after-or-now! 'flycheck
-  ;; From URL `https://www.masteringemacs.org/article/seamlessly-merge-multiple-documentation-sources-eldoc'.
+(daemon-require! 'flycheck)
+(after! 'flycheck
+  ;; From URL
+  ;; `https://www.masteringemacs.org/article/seamlessly-merge-multiple-documentation-sources-eldoc'.
   (eval-and-compile
-    (defun zy/-flycheck-eldoc (callback &rest _)
+    (defun +syncheck-flycheck-eldoc-fn (callback &rest _)
       "Print Flycheck messages at point by calling CALLBACK."
       (when-let ((flycheck-errors (and flycheck-mode
                                        (flycheck-overlay-errors-at (point)))))
@@ -38,18 +50,21 @@
          flycheck-errors))))
 
   ;; Display Flycheck errors with Eldoc.
-  (add-hook 'eldoc-documentation-functions #'zy/-flycheck-eldoc)
+  (add-hook 'eldoc-documentation-functions #'+syncheck-flycheck-eldoc-fn)
   (setq
    ;; Override Flycheck's default echoing function, which breaks Eldoc.
    flycheck-display-errors-function nil
    ;; Don't show Flycheck markers. They are useless and don't work well with
    ;; other packages.
-   flycheck-indication-mode nil))
+   flycheck-indication-mode nil
+   ;; Inherit `load-path' from the running Emacs session while checking Emacs
+   ;; Lisp code. This is useful while checking initialization code.
+   flycheck-emacs-lisp-load-path 'inherit))
 
 ;; Use Flycheck rather than Flymake with Eglot.
-(after-or-now! 'eglot
+(after! 'eglot
   (global-flycheck-eglot-mode 1))
 
-(provide 'init-check)
+(provide 'zy-syncheck)
 
-;;; init-check.el ends here
+;;; zy-syncheck.el ends here

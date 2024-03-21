@@ -15,11 +15,28 @@
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
 ;; Enable/disable modules here.
-(defconst zy-modules '(;; Setup Evil and the leader key.
-                       evil
-                       leader
+(defconst zy-modules '(;; Use saner default values.
+                       +defaults
+                       ;; Setup Evil and the leader key.
+                       +evil
+                       +leader
+                       ;; Look and feel.
+                       +theme
+                       +dashboard
+                       +font
+                       +modeline
+                       ;; Enhance the workbench.
+                       +orderless
+                       +minibuffer
                        ;; Text-editing and coding.
-                       quickins)
+                       +paragraph
+                       +outline
+                       +quickins
+                       +yasnippet
+                       +syncheck
+                       +eldoc
+                       ;; Setup GCMH last to prevent GC during startup.
+                       +gcmh)
   "Enabled modules of Zyxir's Emacs configuration.")
 
 (defun zy-load-rel (relpath &rest args)
@@ -41,8 +58,13 @@ file (init.el)."
       ;; Temporarily dropping ".so" from the list reduces the permutations
       ;; needed to load the correct files during startup.
       (load-suffixes '(".elc" ".el"))
-      ;; Don't spend precious time checking modified time during startup.
-      ;; TODO: mention a way to sync the configuration.
+      ;; `load-source-file-function' decides what function to be called to do
+      ;; code conversion before reading a source file. Since I do not need code
+      ;; conversion while loading the configuration, unsetting it reduces tons
+      ;; of startup time.
+      (load-source-file-function nil)
+      ;; Don't spend precious time checking modified time during startup. TODO:
+      ;; mention a way to sync the configuration.
       (load-prefer-newer nil))
 
   ;; Load all components of Zylib manually, which defines utility functions and
@@ -55,7 +77,8 @@ file (init.el)."
 
   ;; Load all modules in order.
   (dolist (module zy-modules)
-    (zy-load-rel "modules/zy-%s" module)))
+    (zy-load-rel "modules/zy-%s"
+                 (substring (symbol-name module) 1))))
 
 ;;;; Load modules.
 

@@ -1,18 +1,59 @@
-;;; init-fonts.el --- Font settings.  -*- lexical-binding: t -*-
+;;; zy-font.el --- Setup fonts. -*- lexical-binding: t -*-
+
 ;;; Commentary:
 
-;; This file sets font for various faces and multiple character sets. An
-;; objective of these settings is to make the width of one Chinese character
-;; equal that of two Latin characters, so that these two lines could align:
+;; This file provides the `+font' module of the configuration.
+
+;; It sets font for various faces and multiple character sets. An objective of
+;; these settings is to make the width of one Chinese character equal that of
+;; two Latin characters, so that these two lines could align:
 ;;
 ;; 這句話一共由十三個漢字組成
 ;; abcdefghijklmnopqrstuvwxyz
 
+;; commentary
+
 ;;; Code:
 
-(eval-and-compile (require 'init-basic))
+(require 'zylib)
 
 (pkg! 'ligature)
+
+;;;; Font Customizables
+
+(defun +font-set-font (font-sym font-val)
+  "The `:set' function for customizable font variables.
+This function set the value of FONT-SYM to FONT-VAL, and run
+`zy/setup-font-faces' if it is ready."
+  (set font-sym font-val)
+  (when (fboundp 'zy/setup-font-faces)
+    (zy/setup-font-faces)))
+
+(defcustom +font-size 16
+  "The pixel size of font in `default' face."
+  :type 'integer
+  :group 'zyemacs
+  :set #'+font-set-font)
+
+(defmacro +font-define-font (name font docstring)
+  "Define a customizable font variable NAME.
+FONT is its default value, and DOCSTRING is the documentation
+string. The defined customizable variable will have the
+`zy/setup-font-faces' as its `:set' function."
+  (declare (doc-string 3) (indent defun))
+  `(defcustom ,name ,font ,docstring
+     :type 'string
+     :group 'emacs
+     :set '+font-set-font))
+
+(+font-define-font +font-default "Sarasa Mono HC"
+  "Font for the `default' face.")
+(+font-define-font +font-default-cjk "Sarasa Mono HC"
+  "CJK font for the `default' face.")
+(+font-define-font +font-varpitch "Noto Sans"
+  "Font for the `variable-pitch' face.")
+(+font-define-font +font-varpitch-cjk "Noto Sans CJK TC"
+  "CJK font for the `variable-pitch' face.")
 
 ;;;; Font Setting Utility
 
@@ -64,42 +105,6 @@ function provides a simpler interface that just work."
       (when unspecified-p
         (set-face-attribute face frame :fontset fontset)))))
 
-;;;; Font Customizables
-
-(defun zy/-set-font (font-sym font-val)
-  "The `:set' function for customizable font variables.
-This function set the value of FONT-SYM to FONT-VAL, and run
-`zy/setup-font-faces' if it is ready."
-  (set font-sym font-val)
-  (when (fboundp 'zy/setup-font-faces)
-    (zy/setup-font-faces)))
-
-(defcustom zy/font-size 16
-  "The pixel size of font in `default' face."
-  :type 'integer
-  :group 'zyemacs
-  :set #'zy/-set-font)
-
-(defmacro zy/define-font (name font docstring)
-  "Define a customizable font variable NAME.
-FONT is its default value, and DOCSTRING is the documentation
-string. The defined customizable variable will have the
-`zy/setup-font-faces' as its `:set' function."
-  (declare (doc-string 3) (indent defun))
-  `(defcustom ,name ,font ,docstring
-     :type 'string
-     :group 'emacs
-     :set 'zy/-set-font))
-
-(zy/define-font zy/font-default "Sarasa Mono HC"
-  "Font for the `default' face.")
-(zy/define-font zy/font-default-cjk "Sarasa Mono HC"
-  "CJK font for the `default' face.")
-(zy/define-font zy/font-varpitch "Noto Sans"
-  "Font for the `variable-pitch' face.")
-(zy/define-font zy/font-varpitch-cjk "Noto Sans CJK TC"
-  "CJK font for the `variable-pitch' face.")
-
 ;;;; The Actual Setup
 
 ;; I used to write very flexible font configuration codes that defines a tons of
@@ -110,46 +115,42 @@ string. The defined customizable variable will have the
 ;; Anyway this is just my personal configuration, I can change the code at any
 ;; time.
 
-(defun zy/-setup-font-faces-now (frame)
+(defun +font-setup-now (frame)
   "Setup font faces according to font variables.
 
 This is used in `after-make-frame-functions', and arugment
 FRAME makes sure that the validness of the fonts can be correctly
-checked.
-
-This should be only used when FRAME is an X frame. For
-interactive use, use `zy/setup-font-faces' instead."
+checked."
   (let ((available-fonts (font-family-list frame))
-        (height (round (* zy/font-size 7.5))))
+        (height (round (* +font-size 7.5))))
     ;; Default face, fixed-pitch face and global font size.
-    (if (member zy/font-default available-fonts)
+    (if (member +font-default available-fonts)
         (progn
           (set-face-attribute 'default nil
-                              :family zy/font-default
+                              :family +font-default
                               :height height)
           (set-face-attribute 'fixed-pitch nil
-                              :family zy/font-default))
+                              :family +font-default))
       (set-face-attribute 'default nil
                           :height height))
-    (when (member zy/font-default-cjk available-fonts)
+    (when (member +font-default-cjk available-fonts)
       (zy/set-face-charset-font 'default nil
-                                zy/cjk-charsets zy/font-default-cjk)
+                                zy/cjk-charsets +font-default-cjk)
       (zy/set-face-charset-font 'fixed-pitch nil
-                                zy/cjk-charsets zy/font-default-cjk))
+                                zy/cjk-charsets +font-default-cjk))
     ;; Variable-pitch face.
-    (when (member zy/font-varpitch available-fonts)
+    (when (member +font-varpitch available-fonts)
       (set-face-attribute 'variable-pitch nil
-                          :family zy/font-varpitch))
-    (when (member zy/font-varpitch-cjk available-fonts)
+                          :family +font-varpitch))
+    (when (member +font-varpitch-cjk available-fonts)
       (zy/set-face-charset-font 'variable-pitch nil
-                                zy/cjk-charsets zy/font-varpitch-cjk))))
+                                zy/cjk-charsets +font-varpitch-cjk))))
 
-(after-gui! (zy/-setup-font-faces-now frame))
+(after-gui! (+font-setup-now frame))
 
 ;;;; Ligatures
 
 (after-gui!
-  (require 'ligature)
   (ligature-set-ligatures
    'prog-mode
    ;; These ligatures are for Iosevka and also apply to Sarasa Gothic.
@@ -166,6 +167,6 @@ interactive use, use `zy/setup-font-faces' instead."
      "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
   (global-ligature-mode 1))
 
-(provide 'init-fonts)
+(provide 'zy-font)
 
-;;; init-fonts.el ends here
+;;; zy-font.el ends here

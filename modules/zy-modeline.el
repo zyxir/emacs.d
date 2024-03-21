@@ -1,10 +1,17 @@
-;;; init-modeline.el --- Mode line customization.  -*- lexical-binding: t -*-
+;;; zy-modeline.el --- Modeline setup. -*- lexical-binding: t -*-
+
 ;;; Commentary:
+
+;; This file provides the `+modeline' module of the configuration.
+
+;; It sets up an efficient and feature-rich modeline based on the popular
+;; Doom-modeline package.
+
 ;;; Code:
 
-(eval-and-compile (require 'init-basic))
+(require 'zylib)
 
-(pkg! 'doom-modeline)
+(pkg! doom-modeline)
 
 (require 'doom-modeline)
 
@@ -26,7 +33,7 @@
 
 ;; HACK Add some padding at the right side to prevent cutoff. This tweak is not
 ;; clean, expect problems to happen if `doom-modeline' is updated.
-(defun zy/-doom-modeline-set-right-padding (sym val)
+(defun +modeline-set-right-padding (sym val)
   "Set the right padding of the Doom mode line.
 SYM is intended to be `zy/doom-modeline-right-padding', and VAL
 is a string representing the padding."
@@ -40,16 +47,16 @@ is a string representing the padding."
        indent-info buffer-encoding major-mode process vcs check time
        ,val)))
 
-(defcustom zy/doom-modeline-right-padding "    "
+(defcustom +modeline-right-padding "    "
   "The padding added at the right of the Doom mode line.
 Adjsut it according to the actual display of the device."
   :type 'string
-  :set #'zy/-doom-modeline-set-right-padding
+  :set #'+modeline-set-right-padding
   :group 'zyemacs)
 
 ;; Enable column number display.
 (column-number-mode 1)
 
-(provide 'init-modeline)
+(provide 'zy-modeline)
 
-;;; init-modeline.el ends here
+;;; zy-modeline.el ends here

@@ -58,4 +58,6 @@ It is worth noting that most of these conventions are learned from Doom Emacs.
 
 ** Links
 
+This configuration has been heavily influenced by:
+
 - [[https://github.com/doomemacs/doomemacs][Doom Emacs]]

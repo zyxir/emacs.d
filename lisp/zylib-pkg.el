@@ -28,6 +28,18 @@
                                    ("nongnu" . 2)
                                    ("melpa" . 1)))
 
+;; Natively compile packages at installation. If native compilation support is
+;; absent, this option does not have any effect.
+(setq package-native-compile t)
+
+;; Enable the quickstart feature. This feature concatenates all autoload
+;; statements emitted by installed packages into a single file, the
+;; `package-quickstart-file', thus speeding up startup greatly if there are a
+;; lot of packages. However, if the quickstart file is not updated timely for
+;; some reason and this causes trouble, run `package-quickstart-refresh'
+;; manually to fix it.
+(setq package-quickstart t)
+
 ;; Initialize package.el if not initialized yet. It might have been initialized
 ;; while byte-compiling some code or expanding some macros.
 (unless (bound-and-true-p package--initialized)

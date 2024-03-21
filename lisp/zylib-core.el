@@ -24,6 +24,32 @@ Possible values:
   `linux'       a Linux distribution
   `unsupported' an unsupported platform")
 
+;;;; Feature Detection
+
+(defun native-comp-available-p! ()
+  "Return non-nil if native compilation is available.
+
+The function `native-comp-available-p' is strange: If Emacs is
+not built with native compilation, it is just absent, and calling
+it will result in an error. This function wraps around
+`native-comp-available-p' as a less error-prone way to detect the
+availability of native compilation."
+  (and (fboundp 'native-comp-available-p)
+       (native-comp-available-p)))
+
+(defun modulep! (symbol)
+  "Determine if SYMBOL is a enabled module.
+Return non-nil if the module associated with SYMBOL is an enabled
+module of Zyxir's Emacs configuration. SYMBOL should be a symbol
+started with `+', like `+quickins' or `+font'.
+
+A module being enabled does not necessarily mean it being loaded.
+This function returns non-nil even before the module is loaded."
+  (and
+   ;; `zy-modules' is defined in init.el, tracking all enabled modules.
+   (boundp 'zy-modules)
+   (memq symbol zy-modules)))
+
 ;;;; Symbol Manipulation
 
 (defun unquote! (exp)
@@ -183,25 +209,36 @@ warnings."
   "Normalize FEATURES for macro expansion.
 FEATURES can be:
 
-- A quoted list of quoted symbols.
-- A quoted list of unquoted symbols.
-- An unquoted list of quoted symbols.
-- An unquoted list of unquoted symbols.
+- A quoted list of symbols.
 - A quoted symbol.
-- An unquoted symbol.
 
 This function always returns an unquoted list of unquoted
-symbols."
+symbols.
+
+If there is any symbol starting with the plus sign, like
+`+leader' does, it is recognized as a module of Zyxir's Emacs
+configuration, and is converted to its feature name accordingly,
+like `+leader' is converted to `zy-leader'."
+  ;; Unquote the form.
   (setq features (unquote! features))
-  (if (listp features)
-      (mapcar #'unquote! features)
-    (list features)))
+  ;; Listify the form.
+  (unless (listp features)
+    (setq features (list features)))
+  ;; Unquote and normalize elements.
+  (mapcar (lambda (x)
+            (setq x (unquote! x))
+            (if (string-prefix-p "+" (symbol-name x))
+                (intern (format "zy-%s" (substring (symbol-name x) 1)))
+              x))
+          features))
 
 (defmacro after! (features &rest body)
   "Evaluate BODY after FEATURES are available.
 
 FEATURES can be a symbol or a list of symbols. It can be quoted
-or unquoted."
+or unquoted. If a symbol starts with the plus sign like `+leader'
+does, it is considered a module of the configuration, and will be
+processed accordingly."
   (declare (indent 1) (debug (form def-body)))
   (zy--gen-after-load (zy--normalize-features features) body))
 

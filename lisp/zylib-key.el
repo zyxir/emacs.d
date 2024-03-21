@@ -64,10 +64,52 @@ per `keybind!' in BINDINGS."
   (declare (indent 5))
   (let ((form `(prog1
                    (define-prefix-command ',command nil ,name)
-                 (keybind! ,state ,keymap ,key ,command)))
+                 (defvar ,command)
+                 (keybind! ,state ,keymap ,key '(,name . ,command))))
         (keybind-form (when bindings
                         `(keybind! nil ,command ,@bindings))))
     (append form `(,keybind-form))))
+
+(defun zy--other-place-command (action map &optional prompt)
+  "Make a \"other place\" command based on MAP.
+
+ACTION is used to override `display-buffer-overriding-action' so
+that MAP can be executed in \"other place\".
+
+If optional argument PROMPT is given, it is displayed while
+waiting for the key sequence."
+  (let* ((key (read-key-sequence-vector prompt t))
+         (cmd (lookup-key map key))
+         (switch-to-buffer-obey-display-actions t)
+         (display-buffer-overriding-action action))
+    (if cmd
+        (call-interactively cmd)
+      (user-error "%s is undefined" (key-description key)))))
+
+(defmacro other-windowed! (map &optional prompt)
+  "Produce a (DESC . CMD) pair from MAP.
+
+DESC is the menu name string of MAP, appended by \"in Other
+Window\". If MAP does not have a menu map string, only produce
+NEW-MAP itself.
+
+CMD is a command that read the same key sequences as MAP, but
+display the buffer of the corresponding command in a new window,
+as if it is prefixed by `other-window-prefix'.
+
+If optional argument PROMPT is given, it is displayed while
+waiting for the key sequence."
+  (let* ((old-name (symbol-name map))
+         (new-name (concat old-name "-other-windowed"))
+         (new-symbol (intern new-name)))
+    `(let* ((desc-base (cl-some (lambda (x) (when (stringp x) x)) ,map))
+            (desc (when desc-base (concat desc-base " in Other Window"))))
+       (defun ,new-symbol ()
+         ,(format "Like `%s', but in other window." old-name)
+         (interactive)
+         (zy--other-place-command '((display-buffer-pop-up-window))
+                                  ,map ,prompt))
+       (if desc (cons desc #',new-symbol) #',new-symbol))))
 
 (provide 'zylib-key)
 

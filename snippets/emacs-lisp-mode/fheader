@@ -1,6 +1,6 @@
 # -*- mode: snippet; -*-
 # contributor: zyxir <https://www.github.com/zyxir>
-# name: File header of ZyEmacs
+# name: file header of ZyEmacs
 # key: fheader
 # --
 ;;; ${1:name}.el --- ${2:summary} -*- lexical-binding: t -*-

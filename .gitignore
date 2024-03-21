@@ -5,6 +5,7 @@
 /elpa*
 /eshell
 /history
+/package-quickstart.el
 /places
 /projects
 /recentf

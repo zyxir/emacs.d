@@ -27,7 +27,7 @@
   (interactive)
   (dlet ((fill-column most-positive-fixnum))
     (call-interactively 'fill-paragraph)))
-(general-def "M-Q" #'zy/unfill-paragraph)
+(keybind! nil 'global "M-Q" #'zy/unfill-paragraph)
 
 ;; Customize indent bars.
 (setq-default

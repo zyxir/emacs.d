@@ -36,34 +36,6 @@
  read-buffer-completion-ignore-case t
  read-file-name-completion-ignore-case t)
 
-(after-or-now! 'orderless
-  (defun zy/orderless-literal (word _index _total)
-    "Read WORD= as a literal string."
-    (when (string-suffix-p "=" word)
-      `(orderless-literal . ,(substring word 0 -1))))
-
-  (defun zy/orderless-prefix (word _index _total)
-    "Read WORD^ as a prefix."
-    (when (string-suffix-p "^" word)
-      `(orderless-regexp . ,(format "^%s" (substring word 0 -1)))))
-
-  (defun zy/orderless-initialism (word _index _total)
-    "Read WORD% as an initialism."
-    (when (string-suffix-p "%" word)
-      `(orderless-initialism . ,(substring word 0 -1))))
-
-  (defun zy/orderless-file-ext (word _index _total)
-    "Expand WORD. to a file suffix when completing file names."
-    (when (and minibuffer-completing-file-name
-               (string-suffix-p "." word))
-      `(orderless-regexp . ,(format "\\.%s\\'" (substring word 0 -1)))))
-
-  (setq orderless-matching-styles '(orderless-prefixes orderless-regexp)
-        orderless-style-dispatchers '(zy/orderless-literal
-                                      zy/orderless-prefix
-                                      zy/orderless-initialism
-                                      zy/orderless-file-ext)))
-
 ;; Minibuffer
 
 ;; Allow minibuffer commands while in the minibuffer.

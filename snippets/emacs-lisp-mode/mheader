@@ -7,7 +7,7 @@
 
 ;;; Commentary:
 
-;; This file provides the `$1' module of Zyxir's Emacs configuration.
+;; This file provides the `+$1' module of the configuration.
 
 ;; ${3:commentary}
 

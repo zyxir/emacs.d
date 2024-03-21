@@ -2,7 +2,7 @@
 
 ;;; Commentary:
 
-;; This file provides the `evil' module of Zyxir's Emacs configuration.
+;; This file provides the `+evil' module of the configuration.
 
 ;; This module sets up Evil, the VI emulator for Emacs, and several auxiliary
 ;; packages like Evil-collection and Evil-surround. On top of the default Evil
@@ -36,20 +36,17 @@
 ;; Silence "`evil-want-keybinding' was set to nil but not before loading evil".
 (eval-when-compile (setq-default evil-want-keybinding nil))
 
+;; Evil mode should be activated late enought, since there might be additional
+;; settings in other modules which must be loaded before Evil is loaded, for
+;; instance adding keys to `evil-collection-key-blacklist'.
 (add-hook! 'window-setup-hook (evil-mode 1))
 
 (after! 'evil
-  ;; Define the space key as the leader key, like some popular editor
-  ;; configurations do, including SpaceVim, Spacemacs, and Doom Emacs.
-  (evil-set-leader '(normal visual motion operator) (kbd "SPC"))
-
   ;; Some modes activate insert state by default, but I am so accustomed to
   ;; being in normal state by default, that I always accidentally press "i" or
   ;; "a" upon entering these modes. Therefore I decided to set the initial state
-  ;; of every mode to normal state to provide a consistent experience.
-  (evil-set-initial-state 'comint-mode 'normal)
-  (evil-set-initial-state 'shell-mode 'normal)
-  (evil-set-initial-state 'eshell-mode 'normal)
+  ;; of these mode to normal state to provide a consistent experience.
+  (setq evil-insert-state-modes nil)
 
   ;; Setup Evil in many other modes with Evil-collection.
   (evil-collection-init)
@@ -59,18 +56,6 @@
 
   ;; Enable Evil-lion for powerful aligning commands (with gl or gL).
   (evil-lion-mode 1)
-
-  ;; It's nmemonic to use "M-SPC" (Alt-Space) as the leader key in insert state,
-  ;; but this combination is often used by the window manager (as in Microsoft
-  ;; Windows and many Linux desktop environments) to open window menu. Therefore
-  ;; use "M-m" instead.
-  (evil-set-leader '(insert emacs) "M-m")
-
-  ;; The local leader key is used to perform mode-specific operations. "," (the
-  ;; comma key) is a good choice. Since "M-," is available almost anywhere, use
-  ;; it as the local leader key in insert state.
-  (evil-set-leader '(normal visual motion) "," 'localleader)
-  (evil-set-leader '(insert emacs) "M-," 'localleader)
 
   ;; Restore several keys to default Emacs bindings. In my opinion these keys
   ;; are more useful than default Evil keys and allow moving around easier
