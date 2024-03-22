@@ -13,12 +13,12 @@
 
 (require 'zylib)
 
-(pkg! evil)
-(pkg! evil-collection)
-(pkg! evil-surround)
-(pkg! evil-lion)
-(pkg! avy)
-(pkg! consult)
+(pkg! 'evil)
+(pkg! 'evil-collection)
+(pkg! 'evil-surround)
+(pkg! 'evil-lion)
+(pkg! 'avy)
+(pkg! 'consult)
 
 (setq-default
  ;; Delete back to indentation with C-u in insert state.

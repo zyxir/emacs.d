@@ -12,7 +12,7 @@
 
 (require 'zylib)
 
-(pkg! dashboard)
+(pkg! 'dashboard)
 
 ;; Configure Dashboard in advance.
 (setq-default

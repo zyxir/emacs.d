@@ -11,8 +11,8 @@
 
 (require 'zylib)
 
-(pkg! cape)
-(pkg! consult-yasnippet)
+(pkg! 'cape)
+(pkg! 'consult-yasnippet)
 
 (defun +quickins/zwsp ()
   "Insert a ZWSP (zero-width space)."

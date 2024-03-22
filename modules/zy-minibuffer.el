@@ -13,8 +13,8 @@
 
 (require 'zylib)
 
-(pkg! vertico)
-(pkg! marginalia)
+(pkg! 'vertico)
+(pkg! 'marginalia)
 
 (add-hook! 'window-setup-hook
   ;; Allow minibuffer commands while in the minibuffer.

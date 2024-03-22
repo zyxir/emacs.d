@@ -18,8 +18,6 @@
 (require 'zylib)
 
 (pkg! 'corfu)
-(pkg! 'popon)
-(pkg! 'corfu-terminal "https://codeberg.org/akib/emacs-corfu-terminal")
 (pkg! 'cape)
 
 ;; Enable Corfu globally. For prog modes Corfu is obviously a necessity. For
@@ -46,10 +44,7 @@
 
   ;; Show candidate help message in the echo area after a short delay.
   (setq-default corfu-echo-delay '(1.0 . 0))
-  (corfu-echo-mode 1)
-
-  ;; Enable terminal support.
-  (corfu-terminal-mode 1))
+  (corfu-echo-mode 1))
 
 ;; Enable Corfu in the minibuffer.
 

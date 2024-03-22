@@ -21,19 +21,25 @@
 
 ;;;; Font Customizables
 
-(defun +font-set-font (font-sym font-val)
+(defvar +font-no-refresh-on-set nil
+  "Do no refresh font when customizing them.
+This applies to all customizatble variables in the customization
+group `+font'.")
+
+(defun +font--set-var (font-sym font-val)
   "The `:set' function for customizable font variables.
 This function set the value of FONT-SYM to FONT-VAL, and run
-`zy/setup-font-faces' if it is ready."
+`+font/setup' if it is ready."
   (set font-sym font-val)
-  (when (fboundp 'zy/setup-font-faces)
-    (zy/setup-font-faces)))
+  (when (and (not +font-no-refresh-on-set)
+             (fboundp '+font/setup))
+    (+font/setup)))
 
 (defcustom +font-size 16
   "The pixel size of font in `default' face."
   :type 'integer
-  :group 'zyemacs
-  :set #'+font-set-font)
+  :group '+font
+  :set #'+font--set-var)
 
 (defmacro +font-define-font (name font docstring)
   "Define a customizable font variable NAME.
@@ -43,8 +49,14 @@ string. The defined customizable variable will have the
   (declare (doc-string 3) (indent defun))
   `(defcustom ,name ,font ,docstring
      :type 'string
-     :group 'emacs
-     :set '+font-set-font))
+     :group '+font
+     :set '+font--set-var))
+
+;; Set `+font-no-refresh-on-set' temporarily to define font or read customized
+;; font without triggering automatic font refreshes. A font refresh will be
+;; performed manually afterwards. We cannot use `let' here, since `let' creates
+;; a lexical scope, preventing the defined variables from being used globally.
+(setq +font-no-refresh-on-set t)
 
 (+font-define-font +font-default "Sarasa Mono HC"
   "Font for the `default' face.")
@@ -54,6 +66,10 @@ string. The defined customizable variable will have the
   "Font for the `variable-pitch' face.")
 (+font-define-font +font-varpitch-cjk "Noto Sans CJK TC"
   "CJK font for the `variable-pitch' face.")
+
+;; Unset `+font-no-refresh-on-set', so that if the user customizes a font, a
+;; font refresh will be triggered.
+(setq +font-no-refresh-on-set nil)
 
 ;;;; Font Setting Utility
 
@@ -115,7 +131,7 @@ function provides a simpler interface that just work."
 ;; Anyway this is just my personal configuration, I can change the code at any
 ;; time.
 
-(defun +font-setup-now (frame)
+(defun +font--setup-now (frame)
   "Setup font faces according to font variables.
 
 This is used in `after-make-frame-functions', and arugment
@@ -146,7 +162,23 @@ checked."
       (zy/set-face-charset-font 'variable-pitch nil
                                 zy/cjk-charsets +font-varpitch-cjk))))
 
-(after-gui! (+font-setup-now frame))
+(defun +font/setup (&optional frame)
+  "Setup font faces according to font variables.
+This sets fonts for FRAME and all future graphic frames. If FRAME
+is not graphic, which possibly means that graphics is not ready
+yet, defer the setting until the first graphic frame is created.
+
+This function can also be interactively called to fix font
+issues."
+  (interactive)
+  (setq frame (if frame frame (selected-frame)))
+  (if (display-graphic-p frame)
+      (progn
+        (remove-hook 'after-make-frame-functions '+font/setup)
+        (+font--setup-now frame))
+    (add-hook 'after-make-frame-functions '+font/setup)))
+
+(+font/setup)
 
 ;;;; Ligatures
 

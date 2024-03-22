@@ -36,6 +36,8 @@
                        +yasnippet
                        +syncheck
                        +eldoc
+                       ;; Platform and system.
+                       +terminal
                        ;; Setup GCMH last to prevent GC during startup.
                        +gcmh)
   "Enabled modules of Zyxir's Emacs configuration.")
@@ -206,3 +208,17 @@ code inconsistency."
 (provide 'init)
 
 ;;; init.el ends here
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(+font-size 20)
+ '(package-selected-packages
+   '(elisp--witness--lisp gcmh flycheck-eglot flycheck yasnippet-snippets yasnippet consult-yasnippet indent-bars cape corfu-terminal popon corfu marginalia vertico orderless doom-modeline ligature dashboard rainbow-delimiters solaire-mode modus-themes which-key consult avy evil-lion evil-surround evil-collection evil)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

@@ -11,7 +11,7 @@
 
 (require 'zylib)
 
-(pkg! gcmh)
+(pkg! 'gcmh)
 
 (require 'gcmh)
 

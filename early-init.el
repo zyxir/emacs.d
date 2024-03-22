@@ -26,10 +26,6 @@
   (setq init-file-debug t
         debug-on-error t))
 
-;; Turn off the automatic call to `package-initialize' so that we can decide
-;; when exactly package.el is loaded.
-(setq package-enable-at-startup nil)
-
 ;; Configure GUI features here to speed up loading. It will be much more
 ;; expensive to configure the GUI once it has been started, as the frame may be
 ;; resized and redrawn multiple times.

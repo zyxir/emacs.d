@@ -19,8 +19,7 @@
 
 (require 'zylib)
 
-(pkg! consult)
-(pkg! which-key)
+(pkg! 'consult)
 
 ;; Define the (local) leader key after loading Evil.
 (after! 'evil
@@ -102,6 +101,7 @@
   "o" '("Symbol" . describe-symbol)
   "m" '("Mode" . describe-mode)
   "k" '("Key" . describe-key)
+  "p" '("Package" . describe-package)
   "M" '("Keymap" . describe-keymap)
   "F" '("Face" . describe-face))
 
@@ -111,7 +111,10 @@
   "f" '("File" . project-find-file)
   "d" '("Dir" . project-find-dir)
   "b" '("Buffer" . project-switch-to-buffer)
-  "v" '("VC" . project-vc-dir))
+  "v" '("VC" . project-vc-dir)
+  "/" '("Search" . project-find-regexp)
+  "%" '("Replace" . project-query-replace-regexp)
+  "&" '("Shell Command" . project-async-shell-command))
 
 (defprefix! +leader-q-map "Quit"
             nil +leader-map "q"
@@ -119,7 +122,7 @@
   "r" '("Restart" . restart-emacs)
   "z" '("Suspend" . suspend-emacs))
 
-(other-tabbed! +leader-p-other-tab-map +leader-p-map)
+(define-other-tabbed-command! +leader-p-other-tab-map +leader-p-map)
 
 (defprefix! +leader-t-map "Tab"
             nil +leader-map "t"
@@ -131,7 +134,7 @@
   "f" '("File" . find-file-other-tab)
   "p" '("Project" . +leader-p-other-tab-map))
 
-(other-windowed! +leader-p-other-window-map +leader-p-map)
+(define-other-windowed-command! +leader-p-other-window-map +leader-p-map)
 
 (defprefix! +leader-w-map "Other Window..."
             nil +leader-map "w"
@@ -146,13 +149,6 @@
             nil +leader-map "y"
   "l" #'display-line-numbers-mode
   "o" #'outline-minor-mode)
-
-;; Show automatic key hints with Which-key.
-(add-hook! 'window-setup-hook
-  (eval-and-compile (require 'which-key))
-  (setq which-key-idle-delay 0.5
-        which-key-sort-order #'which-key-key-order-alpha)
-  (which-key-mode 1))
 
 (provide 'zy-leader)
 

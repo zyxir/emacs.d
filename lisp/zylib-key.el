@@ -15,7 +15,7 @@
 
 (require 'zylib-pkg)
 
-(pkg! evil)
+(pkg! 'evil)
 
 (defmacro keybind! (state keymap key def &rest bindings)
   "Create a STATE binding from KEY to DEF for KEYMAP.
@@ -66,46 +66,79 @@ You may continue to define keybindings using KEY and DEF pairs as
 per `keybind!' in BINDINGS."
   (declare (indent 5))
   (let ((form `(prog1
-                   (define-prefix-command ',command nil ,name)
+                   (define-prefix-command ',command)
                  (defvar ,command)
                  (keybind! ,state ,keymap ,key '(,name . ,command))))
         (keybind-form (when bindings
                         `(keybind! nil ,command ,@bindings))))
     (append form `(,keybind-form))))
 
-(defmacro other-windowed! (command map)
+(defun zy--get-keymap-hint (keymap)
+  "Get keystroke hint for keymap KEYMAP.
+The hint is a string like:
+
+  [a] Lorem  [b] Ipsum  [c] Dolor
+
+Where a, b, c are the keys that could be pressed in KEYMAP, and
+Lorem, Ipsum, Dolor are the menu item names given for each key
+definition as per `define-key'. If no menu item name is given for
+a key definition, show nothing. For keymaps defined in Zyxir's
+Emacs configuration, a menu item name shall always be given to
+any key definition.
+
+The hint is intended as the MESSAGE argument for
+`set-transient-map', which includes format specifiers, so all
+percent sign (`%') is replaced with double percent sign (`%%')."
+  (string-join
+   (seq-map
+    (lambda (elt)
+      (when-let* ((key (car-safe elt))
+                  (key (key-description (list key)))
+                  (key (string-replace "%" "%%" key))
+                  (key (propertize key 'face 'bold))
+                  (key (format "[%s]" key))
+                  (def (cdr-safe elt))
+                  (name (and (consp def)
+                             (stringp (car def))
+                             (car def))))
+        (if name (concat key " " name) key)))
+    (seq-filter #'consp keymap))
+   "  "))
+
+(defconst zy--all-undefined-keymap (make-sparse-keymap))
+(define-key zy--all-undefined-keymap [t] 'undefined)
+
+(defmacro define-other-windowed-command! (command map)
   "Define COMMAND as the \"other window\" version of MAP.
 MAP is a keymap and COMMAND is an interactive command. Calling
 COMMAND is like triggering MAP, but the buffer of the subsequent
 command is displayed in another window. For instance, if MAP is
 `project-prefix-map', COMMAND will act like
 `project-other-window-map'."
-  (declare (indent defun))
-  `(let* ((hint (if (stringp (nth 2 ,map)) (nth 2 ,map) "Options"))
-          (message (format "%s: %%k" hint)))
-     (defun ,command ()
-       ,(format "The \"other window\" version of `%s'" map)
-       (interactive)
-       (let ((inhibit-message t))
-         (other-window-prefix))
-       (set-transient-map ,map nil nil message))))
+  `(defun ,command ()
+     ,(format "The \"other window\" version of `%s'" map)
+     (interactive)
+     (let ((inhibit-message t))
+       (other-window-prefix))
+     (set-transient-map
+      (make-composed-keymap ,map zy--all-undefined-keymap)
+      nil nil (zy--get-keymap-hint ,map))))
 
-(defmacro other-tabbed! (command map)
+(defmacro define-other-tabbed-command! (command map)
   "Define COMMAND as the \"other tab\" version of MAP.
 MAP is a keymap and COMMAND is an interactive command. Calling
 COMMAND is like triggering MAP, but the buffer of the subsequent
 command is displayed in another tab. For instance, if MAP is
 `project-prefix-map', COMMAND will act like
 `project-other-tab-map'."
-  (declare (indent defun))
-  `(let* ((hint (if (stringp (nth 2 ,map)) (nth 2 ,map) "Options"))
-          (message (format "%s: %%k" hint)))
-     (defun ,command ()
-       ,(format "The \"other window\" version of `%s'" map)
-       (interactive)
-       (let ((inhibit-message t))
-         (other-tab-prefix))
-       (set-transient-map ,map nil nil message))))
+  `(defun ,command ()
+     ,(format "The \"other window\" version of `%s'" map)
+     (interactive)
+     (let ((inhibit-message t))
+       (other-tab-prefix))
+     (set-transient-map
+      (make-composed-keymap ,map zy--all-undefined-keymap)
+      nil nil (zy--get-keymap-hint ,map))))
 
 (provide 'zylib-key)
 

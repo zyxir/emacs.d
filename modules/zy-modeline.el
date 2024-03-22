@@ -11,7 +11,7 @@
 
 (require 'zylib)
 
-(pkg! doom-modeline)
+(pkg! 'doom-modeline)
 
 (require 'doom-modeline)
 
