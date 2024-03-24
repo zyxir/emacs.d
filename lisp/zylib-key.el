@@ -50,6 +50,7 @@ It is possible to specify multiple KEY and DEF pairs in BINDINGS.
     (setq wrapped-bindings (reverse wrapped-bindings))
     `(eval-after-load 'evil
        #'(lambda ()
+           (declare-function evil-define-key* 'evil-core)
            (evil-define-key* ,state ,keymap ,@wrapped-bindings)))))
 
 (defmacro defprefix! (command name state keymap key &rest bindings)
@@ -73,72 +74,117 @@ per `keybind!' in BINDINGS."
                         `(keybind! nil ,command ,@bindings))))
     (append form `(,keybind-form))))
 
-(defun zy--get-keymap-hint (keymap)
-  "Get keystroke hint for keymap KEYMAP.
-The hint is a string like:
+(defun zy--other-window-prefix ()
+  "Display the buffer of the next command in a new window.
+This is like `other-window-prefix', but it echoes nothing, and
+returns a function used to undo the prefix."
+  (display-buffer-override-next-command
+   (lambda (buffer alist)
+     (let ((alist (append '((inhibit-same-window . t)) alist))
+           window type)
+       (if (setq window (display-buffer-pop-up-window buffer alist))
+           (setq type 'window)
+         (setq window (display-buffer-use-some-window buffer alist)
+               type 'reuse))
+       (cons window type)))))
 
-  [a] Lorem  [b] Ipsum  [c] Dolor
+(defun zy--other-frame-prefix ()
+  "Display the buffer of the next command in a new frame.
+This is like `other-frame-prefix', but it echoes nothing, and
+returns a function used to undo the prefix."
+  (display-buffer-override-next-command
+   (lambda (buffer alist)
+     (cons (display-buffer-pop-up-frame
+            buffer (append '((inhibit-same-window . t))
+                           alist))
+           'frame))))
 
-Where a, b, c are the keys that could be pressed in KEYMAP, and
-Lorem, Ipsum, Dolor are the menu item names given for each key
-definition as per `define-key'. If no menu item name is given for
-a key definition, show nothing. For keymaps defined in Zyxir's
-Emacs configuration, a menu item name shall always be given to
-any key definition.
+(defun zy--other-tab-prefix ()
+  "Display the buffer of the next command in a new tab.
+This is like `other-tab-prefix', but it echoes nothing, and
+returns a function used to undo the prefix."
+  (display-buffer-override-next-command
+   (lambda (buffer alist)
+     (cons (progn
+             (display-buffer-in-tab
+              buffer (append alist '((inhibit-same-window . nil))))
+             (selected-window))
+           'tab))))
 
-The hint is intended as the MESSAGE argument for
-`set-transient-map', which includes format specifiers, so all
-percent sign (`%') is replaced with double percent sign (`%%')."
-  (string-join
-   (seq-map
-    (lambda (elt)
-      (when-let* ((key (car-safe elt))
-                  (key (key-description (list key)))
-                  (key (string-replace "%" "%%" key))
-                  (key (propertize key 'face 'bold))
-                  (key (format "[%s]" key))
-                  (def (cdr-safe elt))
-                  (name (and (consp def)
-                             (stringp (car def))
-                             (car def))))
-        (if name (concat key " " name) key)))
-    (seq-filter #'consp keymap))
-   "  "))
+(defmacro other-placed! (place string keymap)
+  "Get the \"other place\" version of KEYMAP.
+The \"other place\" version of KEYMAP is an extended menu item
+definition which can be used in `define-key'. It behaves like
+KEYMAP, but displays the buffer of the subsequent command in
+another place, in accordance with PLACE, which have the following
+possible values:
 
-(defconst zy--all-undefined-keymap (make-sparse-keymap))
-(define-key zy--all-undefined-keymap [t] 'undefined)
+`window' a new window
+`frame'  a new frame
+`tab'    a new tab
 
-(defmacro define-other-windowed-command! (command map)
-  "Define COMMAND as the \"other window\" version of MAP.
-MAP is a keymap and COMMAND is an interactive command. Calling
-COMMAND is like triggering MAP, but the buffer of the subsequent
-command is displayed in another window. For instance, if MAP is
-`project-prefix-map', COMMAND will act like
-`project-other-window-map'."
-  `(defun ,command ()
-     ,(format "The \"other window\" version of `%s'" map)
-     (interactive)
-     (let ((inhibit-message t))
-       (other-window-prefix))
-     (set-transient-map
-      (make-composed-keymap ,map zy--all-undefined-keymap)
-      nil nil (zy--get-keymap-hint ,map))))
+STRING is used as the menu item name for the definition."
+  (let ((fn (intern (format "%s-other-%s-%s" keymap place (cl-gensym)))))
+    `(progn
+       ;; This function acts as the `:filter' property of the extended menu
+       ;; item definition. It is called every time the menu item is accessed
+       ;; to dynamically compute the keymap for the menu item. What the
+       ;; function does is: (a) Call `zy--other-window-prefix' so that the
+       ;; next command displays its buffer in another window; (b) Compose an
+       ;; `aux-map' as the backup map; (c) Return the (STRING . DEFN) pair
+       ;; used by `define-key', where STRING is the menu item name extracted
+       ;; from `keymap', and `defn' is the keymap composed from `keymap' and
+       ;; `aux-map'.
+       ;;
+       ;; Using `aux-map' as a backup keymap here ensures that if a key not in
+       ;; `keymap' is hit, the effect of `zy--other-window-prefix' is
+       ;; cancelled, and an "X is undefined" message is displayed.
+       (defun ,fn (_cmd)
+         ,(format "Trigger `%s' in another window." keymap)
+         (let* ((exitfun (,(pcase (unquote! place)
+                             ('window 'zy--other-window-prefix)
+                             ('frame 'zy--other-frame-prefix)
+                             ('tab 'zy--other-tab-prefix)
+                             (_ (error "%s is not a valid place" place)))))
+                (aux-map (make-sparse-keymap)))
+           (define-key aux-map [t]
+                       (lambda ()
+                         (interactive)
+                         (funcall exitfun)
+                         (funcall 'undefined)))
+           (cons ,string (make-composed-keymap ,keymap aux-map))))
+       ;; Now compose and return the extended menu item definition.
+       '(menu-item "" nil :filter ,fn))))
 
-(defmacro define-other-tabbed-command! (command map)
-  "Define COMMAND as the \"other tab\" version of MAP.
-MAP is a keymap and COMMAND is an interactive command. Calling
-COMMAND is like triggering MAP, but the buffer of the subsequent
-command is displayed in another tab. For instance, if MAP is
-`project-prefix-map', COMMAND will act like
-`project-other-tab-map'."
-  `(defun ,command ()
-     ,(format "The \"other window\" version of `%s'" map)
-     (interactive)
-     (let ((inhibit-message t))
-       (other-tab-prefix))
-     (set-transient-map
-      (make-composed-keymap ,map zy--all-undefined-keymap)
-      nil nil (zy--get-keymap-hint ,map))))
+(defmacro other-windowed! (string keymap)
+  "Get the \"other window\" version of KEYMAP.
+The \"other window\" version of KEYMAP is an extended menu item
+definition which can be used in `define-key'. It behaves like
+KEYMAP, but displays the buffer of the sebsequent command in
+another window.
+
+STRING is used as the menu item for the definition."
+  `(other-placed! 'window ,string ,keymap))
+
+(defmacro other-framed! (string keymap)
+  "Get the \"other frame\" version of KEYMAP.
+The \"other frame\" version of KEYMAP is an extended menu item
+definition which can be used in `define-key'. It behaves like
+KEYMAP, but displays the buffer of the sebsequent command in
+another frame.
+
+STRING is used as the menu item for the definition."
+  `(other-placed! 'frame ,string ,keymap))
+
+(defmacro other-tabbed! (string keymap)
+  "Get the \"other tab\" version of KEYMAP.
+The \"other tab\" version of KEYMAP is an extended menu item
+definition which can be used in `define-key'. It behaves like
+KEYMAP, but displays the buffer of the sebsequent command in
+another tab.
+
+STRING is used as the menu item for the definition."
+  `(other-placed! 'tab ,string ,keymap))
 
 (provide 'zylib-key)
 

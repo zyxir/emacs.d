@@ -61,26 +61,11 @@ This function returns non-nil even before the module is loaded."
 
 ;;;; Hook Management
 
-(defun zy--resolve-hook-forms (hooks)
-  "Convert a list of modes into a list of hook symbols.
-
-HOOKS is either an unquoted mode, an unquoted list of modes, a
-quoted hook variable or a quoted list of hook variables."
-  (declare (pure t) (side-effect-free t))
-  (let ((hook-list (ensure-list (unquote! hooks))))
-    (if (eq (car-safe hooks) 'quote)
-        hook-list
-      (cl-loop for hook in hook-list
-               if (eq (car-safe hook) 'quote)
-               collect (cadr hook)
-               else collect (intern (format "%s-hook"
-                                            (symbol-name hook)))))))
-
 (defmacro add-hook! (hooks &rest rest)
   "A convennient macro to add N functions to M hooks.
 
-HOOKS is either an unquoted mode, an unquoted list of modes, a
-quoted hook variable or a quoted list of hook variables.
+HOOKS is either a quoted hook variable or a quoted list of hook
+variables.
 
 REST can contain optional properties :local, :append, and/or
 :depth [N], which will make the hook buffer-local or append to
@@ -93,7 +78,9 @@ in a lambda).
 
 This function was adapted from Doom Emacs."
   (declare (indent 1) (debug t))
-  (let* ((hook-forms (zy--resolve-hook-forms hooks))
+  (let* ((hook-forms (if (eq (car-safe hooks) 'quote)
+                         (ensure-list (cadr hooks))
+                       (error "HOOKS must be quoted")))
          (func-forms ())
          (defn-forms ())
          append-p local-p remove-p depth)
@@ -138,55 +125,6 @@ This function is based on `remove-hook!' of Doom Emacs."
   (declare (indent defun) (debug t))
   `(add-hook! ,hooks :remove ,@rest))
 
-;;;; Advice Management
-;; TODO: This section should be removed. All `defadvice!' should be rewritten.
-
-(defmacro defadvice! (symbol arglist &optional docstring &rest body)
-  "Define an advice called SYMBOL and add it to PLACES.
-
-ARGLIST is as in `defun'.  WHERE is a keyword as passed to
-`advice-add', and PLACE is the function to which to add the
-advice, like in `advice-add'.  DOCSTRING and BODY are as in
-`defun'.
-
-\(fn SYMBOL ARGLIST &optional DOCSTRING \
-&rest [WHERE PLACES...] BODY)
-
-This function is based on `defadvice!' of Doom Emacs."
-  (declare (doc-string 3) (indent defun))
-  (unless (stringp docstring)
-    (push docstring body)
-    (setq docstring nil))
-  (let (where-alist)
-    (while (keywordp (car body))
-      (push `(cons ,(pop body) (ensure-list ,(pop body)))
-            where-alist))
-    `(progn
-       (defun ,symbol ,arglist ,docstring ,@body)
-       (dolist (targets (list ,@(nreverse where-alist)))
-         (dolist (target (cdr targets))
-           (advice-add target (car targets) ',symbol))))))
-
-(defmacro undefadvice! (symbol _arglist &optional docstring &rest body)
-  "Undefine an advice called SYMBOL.
-
-This has the same signature as `defadvice!' an exists as an easy
-undefiner when testing advice (when combined with `rotate-text').
-
-\(fn SYMBOL ARGLIST &optional DOCSTRING \
-&rest [WHERE PLACES...] BODY)
-
-This function is based on `undefadvice!' of Doom Emacs."
-  (declare (doc-string 3) (indent defun))
-  (let (where-alist)
-    (unless (stringp docstring)
-      (push docstring body))
-    (while (keywordp (car body))
-      (push `(cons ,(pop body) (ensure-list ,(pop body)))
-            where-alist))
-    `(dolist (targets (list ,@(nreverse where-alist)))
-       (dolist (target (cdr targets))
-         (advice-remove target #',symbol)))))
 
 ;;;; Lazy Loading Macros
 
@@ -241,73 +179,6 @@ does, it is considered a module of the configuration, and will be
 processed accordingly."
   (declare (indent 1) (debug (form def-body)))
   (zy--gen-after-load (zy--normalize-features features) body))
-
-(defun zy--gen-deferred-features (features)
-  "Generate deferred loading statements for FEATURES.
-FEATURES is a list of feature symbols.
-
-If `daemonp' returns non-nil, FEATURES will be loaded right now.
-Otherwise, they will be executed at `window-setup-hook'."
-  (let* ((loading-sexps (mapcar
-                         (lambda (x) `(require ',(unquote! x)))
-                         features)))
-    `(if (daemonp)
-         ,(macroexp-progn loading-sexps)
-       (add-hook 'window-setup-hook
-                 (lambda () ,@loading-sexps)))))
-
-;; TODO: This should eventually be removed.
-(defmacro after-deferred! (features &rest body)
-  "Defer FEATURES, and evaluate BODY after them.
-If running in daemon mode, require FEATURES now, and BODY will be
-evaluated subsequently; otherwise require FEATURES at
-`window-setup-hook'.
-
-FEATURES can be a symbol or a list of symbols. It can be quoted
-or unquoted."
-  (declare (indent 1) (debug (form def-body)))
-  (let ((features (zy--normalize-features features)))
-    `(progn
-       ,(zy--gen-deferred-features features)
-       ,(zy--gen-after-load features body))))
-
-(defun zy--gen-maybe-required-features (features)
-  "Generate maybe required statements for FEATURES.
-FEATURES is a list of feature symbols.
-
-If `daemonp' returns non-nil, FEATURES will be loaded right now.
-Otherwise, do nothing."
-  (let* ((loading-sexps (mapcar
-                         (lambda (x) `(require ',(unquote! x)))
-                         features)))
-    `(when (daemonp) ,(macroexp-progn loading-sexps))))
-
-;; TODO: This should eventually be removed.
-(defmacro after-or-now! (features &rest body)
-  "Evaluate BODY after FEATURES are available.
-If running in daemon mode, require FEATURES now, and BODY will be
-evaluated subsequently.
-
-FEATURES can be a symbol or a list of symbols. It can be quoted
-or unquoted.
-
-This is similar to `after-deferred!', but FEATURES will not be
-automatically required if not in daemon mode."
-  (declare (indent 1) (debug (form def-body)))
-  (let ((features (zy--normalize-features features)))
-    `(progn
-       ,(zy--gen-maybe-required-features features)
-       ,(zy--gen-after-load features body))))
-
-;; TODO: This should eventually be removed.
-(defmacro defer! (&rest body)
-  "Run BODY at `window-setup-hook'.
-If running in daemon mode, run them now."
-  (declare (indent 0) (debug (form def-body)))
-  `(if (daemonp)
-       ,(macroexp-progn body)
-     (add-hook 'window-setup-hook
-               (lambda () ,@body))))
 
 (defmacro after-gui! (&rest body)
   "Run BODY when GUI is ready.

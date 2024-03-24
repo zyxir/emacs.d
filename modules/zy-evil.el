@@ -20,33 +20,48 @@
 (pkg! 'avy)
 (pkg! 'consult)
 
-(setq-default
- ;; Delete back to indentation with C-u in insert state.
- evil-want-C-u-delete t
- ;; Scroll with C-u/d in normal state.
- evil-want-C-u-scroll t
- evil-want-C-d-scroll t
- ;; Respect visual lines.
- evil-respect-visual-line-mode t
- ;; Evil-collection requires this to be nil.
- evil-want-keybinding nil
- ;; Use the built-in `undo-redo' system.
- evil-undo-system 'undo-redo)
+;; Scroll up/down with C-u/d in normal state, as Vim does.
+(setq-default evil-want-C-u-scroll t
+              evil-want-C-d-scroll t)
 
-;; Silence "`evil-want-keybinding' was set to nil but not before loading evil".
-(eval-when-compile (setq-default evil-want-keybinding nil))
+;; Use C-h as an alternate Backspace. Useful for further customizations in the
+;; `+pair' module.
+(setq-default evil-want-C-h-delete t)
 
-;; Evil mode should be activated late enought, since there might be additional
-;; settings in other modules which must be loaded before Evil is loaded, for
+;; Respect visual lines. This means that movement commands move according to
+;; visual lines, rather than actual lines.
+(setq-default evil-respect-visual-line-mode t)
+
+;; When `evil-want-keybinding' is unset, Evil doesn't setup keys for many major
+;; modes, so that Evil-collection can set its keybindings up instead. Wrapping
+;; this line in `eval-and-compile' silence the "`evil-want-keybinding' was set
+;; to nil but not before loading evil" warning during byte compilation.
+(eval-and-compile (setq-default evil-want-keybinding nil))
+
+;; Use the built-in `undo-redo' system introduced in Emacs 28.1.
+(setq-default evil-undo-system 'undo-redo)
+
+;; Evil mode should be loaded late enought, since there might be additional
+;; settings in other modules which must be loaded before loading Evil, for
 ;; instance adding keys to `evil-collection-key-blacklist'.
-(add-hook! 'window-setup-hook (evil-mode 1))
+(add-hook! 'window-setup-hook (require 'evil))
 
 (after! 'evil
+  ;; Enable Evil mode. If Evil mode is not enabled beforehand, some of the
+  ;; following configuration might fail. For instance,
+  ;; `evil-collection-unimpaired-mode' keybindings may be bugged until the user
+  ;; switch state manually.
+  (evil-mode 1)
+
   ;; Some modes activate insert state by default, but I am so accustomed to
   ;; being in normal state by default, that I always accidentally press "i" or
   ;; "a" upon entering these modes. Therefore I decided to set the initial state
   ;; of these mode to normal state to provide a consistent experience.
   (setq evil-insert-state-modes nil)
+
+  ;; Do not echo the current state in the echo area, as it blocks ELdoc
+  ;; sometimes.
+  (setq evil-echo-state nil)
 
   ;; Setup Evil in many other modes with Evil-collection.
   (evil-collection-init)

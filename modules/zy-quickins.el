@@ -4,8 +4,9 @@
 
 ;; This file provides the `+quickins' module of the configuration.
 
-;; This file introduces and configures several ways of inserting text quickly,
-;; including a keymap in insert state, and dynamic abbreviation expansion.
+;; This file introduces the keymap `+quickins-map' for quickly inserting
+;; frequently-used text, or inserting snippets, emojis, and filesystem paths
+;; with the help of completion.
 
 ;;; Code:
 

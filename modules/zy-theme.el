@@ -23,7 +23,7 @@
 (pkg! 'solaire-mode)
 (pkg! 'rainbow-delimiters)
 
-(defcustom zy/theme 'modus-operandi-tinted
+(defcustom +theme-theme 'modus-operandi-tinted
   "The theme to use for Emacs.
 
 Set theme with this variable instead of `custom-enabled-themes'
@@ -40,22 +40,25 @@ to make the loading of themes more deterministic."
 
 ;; Load (require) the user-specified theme.
 (cond
- ((string-prefix-p "modus-" (symbol-name zy/theme))
+ ((string-prefix-p "modus-" (symbol-name +theme-theme))
   (require 'modus-themes))
  (t nil))
 
 ;; Configure Modus Themes if necessary.
 (after! 'modus-themes
-   ;; Use more variants to enhance distinguishability.
+  ;; Use more variants to enhance distinguishability.
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
         modus-themes-mixed-fonts t
         modus-themes-variable-pitch-ui t)
 
+  ;; Do not extend region highlight to the edge of the window.
+  (set-face-attribute 'region nil :extend nil)
+
   ;; Use more prominent faces for errors/warnings/notes on terminal since
   ;; underlines cannot be colored there.
   (add-hook! '(window-setup-hook after-make-frame-functions)
-    (defun +theme-setup-terminal-err-faces-h (&rest frame)
+    (defun +theme-setup-terminal-err-faces-h (&optional frame)
       "Setup more prominent error faces for FRAME.
 Only works for non-graphical frames."
       (when-let* ((frame (if frame frame (selected-frame))))
@@ -68,13 +71,14 @@ Only works for non-graphical frames."
                               :inherit 'note))))))
 
 ;; Load the theme.
-(load-theme zy/theme 'no-confirm)
+(let ((enable-theme-functions nil))
+ (load-theme +theme-theme 'no-confirm))
 
 ;; Enable Solaire mode to distinguish between file and non-file buffers.
 (solaire-global-mode 1)
 
 ;; Enable rainbow delimeters for all prog modes.
-(add-hook! prog-mode #'rainbow-delimiters-mode)
+(add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
 
 (provide 'zy-theme)
 

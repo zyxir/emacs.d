@@ -79,8 +79,8 @@ string. The defined customizable variable will have the
 (defun zy/set-face-charset-font (face frame charset font)
   "Set the font used for character set CHARSET in face FACE.
 
-This function has no effect if `display-graphic-p' returns nil,
-since fontset is not supported in console mode.
+This function has no effect if `display-graphic-p' returns nil
+for FRAME, since fontset is not supported in console mode.
 
 FRAME specifies the frame to set in. When FRAME is nil or
 omitted, set it for all existing frames, as well as the default
@@ -98,7 +98,7 @@ set (like CJK characters or symbols). However, the fontset system
 of Emacs is complicated, and not very straightforward. Instead of
 playing with `font-spec', fontsets and frame attributes, this
 function provides a simpler interface that just work."
-  (when (display-graphic-p)
+  (when (display-graphic-p frame)
     (let* (;; The fontset that we are going to manipulate
            (fontset (face-attribute face :fontset frame))
            ;; If the fontset is not specified
@@ -114,9 +114,9 @@ function provides a simpler interface that just work."
       ;; Set font for the fontset
       (if (listp charset)
           (mapc (lambda (c)
-                  (set-fontset-font fontset c font frame 'prepend))
+                  (set-fontset-font fontset c font nil 'prepend))
                 charset)
-        (set-fontset-font fontset charset font frame))
+        (set-fontset-font fontset charset font nil))
       ;; Assign the fontset to the face if necessary
       (when unspecified-p
         (set-face-attribute face frame :fontset fontset)))))

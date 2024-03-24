@@ -37,10 +37,10 @@
   (interactive)
   (dlet ((fill-column most-positive-fixnum))
     (call-interactively 'fill-paragraph)))
-(general-def "M-Q" #'+paragraph/unfill-paragraph)
+(keybind! nil 'global "M-Q" #'+paragraph/unfill-paragraph)
 
 ;; Display indent bars for all prog-modes except the Lisp modes.
-(add-hook! prog-mode
+(add-hook! 'prog-mode-hook
   (unless (derived-mode-p 'lisp-data-mode)
     (indent-bars-mode 1)))
 
@@ -60,10 +60,14 @@
    indent-bars-display-on-blank-lines nil))
 
 ;; Display a `fill-column' indicator for prog modes.
-(add-hook! prog-mode #'display-fill-column-indicator-mode)
+(add-hook! 'prog-mode-hook #'display-fill-column-indicator-mode)
 
-;; Always enable visual line mode.
-(global-visual-line-mode 1)
+(add-hook! 'window-setup-hook
+  ;; Always use subword movement (move between camel case words).
+  (global-subword-mode 1)
+
+  ;; Always enable visual line mode.
+  (global-visual-line-mode 1))
 
 (provide 'zy-paragraph)
 

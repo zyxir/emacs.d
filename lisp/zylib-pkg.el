@@ -45,8 +45,7 @@
 ;; unless `package-enable-at-startup' is set to nil in the early init file.
 ;; However, Esup need to call `package-initialize' in order to work.
 (when (featurep 'esup-child)
-  (unless (bound-and-true-p package--initialized)
-    (package-initialize)))
+  (package-initialize))
 
 (defvar zy-required-packages '()
   "Packages explicitly required by `pkg!'.")
@@ -65,20 +64,34 @@ to install the package again."
        (package-refresh-contents)
        (zy--install-symbol-package package 'no-refresh)))))
 
-(defun zy-require-package (package &optional repo)
+(defun zy-require-package (package &optional info)
   "Make sure that PACKAGE is installed.
 PACKAGE is a symbol representing a package.
 
-If REPO is given and is a URL, install PACKAGE as a
-version-controlled package from that URL. Otherwise install
-PACKAGE from one of the package repositories.
+If a 2nd optional argument INFO is omitted, install PACKAGE via
+`package-install' when it is not installed.
 
-If the package is installed, it is added to
-`zy-required-packages'."
+If INFO is given as a string, and is the name of one of the
+`package-archives', only install the package from that archive.
+
+If INFO is given as a string, and is a URL, install PACKAGE as a
+version-controlled package from that URL.
+
+If the package is successfully installed or already installed, it
+is added to `zy-required-packages'."
   (unless (package-installed-p package)
-    (if repo
-        (package-vc-install `(,package :url ,repo))
-      (zy--install-symbol-package package)))
+    (cond
+     ;; Case 1: No `info' provided. Install normally.
+     ((not info) (zy--install-symbol-package package))
+     ;; Case 2: `info' is a package archive. Pin the package to that archive
+     ;; before installing normally.
+     ((assoc info package-archives)
+      (let ((package-pinned-packages `((,package . ,info))))
+        (zy--install-symbol-package package)))
+     ;; Case 3: `info' is a string. Install with VC.
+     ((stringp info) (package-vc-install `(,package :url ,info)))
+     ;; Other cases: invalid `info' provided.
+     (t (error "Invalid package info: %s" info))))
   ;; Add the package symbol to `package-selected-packages' to prevent it from
   ;; being auto-removed. Normally this shouldn't be done manually, but we do
   ;; this just in case the list is unexpectedly modified.
@@ -88,22 +101,27 @@ If the package is installed, it is added to
   ;; Return the package symbol.
   package)
 
-(defmacro pkg! (package &optional repo)
+(defmacro pkg! (package &optional info)
   "Make sure that PACKAGE is installed.
 PACKAGE is a package name, either quoted or unquoted.
 
-If REPO is given and is a URL, install PACKAGE as a
-version-controlled package from that URL. Otherwise install
-PACKAGE from one of the package repositories.
+If a 2nd optional argument INFO is omitted, install PACKAGE via
+`package-install' when it is not installed.
 
-If the package is installed, it is added to
-`zy-required-packages'.
+If INFO is given as a string, and is the name of one of the
+`package-archives', only install the package from that archive.
+
+If INFO is given as a string, and is a URL, install PACKAGE as a
+version-controlled package from that URL.
+
+If the package is successfully installed or already installed, it
+is added to `zy-required-packages'.
 
 This is a macro wrapped around `zy-require-package'. The
 difference is that this macro tries to install the package
 required during byte compilation, so that the code depending on
 the required package could be compiled correctly."
-  `(eval-and-compile (zy-require-package ,package ,repo)))
+  `(eval-and-compile (zy-require-package ,package ,info)))
 
 (provide 'zylib-pkg)
 

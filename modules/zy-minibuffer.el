@@ -16,6 +16,18 @@
 (pkg! 'vertico)
 (pkg! 'marginalia)
 
+(defun +minibuffer-crm-indicator (args)
+  "Indicator for `completing-read-multiple'.
+
+ARGS are the arguments passed."
+  (defvar crm-separator)
+  (cons (format "[CRM%s] %s"
+                (replace-regexp-in-string
+                 "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                 crm-separator)
+                (car args))
+        (cdr args)))
+
 (add-hook! 'window-setup-hook
   ;; Allow minibuffer commands while in the minibuffer.
   (setq enable-recursive-minibuffers t)
@@ -39,24 +51,9 @@
   ;; Use "C-j" and "C-RET" for force exit since "M-RET" is occupied by default
   ;; in Windows Terminal. It is worth noting that "C-RET" equals to "C-j" in
   ;; terminal.
-  (general-def
-    :keymaps 'vertico-map
+  (keybind! nil vertico-map
     "C-j" #'vertico-exit-input
     "C-RET" #'vertico-exit-input)
-
-  ;; Indicator for completing-read-multiple.
-  (eval-and-compile
-    (defun +minibuffer-crm-indicator (args)
-      "Indicator for `completing-read-multiple'.
-
-ARGS are the arguments passed."
-      (defvar crm-separator)
-      (cons (format "[CRM%s] %s"
-                    (replace-regexp-in-string
-                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-                     crm-separator)
-                    (car args))
-            (cdr args))))
 
   ;; Show candidate info with Marginalia.
   (marginalia-mode 1)

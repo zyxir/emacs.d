@@ -22,8 +22,9 @@
 (add-hook! 'window-setup-hook
   (eval-and-compile (require 'which-key))
 
-  ;; Show key hints after 0.5 seconds.
-  (setq which-key-idle-delay 0.5)
+  ;; Show key hints initially after 1.0 seconds, and 0.5 seconds afterwards.
+  (setq which-key-idle-delay 1.0
+        which-key-idle-secondary-delay 0.5)
 
   ;; Sort keys alphabetically.
   (setq which-key-sort-order #'which-key-key-order-alpha)

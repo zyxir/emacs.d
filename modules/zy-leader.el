@@ -53,12 +53,18 @@
 ;; general.el in my configuration, I have to figure out a solution myself.
 ;; Unbinding the occupied keys in these special modes seems the most reliable
 ;; way to me.
-(dolist (feature-map-pair `((help-mode . ,help-mode-map)))
+(dolist (feature-map-pair `((help-mode . help-mode-map)
+                            (magit-status . magit-status-mode-map)
+                            (info . Info-mode-map)))
   (let ((feature (car feature-map-pair))
-        (map (cdr feature-map-pair)))
+        (map-symbol (cdr feature-map-pair)))
     (with-eval-after-load feature
-      (keybind! '(normal visual motion operator) map "SPC" nil)
-      (keybind! 'insert map "M-m" nil))))
+      ;; For some reason you need to both unbind SPC normally and then unbind it
+      ;; in these Evil states to ensure that it is not occupied at all.
+      (keybind! nil (symbol-value map-symbol) "SPC" nil)
+      (keybind! '(normal motion visual operator)
+          (symbol-value map-symbol) "SPC" nil)
+      (keybind! 'insert (symbol-value map-symbol) "M-m" nil))))
 
 ;; Tell Evil-collection to not touch my leader keys.
 (defvar evil-collection-key-blacklist nil)
@@ -70,85 +76,122 @@
 (defprefix! +leader-map "Leader"
             '(motion insert) 'global "<leader>"
   ;; Quick commands with leader plus a single key.
-  "<leader>" '("Execute..." . execute-extended-command)
-  "b" '("Switch to Buffer" . consult-buffer)
-  "B" '("Switch to Buffer*" . switch-to-buffer)
-  "C-b" '("List Buffers" . list-buffers)
-  "d" '("Dired" . dired)
-  "s" '("Save Buffer" . save-buffer)
-  "k" '("Kill Buffer" . kill-buffer))
+  "b" (cons "Go to Buffer" #'consult-buffer)
+  "B" (cons "Go to Buffer*" #'switch-to-buffer)
+  "C-b" (cons "List Buffers" #'list-buffers)
+  "d" (cons "Dired" #'dired)
+  "s" (cons "Save Buffer" #'save-buffer)
+  "k" (cons "Kill Buffer" #'kill-buffer))
+
+(defmacro +leader-c-create-action (action &optional eglot-action)
+  "Create a placeholder command for action ACTION.
+
+ACTION must be a string. If EGLOT-ACTION is non-nil and is a
+command, call it if Eglot is available.
+
+Return a cons cell (NAME . COMMAND), where NAME is the
+capitalized ACTION, and COMMAND is the command created. This cons
+cell is ready to be used in `define-key'."
+  (declare (indent defun))
+  (let* ((fn-name (intern (format "+leader-do-%s" action)))
+         (eglot-action (unquote! eglot-action)))
+    ;; Validate EGLOT-ACTION at compile time.
+    (when eglot-action
+      (require 'eglot)
+      (unless (fboundp eglot-action)
+        (error "`%s' is not a valid Eglot command" eglot-action)))
+    `(progn
+       (defun ,fn-name (&rest _)
+         ,(format
+           "A placeholder command for action \"%s\"."
+           action)
+         (interactive)
+         (if (and (fboundp 'eglot-managed-p)
+                  (eglot-managed-p))
+             (call-interactively ',eglot-action)
+           (message ,(format "Action \"%s\" is not implemented." action))))
+       (cons ,(capitalize (string-replace "-" " " action)) #',fn-name))))
 
 (defprefix! +leader-c-map "Code"
-            nil +leader-map "c")
+            nil +leader-map "c"
+  "f" (+leader-c-create-action "format" 'eglot-format)
+  "i" (+leader-c-create-action "inline" 'eglot-code-action-inline)
+  "o" (+leader-c-create-action "organize-imports"
+        'eglot-code-action-organize-imports)
+  "q" (+leader-c-create-action "quickfix" 'eglot-code-action-quickfix)
+  "r" (+leader-c-create-action "rename" 'eglot-rename)
+  "R" (+leader-c-create-action "rewrite" 'eglot-code-action-rewrite)
+  "x" (+leader-c-create-action "extract" 'eglot-code-action-extract))
 
 (defprefix! +leader-f-map "File"
             nil +leader-map "f"
-  "f" '("Open" . find-file)
-  "r" '("Revert" . revert-buffer-quick)
-  "c" '("Recent" . consult-recent-file)
-  "R" '("Rename" . rename-visited-file)
-  "s" '("Save" . save-buffer)
-  "S" '("Mass Save" . save-some-buffers)
-  "w" '("Save As..." . write-file))
+  "f" (cons "Open" #'find-file)
+  "r" (cons "Revert" #'revert-buffer-quick)
+  "c" (cons "Recent" #'consult-recent-file)
+  "R" (cons "Rename" #'rename-visited-file)
+  "s" (cons "Save" #'save-buffer)
+  "S" (cons "Mass Save" #'save-some-buffers)
+  "w" (cons "Save As..." #'write-file))
+
+(defprefix! +leader-g-map "Git"
+            nil +leader-map "g")
 
 (defprefix! +leader-h-map "Help"
             nil +leader-map "h"
   ;; Some of these keys mirror those of `help-map', but not all of them do. For
   ;; example, "F" is `Info-goto-emacs-command-node' in `help-map', but is
   ;; `describe-face' here.
-  "f" '("Function" . describe-function)
-  "v" '("Variable" . describe-variable)
-  "o" '("Symbol" . describe-symbol)
-  "m" '("Mode" . describe-mode)
-  "k" '("Key" . describe-key)
-  "p" '("Package" . describe-package)
-  "M" '("Keymap" . describe-keymap)
-  "F" '("Face" . describe-face))
+  "f" (cons "Function" #'describe-function)
+  "v" (cons "Variable" #'describe-variable)
+  "o" (cons "Symbol" #'describe-symbol)
+  "m" (cons "Mode" #'describe-mode)
+  "k" (cons "Key" #'describe-key)
+  "p" (cons "Package" #'describe-package)
+  "M" (cons "Keymap" #'describe-keymap)
+  "F" (cons "Face" #'describe-face))
 
 (defprefix! +leader-p-map "Project"
             nil +leader-map "p"
-  "p" '("Switch" . project-switch-project)
-  "f" '("File" . project-find-file)
-  "d" '("Dir" . project-find-dir)
-  "b" '("Buffer" . project-switch-to-buffer)
-  "v" '("VC" . project-vc-dir)
-  "/" '("Search" . project-find-regexp)
-  "%" '("Replace" . project-query-replace-regexp)
-  "&" '("Shell Command" . project-async-shell-command))
+  "p" (cons "Switch" #'project-switch-project)
+  "f" (cons "File" #'project-find-file)
+  "d" (cons "Dir" #'project-find-dir)
+  "b" (cons "Buffer" #'project-switch-to-buffer)
+  "e" (cons "Eshell" #'project-eshell)
+  "v" (cons "VC" #'project-vc-dir)
+  "k" (cons "Kill Buffers" #'project-kill-buffers)
+  "/" (cons "Search" #'project-find-regexp)
+  "%" (cons "Replace" #'project-query-replace-regexp)
+  "&" (cons "Shell Command" #'project-async-shell-command))
 
 (defprefix! +leader-q-map "Quit"
             nil +leader-map "q"
-  "q" '("Quit" . save-buffers-kill-terminal)
-  "r" '("Restart" . restart-emacs)
-  "z" '("Suspend" . suspend-emacs))
-
-(define-other-tabbed-command! +leader-p-other-tab-map +leader-p-map)
+  "q" (cons "Quit" #'save-buffers-kill-terminal)
+  "r" (cons "Restart" #'restart-emacs)
+  "z" (cons "Suspend" #'suspend-emacs))
 
 (defprefix! +leader-t-map "Tab"
             nil +leader-map "t"
-  "n" '("New Tab" . tab-new)
-  "t" '("Other Tab Prefix" . other-tab-prefix)
-  "c" '("Close Tab" . tab-close)
-  "b" '("Buffer" . consult-buffer-other-tab)
-  "d" '("Dired" . dired-other-tab)
-  "f" '("File" . find-file-other-tab)
-  "p" '("Project" . +leader-p-other-tab-map))
-
-(define-other-windowed-command! +leader-p-other-window-map +leader-p-map)
+  "n" (cons "New" #'tab-new)
+  "t" (cons "Other Tab..." #'other-tab-prefix)
+  "c" (cons "Close" #'tab-close)
+  "b" (cons "Buffer" #'consult-buffer-other-tab)
+  "d" (cons "Dired" #'dired-other-tab)
+  "f" (cons "File" #'find-file-other-tab)
+  "p" (other-tabbed! "Project" +leader-p-map))
 
 (defprefix! +leader-w-map "Other Window..."
             nil +leader-map "w"
-  "c" '("Close Window" . delete-window)
-  "w" '("Other Window Prefix" . other-window-prefix)
-  "b" '("Buffer" . consult-buffer-other-window)
-  "d" '("Dired" . dired-other-window)
-  "f" '("File" . find-file-other-window)
-  "p" '("Project" . +leader-p-other-window-map))
+  "c" (cons "Close" #'delete-window)
+  "w" (cons "Other Window..." #'other-window-prefix)
+  "b" (cons "Buffer" #'consult-buffer-other-window)
+  "d" (cons "Dired" #'dired-other-window)
+  "f" (cons "File" #'find-file-other-window)
+  "p" (other-windowed! "Project" +leader-p-map))
 
 (defprefix! +leader-y-map "Toggle..."
             nil +leader-map "y"
-  "l" #'display-line-numbers-mode
-  "o" #'outline-minor-mode)
+  "l" (cons "Line Numbers" #'display-line-numbers-mode)
+  "o" (cons "Outline" #'outline-minor-mode))
 
 (provide 'zy-leader)
 

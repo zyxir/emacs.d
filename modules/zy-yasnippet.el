@@ -18,15 +18,27 @@
 (pkg! 'yasnippet)
 (pkg! 'yasnippet-snippets)
 
-;; Enable snippets.
-(after-deferred! 'yasnippet
-  ;; HACK: Yasnippet prints a message at startup, which is very annoying and
-  ;; cannot be inhibited by setting `inhibit-message'. Here the message is
-  ;; silenced by temporarily rebinding `yas--message', the function used by
-  ;; Yasnippet internally to print messages.
-  (cl-letf (((symbol-function #'yas--message)
-             (symbol-function #'ignore)))
-    (yas-global-mode 1)))
+;; Make Yasnippet ready after setup.
+(add-hook! 'window-setup-hook (yas-global-mode 1))
+
+;; Inhibit the echoing of messages with this advice. Messages will still be
+;; appended to the *Messages* buffer.
+(defun +yasnippet--inhibit-message-a (oldfun &rest args)
+  "Inhibit message echoing in OLDFUN.
+ARGS are passed to OLDFUN as is."
+  (let ((inhibit-message t))
+    (apply oldfun args)))
+
+(after! 'yasnippet
+  ;; HACK: Yasnippet prints a lot of messages verbosely. The most annoying one
+  ;; is its startup message. We disable the echoing of all messages of
+  ;; `yas--message' here. They are still available in the *Messages* buffer.
+  (advice-add #'yas--message :around #'+yasnippet--inhibit-message-a)
+
+  ;; HACK: `yas--parse-template' sometimes prints uninterested warnings, and it
+  ;; uses the function `message' instead of `yas--message'. Let's inhibit these
+  ;; unnecessary messages.
+  (advice-add #'yas--parse-template :around #'+yasnippet--inhibit-message-a))
 
 (provide 'zy-yasnippet)
 

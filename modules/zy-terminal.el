@@ -41,8 +41,7 @@
 ;; Change cursor shape by Evil state in the terminal like in GUI.
 (when (modulep! '+evil)
   (pkg! 'evil-terminal-cursor-changer)
-  (add-hook! 'evil-mode-hook
-    (evil-terminal-cursor-changer-activate)))
+  (evil-terminal-cursor-changer-activate))
 
 ;; Corfu-terminal makes Corfu completion UI available in the terminal by drawing
 ;; the completion UI with popon instead of posframe.

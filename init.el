@@ -15,32 +15,55 @@
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
 ;; Enable/disable modules here.
-(defconst zy-modules '(;; Use saner default values.
-                       +defaults
-                       ;; Setup Evil and the leader key.
-                       +evil
-                       +leader
-                       ;; Look and feel.
-                       +theme
-                       +dashboard
-                       +font
-                       +modeline
-                       ;; Enhance the workbench.
-                       +orderless
-                       +minibuffer
-                       ;; Text-editing and coding.
-                       +corfu
-                       +paragraph
-                       +outline
-                       +quickins
-                       +yasnippet
-                       +syncheck
-                       +eldoc
-                       ;; Platform and system.
-                       +terminal
-                       ;; Setup GCMH last to prevent GC during startup.
-                       +gcmh)
+(defvar zy-modules '(;; Use saner default values.
+                     +defaults
+                     ;; Platform or environment-specific.
+                     +terminal
+                     ;; Setup Evil, leader-prefixed keys, and key hints.
+                     +evil
+                     +leader
+                     +keyhint
+                     ;; Enhance the workbench.
+                     +theme
+                     +font
+                     +modeline
+                     +dashboard
+                     +linum
+                     +orderless
+                     +minibuffer
+                     +persist
+                     ;; Applications.
+                     +git
+                     +esup
+                     ;; Text-editing and coding.
+                     +corfu
+                     +dabbrev
+                     +paragraph
+                     +outline
+                     +quickins
+                     +search
+                     +yasnippet
+                     +syncheck
+                     +eldoc
+                     +undo
+                     +pair
+                     +editorconfig
+                     +direnv
+                     +eglot
+                     ;; Setup GCMH last to prevent GC during startup.
+                     +gcmh
+                     )
   "Enabled modules of Zyxir's Emacs configuration.")
+
+;; Synchronize the configuration (re-compile everything, and install missing
+;; packages in the process) if Emacs is started with the "--sync".
+(when (member "--sync" command-line-args)
+  ;; Delete the argument so that Dashboard setups its hooks normally.
+  (setq command-line-args (delete "--sync" command-line-args))
+  (message "Synchronizing the configuration...")
+  (load (expand-file-name "zy-sync.el" user-emacs-directory)
+        nil 'nomessage 'nosuffix)
+  (message "Synchronizing the configuration...done"))
 
 (defun zy-load-rel (relpath &rest args)
   "Load the file in relative path RELPATH.
@@ -78,147 +101,15 @@ file (init.el)."
   (zy-load-rel "lisp/zylib-key")
   (zy-load-rel "lisp/zylib")
 
+  ;; Load the custom file now.
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (zy-load-rel "custom.el")
+
   ;; Load all modules in order.
   (dolist (module zy-modules)
     (zy-load-rel "modules/zy-%s"
                  (substring (symbol-name module) 1))))
 
-;;;; Load modules.
-
-(defvar zy/modules-dir (expand-file-name "modules" user-emacs-directory)
-  "Directory containing modules of Zyxir's Emacs configuration.")
-
-(add-to-list 'load-path zy/modules-dir)
-
-(defvar zy/modules '()
-  "All modules of Zyxir's Emacs configuration.
-They are placed in a reverse chronological order.")
-
-(defun zy/compile-file (file)
-  "Compile FILE in all ways possible.
-MODULE-FILE is a `.el' file. This function byte-compile it, and
-natively compile it asynchronously, if native compilation is
-available."
-  ;; Byte compile the file, and ignore warnings while doing it, since all actual
-  ;; warnings should be eliminated while writting the code, and only the
-  ;; compiled byte code matters to the user (for example, Evil will warn that
-  ;; some variable is set after Evil is loaded, but Evil is only loaded early in
-  ;; compile time in order to supress warnings in `eval-after-load' blocks,
-  ;; therefore the warning does not matter at runtime).
-  (defvar byte-compile-warnings)
-  (let ((byte-compile-warnings nil))
-    (byte-compile-file file))
-  ;; Additionally, if native compilation is available, native-compile the
-  ;; byte code.
-  (when (and (fboundp 'native-comp-available-p)
-             (native-comp-available-p))
-    (native-compile-async file nil 'load)))
-
-(defun zy/require-init (module)
-  "Load module MODULE of the configuration.
-Always try to load the compiled version of MODULE (if not
-compiled yet, compile it now).
-
-Compilation optimizes load speed and ensures proper loading
-order (otherwise some features might be loaded early by macro
-expansion).
-
-Yes, compiling the init file might introduce more issues than it
-solves. However, as a perfectionist, I prefer eliminating all
-Flycheck warnings of my config, since a warning might stand for a
-potential bug. I am willing to invest time to ensure the byte
-code compatibility of my config."
-  (let* ((base (expand-file-name (symbol-name module) zy/modules-dir))
-         (source (concat base ".el"))
-         (compiled (concat base ".elc"))
-         (outdated (file-newer-than-file-p source compiled)))
-    (if t
-        ;; Currently this branch will never be executed. It is left for
-        ;; convenience.
-        (load source 'noerror 'nomessage 'nosuffix)
-      ;; Compile the source file if the byte code is outdated.
-      (when outdated (zy/compile-file source))
-      ;; Load the compiled byte code.
-      (load compiled 'noerror 'nomessage 'nosuffix))
-    ;; Push the module to the list.
-    (setq zy/modules (cons module zy/modules))))
-
-(defun zy/compile-all ()
-  "Re-compile all modules of Zyxir's Emacs configuration.
-A clean re-compilation helps reduce errors introduced by byte
-code inconsistency."
-  (interactive)
-  (dolist (module (reverse zy/modules))
-    (let* ((file (expand-file-name (concat (symbol-name module) ".el")
-                                   zy/modules-dir)))
-      (zy/compile-file file))))
-(defalias 'zy/recompile-all #'zy/compile-all)
-
-;; Clear the file name handler to make loading faster.
-;; (let* ((file-name-handler-alist nil))
-
-;;   ;; Load the custom file first.
-;;   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-;;   (load custom-file 'noerror 'nomessage)
-
-;;   ;; Basic modules.
-;;   ;; (zy/require-init 'init-elpa)
-;;   ;; (zy/require-init 'init-util)
-;;   ;; (zy/require-init 'init-keybindings)
-
-;;   ;; A placeholder module which ensures every basic module has been loaded.
-;;   (zy/require-init 'init-basic)
-
-;;   ;; Applications and features.
-;;   (zy/require-init 'init-personal)
-;;   (zy/require-init 'init-dired)
-;;   (zy/require-init 'init-lingual)
-;;   (zy/require-init 'init-os)
-
-;;   ;; Text-editing and coding.
-;;   (zy/require-init 'init-misc)
-;;   (zy/require-init 'init-paragraph)
-;;   (zy/require-init 'init-snippet)
-;;   (zy/require-init 'init-completion)
-;;   (zy/require-init 'init-search)
-;;   (zy/require-init 'init-vc)
-;;   (zy/require-init 'init-treesit)
-;;   (zy/require-init 'init-project)
-;;   (zy/require-init 'init-highlight)
-;;   (zy/require-init 'init-check)
-;;   (zy/require-init 'init-lsp)
-;;   (zy/require-init 'init-env)
-;;   (zy/require-init 'init-prose)
-
-;;   ;; Look and feel.
-;;   (zy/require-init 'init-theme)
-;;   (zy/require-init 'init-modeline)
-;;   (zy/require-init 'init-fonts)
-
-;;   ;; File type specific.
-;;   (zy/require-init 'init-lisp)
-;;   (zy/require-init 'init-nix)
-;;   (zy/require-init 'init-org)
-;;   (zy/require-init 'init-pdf)
-;;   (zy/require-init 'init-python)
-;;   (zy/require-init 'init-scala)
-;;   (zy/require-init 'init-tex)
-;;   (zy/require-init 'init-other-modes))
-
 (provide 'init)
 
 ;;; init.el ends here
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(+font-size 20)
- '(package-selected-packages
-   '(elisp--witness--lisp gcmh flycheck-eglot flycheck yasnippet-snippets yasnippet consult-yasnippet indent-bars cape corfu-terminal popon corfu marginalia vertico orderless doom-modeline ligature dashboard rainbow-delimiters solaire-mode modus-themes which-key consult avy evil-lion evil-surround evil-collection evil)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
