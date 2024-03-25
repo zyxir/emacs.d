@@ -1,16 +1,23 @@
-;;; init-lingual.el --- Language-related features.  -*- lexical-binding: t -*-
+;;; zy-lingual.el --- Linguistic features. -*- lexical-binding: t -*-
+
 ;;; Commentary:
+
+;; This file provides the `+lingual' module of the configuration.
+
+;; The Rime input method, as well as other configurations about input methods is
+;; put here.
+
 ;;; Code:
 
-(eval-and-compile (require 'init-basic))
-;; (eval-and-compile (require 'init-theme))
+(require 'zylib)
 
 (pkg! 'rime)
 (pkg! 'sis)
 
-;; Use integrated Rime as the input method.
+;; Use the integrated Rime input method as the default input method.
 (setq-default default-input-method "rime")
-(after-deferred! 'rime
+
+(after! 'rime
   (setq-default
    ;; I have my scheme data in my emacs directory.
    rime-user-data-dir (expand-file-name "rime" user-emacs-directory)
@@ -35,7 +42,7 @@
               "Get alternate color from COLOR."
               (cond
                ;; Use these presets for known themes.
-               ((string-prefix-p "modus-" (symbol-name zy/theme))
+               ((string-prefix-p "modus-" (symbol-name +theme-theme))
                 (eval-and-compile (require 'modus-themes))
                 (modus-themes-get-color-value 'green-intense))
                ;; Otherwise, invert the color. Might be ugly!
@@ -56,12 +63,12 @@
                               cursor-color-default)))))))
 
 ;; Automatically toggle input method with Sis.
-(after-deferred! 'sis
-  ;; Use native input method on Emacs.
+(add-hook! 'window-setup-hook
+  (require 'sis)
   (sis-ism-lazyman-config nil "rime" 'native)
   (sis-global-respect-mode 1)
   (sis-global-context-mode 1))
 
-(provide 'init-lingual)
+(provide 'zy-lingual)
 
-;;; init-lingual.el ends here
+;;; zy-lingual.el ends here

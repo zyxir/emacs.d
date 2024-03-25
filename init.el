@@ -33,9 +33,12 @@
     +orderless
     +minibuffer
     +persist
+    ;; File/directory/project management.
+    +project
     ;; Applications or additional features.
     +esup
     +git
+    +lingual
     +pdf
     ;; Text-editing and coding.
     +corfu
@@ -53,6 +56,7 @@
     +direnv
     +eglot
     +treesit
+    +prose
     ;; Programming Languages.
     +elisp
     +nix

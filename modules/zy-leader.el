@@ -20,6 +20,7 @@
 (require 'zylib)
 
 (pkg! 'consult)
+(pkg! 'magit)
 
 ;; Define the (local) leader key after loading Evil.
 (after! 'evil
@@ -157,6 +158,7 @@ cell is ready to be used in `define-key'."
   "d" (cons "Dir" #'project-find-dir)
   "b" (cons "Buffer" #'project-switch-to-buffer)
   "e" (cons "Eshell" #'project-eshell)
+  "g" (cons "Magit" #'magit-project-status)
   "v" (cons "VC" #'project-vc-dir)
   "k" (cons "Kill Buffers" #'project-kill-buffers)
   "/" (cons "Search" #'project-find-regexp)
