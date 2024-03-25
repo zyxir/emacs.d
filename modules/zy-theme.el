@@ -22,6 +22,7 @@
 (pkg! 'modus-themes)
 (pkg! 'solaire-mode)
 (pkg! 'rainbow-delimiters)
+(pkg! 'hl-todo)
 
 (defcustom +theme-theme 'modus-operandi-tinted
   "The theme to use for Emacs.
@@ -79,6 +80,9 @@ Only works for non-graphical frames."
 
 ;; Enable rainbow delimeters for all prog modes.
 (add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)
+
+;; Enable todo keyword highlight globally.
+(add-hook! 'window-setup-hook (global-hl-todo-mode 1))
 
 (provide 'zy-theme)
 

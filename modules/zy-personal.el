@@ -1,21 +1,24 @@
-;;; init-personal.el --- Personal settings.  -*- lexical-binding: t -*-
+;;; zy-personal.el --- Personal settings -*- lexical-binding: t -*-
+
 ;;; Commentary:
 
-;; Most of these settings only appli when the user name equals "zyxir", which
+;; This file provides the `+personal' module of the configuration.
+
+;; Most of these settings only apply when the user name equals "zyxir", which
 ;; means that the user is Eric Zyxir Zhuo Chen himself.
 
 ;;; Code:
 
-(eval-and-compile (require 'init-basic))
+(require 'zylib)
 
-(defconst zy/user-is-zyxir (equal user-login-name "zyxir")
-  "If the user is Zyxir himself.")
+(defconst +personal-enable (equal user-login-name "zyxir")
+  "The `+personal' module only works for Zyxir himself.")
 
-(when (equal user-login-name "zyxir")
+(when +personal-enable
   (setq user-full-name "Eric Zhuo Chen"
         user-mail-address "ericzhuochen@outlook.com"))
 
-(defun zy/-set-zybox-path (sym path)
+(defun +personal--set-zybox-path (sym path)
   "Set SYM to PATH, and set other paths relative to Zybox.
 
 This set up paths for many packages, including Org-agenda,
@@ -60,22 +63,22 @@ Org-journal, Org-roam, and many more."
               (expand-file-name "ebib/notes" path)
               ebib-file-search-dirs
               `(,(expand-file-name "ebib/files" path))))
-    ;; When the path is invalid, report only when the user is Zyxir himself.
-    (when zy/user-is-zyxir
+    ;; Otherwise, warn about it when necessary.
+    (when +personal-enable
       (lwarn 'zyemacs :warning "Zybox path is not valid."))))
 
-(defcustom zy/zybox-path (or (some-path!
-                              "~/Zybox"
-                              "/mnt/c/Users/zyxir/Zybox")
-                             "/path/to/Zybox")
+(defcustom +personal-zybox-path (or (some-path!
+                                     "~/Zybox"
+                                     "/mnt/c/Users/zyxir/Zybox")
+                                    "/path/to/Zybox")
   "The directory containing Zyxir's personal files.
 
 Once set to a valid path via the Customize interface, set all
 relavant paths like `org-directory' as well."
   :type 'directory
-  :set 'zy/-set-zybox-path
+  :set '+personal--set-zybox-path
   :group 'zyemacs)
 
-(provide 'init-personal)
+(provide 'zy-personal)
 
-;;; init-personal.el ends here
+;;; zy-personal.el ends here

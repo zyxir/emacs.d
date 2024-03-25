@@ -18,8 +18,6 @@
 (defvar zy-modules
   '(;; Use saner default values.
     +defaults
-    ;; Platform or environment-specific.
-    +terminal
     ;; Setup Evil, leader-prefixed keys, and key hints.
     +evil
     +leader
@@ -28,13 +26,19 @@
     +theme
     +font
     +modeline
-    +dashboard
-    +linum
     +orderless
     +minibuffer
     +persist
+    +dashboard
+    +linum
+    ;; Platform or environment-specific.
+    +terminal
+    +platform
     ;; File/directory/project management.
     +project
+    +direnv
+    +file
+    +dired
     ;; Applications or additional features.
     +esup
     +git
@@ -53,7 +57,6 @@
     +undo
     +pair
     +editorconfig
-    +direnv
     +eglot
     +treesit
     +prose
@@ -63,6 +66,7 @@
     +python
     +scala
     +tex
+    +othermodes
     ;; Setup GCMH last to prevent GC during startup.
     +gcmh)
   "Enabled modules of Zyxir's Emacs configuration.")
