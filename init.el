@@ -15,44 +15,46 @@
 (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
 
 ;; Enable/disable modules here.
-(defvar zy-modules '(;; Use saner default values.
-                     +defaults
-                     ;; Platform or environment-specific.
-                     +terminal
-                     ;; Setup Evil, leader-prefixed keys, and key hints.
-                     +evil
-                     +leader
-                     +keyhint
-                     ;; Enhance the workbench.
-                     +theme
-                     +font
-                     +modeline
-                     +dashboard
-                     +linum
-                     +orderless
-                     +minibuffer
-                     +persist
-                     ;; Applications.
-                     +git
-                     +esup
-                     ;; Text-editing and coding.
-                     +corfu
-                     +dabbrev
-                     +paragraph
-                     +outline
-                     +quickins
-                     +search
-                     +yasnippet
-                     +syncheck
-                     +eldoc
-                     +undo
-                     +pair
-                     +editorconfig
-                     +direnv
-                     +eglot
-                     ;; Setup GCMH last to prevent GC during startup.
-                     +gcmh
-                     )
+(defvar zy-modules
+  '(;; Use saner default values.
+    +defaults
+    ;; Platform or environment-specific.
+    +terminal
+    ;; Setup Evil, leader-prefixed keys, and key hints.
+    +evil
+    +leader
+    +keyhint
+    ;; Enhance the workbench.
+    +theme
+    +font
+    +modeline
+    +dashboard
+    +linum
+    +orderless
+    +minibuffer
+    +persist
+    ;; Applications.
+    +git
+    +esup
+    ;; Text-editing and coding.
+    +corfu
+    +dabbrev
+    +paragraph
+    +outline
+    +quickins
+    +search
+    +yasnippet
+    +syncheck
+    +eldoc
+    +undo
+    +pair
+    +editorconfig
+    +direnv
+    +eglot
+    +treesit
+    ;; Setup GCMH last to prevent GC during startup.
+    +gcmh
+    )
   "Enabled modules of Zyxir's Emacs configuration.")
 
 ;; Synchronize the configuration (re-compile everything, and install missing
