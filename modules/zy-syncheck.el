@@ -18,7 +18,7 @@
 (pkg! 'flycheck-eglot)
 
 ;; Enable Flycheck everywhere.
-(global-flycheck-mode 1)
+(add-hook! 'window-setup-hook (global-flycheck-mode 1))
 
 (daemon-require! 'flycheck)
 (after! 'flycheck

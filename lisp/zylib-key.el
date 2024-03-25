@@ -61,18 +61,24 @@ and its value. NAME is the menu name string for the map.
 
 Bind this prefix command to KEY in STATE and KEYMAP as per
 `keybind!'. If KEY is a string, it will be wrapped in `kbd'
-before being used to bind the key.
+before being used to bind the key. If KEYMAP is a unquoted list,
+bind this prefix command to KEY in each KEYMAP.
 
 You may continue to define keybindings using KEY and DEF pairs as
 per `keybind!' in BINDINGS."
   (declare (indent 5))
-  (let ((form `(prog1
-                   (define-prefix-command ',command)
-                 (defvar ,command)
-                 (keybind! ,state ,keymap ,key '(,name . ,command))))
-        (keybind-form (when bindings
-                        `(keybind! nil ,command ,@bindings))))
-    (append form `(,keybind-form))))
+  (let* ((keybind-form-upper
+          (if (eq (car-safe keymap) 'quote)
+              `(keybind! ,state ,keymap ,key '(,name . ,command))
+            `(dolist (keymap (list ,@(ensure-list keymap)))
+               (keybind! ,state keymap ,key '(,name . ,command)))))
+         (form `(prog1
+                    (define-prefix-command ',command)
+                  (defvar ,command)
+                  ,keybind-form-upper))
+         (keybind-form-lower (when bindings
+                               `(keybind! nil ,command ,@bindings))))
+    (append form `(,keybind-form-lower))))
 
 (defun zy--other-window-prefix ()
   "Display the buffer of the next command in a new window.

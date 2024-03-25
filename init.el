@@ -1,4 +1,4 @@
-;;; init.el --- Boostrap config modules.  -*- lexical-binding: t; no-byte-compile: t -*-
+;;; init.el --- Boostrap config modules.  -*- lexical-binding: t -*-
 ;;; Commentary:
 ;;; Code:
 
@@ -33,9 +33,10 @@
     +orderless
     +minibuffer
     +persist
-    ;; Applications.
-    +git
+    ;; Applications or additional features.
     +esup
+    +git
+    +pdf
     ;; Text-editing and coding.
     +corfu
     +dabbrev
@@ -52,20 +53,28 @@
     +direnv
     +eglot
     +treesit
+    ;; Programming Languages.
+    +elisp
+    +nix
+    +python
+    +scala
+    +tex
     ;; Setup GCMH last to prevent GC during startup.
-    +gcmh
-    )
+    +gcmh)
   "Enabled modules of Zyxir's Emacs configuration.")
 
 ;; Synchronize the configuration (re-compile everything, and install missing
 ;; packages in the process) if Emacs is started with the "--sync".
-(when (member "--sync" command-line-args)
+(when-let* ((rest (or (member "--sync" command-line-args)
+                      (member "--force-sync" command-line-args)))
+            (switch (car rest)))
   ;; Delete the argument so that Dashboard setups its hooks normally.
-  (setq command-line-args (delete "--sync" command-line-args))
-  (message "Synchronizing the configuration...")
+  (setq command-line-args (delete switch command-line-args))
+  ;; Set this variable if forced re-compilation is needed.
+  (defvar zy-sync-force (equal switch "--force-sync")
+    "If re-compilation is forced for this synchronization.")
   (load (expand-file-name "zy-sync.el" user-emacs-directory)
-        nil 'nomessage 'nosuffix)
-  (message "Synchronizing the configuration...done"))
+        nil 'nomessage 'nosuffix))
 
 (defun zy-load-rel (relpath &rest args)
   "Load the file in relative path RELPATH.

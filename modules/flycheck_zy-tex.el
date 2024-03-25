@@ -1,12 +1,16 @@
-;;; init-tex.el --- TeX and LaTeX.  -*- lexical-binding: t -*-
+;;; zy-tex.el --- TeX and LaTeX. -*- lexical-binding: t -*-
+
 ;;; Commentary:
 
-;; I don't know very well the differences between TeX and LaTeX, but I use LaTeX
-;; almost 100% of my time. Therefore, most settings in this file apply to LaTeX.
+;; This file provides the `+tex' module of the configuration.
+
+;; I only know the approximate differences between TeX and LaTeX, but I use
+;; LaTeX almost 100% of my time. Therefore, most settings in this file only
+;; apply to LaTeX.
 
 ;;; Code:
 
-(eval-and-compile (require 'init-basic))
+(require 'zylib)
 
 (pkg! 'auctex)
 
@@ -61,6 +65,6 @@
     "v" #'TeX-view
     "_" #'TeX-master-file-ask))
 
-(provide 'init-tex)
+(provide 'zy-tex)
 
-;;; init-tex.el ends here
+;;; zy-tex.el ends here

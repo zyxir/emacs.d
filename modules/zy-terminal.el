@@ -35,18 +35,19 @@
 
 (require 'zylib)
 
+(pkg! 'evil-terminal-cursor-changer)
+(pkg! 'corfu-terminal "https://codeberg.org/akib/emacs-corfu-terminal")
+
 ;; Enable mouse clicks in the terminal.
 (xterm-mouse-mode 1)
 
 ;; Change cursor shape by Evil state in the terminal like in GUI.
 (when (modulep! '+evil)
-  (pkg! 'evil-terminal-cursor-changer)
   (evil-terminal-cursor-changer-activate))
 
 ;; Corfu-terminal makes Corfu completion UI available in the terminal by drawing
 ;; the completion UI with popon instead of posframe.
 (when (modulep! '+corfu)
-  (pkg! 'corfu-terminal "https://codeberg.org/akib/emacs-corfu-terminal")
   (after! 'corfu
     (corfu-terminal-mode 1)))
 

@@ -14,7 +14,6 @@
 (require 'zylib)
 
 (pkg! 'treesit-auto)
-(pkg! 'evil-textobj-tree-sitter)
 
 ;; Fontify everything with tree-sitter.
 (after! 'treesit
@@ -52,15 +51,11 @@
 (treesit-auto-add-to-auto-mode-alist 'all)
 (global-treesit-auto-mode 1)
 
-;; Override some text objects from Evil-cleverparens, and provide more, by
-;; Evil-textobj-tree-sitter.
-(after! 'evil
-  (require 'evil-textobj-tree-sitter)
-  (keybind! nil evil-inner-text-objects-map
-    "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
-  (keybind! nil evil-outer-text-objects-map
-    "f" (evil-textobj-tree-sitter-get-textobj "function.outer")
-    "a" (evil-textobj-tree-sitter-get-textobj "conditional.outer")))
+(defun +treesit-mode-p ()
+  "Return t if the current major mode is powered by tree-sitter."
+  (and (fboundp 'treesit-available-p)
+       (treesit-available-p)
+       (string-suffix-p "-ts-mode" (symbol-name major-mode))))
 
 (provide 'zy-treesit)
 
