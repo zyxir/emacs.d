@@ -151,6 +151,12 @@ cell is ready to be used in `define-key'."
   "M" (cons "Keymap" #'describe-keymap)
   "F" (cons "Face" #'describe-face))
 
+(defprefix! +leader-o-map "Org"
+            nil +leader-map "o"
+  "a" (cons "Agenda" #'org-agenda)
+  "c" (cons "Capture" #'org-capture)
+  "l" (cons "Calendar" #'calendar))
+
 (defprefix! +leader-p-map "Project"
             nil +leader-map "p"
   "p" (cons "Switch" #'project-switch-project)
@@ -174,17 +180,24 @@ cell is ready to be used in `define-key'."
 (defprefix! +leader-t-map "Tab"
             nil +leader-map "t"
   "n" (cons "New" #'tab-new)
-  "t" (cons "Other Tab..." #'other-tab-prefix)
   "c" (cons "Close" #'tab-close)
+  "t" (cons "O.T. Prefix" #'other-tab-prefix)
   "b" (cons "Buffer" #'consult-buffer-other-tab)
   "d" (cons "Dired" #'dired-other-tab)
   "f" (cons "File" #'find-file-other-tab)
   "p" (other-tabbed! "Project" +leader-p-map))
 
-(defprefix! +leader-w-map "Other Window..."
+(defprefix! +leader-w-map "Window"
             nil +leader-map "w"
   "c" (cons "Close" #'delete-window)
-  "w" (cons "Other Window..." #'other-window-prefix)
+  "o" (cons "Only" #'delete-other-windows)
+  "h" (cons "Left" #'evil-window-left)
+  "j" (cons "Down" #'evil-window-down)
+  "k" (cons "Up" #'evil-window-up)
+  "s" (cons "Split" #'evil-window-split)
+  "v" (cons "Vsplit" #'evil-window-vsplit)
+  "l" (cons "Right" #'evil-window-right)
+  "w" (cons "O.W. Prefix" #'other-window-prefix)
   "b" (cons "Buffer" #'consult-buffer-other-window)
   "d" (cons "Dired" #'dired-other-window)
   "f" (cons "File" #'find-file-other-window)

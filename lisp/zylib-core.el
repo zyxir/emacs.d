@@ -50,6 +50,45 @@ This function returns non-nil even before the module is loaded."
    (boundp 'zy-modules)
    (memq symbol zy-modules)))
 
+(defun disabled-modules! (&optional form)
+  "Return the list of disabled modules.
+
+The 2nd optional argument FORM specifies how to represent these
+modules. It can be:
+
+  nil       module symbols (like `+leader')
+  `feature' feature symbols (like `zy-leader')
+  `feat'    same as `feature'
+  `path'    filesystem paths"
+  (let* ((all-modules
+          (seq-map (lambda (file)
+                     (let* ((sans-ext (string-remove-prefix "zy-" file))
+                            (mod-name (string-remove-suffix ".el" sans-ext))
+                            (mod-symbol (intern (format "+%s" mod-name))))
+                       mod-symbol))
+                   (directory-files
+                    (expand-file-name "modules" user-emacs-directory)
+                    nil "^zy-.*\\.el$")))
+         (enabled-modules
+          (if (boundp 'zy-modules)
+              zy-modules
+            (error "Cannot get the list of enabled modules")))
+         (disabled-modules (cl-set-difference all-modules enabled-modules)))
+    (cond
+     ((not form) disabled-modules)
+     ((memq form '(feat feature))
+      (seq-map (lambda (module)
+                 (intern (format "zy-%s" (substring (symbol-name module) 1))))
+               disabled-modules))
+     ((eq form 'path)
+      (seq-map (lambda (module)
+                 (expand-file-name
+                  (format "modules/zy-%s.el"
+                          (substring (symbol-name module) 1))
+                  user-emacs-directory))
+               disabled-modules))
+     (t (error "Invalid `form' argument: %s" form)))))
+
 ;;;; Symbol Manipulation
 
 (defun unquote! (exp)
@@ -157,17 +196,16 @@ If there is any symbol starting with the plus sign, like
 `+leader' does, it is recognized as a module of Zyxir's Emacs
 configuration, and is converted to its feature name accordingly,
 like `+leader' is converted to `zy-leader'."
-  ;; Unquote the form.
-  (setq features (unquote! features))
-  ;; Listify the form.
-  (unless (listp features)
-    (setq features (list features)))
-  ;; Unquote and normalize elements.
-  (mapcar (lambda (x)
-            (setq x (unquote! x))
-            (if (string-prefix-p "+" (symbol-name x))
-                (intern (format "zy-%s" (substring (symbol-name x) 1)))
-              x))
+  ;; Unquote and listify the form.
+  (setq features (ensure-list (cadr features)))
+  ;; Normalize elements.
+  (mapcar (lambda (feature)
+            (when (and (listp feature)
+                       (eq (car feature) 'quote))
+              (error "Feature should not be double-quoted"))
+            (if (string-prefix-p "+" (symbol-name feature))
+                (intern (format "zy-%s" (substring (symbol-name feature) 1)))
+              feature))
           features))
 
 (defmacro after! (features &rest body)
@@ -206,7 +244,7 @@ Each FEATURE in FEATURES is a quoted feature symbol.
 \(fn [FEATURE] ...)"
   (let* ((require-forms
           (mapcar (lambda (feature)
-                    `(require ',(unquote! feature)))
+                    `(require ,feature))
                   features)))
     `(when (daemonp) ,@require-forms)))
 

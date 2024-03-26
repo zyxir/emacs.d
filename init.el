@@ -34,17 +34,20 @@
     ;; Platform or environment-specific.
     +terminal
     +platform
+    +personal
     ;; File/directory/project management.
     +project
     +direnv
     +file
     +dired
-    ;; Applications or additional features.
+    ;; Applications or features.
     +esup
     +git
+    +gtd
+    +journal
     +lingual
-    +pdf
     ;; Text-editing and coding.
+    +embark
     +corfu
     +dabbrev
     +paragraph
@@ -60,9 +63,11 @@
     +eglot
     +treesit
     +prose
-    ;; Programming Languages.
+    ;; Programming Languages or file formats.
     +elisp
     +nix
+    +org
+    +pdf
     +python
     +scala
     +tex

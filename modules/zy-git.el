@@ -23,6 +23,8 @@
 
   (keybind! nil +leader-g-map
     "g" (cons "Magit" #'magit)
+    "f" (cons "File" #'magit-file-dispatch)
+    "F" (cons "Pull" #'magit-pull)
     "t" (cons "Timemachine" #'git-timemachine)
     "h" (cons "Show Hunk" #'diff-hl-show-hunk))
 

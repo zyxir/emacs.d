@@ -34,17 +34,17 @@ Org-journal, Org-roam, and many more."
         (defvar org-directory)
         (setq org-directory (expand-file-name "org" path))
         ;; My GTD files.
-        (defvar zy-gtd-dir)
-        (defvar zy-gtd-inbox-file)
-        (defvar zy-gtd-gtd-file)
-        (defvar zy-gtd-someday-file)
-        (setq zy-gtd-dir org-directory
-              zy-gtd-inbox-file
-              (expand-file-name "inbox.org" zy-gtd-dir)
-              zy-gtd-gtd-file
-              (expand-file-name "gtd.org" zy-gtd-dir)
-              zy-gtd-someday-file
-              (expand-file-name "someday.org" zy-gtd-dir))
+        (defvar +gtd-dir)
+        (defvar +gtd-inbox-file)
+        (defvar +gtd-gtd-file)
+        (defvar +gtd-someday-file)
+        (setq +gtd-dir org-directory
+              +gtd-inbox-file
+              (expand-file-name "inbox.org" +gtd-dir)
+              +gtd-gtd-file
+              (expand-file-name "gtd.org" +gtd-dir)
+              +gtd-someday-file
+              (expand-file-name "someday.org" +gtd-dir))
         ;; The Org-journal directory.
         (defvar org-journal-dir)
         (setq org-journal-dir

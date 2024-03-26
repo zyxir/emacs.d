@@ -14,7 +14,9 @@
 
 (require 'zylib)
 
+(pkg! 'consult)
 (pkg! 'dired-sidebar)
+(pkg! 'async)
 
 (after! '+leader
   (keybind! nil +leader-map
@@ -56,11 +58,21 @@
    (setq dired-recursive-copies 'always
          dired-recursive-deletes 'always)
 
+   (keybind! nil dired-mode-map
+     ;; `dired-goto-file' doesn't work for subtrees. `consult-line' is a great
+     ;; alternative which essentially does the same thing under this
+     ;; circumstance.
+     [remap dired-goto-file] #'consult-line)
+
+   ;; Auto-revert for Dired buffers.
    (add-hook! 'dired-mode-hook
      (defun +dired-auto-revert-a ()
        "Auto revert Dired buffers if not on remote."
        (unless (file-remote-p default-directory)
-         (auto-revert-mode 1)))))
+         (auto-revert-mode 1))))
+
+   ;; Use `dired-async-mode' for asynchronous file operations.
+   (dired-async-mode 1))
 
 (provide 'zy-dired)
 

@@ -41,6 +41,10 @@
 ;; Use the built-in `undo-redo' system introduced in Emacs 28.1.
 (setq-default evil-undo-system 'undo-redo)
 
+;; Use Evil's search module, which supports Chinese input methods, and is more
+;; Vimmy. Further customization is in the `+search' module.
+(setq-default evil-search-module 'evil-search)
+
 ;; Evil mode should be loaded late enought, since there might be additional
 ;; settings in other modules which must be loaded before loading Evil, for
 ;; instance adding keys to `evil-collection-key-blacklist'.
@@ -72,6 +76,13 @@
   ;; Enable Evil-lion for powerful aligning commands (with gl or gL).
   (evil-lion-mode 1)
 
+  ;; Clear search highlights by pressing "C-l".
+  (advice-add
+   #'recenter-top-bottom :after
+   (defun +evil-clear-highlights (&rest _)
+     "Clear Evil search highlights."
+     (evil-ex-nohighlight)))
+
   ;; Restore several keys to default Emacs bindings. In my opinion these keys
   ;; are more useful than default Evil keys and allow moving around easier
   ;; without switching states. Besides, my muscle memory needs them!
@@ -97,7 +108,12 @@
   ;; way of defining macros makes sense to me.
   (keybind! 'normal global-map
     "Q" #'kmacro-start-macro-or-insert-counter
-    "q" #'kmacro-end-or-call-macro))
+    "q" #'kmacro-end-or-call-macro)
+
+  ;; More Unimpaired style keybindings.
+  (keybind! 'motion global-map
+    "[ t" #'tab-previous
+    "] t" #'tab-next))
 
 (provide 'zy-evil)
 

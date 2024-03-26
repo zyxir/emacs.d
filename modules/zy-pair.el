@@ -76,7 +76,11 @@
     "M-S" #'sp-split-sexp
     "M-t" #'sp-transpose-sexp
     "M-v" #'sp-convolute-sexp
-    "M-r" #'sp-raise-sexp))
+    "M-r" #'sp-raise-sexp
+    "+" #'sp-forward-barf-sexp
+    "-" #'sp-backward-barf-sexp
+    "M-}" #'sp-forward-slurp-sexp
+    "M-{" #'sp-backward-slurp-sexp))
 
 (provide 'zy-pair)
 
