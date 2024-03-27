@@ -30,9 +30,15 @@
           (message "Deleted file %s" filename)
           (kill-buffer))))))
 
+(defun +file-print-info ()
+  "Print the path of the current file or `default-directory'."
+  (interactive)
+  (message (or (buffer-file-name) default-directory)))
+
 (after! '+leader
   (keybind! nil +leader-f-map
-    "D" (cons "Delete" #'+file-delete-file-and-buffer)))
+    "D" (cons "Delete" #'+file-delete-file-and-buffer)
+    "v" (cons "Info" #'+file-print-info)))
 
 (provide 'zy-file)
 

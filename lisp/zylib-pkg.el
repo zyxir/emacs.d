@@ -79,7 +79,7 @@ version-controlled package from that URL.
 
 If the package is successfully installed or already installed, it
 is added to `zy-required-packages'."
-  (unless (package-installed-p package)
+  (unless (memq package package-activated-list)
     (cond
      ;; Case 1: No `info' provided. Install normally.
      ((not info) (zy--install-symbol-package package))
@@ -117,7 +117,7 @@ This is a macro wrapped around `zy-require-package'. The
 difference is that this macro tries to install the package
 required during byte compilation, so that the code depending on
 the required package could be compiled correctly."
-  `(eval-and-compile (zy-require-package ,package ,info)))
+  `(zy-require-package ,package ,info))
 
 (provide 'zylib-pkg)
 

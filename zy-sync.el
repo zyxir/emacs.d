@@ -50,23 +50,26 @@
   `(progn
      (package-initialize)
      (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
-     (add-to-list 'load-path (expand-file-name "modules" user-emacs-directory))
-     (require 'zylib)
+     (require 'zylib-pkg)
      (message "The Emacs subprocess is ready.")
      (while t (eval (read-minibuffer ""))))
   "Initialization form for the Emacs subprocess.")
 
 (defun zy-sync--proc-create ()
-  "Create and return the the Emacs subprocess."
-  (start-process "emacs" zy-sync--proc-buffer "emacs"
-                 "--batch" "--eval"
-                 (format "%S" zy-sync--proc-init-form)))
+  "Create the Emacs subprocess with its buffer."
+  (with-current-buffer
+      (get-buffer-create zy-sync--proc-buffer)
+    (read-only-mode 1))
+  (setq zy-sync--proc
+        (start-process "emacs" zy-sync--proc-buffer "emacs"
+                       "--batch" "--eval"
+                       (format "%S" zy-sync--proc-init-form))))
 
 (defun zy-sync-eval (form)
   "Evaluate FORM in the Emacs subprocess.
 FORM is an s-expression."
   (unless zy-sync--proc
-    (setq zy-sync--proc (zy-sync--proc-create)))
+    (zy-sync--proc-create))
   (let ((print-escape-newlines t)
         (print-escape-control-characters t))
     (process-send-string zy-sync--proc (format "%S\n" form))))
@@ -113,7 +116,7 @@ If no s-expression can be read, return nil."
     (dolist (form pkg-forms)
       (zy-sync-eval form)
       (when init-file-debug
-        (zy-sync-msg "  `%s' ensured." (cadr (cadr form)))))
+        (zy-sync-msg "`%s' ensured." (cadr (cadr form)))))
     (zy-sync-msg "%s packages ensured." (cl-list-length pkg-forms))
     ;; Reload the quickstart file.
     (zy-sync-msg "Refreshing the package quickstart file...")
@@ -163,15 +166,14 @@ non-nil, re-compile every file."
 (defun zy-sync-sync (&optional force)
   "Do a synchronization of Zyxir's Emacs configuration.
 If FORCE is non-nil, force re-compile every file."
-  (message "Synchronizing the configuration... (See buffer %s for details)"
-           zy-sync--proc-buffer)
+  (message "Synchronizing the configuration...")
   (let* ((result
           (benchmark-run 1
             ;; Make sure all packages are installed.
             (zy-sync-ensure-packages)
             ;; Re-compile everything smartly.
             (zy-sync-compile-all force)
-            ;; Kill the process.
+            ;; Wait until everything is done, and stop the process.
             (zy-sync-stop-proc)))
          (secs (car result)))
   (message "Synchronizing completed in %s seconds." secs)))

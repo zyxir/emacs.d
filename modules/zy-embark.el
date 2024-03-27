@@ -18,6 +18,10 @@
 (require 'zylib)
 
 (pkg! 'embark)
+(pkg! 'consult)
+(pkg! 'embark-consult)
+
+(daemon-require! 'embark)
 
 ;; Use ";", a key easily accessible by your right pinky, for Embark. Use "M-;"
 ;; instead in insert state.
