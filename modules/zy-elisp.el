@@ -18,7 +18,9 @@
     "e" (cons "Eval Last" #'eval-last-sexp)
     "E" (cons "Eval Region/Buffer"#'elisp-eval-region-or-buffer)
     "d" (cons "Eval Defun" #'eval-defun)
-    "m" (cons "Macro Expand" #'pp-macroexpand-last-sexp)))
+    "m" (cons "Macro Expand" #'pp-macroexpand-last-sexp))
+  (keybind! nil lisp-interaction-mode-map
+    "<localleader>" +elisp-map))
 
 (provide 'zy-elisp)
 

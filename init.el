@@ -139,6 +139,29 @@ Sync the configuration via \"emacs --sync\"" abspath)))))
     (zy-load-rel "modules/zy-%s"
                  (substring (symbol-name module) 1))))
 
+(defun zy/sync (&optional force)
+  "Do a synchronization of Zyxir's Emacs configuration.
+
+This command starts an Emacs subprocess, and do all works there.
+The buffer of the subprocess will be displayed automatically.
+
+What files are re-compiled is decided smartly. If called
+interactively with a positive prefix argument, force
+re-compilation of every file.
+
+If called from Lisp, force re-compilation if FORCE is non-nil."
+  (interactive "P")
+  (let* ((script (expand-file-name "zy-sync.el" user-emacs-directory))
+         (emacs (car command-line-args))
+         (env (if force "ZYEMACS_FORCE=1" ""))
+         (cmd (string-join (list env emacs "--batch" "--load" script) " "))
+         (buffer-name "*ZyEmacs-Sync*"))
+    ;; I tried this with the function `compile' before, but it does not install
+    ;; packages properlly. `async-shell-command' works as expected.
+    (with-current-buffer (get-buffer-create buffer-name)
+      (read-only-mode 1))
+    (async-shell-command cmd "*ZyEmacs-Sync*")))
+
 (provide 'init)
 
 ;;; init.el ends here

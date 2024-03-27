@@ -12,11 +12,14 @@
 
 (require 'zylib)
 
-;; As of 2024-03-23, the ELPA version of Smartparens was released at 2017, and
-;; is much outdated! For this specific case, I choose to use the Melpa version,
-;; which was updated only days ago.
-(pkg! 'smartparens "melpa")
+(pkg! 'smartparens)
 (pkg! 'evil-cleverparens)
+
+;; As of 2024-03-28, Smartparens in ELPA and Melpa-stable was updated in 2017,
+;; lacks many useful functions and bugfixes, and even requires the deprecated
+;; feature `cl', whereas the Melpa version was updated within this month. I have
+;; to pin it to Melpa to provide a better experience.
+(pin-to! "melpa" 'smartparens)
 
 ;; Use Smartparens for most modes.
 (add-hook! '(prog-mode-hook

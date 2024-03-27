@@ -42,11 +42,14 @@
                        (width . 110)
                        (height . 40))
  ;; These modes should also be `nil' to correspond to their actual states.
- menu-bar-mode nil
  scroll-bar-mode nil
  tool-bar-mode nil
  ;; Resize frames pixelwise instead of character-wise to prevent startup delay.
  frame-resize-pixelwise t)
+
+;; `menu-bar-mode' should further be turned off, otherwise the menu bar will
+;; show temporarily at startup.
+(menu-bar-mode -1)
 
 (provide 'early-init)
 
