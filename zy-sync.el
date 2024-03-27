@@ -163,8 +163,8 @@ non-nil, re-compile every file."
 (defun zy-sync-sync (&optional force)
   "Do a synchronization of Zyxir's Emacs configuration.
 If FORCE is non-nil, force re-compile every file."
-  (message "Synchronizing the configuration...")
-  (message "See buffer %s for details" zy-sync--proc-buffer)
+  (message "Synchronizing the configuration... (See buffer %s for details)"
+           zy-sync--proc-buffer)
   (let* ((result
           (benchmark-run 1
             ;; Make sure all packages are installed.
