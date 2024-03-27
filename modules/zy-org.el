@@ -16,13 +16,6 @@
 
 (pkg! 'org)
 (pkg! 'org-modern)
-(pkg! 'evil-org)
-
-;; Use Evil keybindings for Org provided by Evil-org.
-(add-hook! 'org-mode-hook
-  (evil-org-mode 1)
-  (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
 
 ;; Indent sections by depth by default.
 (setq-default org-startup-indented t)
@@ -70,6 +63,7 @@
 
 ;; Prettify Org buffers with Org-modern.
 (add-hook! 'org-mode-hook (org-modern-mode 1))
+(add-hook! 'org-agenda-finalize-hook #'org-modern-agenda)
 
 (after! 'org-modern
   ;; Show blocks and symbols with the fixed-pitch face.

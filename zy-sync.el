@@ -78,7 +78,11 @@ The message is formatted with FORMAT-STRING with ARGS."
 
 (defun zy-sync-stop-proc ()
   "Properly stop the Emacs subprocess."
-  (zy-sync-eval `(kill-emacs)))
+  ;; Ask the process to quit.
+  (zy-sync-eval `(kill-emacs))
+  ;; Wait until it is actually stopped.
+  (while (process-live-p zy-sync--proc)
+    (ignore)))
 
 (defun zy-sync--read-sexp (buf)
   "Read one s-expression from buffer BUF.

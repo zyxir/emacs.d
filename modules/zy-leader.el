@@ -102,15 +102,16 @@ cell is ready to be used in `define-key'."
       (unless (fboundp eglot-action)
         (error "`%s' is not a valid Eglot command" eglot-action)))
     `(progn
-       (defun ,fn-name (&rest _)
-         ,(format
-           "A placeholder command for action \"%s\"."
-           action)
-         (interactive)
-         (if (and (fboundp 'eglot-managed-p)
-                  (eglot-managed-p))
-             (call-interactively ',eglot-action)
-           (message ,(format "Action \"%s\" is not implemented." action))))
+       (eval-and-compile
+         (defun ,fn-name (&rest _)
+           ,(format
+             "A placeholder command for action \"%s\"."
+             action)
+           (interactive)
+           (if (and (fboundp 'eglot-managed-p)
+                    (eglot-managed-p))
+               (call-interactively ',eglot-action)
+             (message ,(format "Action \"%s\" is not implemented." action)))))
        (cons ,(capitalize (string-replace "-" " " action)) #',fn-name))))
 
 (defprefix! +leader-c-map "Code"

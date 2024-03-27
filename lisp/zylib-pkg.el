@@ -43,6 +43,13 @@
 (defvar zy-required-packages '()
   "Packages explicitly required by `pkg!'.")
 
+;; Now that the list of packages is declared in the configuration instead of
+;; controlled by manual `package-install' calls, we should make sure that
+;; `package-selected-packages' cooresponds to `zy-required-packages' after
+;; startup, so that utility functions like `package-autoremove' work properlly.
+(add-hook! 'window-setup-hook
+  (setq package-selected-packages zy-required-packages))
+
 (defun zy--install-symbol-package (package &optional no-refresh)
   "Install PACKAGE, a symbol representing a package.
 
@@ -85,10 +92,6 @@ is added to `zy-required-packages'."
      ((stringp info) (package-vc-install `(,package :url ,info)))
      ;; Other cases: invalid `info' provided.
      (t (error "Invalid package info: %s" info))))
-  ;; Add the package symbol to `package-selected-packages' to prevent it from
-  ;; being auto-removed. Normally this shouldn't be done manually, but we do
-  ;; this just in case the list is unexpectedly modified.
-  (add-to-list 'package-selected-packages package)
   ;; Track explicitly required packages.
   (add-to-list 'zy-required-packages package)
   ;; Return the package symbol.

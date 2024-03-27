@@ -93,27 +93,33 @@
 RELPATH is relative to `user-emacs-directory', and is formatted
 with ARGS like `format' does.
 
+The file is always loaded as byte code. If not, issue an error.
+
 This function is and should only be used in the initialization
 file (init.el)."
-  (load (expand-file-name (apply #'format relpath args)
+  (let ((abspath (concat (expand-file-name
+                          (apply #'format relpath args)
                           user-emacs-directory)
-        ;; Announce the loading while debugging.
-        nil (not init-file-debug) nil 'must-suffix))
+                         ".elc")))
+    (condition-case nil
+         ;; Announce the loading while debugging.
+        (load abspath nil (not init-file-debug) 'nosuffix)
+      (file-missing
+       (error "%s not found. Maybe you forgot to sync?
+Sync the configuration via \"emacs --sync\"" abspath)))))
 
 (let (;; `file-name-handler-alist' is consulted each time a file is loaded.
       ;; Unsetting it speeds up startup notably.
       (file-name-handler-alist nil)
-      ;; Each suffix of `load-suffixes' is tried while loading a file.
-      ;; Temporarily dropping ".so" from the list reduces the permutations
-      ;; needed to load the correct files during startup.
-      (load-suffixes '(".elc" ".el"))
       ;; `load-source-file-function' decides what function to be called to do
       ;; code conversion before reading a source file. Since I do not need code
       ;; conversion while loading the configuration, unsetting it reduces tons
       ;; of startup time.
       (load-source-file-function nil)
-      ;; Don't spend precious time checking modified time during startup. TODO:
-      ;; mention a way to sync the configuration.
+      ;; Don't spend precious time checking modified time during startup.
+      ;; Ensuring that the configuration is updated is the job of zy-sync.el.
+      ;; Run "emacs --sync" to perform a synchronization of the configuration
+      ;; before startup.
       (load-prefer-newer nil))
 
   ;; Load all components of Zylib manually, which defines utility functions and
@@ -126,7 +132,7 @@ file (init.el)."
 
   ;; Load the custom file now.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (zy-load-rel "custom.el")
+  (load custom-file nil (not init-file-debug) 'nosuffix)
 
   ;; Load all modules in order.
   (dolist (module zy-modules)

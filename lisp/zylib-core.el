@@ -235,7 +235,7 @@ newly created GUI frame."
                        ;; Otherwise, add itself to the hook.
                        (add-hook 'after-make-frame-functions
                                  ',fn-name)))))
-    `(progn ,fn-form (,fn-name))))
+    `(progn (eval-and-compile ,fn-form) (,fn-name))))
 
 (defmacro daemon-require! (&rest features)
   "Require FEATURES if running as a daemon.
