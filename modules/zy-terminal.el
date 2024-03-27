@@ -35,6 +35,7 @@
 
 (require 'zylib)
 
+(pkg! 'popon)
 (pkg! 'evil-terminal-cursor-changer)
 (pkg! 'corfu-terminal "https://codeberg.org/akib/emacs-corfu-terminal")
 

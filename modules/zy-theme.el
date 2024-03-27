@@ -20,7 +20,6 @@
 ;; Although Modus Themes are included in Emacs 29, the ELPA version has more
 ;; features and variants.
 (pkg! 'modus-themes)
-(pkg! 'solaire-mode)
 (pkg! 'rainbow-delimiters)
 (pkg! 'hl-todo)
 
@@ -74,9 +73,6 @@ Only works for non-graphical frames."
 ;; Load the theme.
 (let ((enable-theme-functions nil))
  (load-theme +theme-theme 'no-confirm))
-
-;; Enable Solaire mode to distinguish between file and non-file buffers.
-(solaire-global-mode 1)
 
 ;; Enable rainbow delimeters for all prog modes.
 (add-hook! 'prog-mode-hook #'rainbow-delimiters-mode)

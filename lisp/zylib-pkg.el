@@ -40,13 +40,6 @@
 ;; manually to fix it.
 (setq package-quickstart t)
 
-;; Starting from Emacs 27.1, it is no longer necessary to call
-;; `package-initialize' since it is now activated before loading the init file,
-;; unless `package-enable-at-startup' is set to nil in the early init file.
-;; However, Esup need to call `package-initialize' in order to work.
-(when (featurep 'esup-child)
-  (package-initialize))
-
 (defvar zy-required-packages '()
   "Packages explicitly required by `pkg!'.")
 

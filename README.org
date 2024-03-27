@@ -13,7 +13,8 @@ Fast and lightweight Emacs configuration tailored for my daily usage.
 ** Philosophy
 
 - Efficiency :: Being fast and productive is the utmost goal.
-- Minimal :: Stick to a simple, text-based UI. No fancy graphics or bloated packages.
+- Minimal :: Stick to a simple, text-based UI. Terminal support is highly valued.
+- Modular :: Composed of modules without inter-dependency, except a common library.
 
 *** Why Evil
 
@@ -39,9 +40,7 @@ Most behavior of this configuration is hard-coded. That is because I am currentl
 
 ** Tips
 
-*** Profiling startup time
-
-Powered by [[https://github.com/jschaf/esup][ESUP]], You can profile startup time via ~M-x esup~.
+TODO: Add features that are often forgotten here.
 
 ** Naming Conventions
 

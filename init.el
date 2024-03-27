@@ -41,7 +41,6 @@
     +file
     +dired
     ;; Applications or features.
-    +esup
     +git
     +gtd
     +journal
