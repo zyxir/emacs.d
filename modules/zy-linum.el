@@ -13,7 +13,8 @@
 
 ;; Enable line numbers for any non-special mode.
 (add-hook! 'after-change-major-mode-hook
-  (unless (derived-mode-p 'special-mode)
+  (unless (or (derived-mode-p 'special-mode)
+              (derived-mode-p 'dired-mode))
     (display-line-numbers-mode 1)))
 
 (after! 'display-line-numbers

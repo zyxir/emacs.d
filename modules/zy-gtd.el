@@ -27,6 +27,46 @@ Automatically set when `+personal-zybox-dir' is customized.")
   "My someday file of the GTD system.
 Automatically set when `+personal-zybox-dir' is customized.")
 
+(after! 'org
+  ;; Track the time of an entry set to done.
+  (setq org-log-done 'time)
+
+  ;; Refile entries from inbox to other GTD files.
+  (setq-default org-refile-targets `((,+gtd-gtd-file :level . 2)
+                                     (,+gtd-someday-file :maxlevel . 3)))
+
+  ;; Customized todo keywords.
+  (setq org-todo-keywords '((sequence "TODO(t)"
+                                      "DOING(i)"
+                                      "|"
+                                      "DONE(d)"
+                                      "CANCELED(c)"))
+        org-todo-keyword-faces '(("TODO" . org-todo)
+                                 ("DOING" . package-status-available)
+                                 ("DONE" . org-done)
+                                 ("CANCELED" . shadow))))
+
+(after! 'org-agenda
+  ;; Add GTD files to agenda files.
+  (add-to-list 'org-agenda-files +gtd-inbox-file)
+  (add-to-list 'org-agenda-files +gtd-gtd-file)
+  (add-to-list 'org-agenda-files +gtd-someday-file)
+
+  ;; Use normal state for the agenda buffer.
+  (after! 'evil
+    (evil-set-initial-state 'org-agenda-mode 'normal))
+
+  ;; Use variable pitch font for the agenda.
+  (add-hook! 'org-agenda-mode-hook (variable-pitch-mode 1)))
+
+(after! 'org-capture
+  ;; Capture template for todo entries.
+  (add-to-list 'org-capture-templates
+               `("i" "GTD inbox" entry
+                 (file+headline ,+gtd-inbox-file "Inbox")
+                 "* TODO %i%? %^G\nCREATED: %U"
+                 :kill-buffer t)))
+
 (provide 'zy-gtd)
 
 ;;; zy-gtd.el ends here
