@@ -52,6 +52,10 @@
 ;; manually to fix it.
 (setq package-quickstart t)
 
+;; Now we should do `package-initialize' if it is not initialized yet.
+(unless (bound-and-true-p package--initialized)
+  (package-initialize))
+
 (defvar zy-required-packages '()
   "Packages explicitly required by `pkg!'.")
 
@@ -131,6 +135,8 @@ is added to `zy-required-packages'.
 This macro is recognized at the synchronization stage to ensure a
 package is installed."
   `(zy-require-package ,package ,info))
+
+(defvar package-pinned-packages)
 
 (defmacro pin-to! (archive package &rest packages)
   "Only install PACKAGES from ARCHIVE.

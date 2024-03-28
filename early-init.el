@@ -51,6 +51,9 @@
 ;; show temporarily at startup.
 (menu-bar-mode -1)
 
+;; Do not initialize package.el now. Do it manually later.
+(setq package-enable-at-startup nil)
+
 (provide 'early-init)
 
 ;;; early-init.el ends here

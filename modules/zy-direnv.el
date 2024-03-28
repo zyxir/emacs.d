@@ -16,6 +16,11 @@
 
 (require 'zylib)
 
+;; As of 2024-03-28, the stable version of Envrc is a bit basic. It lacks an
+;; important command, `envrc-show-log', which is used to know the current status
+;; of Direnv. Use the cutting-edge Melpa version instead.
+(pin-to! "melpa" 'envrc)
+
 (pkg! 'envrc)
 
 (add-hook! 'window-setup-hook
