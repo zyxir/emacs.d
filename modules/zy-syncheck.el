@@ -51,15 +51,28 @@
 
   ;; Display Flycheck errors with Eldoc.
   (add-hook 'eldoc-documentation-functions #'+syncheck-flycheck-eldoc-fn)
-  (setq
-   ;; Override Flycheck's default echoing function, which breaks Eldoc.
-   flycheck-display-errors-function nil
-   ;; Don't show Flycheck markers. They are useless and don't work well with
-   ;; other packages.
-   flycheck-indication-mode nil
-   ;; Inherit `load-path' from the running Emacs session while checking Emacs
-   ;; Lisp code. This is useful while checking initialization code.
-   flycheck-emacs-lisp-load-path 'inherit))
+
+  ;; Unset Flycheck's default echoing function, which breaks Eldoc.
+  (setq flycheck-display-errors-function nil)
+
+  ;; Don't show Flycheck markers. They are useless and don't work well with
+  ;; other packages.
+  (setq flycheck-indication-mode nil)
+
+  ;; Inherit `load-path' from the running Emacs session while checking Emacs
+  ;; Lisp code. This is useful while checking initialization code.
+  (setq flycheck-emacs-lisp-load-path 'inherit)
+
+  ;; Ignore package signatures during Emacs Lisp syntax checking. They are
+  ;; irrelevant!
+  (setq flycheck-emacs-lisp-package-initialize-form
+        (eval-and-compile
+          (format
+           "%S"
+           `(with-demoted-errors
+                "Error during package initialization: %S"
+              (setq package-check-signature nil)
+              (package-initialize))))))
 
 ;; Use Flycheck rather than Flymake with Eglot.
 (after! 'eglot
