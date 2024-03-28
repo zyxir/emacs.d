@@ -33,7 +33,7 @@ a string, it is always wrapped in `kbd' before being used.
 
 It is possible to specify multiple KEY and DEF pairs in BINDINGS.
 
-\(fn STATE KEYMAP KEY DEF [KEY DEF])"
+\(fn STATE KEYMAP KEY DEF [KEY DEF] ...)"
   (declare (indent 2))
   (let* ((bindings (append `(,key ,def) bindings))
          (index 0)
