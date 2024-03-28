@@ -37,7 +37,7 @@
 
 (pkg! 'popon)
 (pkg! 'evil-terminal-cursor-changer)
-(pkg! 'corfu-terminal "https://codeberg.org/akib/emacs-corfu-terminal")
+(pkg! 'corfu-terminal)
 
 ;; Use a prettier character to divide windows.
 (unless standard-display-table

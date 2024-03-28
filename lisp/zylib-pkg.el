@@ -86,29 +86,38 @@ to install the package again."
    (package-desc-version
     (package-get-descriptor package))))
 
-(defun zy-require-package (package &optional info)
+(defun zy-require-package (package &rest spec)
   "Make sure that PACKAGE is installed.
 PACKAGE is a symbol representing a package.
 
-If a 2nd optional argument INFO is omitted, install PACKAGE via
-`package-install' when it is not installed.
+If no optional argument SPEC is provided, install the package
+PACKAGE via `package-install' when it is not installed. It
+respects packages pinned to a specific archive via `pin-to!', and
+respects `package-archive-priority'.
 
-If INFO is given as a string, and is a URL, install PACKAGE as a
-version-controlled package from that URL.
+Otherwise, SPEC should be a property list describing a package
+specification specifying a package from source, which will be
+installed via `package-vc-install', as described in the Info
+node `(emacs)Fetching Package Sources'.
 
 If the package is successfully installed or already installed, it
-is added to `zy-required-packages'."
+is added to `zy-required-packages', which will eventually replace
+the content of `package-selected-packages'."
+  ;; Make sure that packages are initialized.
+  (unless (bound-and-true-p package--initialized)
+    (package-initialize))
+  ;; Install the package unless it is already installed yet.
   (unless (package-installed-p package)
     (let (;; Messages generated while installing a package generally do not
           ;; matter. We want to be notified only when an error occurs.
           (inhibit-message t))
       (cond
-     ;; Case 1: No `info' provided. Install normally.
-     ((not info) (zy--install-symbol-package package))
-     ;; Case 2: `info' is a string. Install with VC.
-     ((stringp info) (package-vc-install `(,package :url ,info)))
-     ;; Other cases: invalid `info' provided.
-     (t (error "Invalid package info: %s" info))))
+       ;; Case 1: No `spec' provided. Install normally.
+       ((not spec) (zy--install-symbol-package package))
+       ;; Case 2: `spec' is a plist. Install with VC.
+       ((plistp spec) (package-vc-install (cons package spec)))
+       ;; Other cases: invalid `spec' provided.
+       (t (error "Invalid package specification: %s" spec))))
     (message "Package `%s' with version %s installed."
              package (zy-get-package-version package)))
   ;; Track explicitly required packages.
@@ -116,25 +125,30 @@ is added to `zy-required-packages'."
   ;; Return the package symbol.
   package)
 
-(defmacro pkg! (package &optional info)
+(defmacro pkg! (package &rest spec)
   "Make sure that PACKAGE is installed.
-PACKAGE is a package name, either quoted or unquoted.
+PACKAGE is a symbol representing a package.
 
-If a 2nd optional argument INFO is omitted, install PACKAGE via
-`package-install' when it is not installed.
+If no optional argument SPEC is provided, install the package
+PACKAGE via `package-install' when it is not installed. It
+respects packages pinned to a specific archive via `pin-to!', and
+respects `package-archive-priority'.
 
-If INFO is given as a string, and is the name of one of the
-`package-archives', only install the package from that archive.
+Otherwise, SPEC should be a property list describing a package
+specification specifying a package from source, which will be
+installed via `package-vc-install', as described in the Info
+node `(emacs)Fetching Package Sources'.
 
-If INFO is given as a string, and is a URL, install PACKAGE as a
-version-controlled package from that URL.
+If the package is successfully installed or already installed, it
+is added to `zy-required-packages', which will eventually replace
+the content of `package-selected-packages'.
 
 If the package is successfully installed or already installed, it
 is added to `zy-required-packages'.
 
 This macro is recognized at the synchronization stage to ensure a
 package is installed."
-  `(zy-require-package ,package ,info))
+  `(zy-require-package ,package ,@spec))
 
 (defvar package-pinned-packages)
 

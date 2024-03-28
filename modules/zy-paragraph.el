@@ -11,7 +11,9 @@
 
 (require 'zylib)
 
-(pkg! 'indent-bars "https://github.com/jdtsmith/indent-bars")
+(pkg! 'indent-bars
+      :url "https://github.com/jdtsmith/indent-bars"
+      :branch "main")
 
  ;; Use 80 characters as the global line length standard, as recommended by
  ;; the Google Style Guides.
