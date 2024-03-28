@@ -44,7 +44,7 @@ is a string representing the padding."
        selection-info)
     `( compilation objed-state misc-info persp-name battery grip
        irc mu4e gnus github debug repl lsp minor-modes input-method
-       indent-info buffer-encoding major-mode process vcs check time
+       indent-info buffer-encoding major-mode process vcs checker time
        ,val)))
 
 (defcustom +modeline-right-padding "    "

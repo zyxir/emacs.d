@@ -25,10 +25,20 @@
 ;; Prefer packages from GNU ELPA and NonGNU ELPA, since packages in them are
 ;; considered part of GNU Emacs, have undergone stricter review upon
 ;; entering/updating, and are generally more stable.
+;;
+;; When a package is only available on Melpa, prefer Melpa-stable, since tagged
+;; versions are usually more stable than the master branch. For instance, as of
+;; 2024-03-27, the master branch of Dashboard breaks, but the tagged version
+;; works.
+;;
+;; However, sometimes a package in Melpa-stable may be very outdated. For
+;; example, as of 2024-03-28, Smartparens on Melpa-stable was updated in 2017.
+;; In this case it is preferred to pin it to a specific package archive with the
+;; `pin-to!' command.
 (setq package-archive-priorities '(("gnu" . 4)
                                    ("nongnu" . 3)
-                                   ("melpa" . 2)
-                                   ("melpa-stable" . 1)))
+                                   ("melpa-stable" . 2)
+                                   ("melpa" . 1)))
 
 ;; Natively compile packages at installation. If native compilation support is
 ;; absent, this option does not have any effect.

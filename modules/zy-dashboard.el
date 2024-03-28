@@ -14,10 +14,6 @@
 
 (pkg! 'dashboard)
 
-;; As of 2024-03-28, the latest commit of Dashboard causes an error. Pin it to
-;; Melpa-stable temporarily. Maybe I should consider using Straight some time!
-(pin-to! "melpa-stable" 'dashboard)
-
 ;; Configure Dashboard in advance.
 (setq-default
  ;; Use project.el for projects.
