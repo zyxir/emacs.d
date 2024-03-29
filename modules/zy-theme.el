@@ -65,7 +65,7 @@ to make the loading of themes more deterministic."
     (defun +theme-setup-terminal-err-faces-h (&optional frame)
       "Setup more prominent error faces for FRAME.
 Only works for non-graphical frames."
-      (when-let* ((frame (if frame frame (selected-frame))))
+      (when-let* ((frame (or frame (selected-frame))))
         (unless (display-graphic-p frame)
           (set-face-attribute 'modus-themes-lang-error frame
                               :inherit 'error)

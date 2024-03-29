@@ -31,6 +31,7 @@
     +persist
     +dashboard
     +linum
+    +tab
     ;; Platform or environment-specific.
     +terminal
     +platform

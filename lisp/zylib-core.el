@@ -177,7 +177,7 @@ warnings."
   (let* ((require-sexp `(eval-and-compile
                           ,@(mapcar #'(lambda (x) `(require ',x))
                                     features)))
-         (body `(lambda () ,require-sexp ,@body)))
+         (body `#'(lambda () ,require-sexp ,@body)))
     (dolist (feature features)
       (setq body `(eval-after-load ',feature ,body)))
     body))
