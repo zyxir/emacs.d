@@ -36,23 +36,59 @@ tab via Bufferlo. After that, return the dashboard buffer if
 there it exists, otherwise return the created scratch buffer."
      (let* ((scratch (bufferlo-create-local-scratch-buffer))
             (dashboard (get-buffer "*dashboard*")))
-       (or dashboard scratch)))))
+       (or dashboard scratch))))
 
-;; Only show local buffers in `consult-buffer'.
+  ;; Use a custom strategy for generating tab names.
+  (setq
+   tab-bar-tab-name-function
+   (defun +tab-name-current()
+     "Generate tab name smartly.
+Try the current project name first, then the current buffer name."
+     (if (and (project-current) (fboundp 'project-name))
+         (project-name (project-current))
+       (buffer-name (window-buffer (minibuffer-selected-window)))))))
+
+;; Prefer local buffers in `consult-buffer'. Note that `consult-buffer' groups
+;; buffers (as well as local files and recent files) into different sources, and
+;; completion works for the first source by default until a narrow key is used.
 (after! '(bufferlo consult)
-  (set 'consult--source-buffer
-       `( :name "Local Buffers"
-          :narrow ?l
-          :category buffer
-          :face consult-buffer
-          :history buffer-name-history
-          :state ,#'consult--buffer-state
-          :default t
-          :items #'(lambda () (consult--buffer-query
-                               :predicate #'bufferlo-local-buffer-p
-                               :sort 'visibility
-                               :as #'buffer-name))))
-  t)
+  (defvar +tab-consult-source-local-buffer
+    `( :name "Local Buffers"
+       :narrow ?l
+       :category buffer
+       :face consult-buffer
+       :history buffer-name-history
+       :state ,#'consult--buffer-state
+       :items ,#'(lambda () (consult--buffer-query
+                             :predicate #'bufferlo-local-buffer-p
+                             :sort 'visibility
+                             :as #'buffer-name)))
+    "Local buffer candidate source for `consult-buffer'.")
+
+  (defvar +tab-consult-source-other-buffer
+    `( :name "Other Buffers"
+       :narrow ?l
+       :category buffer
+       :face consult-buffer
+       :history buffer-name-history
+       :state ,#'consult--buffer-state
+       :items ,#'(lambda () (consult--buffer-query
+                             :predicate #'bufferlo-non-local-buffer-p
+                             :sort 'visibility
+                             :as #'buffer-name)))
+    "Non-local buffer candidate source for `consult-buffer'.")
+
+  ;; Replace `consult--source-buffer' by the two entries defined, and keep
+  ;; others unchanged.
+  (setq consult-buffer-sources '(consult--source-hidden-buffer
+                                 consult--source-modified-buffer
+                                 +tab-consult-source-local-buffer
+                                 +tab-consult-source-other-buffer
+                                 consult--source-recent-file
+                                 consult--source-file-register
+                                 consult--source-bookmark
+                                 consult--source-project-buffer-hidden
+                                 consult--source-project-recent-file-hidden)))
 
 (provide 'zy-tab)
 

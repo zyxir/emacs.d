@@ -177,7 +177,8 @@ warnings."
   (let* ((require-sexp `(eval-and-compile
                           ,@(mapcar #'(lambda (x) `(require ',x))
                                     features)))
-         (body `#'(lambda () ,require-sexp ,@body)))
+         (fn-name (cl-gensym "after!-"))
+         (body `(defun ,fn-name () ,require-sexp ,@body t)))
     (dolist (feature features)
       (setq body `(eval-after-load ',feature ,body)))
     body))
@@ -223,7 +224,7 @@ processed accordingly."
 In BODY, one can use the variable FRAME, which is bound to the
 newly created GUI frame."
   (declare (indent 0) (debug (form def-body)))
-  (let* ((fn-name (intern (format "after-gui-%s" (cl-gensym))))
+  (let* ((fn-name (cl-gensym "after-gui!-"))
          (fn-form `(defun ,fn-name (&optional frame)
                      (if (display-graphic-p frame)
                          ;; When GUI is ready, remove the hook function and
@@ -232,10 +233,12 @@ newly created GUI frame."
                            (remove-hook 'after-make-frame-functions
                                         ',fn-name)
                            ,@body)
-                       ;; Otherwise, add itself to the hook.
+                       ;; Otherwise, add itself to the hooks.
                        (add-hook 'after-make-frame-functions
-                                 ',fn-name)))))
-    `(progn (eval-and-compile ,fn-form) (,fn-name))))
+                                 ',fn-name))
+                     ;; Return something to prevent compiling issues.
+                     t)))
+    `(add-hook 'window-setup-hook ,fn-form)))
 
 (defmacro daemon-require! (&rest features)
   "Require FEATURES if running as a daemon.

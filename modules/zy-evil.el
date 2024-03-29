@@ -45,10 +45,14 @@
 ;; Vimmy. Further customization is in the `+search' module.
 (setq-default evil-search-module 'evil-search)
 
-;; Evil mode should be loaded late enought, since there might be additional
+;; Evil mode should be loaded late enough, since there might be additional
 ;; settings in other modules which must be loaded before loading Evil, for
-;; instance adding keys to `evil-collection-key-blacklist'.
-(add-hook! 'window-setup-hook (require 'evil))
+;; instance adding keys to `evil-collection-key-blacklist'. However, Evil should
+;; also be loaded before any buffer is created, which happens in hooks like
+;; `after-init-hook', `emacs-startup-hook', and `window-setup-hook'. Now we make
+;; sure that Evil is always loaded first at `after-init-hook'.
+(add-hook! 'after-init-hook :depth -90
+  (require 'evil))
 
 (after! 'evil
   ;; Enable Evil mode. If Evil mode is not enabled beforehand, some of the
