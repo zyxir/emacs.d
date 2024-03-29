@@ -24,7 +24,7 @@
   (keybind! nil +leader-g-map
     "g" (cons "Magit" #'magit)
     "f" (cons "File" #'magit-file-dispatch)
-    "F" (cons "Pull" #'magit-pull)
+    "F" (cons "Pull" #'magit-pull-from-upstream)
     "t" (cons "Timemachine" #'git-timemachine)
     "h" (cons "Show Hunk" #'diff-hl-show-hunk))
 
@@ -34,10 +34,10 @@
 ;; Magit is used very frequently. Load it at startup if running as a daemon.
 (daemon-require! 'magit)
 
-(after! 'magit
-  ;; Do not bind keys automatically.
-  (setq magit-define-global-key-bindings nil)
+;; Do not bind keys automatically.
+(setq magit-define-global-key-bindings nil)
 
+(after! 'magit
   ;; Show commit time in the status buffer.
   (setq magit-status-margin '(t age magit-log-margin-width nil 18)))
 

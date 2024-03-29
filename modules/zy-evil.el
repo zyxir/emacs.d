@@ -115,7 +115,7 @@
     "q" #'kmacro-end-or-call-macro)
 
   ;; More Unimpaired style keybindings.
-  (keybind! 'motion global-map
+  (keybind! 'normal global-map
     "[ t" #'tab-previous
     "] t" #'tab-next))
 
