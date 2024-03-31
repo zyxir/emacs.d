@@ -4,12 +4,24 @@
 
 ;; This file provides the `+font' module of the configuration.
 
-;; It sets font for various faces and multiple character sets. An objective of
-;; these settings is to make the width of one Chinese character equal that of
-;; two Latin characters, so that these two lines could align:
+;; It sets font for various faces and multiple character sets. I used to aim at
+;; making the width of one Chinese character equal that of two Latin characters,
+;; so that the following two lines could align:
 ;;
 ;; 這句話一共由十三個漢字組成
 ;; abcdefghijklmnopqrstuvwxyz
+;;
+;; In order to make them align, a special font should be chosen. The best font
+;; for this alignment is Sarasa Fixed.
+;;
+;; However, as I used that font in a day to day basis, I found that it is too
+;; thin (for alignment) and is hard to read. As long as I tried other
+;; programming fonts (like Inconsolata, JetBrains Mono, and so on), I found that
+;; these professional fonts are far more clear and beautiful than Sarasa Fixed
+;; (or Iosevka, the font that Sarasa's Latin part is based on). Therefore, now I
+;; value font appearance more than pure alignment. When alignment is really that
+;; necessary, for instance in tables in Markdown or Org-mode, we can use the
+;; package Valign for perfect text alignment.
 
 ;;; Code:
 
@@ -148,7 +160,7 @@ checked."
     ;; Default face, fixed-pitch face and global font size.
     (dolist (face '(default fixed-pitch))
       (eval
-       (append '(set-face-attribute face nil)
+       (append `(set-face-attribute ',face nil)
                (when (member +font-default available-fonts)
                  `(:family ,+font-default))
                `(:height ,height)))
