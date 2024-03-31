@@ -15,12 +15,8 @@
 (require 'zylib)
 
 (pkg! 'consult)
-(pkg! 'dired-sidebar)
+(pkg! 'dired-subtree)
 (pkg! 'async)
-
-(after! '+leader
-  (keybind! nil +leader-map
-    "D" (cons "Dired Sidebar" #'dired-sidebar-toggle-sidebar)))
 
 (daemon-require! 'dired 'dired-sidebar)
 

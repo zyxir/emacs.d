@@ -11,13 +11,9 @@
 ;; 這句話一共由十三個漢字組成
 ;; abcdefghijklmnopqrstuvwxyz
 
-;; commentary
-
 ;;; Code:
 
 (require 'zylib)
-
-(pkg! 'ligature)
 
 ;;;; Font Customizables
 
@@ -35,8 +31,17 @@ This function set the value of FONT-SYM to FONT-VAL, and run
              (fboundp '+font/setup))
     (+font/setup)))
 
-(defcustom +font-size 16
-  "The pixel size of font in `default' face."
+(defcustom +font-size-default 16
+  "The pixel size of font for the `default' face."
+  :type 'integer
+  :group '+font
+  :set #'+font--set-var)
+
+(defcustom +font-size-varpitch 18
+  "The pixel size of font for the `variable-pitch' face.
+When set to 0, does not set an explicit size for the
+`variable-pitch' face, and the face will use the default size
+implied by `+font-size-default'."
   :type 'integer
   :group '+font
   :set #'+font--set-var)
@@ -58,13 +63,13 @@ string. The defined customizable variable will have the
 ;; a lexical scope, preventing the defined variables from being used globally.
 (setq +font-no-refresh-on-set t)
 
-(+font-define-font +font-default "Sarasa Mono HC"
+(+font-define-font +font-default "JetBrainsMonoNL Nerd Font"
   "Font for the `default' face.")
-(+font-define-font +font-default-cjk "Sarasa Mono HC"
+(+font-define-font +font-default-cjk "Sarasa Fixed SC Nerd Font"
   "CJK font for the `default' face.")
-(+font-define-font +font-varpitch "Noto Sans"
+(+font-define-font +font-varpitch "Source Sans 3"
   "Font for the `variable-pitch' face.")
-(+font-define-font +font-varpitch-cjk "Noto Sans CJK TC"
+(+font-define-font +font-varpitch-cjk "Sarasa Fixed SC Nerd Font"
   "CJK font for the `variable-pitch' face.")
 
 ;; Unset `+font-no-refresh-on-set', so that if the user customizes a font, a
@@ -73,10 +78,10 @@ string. The defined customizable variable will have the
 
 ;;;; Font Setting Utility
 
-(defconst zy/cjk-charsets '(han cjk-misc bopomofo kana hangul)
+(defconst +font-cjk-charsets '(han cjk-misc bopomofo kana hangul)
   "CJK character sets.")
 
-(defun zy/set-face-charset-font (face frame charset font)
+(defun +font-set-charset-font (face frame charset font)
   "Set the font used for character set CHARSET in face FACE.
 
 This function has no effect if `display-graphic-p' returns nil
@@ -138,29 +143,28 @@ This is used in `after-make-frame-functions', and arugment
 FRAME makes sure that the validness of the fonts can be correctly
 checked."
   (let ((available-fonts (font-family-list frame))
-        (height (round (* +font-size 7.5))))
+        (height (round (* +font-size-default 7.5)))
+        (varpitch-height (round (* +font-size-varpitch 7.5))))
     ;; Default face, fixed-pitch face and global font size.
-    (if (member +font-default available-fonts)
-        (progn
-          (set-face-attribute 'default nil
-                              :family +font-default
-                              :height height)
-          (set-face-attribute 'fixed-pitch nil
-                              :family +font-default))
-      (set-face-attribute 'default nil
-                          :height height))
-    (when (member +font-default-cjk available-fonts)
-      (zy/set-face-charset-font 'default nil
-                                zy/cjk-charsets +font-default-cjk)
-      (zy/set-face-charset-font 'fixed-pitch nil
-                                zy/cjk-charsets +font-default-cjk))
+    (dolist (face '(default fixed-pitch))
+      (eval
+       (append '(set-face-attribute face nil)
+               (when (member +font-default available-fonts)
+                 `(:family ,+font-default))
+               `(:height ,height)))
+      (when (member +font-default-cjk available-fonts)
+        (+font-set-charset-font face nil
+                                +font-cjk-charsets +font-default-cjk)))
     ;; Variable-pitch face.
-    (when (member +font-varpitch available-fonts)
-      (set-face-attribute 'variable-pitch nil
-                          :family +font-varpitch))
+    (eval
+     (append '(set-face-attribute 'variable-pitch nil)
+             (when (member +font-varpitch available-fonts)
+               `(:family ,+font-varpitch))
+             (when (> varpitch-height 0)
+               `(:height ,varpitch-height))))
     (when (member +font-varpitch-cjk available-fonts)
-      (zy/set-face-charset-font 'variable-pitch nil
-                                zy/cjk-charsets +font-varpitch-cjk))))
+      (+font-set-charset-font 'variable-pitch nil
+                              +font-cjk-charsets +font-varpitch-cjk))))
 
 (defun +font/setup (&optional frame)
   "Setup font faces according to font variables.
@@ -179,25 +183,6 @@ issues."
     (add-hook 'after-make-frame-functions '+font/setup)))
 
 (+font/setup)
-
-;;;; Ligatures
-
-(after-gui!
-  (ligature-set-ligatures
-   'prog-mode
-   ;; These ligatures are for Iosevka and also apply to Sarasa Gothic.
-   '("-|" "-~" "---" "-<<" "-<" "--" "->" "->>" "-->" "///" "/=" "/=="
-     "/>" "//" "/*" "*>" "***" "*/" "<-" "<<-" "<=>" "<=" "<|" "<||"
-     "<|||" "<|>" "<:" "<>" "<-<" "<<<" "<==" "<<=" "<=<" "<==>" "<-|"
-     "<<" "<~>" "<=|" "<~~" "<~" "<$>" "<$" "<+>" "<+" "</>" "</" "<*"
-     "<*>" "<->" "<!--" ":>" ":<" ":::" "::" ":?" ":?>" ":=" "::=" "=>>"
-     "==>" "=/=" "=!=" "=>" "===" "=:=" "==" "!==" "!!" "!=" ">]" ">:"
-     ">>-" ">>=" ">=>" ">>>" ">-" ">=" "&&&" "&&" "|||>" "||>" "|>" "|]"
-     "|}" "|=>" "|->" "|=" "||-" "|-" "||=" "||" ".." ".?" ".=" ".-" "..<"
-     "..." "+++" "+>" "++" "[||]" "[<" "[|" "{|" "??" "?." "?=" "?:" "##"
-     "###" "####" "#[" "#{" "#=" "#!" "#:" "#_(" "#_" "#?" "#(" ";;" "_|_"
-     "__" "~~" "~~>" "~>" "~-" "~@" "$>" "^=" "]#"))
-  (global-ligature-mode 1))
 
 (provide 'zy-font)
 

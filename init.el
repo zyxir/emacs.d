@@ -32,6 +32,8 @@
     +dashboard
     +linum
     +tab
+    +icon
+    +treemacs
     ;; Platform or environment-specific.
     +terminal
     +platform

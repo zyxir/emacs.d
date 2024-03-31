@@ -77,12 +77,19 @@
 (defprefix! +leader-map "Leader"
             '(motion insert) 'global "<leader>"
   ;; Quick commands with leader plus a single key.
+  "a" (cons "Sidebar"
+            (defun +leader-sidebar ()
+              "Reserved for a sidebar command."
+              (interactive)
+              (message "This key is reserved for a side bar command.")))
   "b" (cons "Go to Buffer" #'consult-buffer)
   "B" (cons "Go to Buffer*" #'switch-to-buffer)
   "C-b" (cons "List Buffers" #'list-buffers)
   "d" (cons "Dired" #'dired)
   "s" (cons "Save Buffer" #'save-buffer)
-  "k" (cons "Kill Buffer" #'kill-buffer))
+  "k" (cons "Kill Buffer" #'kill-buffer)
+  "]" (cons "Next Tab" #'tab-next)
+  "[" (cons "Prev Tab" #'tab-previous))
 
 (defmacro +leader-c-create-action (action &optional eglot-action)
   "Create a placeholder command for action ACTION.

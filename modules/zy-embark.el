@@ -23,21 +23,17 @@
 
 (daemon-require! 'embark)
 
-;; Use ";", a key easily accessible by your right pinky, for Embark. Use "M-;"
-;; instead in insert state.
+;; Use ";", a key easily accessible by your right pinky, for Embark. Use "M-h"
+;; instead in insert state. Why don't we use "M-;" here? Because the key is used
+;; as `comment-dwim' by default and is used by Embark keymaps. I always use it
+;; to toggle comments and it's so hard for me to change this musle memory!
 (keybind! 'motion 'global
   ";" (cons "Embark" #'embark-act))
 (keybind! nil 'global
-  "M-;" (cons "Embark" #'embark-act))
+  "M-h" (cons "Embark" #'embark-act))
 
 ;; Use the ";" key for cycling.
 (setq-default embark-cycle-key ";")
-
-;; Now that "M-;" (`comment-dwim') is occupied, use "C-/" instead, which is also
-;; used by text editors like VS Code. In terminal, "C-/" is the same as "C-_".
-(keybind! nil 'global
-  "C-_" (cons "Comment" #'comment-dwim)
-  "C-/" (cons "Comment" #'comment-dwim))
 
 ;; Add (or replace) some Vim-styled keys.
 (after! '(embark evil)
@@ -45,7 +41,8 @@
     "C-s" nil
     "C-r" nil
     "/" #'evil-ex-search-forward
-    "?" #'evil-ex-search-backward)
+    "?" #'evil-ex-search-backward
+    "y" #'embark-copy-as-kill)
 
   (keybind! nil embark-region-map
     "TAB" nil

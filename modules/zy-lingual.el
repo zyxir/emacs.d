@@ -21,9 +21,13 @@
   (setq-default
    ;; I have my scheme data in my emacs directory.
    rime-user-data-dir (expand-file-name "rime" user-emacs-directory)
-   ;; This data must be provided by the system package manager. The package name
-   ;; is often rime-data.
-   rime-share-data-dir "/usr/share/rime-data"
+   ;; This data directory is usually provided by a package manager. The package
+   ;; name is often rime-data.
+   rime-share-data-dir (some-path!
+                        ;; By normal system package manager.
+                        "/usr/share/rime-data"
+                        ;; By Nix.
+                        "~/.nix-profile/share/rime-data")
    ;; Show candidates with posframe.
    rime-show-candidate 'posframe
    rime-posframe-properties '(:internal-border-width 2)))
