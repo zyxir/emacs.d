@@ -219,12 +219,23 @@ processed accordingly."
   (declare (indent 1) (debug (form def-body)))
   (zy--gen-after-load (zy--normalize-features features) body))
 
-(defmacro after-gui! (&rest body)
-  "Run BODY when GUI is ready.
-In BODY, one can use the variable FRAME, which is bound to the
-newly created GUI frame."
+(defmacro after-frame! (&rest body)
+  "Run BODY when the first frame is created.
+In BODY, although not suggested, one can use the variable FRAME,
+which is bound to the newly created frame."
   (declare (indent 0) (debug (form def-body)))
-  (let* ((fn-name (cl-gensym "after-gui!-"))
+  (let* ((fn-name (cl-gensym "after-frame!-"))
+         (fn-form `(defun ,fn-name (&optional _) ,@body)))
+    `(if (daemonp)
+         (add-hook 'after-make-frame-functions ,fn-form)
+       ,@body)))
+
+(defmacro after-graphics! (&rest body)
+  "Run BODY when graphics is ready.
+In BODY, although not suggested, one can use the variable FRAME,
+which is bound to the newly created graphic frame."
+  (declare (indent 0) (debug (form def-body)))
+  (let* ((fn-name (cl-gensym "after-graphics!-"))
          (fn-form `(defun ,fn-name (&optional frame)
                      (if (display-graphic-p frame)
                          ;; When GUI is ready, remove the hook function and
@@ -258,6 +269,30 @@ Each FEATURE in FEATURES is a quoted feature symbol.
   (cl-some (lambda (path)
              (if (file-exists-p path) path nil))
            paths))
+
+;;;; Color manipulation
+
+(defun zy--lighten-color (color percent &optional darken)
+  "Lighten a color tag COLOR by PERCENT.
+
+Return the lightened color tag. If optional argument DARKEN is
+non-nil, return the darkened color instead."
+  (eval-and-compile (require 'color))
+  (let* ((rgb (color-name-to-rgb color))
+         (hsl (apply #'color-rgb-to-hsl rgb))
+         (hsl (apply (if darken #'color-darken-hsl #'color-lighten-hsl)
+                     (append hsl `(,percent))))
+         (rgb (apply #'color-hsl-to-rgb hsl))
+         (color (apply #'color-rgb-to-hex (append rgb '(2)))))
+    color))
+
+(defun lighten! (color percent)
+  "Return a color tag of COLOR lightened by PERCENT."
+  (zy--lighten-color color percent))
+
+(defun darken! (color percent)
+  "Return a color tag of COLOR darkened by PERCENT."
+  (zy--lighten-color color percent 'darken))
 
 (provide 'zylib-core)
 

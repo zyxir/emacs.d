@@ -31,6 +31,8 @@
     +persist
     +dashboard
     +linum
+    ;; +indentbar
+    +indentguide
     +tab
     +icon
     +treemacs

@@ -34,7 +34,7 @@
 
 ;; Indicate input method with different cursor color.
 (after! '+theme
-  (after-gui!
+  (after-graphics!
     (eval-and-compile (require 'color))
     (cl-flet ((im-p ()
                 "Return non-nil if input method is active."
