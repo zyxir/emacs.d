@@ -24,9 +24,9 @@
 (setq-default evil-want-C-u-scroll t
               evil-want-C-d-scroll t)
 
-;; Use C-h as an alternate Backspace. Useful for further customizations in the
-;; `+pair' module.
-(setq-default evil-want-C-h-delete t)
+;; Do not use C-w for deletion in insert state. Use it as the prefix for window
+;; commands, so that I can switch windows without entering normal state first.
+(setq-default evil-want-C-w-delete nil)
 
 ;; Respect visual lines. This means that movement commands move according to
 ;; visual lines, rather than actual lines.
@@ -65,7 +65,7 @@
   ;; being in normal state by default, that I always accidentally press "i" or
   ;; "a" upon entering these modes. Therefore I decided to set the initial state
   ;; of these mode to normal state to provide a consistent experience.
-  (setq evil-insert-state-modes nil)
+  ;; (setq evil-insert-state-modes nil)
 
   ;; Do not echo the current state in the echo area, as it blocks ELdoc
   ;; sometimes.
