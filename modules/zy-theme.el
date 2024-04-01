@@ -55,9 +55,25 @@ to make the loading of themes more deterministic."
   ;; Do not extend region highlight to the edge of the window.
   (set-face-attribute 'region nil :extend nil)
 
-  ;; Do not use background color for `fill-column-indicator' because it makes
-  ;; the indicator look very thick.
-  (set-face-attribute 'fill-column-indicator nil :background 'unspecified)
+  ;; Modus Themes uses a unique strategy to make its `fill-column' indicator
+  ;; pretty in GUI. However the indicator is very ugly in terminal. Let's use a
+  ;; more "traditional" face for the indicator to achieve better consistency in
+  ;; both GUI and terminal.
+  (set-face-attribute 'fill-column-indicator nil
+                      ;; Do not use the 1-pixel height specified by Modus
+                      ;; Themes.
+                      :height 'unspecified
+                      ;; Attributes copied from the default theme.
+                      :background 'unspecified
+                      :weight 'normal
+                      :slant 'normal
+                      :overline nil
+                      :underline nil
+                      :strike-through nil
+                      :box nil
+                      :inverse-video nil
+                      :stipple nil
+                      :inherit 'shadow)
 
   ;; Use more prominent faces for errors/warnings/notes on terminal since
   ;; underlines cannot be colored there.
