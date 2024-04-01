@@ -107,12 +107,12 @@ file (init.el)."
                           (apply #'format relpath args)
                           user-emacs-directory)
                          ".elc")))
-    (condition-case nil
+    (condition-case err
          ;; Announce the loading while debugging.
         (load abspath nil (not init-file-debug) 'nosuffix)
       (file-missing
-       (error "%s not found. Maybe you forgot to sync?
-Sync the configuration via \"emacs --sync\"" abspath)))))
+       (error "`%s' encountered while loading %s: %s"
+              (car err) abspath (cdr err))))))
 
 (let (;; `file-name-handler-alist' is consulted each time a file is loaded.
       ;; Unsetting it speeds up startup notably.

@@ -18,8 +18,6 @@
 (pkg! 'dired-subtree)
 (pkg! 'async)
 
-(daemon-require! 'dired 'dired-sidebar)
-
 (after! 'dired
   ;; Revert Dired buffers on re-visits if the directory has changed.
   (setq dired-auto-revert-buffer 'dired-directory-changed-p)
