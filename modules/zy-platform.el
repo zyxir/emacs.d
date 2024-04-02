@@ -23,15 +23,20 @@ Unfortunately, _ARGS is not supported here."
 (defun +platform--windows-open (file)
   "Open FILE in default external program.
 This works for Microsoft Windows."
-  (shell-command
-   (concat "PowerShell -Command \"Invoke-Item -LiteralPath\" " "'"
-           (shell-quote-argument (expand-file-name file)) "'")))
+  (let* ((cmd (concat
+               "PowerShell -Command \"Invoke-Item -LiteralPath\" " "'"
+               (shell-quote-argument (expand-file-name file)) "'")))
+    (message cmd)
+    (shell-command cmd)))
 
 (defun +platform--linux-open (file)
   "Open FILE in default external program.
 This works for Linux with the \"xdg-open\" command."
-  (let ((process-connection-type nil))
-    (call-process "xdg-open" nil 0 nil (expand-file-name file))))
+  (let* ((process-connection-type nil)
+         (fullname (expand-file-name file))
+         (cmd (format "xdg-open %s" fullname)))
+    (message cmd)
+    (call-process "xdg-open" nil 0 nil fullname)))
 
 (defun +platform--wsl-open (file)
   "Open FILE in Windows host with default program.
@@ -47,9 +52,18 @@ This works for WSL with wslu installed, which provides the
                           ((and (> len 0)
                                 (eq (aref wslpath-output (- len 1)) ?\n))
                            (substring wslpath-output 0 (- len 1)))
-                          (t wslpath-output))))
-    (message converted-path)
+                          (t wslpath-output)))
+         (cmd (format "wslview %s" converted-path)))
+    (message cmd)
     (call-process "wslview" nil 0 nil converted-path)))
+
+(defvar +platform--open-fn
+  (pcase zy-platform
+    ('windows #'+platform--windows-open)
+    ('linux #'+platform--linux-open)
+    ('wsl #'+platform--wsl-open)
+    (_ (lambda (&rest _) (user-error "Not supported on this platform"))))
+  "Function used to open a file externally.")
 
 (defun +platform/open-externally (&optional filename)
   "Open FILENAME in default external program.
@@ -66,11 +80,7 @@ files."
                       t
                     (y-or-n-p "Open more than 5 files? "))))
     (when do-it-p
-      (pcase zy-platform
-       ('windows (mapc #'+platform--windows-open file-list))
-       ('linux (mapc #'+platform--linux-open file-list))
-       ('wsl (mapc #'+platform--wsl-open file-list))
-       ('unsupported (message "Not supported on this OS."))))))
+      (seq-map +platform--open-fn file-list))))
 
 (after! '+leader
   (keybind! nil +leader-f-map

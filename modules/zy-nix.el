@@ -12,6 +12,8 @@
 
 (require 'zylib)
 
+(pin-to! "melpa" 'nix-ts-mode)
+
 (pkg! 'nix-ts-mode)
 
 (provide 'zy-nix)

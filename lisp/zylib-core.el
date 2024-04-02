@@ -11,11 +11,32 @@
 
 ;;;; Platform Detection
 
+(defconst zy--wsl-p
+  (eval-and-compile
+    (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop"))
+  "Whether Emacs is running on WSL.
+
+WSL, which stands for Windows Subsystem for Linux, is a special
+kind of Linux running on top of Microsoft Windows. There are
+several ways to detect if the current system is a WSL, as
+explained in question #1749781 in Stack Exchange. The fastest
+approach is detecting a environment variable like
+\"WSL_DISTRO_NAME\", but it is unreliable when running as a
+daemon. Detecting by the existence of the interop file is by far
+the most reliable way according to the answer.
+
+Checking the existence of a file may slow down startup for
+several milliseconds, so we detect it at compile time via
+`eval-and-compile', since if a system is a WSL at compile time,
+it should remains a WSL at runtime.
+
+Do not use this constant directly. Use `zy-platform' instead.")
+
 (defvar zy-platform
   (cond ((memq system-type '(ms-dos windows-nt cygwin))
 	 'windows)
 	((eq system-type 'gnu/linux)
-	 (if (getenv "WSL_DISTRO_NAME") 'wsl 'linux))
+	 (if zy--wsl-p 'wsl 'linux))
 	(t 'unsupported))
   "The platform (operating system) Emacs is running on.
 Possible values:
