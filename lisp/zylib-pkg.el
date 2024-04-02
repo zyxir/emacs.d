@@ -40,6 +40,10 @@
                                    ("melpa-stable" . 2)
                                    ("melpa" . 1)))
 
+;; When using a mirror, signature checking sometimes causes problems. Let's
+;; disable signature checking altogether.
+(setq package-check-signature nil)
+
 ;; Natively compile packages at installation. If native compilation support is
 ;; absent, this option does not have any effect.
 (setq package-native-compile t)
