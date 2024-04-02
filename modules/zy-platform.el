@@ -18,7 +18,7 @@
    (defun +platform-wsl-browse-url (url &rest _args)
      "Browse URL with the default browser on Windows host.
 Unfortunately, _ARGS is not supported here."
-     (call-process "explorer.exe" nil 0 nil url))))
+     (call-process "wslview" nil 0 nil url))))
 
 (defun +platform--windows-open (file)
   "Open FILE in default external program.

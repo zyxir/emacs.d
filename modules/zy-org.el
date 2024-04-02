@@ -44,7 +44,12 @@
     (variable-pitch-mode 1)
     ;; Make Olivetti use a larger width to accomodate `org-indent-mode'.
     (when (boundp 'olivetti-body-width)
-      (setq-local olivetti-body-width 90))))
+      (setq-local olivetti-body-width 90)))
+
+  (defprefix! +org-map "Org"
+              nil org-mode-map "<localleader>"
+    "e" (cons "Export" #'org-export-dispatch)
+    "a" (cons "Attach" #'org-attach)))
 
 ;; Configure attachments.
 (after! 'org-attach

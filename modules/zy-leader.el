@@ -123,6 +123,7 @@ cell is ready to be used in `define-key'."
 
 (defprefix! +leader-c-map "Code"
             nil +leader-map "c"
+  "c" (cons "Compile" #'compile)
   "f" (+leader-c-create-action "format" 'eglot-format)
   "i" (+leader-c-create-action "inline" 'eglot-code-action-inline)
   "o" (+leader-c-create-action "organize-imports"
