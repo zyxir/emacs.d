@@ -87,34 +87,54 @@ Loading time (as number of milliseconds) is only recorded when
 `init-file-debug' is non-nil or when the \"DEBUG\" environment
 variable is set.")
 
-(defun zy-load-rel (relpath &rest args)
-  "Load the file in relative path RELPATH.
-RELPATH is relative to `user-emacs-directory', and is formatted
-with ARGS like `format' does.
+(defun zy-load-rel (file)
+  "Load FILE silently, efficiently and safely.
 
-The file is always loaded as byte code. If not, issue an error.
+If FILE is a relative path, interpret it as a path relative to
+the \"lisp\" directory in `user-emacs-directory', without suffix.
+The suffix \".elc\" is always appended to FILE, meaning that
+always try to load the byte code regardless of whether it exists.
+
+If FILE is a absolute path, load it directly. This is the only
+case where the file is loaded as is, without a guessed or
+appended suffix. This case is reserved for loading the custom
+file.
+
+If FILE is a symbol whose name starts with the plus sign, like
+`+leader', interpret it as a module of this configuration, and
+load it accordingly. Always load a module's byte code.
+
+If any error occur during loading, the error is captured and
+reported, therefore the remaining loading keeps going on.
 
 This function is and should only be used in the initialization
 file (init.el)."
-  (let ((abspath (concat (expand-file-name
-                          (apply #'format relpath args)
-                          user-emacs-directory)
-                         ".elc")))
+  (let* ((path (cond
+                ;; A path.
+                ((stringp file)
+                 (if (file-name-absolute-p file)
+                     ;; An absolute path.
+                     file
+                   ;; A Lisp library.
+                   (concat (expand-file-name
+                            file
+                            (expand-file-name "lisp" user-emacs-directory))
+                           ".elc")))
+                ;; A module.
+                ((and (symbolp file)
+                      (string-prefix-p "+" (symbol-name file)))
+                 (expand-file-name
+                  (format "zy-%s.elc"
+                          (substring (symbol-name file) 1))
+                  (expand-file-name "modules" user-emacs-directory)))
+                ;; Unknown cases.
+                (t (lwarn 'init :warning
+                          "I don't know how to load `%s'" file)))))
     (condition-case err
-        ;; Benchmark the loading while debugging.
-        (let* ((form `(load ,abspath nil 'nomessage 'nosuffix)))
-          (if init-file-debug
-              (let* ((start-time (current-time))
-                     (_ (eval form))
-                     (elapsed (time-since start-time))
-                     (msecs (* 1000 (float-time elapsed))))
-                (message "Loading %s...took %.3f milliseconds" abspath msecs)
-                (add-to-list 'zy-module-time-alist
-                             (cons (file-name-base abspath) msecs)))
-            (eval form)))
-      (file-missing
-       (error "`%s' encountered while loading %s: %s"
-              (car err) abspath (cdr err))))))
+        (load path nil 'nomessage 'nosuffix)
+      (error
+       (lwarn 'init :error
+              "Loading %s: %s" path err)))))
 
 (let (;; `file-name-handler-alist' is consulted each time a file is loaded.
       ;; Unsetting it speeds up startup notably.
@@ -130,22 +150,25 @@ file (init.el)."
       ;; before startup.
       (load-prefer-newer nil))
 
+  ;; Load the `+bench' module while debugging to benchmark the loading of files.
+  (when init-file-debug
+    (zy-load-rel '+bench))
+
   ;; Load all components of Zylib manually, which defines utility functions and
   ;; macros that most parts of this configuration depend on. Load them by path
   ;; manually reduces the tiny bit of time used to locate them in `load-path'.
-  (zy-load-rel "lisp/zylib-core")
-  (zy-load-rel "lisp/zylib-pkg")
-  (zy-load-rel "lisp/zylib-key")
-  (zy-load-rel "lisp/zylib")
+  (zy-load-rel "zylib-core")
+  (zy-load-rel "zylib-pkg")
+  (zy-load-rel "zylib-key")
+  (zy-load-rel "zylib")
 
   ;; Load the custom file now.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (load custom-file nil (not init-file-debug) 'nosuffix)
+  (zy-load-rel custom-file)
 
   ;; Load all modules in order.
   (dolist (module zy-modules)
-    (zy-load-rel "modules/zy-%s"
-                 (substring (symbol-name module) 1))))
+    (zy-load-rel module)))
 
 ;; Sort `zy-module-time-alist'.
 (when zy-module-time-alist
