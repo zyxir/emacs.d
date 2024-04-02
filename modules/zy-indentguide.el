@@ -22,15 +22,19 @@
 
 (pkg! 'highlight-indent-guides)
 
-;; Enable indent guides for all prog-modes, after a frame is created. If we
-;; enable this too early, enabling the minor mode for the scratch buffer while
-;; running as a daemon will make Emacs unable to start (and the actual reason is
-;; still unknown to me). However, doing this prevent the scratch buffer, which
-;; is created before a frame is created, from enabling the minor mode. This is
-;; not a big problem though.
+;; Enable indent guides for all prog-modes, except those Lisp modes. Lisp modes
+;; use parenthesis for scopes, thus having little need for indentation guides.
+;;
+;; If we enable this too early, enabling the minor mode for the scratch buffer
+;; while running as a daemon will make Emacs unable to start (and the actual
+;; reason is still unknown to me). However, doing this prevent the scratch
+;; buffer, which is created before a frame is created, from enabling the minor
+;; mode. This is not a problem though, considering we don't want indentation
+;; guidelines for Lisp modes.
 (after-frame!
   (add-hook! 'prog-mode-hook
-    (highlight-indent-guides-mode 1)))
+    (unless (derived-mode-p 'lisp-data-mode)
+      (highlight-indent-guides-mode 1))))
 
 (after! 'highlight-indent-guides
   ;; Use characters for highlighting, which is conventional.
