@@ -81,18 +81,11 @@
     +gcmh)
   "Enabled modules of Zyxir's Emacs configuration.")
 
-;; Synchronize the configuration (re-compile everything, and install missing
-;; packages in the process) if Emacs is started with the "--sync".
-(when-let* ((rest (or (member "--sync" command-line-args)
-                      (member "--force-sync" command-line-args)))
-            (switch (car rest)))
-  ;; Delete the argument so that Dashboard setups its hooks normally.
-  (setq command-line-args (delete switch command-line-args))
-  ;; Set this variable if forced re-compilation is needed.
-  (defvar zy-sync-force (equal switch "--force-sync")
-    "If re-compilation is forced for this synchronization.")
-  (load (expand-file-name "zy-sync.el" user-emacs-directory)
-        nil 'nomessage 'nosuffix))
+(defvar zy-module-time-alist '()
+  "Alist of module paths with their loading time.
+Loading time (as number of milliseconds) is only recorded when
+`init-file-debug' is non-nil or when the \"DEBUG\" environment
+variable is set.")
 
 (defun zy-load-rel (relpath &rest args)
   "Load the file in relative path RELPATH.
@@ -108,8 +101,17 @@ file (init.el)."
                           user-emacs-directory)
                          ".elc")))
     (condition-case err
-         ;; Announce the loading while debugging.
-        (load abspath nil (not init-file-debug) 'nosuffix)
+        ;; Benchmark the loading while debugging.
+        (let* ((form `(load ,abspath nil 'nomessage 'nosuffix)))
+          (if init-file-debug
+              (let* ((start-time (current-time))
+                     (_ (eval form))
+                     (elapsed (time-since start-time))
+                     (msecs (* 1000 (float-time elapsed))))
+                (message "Loading %s...took %.3f milliseconds" abspath msecs)
+                (add-to-list 'zy-module-time-alist
+                             (cons (file-name-base abspath) msecs)))
+            (eval form)))
       (file-missing
        (error "`%s' encountered while loading %s: %s"
               (car err) abspath (cdr err))))))
@@ -145,34 +147,12 @@ file (init.el)."
     (zy-load-rel "modules/zy-%s"
                  (substring (symbol-name module) 1))))
 
-;; The function `zy/sync' is very strange. Although it calls a shell command
-;; asynchronously, it always works differently with the same command executed in
-;; a real shell. For example, some packages already installed by the system
-;; package manager, which are tagged as "external" in `package-list-packages',
-;; always get re-installed while running `zy/sync'.
-
-;; (defun zy/sync (&optional force)
-;;   "Do a synchronization of Zyxir's Emacs configuration.
-
-;; This command starts an Emacs subprocess, and do all works there.
-;; The buffer of the subprocess will be displayed automatically.
-
-;; What files are re-compiled is decided smartly. If called
-;; interactively with a positive prefix argument, force
-;; re-compilation of every file.
-
-;; If called from Lisp, force re-compilation if FORCE is non-nil."
-;;   (interactive "P")
-;;   (let* ((script (expand-file-name "zy-sync.el" user-emacs-directory))
-;;          (emacs (car command-line-args))
-;;          (env (if force "ZYEMACS_FORCE=1" ""))
-;;          (cmd (string-join (list env emacs "--batch" "--load" script) " "))
-;;          (buffer-name "*ZyEmacs-Sync*"))
-;;     ;; I tried this with the function `compile' before, but it does not install
-;;     ;; packages properlly. `async-shell-command' works as expected.
-;;     (with-current-buffer (get-buffer-create buffer-name)
-;;       (read-only-mode 1))
-;;     (async-shell-command cmd "*ZyEmacs-Sync*")))
+;; Sort `zy-module-time-alist'.
+(when zy-module-time-alist
+  (setq zy-module-time-alist
+        (sort zy-module-time-alist
+              (lambda (pair1 pair2)
+                (>= (cdr pair1) (cdr pair2))))))
 
 (provide 'init)
 

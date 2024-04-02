@@ -47,7 +47,6 @@
   (corfu-echo-mode 1))
 
 ;; Enable Corfu in the minibuffer.
-
 (add-hook! 'minibuffer-setup-hook
   (defun +corfu-enable-in-minibuffer-h ()
     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
@@ -56,6 +55,11 @@
       (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
                   corfu-popupinfo-delay nil)
       (corfu-mode 1))))
+
+;; Make Corfu toggleable.
+(after! '(corfu +leader)
+  (keybind! nil +leader-y-map
+    "c" (cons "Corfu" #'corfu-mode)))
 
 (provide 'zy-corfu)
 
