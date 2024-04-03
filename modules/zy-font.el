@@ -43,17 +43,16 @@ This function set the value of FONT-SYM to FONT-VAL, and run
              (fboundp '+font/setup))
     (+font/setup)))
 
-(defcustom +font-size-default 16
+(defcustom +font-size 16
   "The pixel size of font for the `default' face."
   :type 'integer
   :group '+font
   :set #'+font--set-var)
 
-(defcustom +font-size-varpitch 18
-  "The pixel size of font for the `variable-pitch' face.
-When set to 0, does not set an explicit size for the
-`variable-pitch' face, and the face will use the default size
-implied by `+font-size-default'."
+(defcustom +font-varpitch-relsize 2
+  "The relative pixel size of font for the `variable-pitch' face.
+For example, if `+font-size' is 16 and this is 2, the
+font size of the face `variable-pitch' will be 18."
   :type 'integer
   :group '+font
   :set #'+font--set-var)
@@ -155,25 +154,30 @@ This is used in `after-make-frame-functions', and arugment
 FRAME makes sure that the validness of the fonts can be correctly
 checked."
   (let ((available-fonts (font-family-list frame))
-        (height (round (* +font-size-default 7.5)))
-        (varpitch-height (round (* +font-size-varpitch 7.5))))
+        (height (round (* +font-size 7.5)))
+        (varpitch-relheight (round (* +font-varpitch-relsize 7.5))))
     ;; Default face, fixed-pitch face and global font size.
     (dolist (face '(default fixed-pitch))
       (eval
        (append `(set-face-attribute ',face nil)
+               ;; Set font family when `+font-default' is available.
                (when (member +font-default available-fonts)
                  `(:family ,+font-default))
-               `(:height ,height)))
+               ;; Only set font height for the default face.
+               (when (eq face 'default)
+                 `(:height ,height))))
       (when (member +font-default-cjk available-fonts)
         (+font-set-charset-font face nil
                                 +font-cjk-charsets +font-default-cjk)))
     ;; Variable-pitch face.
     (eval
      (append '(set-face-attribute 'variable-pitch nil)
+             ;; Set font when the specified one is available.
              (when (member +font-varpitch available-fonts)
                `(:family ,+font-varpitch))
-             (when (> varpitch-height 0)
-               `(:height ,varpitch-height))))
+             ;; Only set font height if a relative one is specified.
+             (unless (= varpitch-relheight 0)
+               `(:height (lambda (height) (+ height ,varpitch-relheight))))))
     (when (member +font-varpitch-cjk available-fonts)
       (+font-set-charset-font 'variable-pitch nil
                               +font-cjk-charsets +font-varpitch-cjk))))

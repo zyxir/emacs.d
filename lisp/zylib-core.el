@@ -58,6 +58,28 @@ availability of native compilation."
   (and (fboundp 'native-comp-available-p)
        (native-comp-available-p)))
 
+(defun zy--require-recursively (fcomp)
+  "Require the nested feature list FCOMP recursively.
+
+FCOMP is either a feature symbol or a list. If FCOMP is a feature
+symbol, `require' it. If FCOMP is a list, apply this function to
+every element of it. As a result, all feature symbols in the
+nested list got required.
+
+Return the list of features that is actually required."
+  (cond
+   ((symbolp fcomp) (list (require fcomp)))
+   ((listp fcomp) (mapcan #'zy--require-recursively fcomp))
+   (t (user-error "%s is not a nested feature symbol" fcomp))))
+
+(defun zy--require-when-compile (features)
+  "Require every feature in FEATURES during byte compilation.
+This is only used internally in Zylib."
+  (when (bound-and-true-p byte-compile-current-file)
+    (zy--require-recursively features)))
+
+;;;; Module Management
+
 (defun modulep! (symbol)
   "Determine if SYMBOL is a enabled module.
 Return non-nil if the module associated with SYMBOL is an enabled
@@ -195,11 +217,11 @@ lazy loaded.
 
 ALl features will be required at compile time to silence compiler
 warnings."
-  (let* ((require-sexp `(eval-and-compile
-                          ,@(mapcar #'(lambda (x) `(require ',x))
-                                    features)))
-         (fn-name (cl-gensym "after!-"))
-         (body `(defun ,fn-name () ,require-sexp ,@body t)))
+  ;; While byte-compiling the file, require all features so that all its symbols
+  ;; are in scope, like `use-package' does.
+  (zy--require-when-compile features)
+  (let* ((fn-name (cl-gensym "after!-"))
+         (body `(defun ,fn-name (&rest _) ,@body t)))
     (dolist (feature features)
       (setq body `(eval-after-load ',feature ,body)))
     body))
@@ -246,7 +268,7 @@ In BODY, although not suggested, one can use the variable FRAME,
 which is bound to the newly created frame."
   (declare (indent 0) (debug (form def-body)))
   (let* ((fn-name (cl-gensym "after-frame!-"))
-         (fn-form `(defun ,fn-name (&optional _) ,@body)))
+         (fn-form `(defun ,fn-name (&optional _) ,@body t)))
     `(if (daemonp)
          (add-hook 'after-make-frame-functions ,fn-form)
        ,@body)))

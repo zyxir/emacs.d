@@ -31,6 +31,11 @@ file(s)."
 
 ;; Emacs Lisp keybindings.
 (after! 'elisp-mode
+  ;; Add the backquote-quote (`') pair for Emacs Lisp buffers.
+  (add-hook! 'emacs-lisp-mode-hook
+    (after! 'evil-surround
+      (push '(?` . ("`" . "'")) evil-surround-pairs-alist)))
+
   (defprefix! +elisp-map "Emacs Lisp"
               nil emacs-lisp-mode-map "<localleader>"
     "C" (cons "Compile" #'+elisp-compile-dwim)

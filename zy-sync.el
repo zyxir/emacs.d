@@ -153,8 +153,9 @@ Currently it retrieves forms calling these functions/macros:
     (message "%s packages ensured." (cl-list-length pkg-forms))
     ;; Reload the quickstart file.
     (message "Refreshing the package quickstart file...")
-    (package-quickstart-refresh)
-    (load package-quickstart-file nil 'nomessage)))
+    (let ((inhibit-message t))
+      (package-quickstart-refresh))
+    (load package-quickstart-file 'noerror 'nomessage)))
 
 (defun zy-sync--compile (file)
   "Byte-compile (and maybe natively compile) FILE."

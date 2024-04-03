@@ -17,6 +17,39 @@
 
 (pkg! 'evil)
 
+(defun zy--feature-p (maybe-feature)
+  "Return t if MAYBE-FEATURE is a loadable feature.
+This will load MAYBE-FEATURE if it is indeed a feature."
+  (condition-case nil
+      (require maybe-feature)
+    (error nil)
+    (:success t)))
+
+(defun zy--try-suffix (keymap-symbol suffix)
+  "Try to find the feature by which KEYMAP-SYMBOL is defined.
+SUFFIX is used to guess the name of the feature.
+
+First ensure that the KEYMAP-SYMBOL with SUFFIX removed is indeed
+a feature via `zy--feature-p', then check if KEYMAP-SYMBOL is a
+defined variable after the feature is loaded. If all results are
+true, return the feature. Otherwise return nil."
+  (let ((name (symbol-name keymap-symbol)))
+    (and
+     (string-suffix-p suffix name)
+     (let ((feature
+            (intern (substring name 0 (- (length suffix))))))
+       (and (zy--feature-p feature)
+            (boundp keymap-symbol)
+            feature)))))
+
+(defun zy--get-keymap-feature (keymap-symbol)
+  "Try to get the feature by which KEYMAP-SYMBOL is defined.
+KEYMAP-SYMBOL is a symbol representing a keymap.
+
+Return nil if no feature could be found."
+  (cl-some (lambda (suffix) (zy--try-suffix keymap-symbol suffix))
+           '("-map" "-mode-map" "-command-map" "-keymap")))
+
 (defmacro keybind! (state keymap key def &rest bindings)
   "Create a STATE binding from KEY to DEF for KEYMAP.
 
@@ -28,6 +61,10 @@ KEYMAP is a keymap to define the binding in. If KEYMAP is the
 quoted symbol `global', the global evil keymap corresponding to
 the state(s) is used.
 
+If KEYMAP is not quoted, whether it is already loaded or not, try
+to find the feature that defines it, and load the keybinding(s)
+only after that feature is available.
+
 KEY and DEF are like those in `define-key', except that if KEY is
 a string, it is always wrapped in `kbd' before being used.
 
@@ -38,7 +75,12 @@ It is possible to specify multiple KEY and DEF pairs in BINDINGS.
   (let* ((bindings (append `(,key ,def) bindings))
          (index 0)
          (cur nil)
-         (wrapped-bindings '()))
+         (wrapped-bindings '())
+         (features '(evil)))
+    ;; Try to find the feature that defines `keymap'.
+    (when-let ((feature (and (symbolp keymap)
+                             (zy--get-keymap-feature keymap))))
+      (push feature features))
     ;; Wrap all string keys in `bindings' with `kbd'.
     (while bindings
       (setq cur (pop bindings))
@@ -48,10 +90,9 @@ It is possible to specify multiple KEY and DEF pairs in BINDINGS.
             wrapped-bindings)
       (setq index (+ index 1)))
     (setq wrapped-bindings (reverse wrapped-bindings))
-    `(eval-after-load 'evil
-       #'(lambda ()
-           (declare-function evil-define-key* 'evil-core)
-           (evil-define-key* ,state ,keymap ,@wrapped-bindings)))))
+    `(after! '(,@features)
+       (declare-function evil-define-key* 'evil-core)
+       (evil-define-key* ,state ,keymap ,@wrapped-bindings))))
 
 (defmacro defprefix! (command name state keymap key &rest bindings)
   "Define COMMAND as a prefix command. COMMAND should be a symbol.
@@ -68,10 +109,13 @@ You may continue to define keybindings using KEY and DEF pairs as
 per `keybind!' in BINDINGS."
   (declare (indent 5))
   (let* ((keybind-form-upper
-          (if (eq (car-safe keymap) 'quote)
+          (if (or (symbolp keymap)
+                  (eq (car-safe keymap) 'quote))
               `(keybind! ,state ,keymap ,key '(,name . ,command))
-            `(dolist (keymap (list ,@(ensure-list keymap)))
-               (keybind! ,state keymap ,key '(,name . ,command)))))
+            (macroexp-progn
+             (seq-map (lambda (x)
+                        `(keybind! ,state ,x ,key '(,name . ,command)))
+                      keymap))))
          (form `(prog1
                     (define-prefix-command ',command)
                   (defvar ,command)

@@ -16,6 +16,7 @@
 
 (pkg! 'org)
 (pkg! 'org-modern)
+(pkg! 'edit-indirect)
 
 ;; Indent sections by depth by default.
 (setq-default org-startup-indented t)

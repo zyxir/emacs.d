@@ -26,8 +26,8 @@ Always use the Black profile."
          (message "Sorted imports")
        (message "(No changes in Python imports needed)"))))
 
-  ;; Start and switch to the Python shell.
   (eval-and-compile
+    ;; Start and switch to the Python shell.
     (defun +python-switch-to-python-shell ()
       "Switch to inferior Python process buffer.
 When there is no Python process running, start one before
@@ -37,10 +37,9 @@ switching to it."
         (unless proc
           (run-python)
           (setq proc (python-shell-get-process)))
-        (pop-to-buffer (process-buffer proc)))))
+        (pop-to-buffer (process-buffer proc))))
 
-  ;; Wrap some commands to mimic `eglot-format'.
-  (eval-and-compile
+    ;; Wrap some commands to mimic `eglot-format'.
     (defun +python-format (&optional beg end)
       "Format region BEG END.
 This uses `python-black-buffer' or `python-black-region'."
@@ -71,7 +70,7 @@ This uses `python-black-buffer' or `python-black-region'."
     "e" (cons "Send Statement" #'python-shell-send-statement))
 
   ;; Remap some code actions in Python mode.
-  (add-hook! 'python-ts-mode-hook
+  (add-hook! 'python-base-mode-hook
     (keybind! nil 'local
       [remap zy/do-format] #'+python-format
       [remap zy/do-organize-imports] #'python-sort-imports)))

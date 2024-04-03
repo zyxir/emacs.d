@@ -24,8 +24,7 @@
 ;; Use Smartparens for most modes.
 (add-hook! '(prog-mode-hook
              text-mode-hook
-             conf-mode-hook
-             minibuffer-mode-hook)
+             conf-mode-hook)
   (smartparens-mode 1)
 
   ;; If the mode is a Lisp mode, use the strict mode.
@@ -34,6 +33,10 @@
 
   ;; Also enable Cleverparens.
   (evil-cleverparens-mode 1))
+
+;; For the minibuffer, Smartparens does not work well. Let's use the built-in
+;; `electric-pair-mode' instead.
+(add-hook! 'minibuffer-mode-hook (electric-pair-mode 1))
 
 (after! 'smartparens
   ;; Load the default config for many languages.
