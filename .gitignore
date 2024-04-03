@@ -6,6 +6,7 @@
 /elpa*
 /eshell
 /history
+/org-roam.db
 /package-quickstart.el
 /places
 /projects

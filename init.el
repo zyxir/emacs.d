@@ -49,6 +49,7 @@
     +git
     +gtd
     +journal
+    +roam
     +lingual
     ;; Text-editing and coding.
     +embark
@@ -153,9 +154,8 @@ file (init.el)."
       ;; before startup.
       (load-prefer-newer nil))
 
-  ;; Load the `+bench' module while debugging to benchmark the loading of files.
-  (when init-file-debug
-    (zy-load-rel '+bench))
+  ;; Load the `+bench' module first to benchmark the loading of files.
+  (zy-load-rel '+bench)
 
   ;; Load all components of Zylib manually, which defines utility functions and
   ;; macros that most parts of this configuration depend on. Load them by path

@@ -186,6 +186,9 @@ cell is ready to be used in `define-key'."
   "r" (cons "Restart" #'restart-emacs)
   "z" (cons "Suspend" #'suspend-emacs))
 
+(defprefix! +leader-r-map "Roam"
+            nil +leader-map "r")
+
 (defprefix! +leader-t-map "Tab"
             nil +leader-map "t"
   "n" (cons "New" #'tab-new)
