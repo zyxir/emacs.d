@@ -80,10 +80,10 @@
     "M-t" #'sp-transpose-sexp
     "M-v" #'sp-convolute-sexp
     "M-r" #'sp-raise-sexp
-    "+" #'sp-forward-barf-sexp
-    "-" #'sp-backward-barf-sexp
-    "M-}" #'sp-forward-slurp-sexp
-    "M-{" #'sp-backward-slurp-sexp))
+    "M-f" #'sp-forward-barf-sexp
+    "M-b" #'sp-backward-barf-sexp
+    "M-F" #'sp-forward-slurp-sexp
+    "M-B" #'sp-backward-slurp-sexp))
 
 (provide 'zy-pair)
 

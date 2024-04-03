@@ -107,6 +107,8 @@ load it accordingly. Always load a module's byte code.
 If any error occur during loading, the error is captured and
 reported, therefore the remaining loading keeps going on.
 
+Return the full path of the file actually loaded.
+
 This function is and should only be used in the initialization
 file (init.el)."
   (let* ((path (cond
@@ -134,7 +136,8 @@ file (init.el)."
         (load path nil 'nomessage 'nosuffix)
       (error
        (lwarn 'init :error
-              "Loading %s: %s" path err)))))
+              "Loading %s: %s" path err))
+      (:success path))))
 
 (let (;; `file-name-handler-alist' is consulted each time a file is loaded.
       ;; Unsetting it speeds up startup notably.
