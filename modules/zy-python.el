@@ -54,11 +54,9 @@ Always use the Black profile."
 When there is no Python process running, start one before
 switching to it."
       (interactive)
-      (when-let ((proc (python-shell-get-process)))
+      (let ((proc (python-shell-get-process)))
         (unless proc
           (run-python)
-          (while (not (python-shell-get-process))
-            (sit-for 0.1))
           (setq proc (python-shell-get-process)))
         (pop-to-buffer (process-buffer proc))))
 
