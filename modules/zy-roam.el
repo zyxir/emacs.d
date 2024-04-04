@@ -34,7 +34,7 @@
     "u" (cons "UI" #'org-roam-ui-mode)))
 
 ;; Keys inside an Org-roam buffer.
-(after! '(+leader org-roam)
+(after! '(+leader org-roam-mode)
   (defprefix! +roam-map "Roam"
               nil org-roam-mode-map "<localleader>"
     "a" (cons "Add Alias" #'org-roam-alias-add)

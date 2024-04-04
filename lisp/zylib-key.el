@@ -4,95 +4,129 @@
 ;; This file defines the keybinding framework of the configuration. It provides
 ;; two simple macros, `keybind!' and `defprefix!', for an efficient and
 ;; consistent keybinding interface and automatic loading management.
-;;
-;; Due to the deep coupling of the keybinding framework with Evil, it is hard to
-;; implement these utilities without Evil. Therefore Evil is the only package
-;; that is required in Zylib. Nevertheless, this file trys to only use the
-;; utility functions provided to Evil, and leave all customizations of Evil to
-;; the `evil' module, including choosing the (local) leader key.
 
 ;;; Code:
 
 (require 'zylib-pkg)
 
-(pkg! 'evil)
+(defun zy--normalize-bindings (bindings)
+  "Normalize BINDINGS as proper KEY and DEF pairs.
 
-(defun zy--feature-p (maybe-feature)
-  "Return t if MAYBE-FEATURE is a loadable feature.
-This will load MAYBE-FEATURE if it is indeed a feature."
-  (condition-case nil
-      (require maybe-feature)
-    (error nil)
-    (:success t)))
+BINDINGS come in pairs with KEY and DEF, which under most cases
+are the same as in `define-key', except that if KEY is a string,
+it is wrapped with `kbd' (therefore normalized) before being used
+as a KEY.
 
-(defun zy--try-suffix (keymap-symbol suffix)
-  "Try to find the feature by which KEYMAP-SYMBOL is defined.
-SUFFIX is used to guess the name of the feature.
+There can also be KEYWORD and FORM pairs occurring after the KEY
+and DEF pair, where KEYWORD is a Lisp symbol whose name starts
+with a colon (`:'), and FORM is an arbitrary Lisp form. They will
+be regarded as a property list PLIST for the KEY and DEF pair.
 
-First ensure that the KEYMAP-SYMBOL with SUFFIX removed is indeed
-a feature via `zy--feature-p', then check if KEYMAP-SYMBOL is a
-defined variable after the feature is loaded. If all results are
-true, return the feature. Otherwise return nil."
-  (let ((name (symbol-name keymap-symbol)))
-    (and
-     (string-suffix-p suffix name)
-     (let ((feature
-            (intern (substring name 0 (- (length suffix))))))
-       (and (zy--feature-p feature)
-            (boundp keymap-symbol)
-            feature)))))
+In conclusion, BINDINGS is a list like this:
 
-(defun zy--get-keymap-feature (keymap-symbol)
-  "Try to get the feature by which KEYMAP-SYMBOL is defined.
-KEYMAP-SYMBOL is a symbol representing a keymap.
+  ([KEY DEF [[KEYWORD FORM] ...]] ...)
 
-Return nil if no feature could be found."
-  (cl-some (lambda (suffix) (zy--try-suffix keymap-symbol suffix))
-           '("-map" "-mode-map" "-command-map" "-keymap")))
+Return a normalized list of keybinding descriptors DESCS, where
+each element has the form of (KEY DEF . PLIST)."
+  (let* (descs cur-key cur-def cur-rev-plist arg1 arg2)
+    (cl-labels ((collect-desc ()
+                  (when cur-key
+                    (push (append (list cur-key cur-def)
+                                  (reverse cur-rev-plist))
+                          descs))
+                  (setq cur-key nil
+                        cur-def nil
+                        cur-rev-plist nil)))
+      (while bindings
+        (setq arg1 (pop bindings)
+              arg2 (when bindings (pop bindings)))
+        (if (keywordp arg1)
+            ;; Update current (reversed) plist.
+            (progn (push arg1 cur-rev-plist)
+                   (push arg2 cur-rev-plist))
+          ;; Collect the last descriptor and prepare for the next one.
+          (collect-desc)
+          (setq cur-key (if (stringp arg1) `(kbd ,arg1) arg1)
+                cur-def arg2)))
+      ;; Collect the last descriptor.
+      (collect-desc)
+      ;; Return the descriptors in correct order.
+      (reverse descs))))
 
-(defmacro keybind! (state keymap key def &rest bindings)
-  "Create a STATE binding from KEY to DEF for KEYMAP.
+(defun zy--after-keymap-form (keymap body)
+  "Return a form where BODY if run after KEYMAP.
+BODY is a list of forms. If KEYMAP is already a valid keymap, run
+BODY now. Otherwise, check whether KEYMAP is availableis every
+time a file is loaded."
+  (if (equal keymap '(quote global))
+      (macroexp-progn body)
+    (let ((fn-name (cl-gensym "after-keymap-")))
+      `(if (and (boundp ',keymap) (keymapp ,keymap))
+           ,(macroexp-progn body)
+         (add-hook 'after-load-functions
+                   (defun ,fn-name (&rest _)
+                     (when (and (boundp ',keymap) (keymapp ,keymap))
+                       (remove-hook 'after-load-functions ',fn-name)
+                       ,@body)))))))
+
+(defun zy--keybind-form (keymap descs)
+  "Return a single keybinding form.
+KEYMAP is like that used by `evil-define-key*', and DESCS is the
+list of keybinding descriptors returned by
+`zy--normalize-bindings'."
+  (let* ((keymap (if (equal keymap '(quote global))
+                     'global-map
+                   keymap))
+         (forms (seq-map (lambda (desc)
+                           `(define-key ,keymap
+                                        ,(car desc)
+                                        ,(cadr desc)))
+                         descs)))
+    (zy--after-keymap-form keymap forms)))
+
+(defun zy--evil-keybind-form (state keymap descs)
+  "Get a single Evil keybinding form.
+STATE and KEYMAP are like those used by `evil-define-key', and
+DESCS is the list of keybinding descriptors returned by
+`zy--normalize-bindings'."
+  (let* ((bindings (mapcan (lambda (desc)
+                             (list (car desc) (cadr desc)))
+                           descs))
+         (key (pop bindings))
+         (def (pop bindings)))
+    `(when (modulep! '+evil)
+       (after! 'evil
+         (when (fboundp 'evil-define-key)
+           (evil-define-key ,state ,keymap ,key ,def ,@bindings))))))
+
+(defmacro keybind! (state keymap &rest bindings)
+  "Create some keybindings according to BINDINGS.
 
 STATE is one of the Evil states, or a list of one or more of
-them. Omitting a state by using nil corresponds to a standard
-Emacs binding using ‘define-key’.
+them. When STATE is omitted by using nil, create standard Emacs
+keybindings using ‘define-key’；otherwise create Evil keybindings
+using `evil-define-key*'.
 
-KEYMAP is a keymap to define the binding in. If KEYMAP is the
-quoted symbol `global', the global evil keymap corresponding to
-the state(s) is used.
+If the `+evil' module is disabled altogether, a `keybind!' form
+with a non-nil STATE argument does not have any effect.
 
-If KEYMAP is not quoted, whether it is already loaded or not, try
-to find the feature that defines it, and load the keybinding(s)
-only after that feature is available.
+KEYMAP is either an unquoted symbol representing a keymap, or one
+of the following quoted symbols:
 
-KEY and DEF are like those in `define-key', except that if KEY is
-a string, it is always wrapped in `kbd' before being used.
+  `global' the global keymap `global-map', or the state-specific
+           global map.
 
-It is possible to specify multiple KEY and DEF pairs in BINDINGS.
+If KEYMAP is not loaded yet, the keys will not be binded until
+KEYMAP is ready.
 
-\(fn STATE KEYMAP KEY DEF [KEY DEF] ...)"
+BINDINGS comes in pairs with KEY and DEF, where KEY and DEF are
+like those in `define-key', except that if KEY is a string, it is
+always wrapped in `kbd' before being used."
   (declare (indent 2))
-  (let* ((bindings (append `(,key ,def) bindings))
-         (index 0)
-         (cur nil)
-         (wrapped-bindings '())
-         (features '(evil)))
-    ;; Try to find the feature that defines `keymap'.
-    (when-let ((feature (and (symbolp keymap)
-                             (zy--get-keymap-feature keymap))))
-      (push feature features))
-    ;; Wrap all string keys in `bindings' with `kbd'.
-    (while bindings
-      (setq cur (pop bindings))
-      (push (if (and (eq (% index 2) 0)
-                     (stringp cur))
-                `(kbd ,cur) cur)
-            wrapped-bindings)
-      (setq index (+ index 1)))
-    (setq wrapped-bindings (reverse wrapped-bindings))
-    `(after! '(,@features)
-       (declare-function evil-define-key* 'evil-core)
-       (evil-define-key* ,state ,keymap ,@wrapped-bindings))))
+  (let* ((descs (zy--normalize-bindings bindings)))
+    (if state
+        (zy--evil-keybind-form state keymap descs)
+      (zy--keybind-form keymap descs))))
 
 (defmacro defprefix! (command name state keymap key &rest bindings)
   "Define COMMAND as a prefix command. COMMAND should be a symbol.
@@ -123,6 +157,56 @@ per `keybind!' in BINDINGS."
          (keybind-form-lower (when bindings
                                `(keybind! nil ,command ,@bindings))))
     (append form `(,keybind-form-lower))))
+
+(define-minor-mode zy-leader-mode
+  "Global minor mode for enabling leader keybindings."
+  :global t
+  :group 'zyemacs)
+
+(defvar zy-leader-mode-map (make-sparse-keymap)
+  "High precedence keymap for leader keybindings.")
+
+(add-to-list 'emulation-mode-map-alists
+             `((zy-leader-mode . ,zy-leader-mode-map)))
+
+;; The *Messages* buffer is strange. It requires additional configuration for
+;; the leader key to work.
+(add-hook! 'window-setup-hook
+  (when-let ((messages-buffer (get-buffer "*Messages*")))
+    (with-current-buffer messages-buffer
+      (when (fboundp 'evil-normalize-keymaps)
+        (evil-normalize-keymaps)))))
+
+(defun set-leader! (state key &optional localleader)
+  "Set KEY to trigger leader bindings in STATE.
+KEY should be in the form produced by `kbd'. STATE is one of the
+Evil states, a list of one or more of them, or nil, which means
+all states. If LOCALLEADER is non-nil, set the local leader
+instead.
+
+This is almost identical to `evil-set-leader' from the package
+Evil, except that when Evil is absent, this still works if STATE
+is nil."
+  (let* ((leaderkey (if localleader [localleader] [leader]))
+         (binding
+          `(menu-item "" nil :filter ,(lambda (_) (key-binding leaderkey)))))
+    (if (modulep! '+evil)
+        ;; When the module `+evil' is available, bind according to `state'.
+        (let* ((all-states
+                '(normal insert visual replace operator motion emacs))
+               (states (cond ((null state) all-states)
+                            ((consp state) state)
+                            (t (list state)))))
+          (with-eval-after-load 'evil
+            (when (fboundp 'evil-define-key*)
+              (dolist (state states)
+                (evil-define-key* state zy-leader-mode-map key binding)))))
+      ;; Otherwise, bind globally if it is not state-specific.
+      (unless state
+        (define-key zy-leader-mode-map key binding)))
+    ;; Enable the minor mode if not yet.
+    (unless zy-leader-mode
+      (zy-leader-mode 1))))
 
 (defun zy--other-window-prefix ()
   "Display the buffer of the next command in a new window.

@@ -22,60 +22,28 @@
 (pkg! 'consult)
 (pkg! 'magit)
 
-;; Define the (local) leader key after loading Evil.
-(after! 'evil
-  ;; Define the space key as the leader key, like some popular editor
-  ;; configurations do, including SpaceVim, Spacemacs, and Doom Emacs.
-  ;;
-  ;; Setting it in motion state automatically works for normal, visual, and
-  ;; operator states, makes keybindings cleaner, and makes the menu entries
-  ;; correctly show up after pressing the leader key (If set in normal state,
-  ;; the menu entries don't show up correctly).
-  (evil-set-leader 'motion (kbd "SPC"))
+;; Define the space key as the leader key, like other popular Emacs
+;; configurations do, including SpaceVim, Spacemacs, and Doom Emacs. We should
+;; make the leader key available in all these "normal-like" states, so that it
+;; never gets overriden.
+(set-leader! '(normal visual operator motion) (kbd "SPC"))
 
-  ;; It's nmemonic to use "M-SPC" (Alt-Space) as the leader key in insert state,
-  ;; but this combination is often used by the window manager (as in Microsoft
-  ;; Windows and many Linux desktop environments) to open window menu. Therefore
-  ;; use "M-m" instead.
-  (evil-set-leader 'insert (kbd "M-m"))
+;; We should also have a universally-available leader key, so that we can use
+;; the leader key in insert/replace/emacs states, or even when Evil is not
+;; enabled altogether. Using "M-SPC" (Alt-Space) is a good idea, but this
+;; combination is often occupied by the window manager (as in Microsoft Windows
+;; and many Linux desktop environments) to open the window menu. Therefore, we
+;; use "M-m" instead.
+(set-leader! nil (kbd "M-m"))
 
-  ;; The local leader key is used to perform mode-specific operations. "," (the
-  ;; comma key) is a good choice. Since "M-," is available almost anywhere, use
-  ;; it as the local leader key in insert state.
-  (evil-set-leader 'motion (kbd ",") 'localleader)
-  (evil-set-leader 'insert (kbd "M-,") 'localleader))
+;; The local leader key is used to perform mode-specific operations. "," (the
+;; comma key) is a good choice. Since "M-," is available almost anywhere, use
+;; it as the local leader key in insert state.
+(set-leader! '(normal visual operator motion) (kbd ",") 'localleader)
+(set-leader! nil (kbd "M-,") 'localleader)
 
-;; Unmap the occupied leader key in these keymaps.
-;;
-;; I've searched extensively on the Internet about "how to make my leader key
-;; available in all modes, including dired-mode and help-mode". There are many
-;; related contents with all sorts of different solutions. The most recommended
-;; is to use the `override' keymap with general.el. Since I decided to not use
-;; general.el in my configuration, I have to figure out a solution myself.
-;; Unbinding the occupied keys in these special modes seems the most reliable
-;; way to me.
-(dolist (feature-map-pair `((help-mode . help-mode-map)
-                            (magit-status . magit-status-mode-map)
-                            (info . Info-mode-map)))
-  (let ((feature (car feature-map-pair))
-        (map-symbol (cdr feature-map-pair)))
-    (with-eval-after-load feature
-      ;; For some reason you need to both unbind SPC normally and then unbind it
-      ;; in these Evil states to ensure that it is not occupied at all.
-      (keybind! nil (symbol-value map-symbol) "SPC" nil)
-      (keybind! '(normal motion visual operator)
-          (symbol-value map-symbol) "SPC" nil)
-      (keybind! 'insert (symbol-value map-symbol) "M-m" nil))))
-
-;; Tell Evil-collection to not touch my leader keys.
-(defvar evil-collection-key-blacklist nil)
-(add-to-list 'evil-collection-key-blacklist "SPC")
-(add-to-list 'evil-collection-key-blacklist "M-m")
-
-;; As previously mentioned, it is only necessary to bind the map to motion and
-;; insert state.
 (defprefix! +leader-map "Leader"
-            '(motion insert) 'global "<leader>"
+            nil 'global "<leader>"
   ;; Quick commands with leader plus a single key.
   "a" (cons "Sidebar"
             (defun +leader-sidebar ()
@@ -203,12 +171,12 @@ cell is ready to be used in `define-key'."
             nil +leader-map "w"
   "c" (cons "Close" #'delete-window)
   "o" (cons "Only" #'delete-other-windows)
-  "h" (cons "Left" #'evil-window-left)
-  "j" (cons "Down" #'evil-window-down)
-  "k" (cons "Up" #'evil-window-up)
-  "s" (cons "Split" #'evil-window-split)
-  "v" (cons "Vsplit" #'evil-window-vsplit)
-  "l" (cons "Right" #'evil-window-right)
+  "h" (cons "Left" #'windmove-left)
+  "j" (cons "Down" #'windmove-right)
+  "k" (cons "Up" #'windmove-up)
+  "l" (cons "Right" #'windmove-right)
+  "s" (cons "Split" #'split-window-below)
+  "v" (cons "Vsplit" #'split-window-right)
   "w" (cons "O.W. Prefix" #'other-window-prefix)
   "b" (cons "Buffer" #'consult-buffer-other-window)
   "d" (cons "Dired" #'dired-other-window)

@@ -23,14 +23,14 @@
 
 (daemon-require! 'embark)
 
-;; Use ";", a key easily accessible by your right pinky, for Embark. Use "M-g"
+;; Use ";", a key easily accessible by your right pinky, for Embark. Use "M-o"
 ;; instead in insert state. Why don't we use "M-;" here? Because the key is used
 ;; as `comment-dwim' by default and is used by Embark keymaps. I always use it
 ;; to toggle comments and it's so hard for me to change this musle memory!
 (keybind! 'motion 'global
   ";" (cons "Embark" #'embark-act))
 (keybind! nil 'global
-  "M-g" (cons "Embark" #'embark-act))
+  "M-o" (cons "Embark" #'embark-act))
 
 ;; Use the ";" key for cycling.
 (setq-default embark-cycle-key ";")

@@ -10,6 +10,9 @@
 
 ;;; Code:
 
+;; Always load the newer source code to prevent inconsistency.
+(setq load-prefer-newer t)
+
 (defconst zy-sync-zylib-files
   (seq-map (lambda (x)
              (expand-file-name (format "lisp/%s.el" x) user-emacs-directory))
@@ -52,7 +55,8 @@ updated, all module files will be re-compiled to prevent
 incompatibility.
 
 If `zy-sync-level' is 1, only install missing packages, but
-re-compile every file.
+re-compile every file (all byte code is cleaned before
+re-compilation).
 
 If `zy-sync-level' is 2, re-install every package (excluding
 built-in ones and external ones), and re-compile every file.
@@ -157,6 +161,14 @@ Currently it retrieves forms calling these functions/macros:
       (package-quickstart-refresh))
     (load package-quickstart-file 'noerror 'nomessage)))
 
+(defun zy-sync-clean-elc ()
+  "Clean all byte code."
+  (let ((default-directory user-emacs-directory))
+    (message "Cleaning byte code...")
+    (dolist (dir `("lisp" "modules"))
+      (dolist (elc (directory-files dir 'full "\\.elc$"))
+        (delete-file elc nil)))))
+
 (defun zy-sync--compile (file)
   "Byte-compile (and maybe natively compile) FILE."
   (message "Compiling %s..." file)
@@ -177,13 +189,16 @@ Return t if FILE is actually compiled, or nil otherwise."
       (zy-sync--compile file)
       t)))
 
-(defun zy-sync-compile-all (&optional force)
+(defun zy-sync-compile-all (&optional level)
   "Re-compile every file.
-What files are re-compiled is decided smartly. If FORCE is
-non-nil, re-compile every file."
-  (message "\n\nRe-compile everything%s"
-           (if force " forcefully..." "..."))
-  (let ((compiled-cnt 0))
+What files are re-compiled is decided smartly based on LEVEL. See
+`zy-sync-level' for more information."
+  (let ((force (>= level 1))
+        (compiled-cnt 0))
+    (message "\n\nRe-compile everything%s"
+             (if force " forcefully..." "..."))
+    ;; If we should forcefully re-compile everything, clean elc now.
+    (when force (zy-sync-clean-elc))
     ;; Try to compile Zylib. If any component of Zylib is outdated and
     ;; re-compiled, everything else should be re-compiled as well, thus setting
     ;; `force' to t.
@@ -206,7 +221,7 @@ non-nil, re-compile every file."
             (when (>= zy-sync-level 2)
               (zy-sync-clean-packages))
             (zy-sync-ensure-packages)
-            (zy-sync-compile-all (>= zy-sync-level 1))))
+            (zy-sync-compile-all zy-sync-level)))
          (sec (car result)))
     (message "\n\nSynchronization finished in %s seconds." sec)))
 
