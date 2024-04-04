@@ -15,6 +15,27 @@
 (pkg! 'python-black)
 
 (after! 'python
+  ;; Call "isort" instead of "python -m isort".
+  (advice-add
+   #'python--do-isort :override
+   (defun +python-do-isort-a (&rest args)
+     "Edit the current buffer using isort called with ARGS.
+Return non-nil if the buffer was actually modified."
+     (let ((buffer (current-buffer)))
+       (with-temp-buffer
+         (let ((temp (current-buffer)))
+           (with-current-buffer buffer
+             (let ((status (apply #'call-process-region
+                                  (point-min) (point-max)
+                                  "isort"
+                                  nil (list temp nil) nil
+                                  "-" args))
+                   (tick (buffer-chars-modified-tick)))
+               (unless (eq 0 status)
+                 (error "%s exited with status %s" "isort" status))
+               (replace-buffer-contents temp)
+               (not (eq tick (buffer-chars-modified-tick))))))))))
+
   ;; Use the Black profile for Isort.
   (advice-add
    #'python-sort-imports :override
@@ -36,6 +57,8 @@ switching to it."
       (when-let ((proc (python-shell-get-process)))
         (unless proc
           (run-python)
+          (while (not (python-shell-get-process))
+            (sit-for 0.1))
           (setq proc (python-shell-get-process)))
         (pop-to-buffer (process-buffer proc))))
 
@@ -71,9 +94,9 @@ This uses `python-black-buffer' or `python-black-region'."
 
   ;; Remap some code actions in Python mode.
   (add-hook! 'python-base-mode-hook
-    (keybind! nil 'local
-      [remap zy/do-format] #'+python-format
-      [remap zy/do-organize-imports] #'python-sort-imports)))
+    (keybind! nil python-base-mode-map
+      [remap +leader-do-format] #'+python-format
+      [remap +leader-do-organize-imports] #'python-sort-imports)))
 
 (provide 'zy-python)
 

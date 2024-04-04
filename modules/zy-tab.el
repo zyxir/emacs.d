@@ -20,8 +20,10 @@
 ;; Load Bufferlo right after Tab-bar.
 (after! 'tab-bar (require 'bufferlo))
 
-;; And load them both for daemon sessions.
-(daemon-require! 'tab-bar 'bufferlo)
+;; And start tab-bar at startup, otherwise some strange error may occur when the
+;; first tab is created.
+(add-hook! 'window-setup-hook
+  (tab-bar-mode 1))
 
 (after! '(tab-bar bufferlo)
   ;; For a newly-created tab, display the dashboard if there is one, otherwise
