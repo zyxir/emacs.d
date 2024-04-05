@@ -101,6 +101,9 @@ cell is ready to be used in `define-key'."
   "R" (+leader-c-create-action "rewrite" 'eglot-code-action-rewrite)
   "x" (+leader-c-create-action "extract" 'eglot-code-action-extract))
 
+(defprefix! +leader-e-map "Extra"
+            nil +leader-map "e")
+
 (defprefix! +leader-f-map "File"
             nil +leader-map "f"
   "f" (cons "Open" #'find-file)

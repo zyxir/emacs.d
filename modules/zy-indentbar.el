@@ -27,8 +27,10 @@
 
 ;; Display indent bars for any non-Lisp prog-mode.
 (add-hook! 'prog-mode-hook
-  (unless (derived-mode-p 'lisp-data-mode)
-    (indent-bars-mode 1)))
+  (defun +indentbar-activate-h (&rest _)
+    "Activate indent bars for any non-Lisp prog-mode."
+    (unless (derived-mode-p 'lisp-data-mode)
+      (indent-bars-mode 1))))
 
 (after! 'indent-bars
   ;; Use a minimal appearance.

@@ -51,6 +51,7 @@
     +journal
     +roam
     +lingual
+    +bib
     ;; Text-editing and coding.
     +embark
     +corfu

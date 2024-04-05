@@ -105,10 +105,9 @@ This uses `python-black-buffer' or `python-black-region'."
     "e" (cons "Send Statement" #'python-shell-send-statement))
 
   ;; Remap some code actions in Python mode.
-  (add-hook! 'python-base-mode-hook
-    (keybind! nil python-base-mode-map
-      [remap +leader-do-format] #'+python-format
-      [remap +leader-do-organize-imports] #'python-sort-imports)))
+  (keybind! nil python-base-mode-map
+    [remap +leader-do-format] #'+python-format
+    [remap +leader-do-organize-imports] #'python-sort-imports))
 
 (provide 'zy-python)
 

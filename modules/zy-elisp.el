@@ -33,8 +33,10 @@ file(s)."
 (after! 'elisp-mode
   ;; Add the backquote-quote (`') pair for Emacs Lisp buffers.
   (add-hook! 'emacs-lisp-mode-hook
-    (after! 'evil-surround
-      (push '(?` . ("`" . "'")) evil-surround-pairs-alist)))
+    (defun +elisp-define-pairs-a (&rest _)
+      "Define pairs for `emacs-lisp-mode'."
+      (after! 'evil-surround
+        (push '(?` . ("`" . "'")) evil-surround-pairs-alist))))
 
   (defprefix! +elisp-map "Emacs Lisp"
               nil emacs-lisp-mode-map "<localleader>"

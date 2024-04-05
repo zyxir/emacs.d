@@ -59,9 +59,6 @@
   ;; Allow mouse interaction in the fringe.
   (diff-hl-show-hunk-mouse-mode 1)
 
-  ;; Also diff Dired buffers (to indicate file changes).
-  (add-hook! 'dired-mode-hook (diff-hl-dired-mode 1))
-
   ;; Turn on `diff-hl-margin-mode' in terminal frames. It is worth noting that
   ;; `diff-hl-margin-mode' is global and it's very hard, if not impossible, to
   ;; make it window-local or frame-local. So manually toggle it if this behavior

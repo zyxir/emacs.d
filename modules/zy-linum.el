@@ -13,9 +13,11 @@
 
 ;; Enable line numbers for any non-special mode.
 (add-hook! 'after-change-major-mode-hook
-  (unless (or (derived-mode-p 'special-mode)
-              (derived-mode-p 'dired-mode))
-    (display-line-numbers-mode 1)))
+  (defun +linum-activate-h (&rest _)
+    "Activate line numbers when appropriate."
+    (unless (or (derived-mode-p 'special-mode)
+                (derived-mode-p 'dired-mode))
+      (display-line-numbers-mode 1))))
 
 (after! 'display-line-numbers
   ;; Explicitly define a width to reduce the cost of on-the-fly computation. 4 is

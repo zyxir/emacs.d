@@ -17,8 +17,7 @@
 (pkg! 'treemacs-nerd-icons)
 
 ;; Icon support for Dired.
-(add-hook! 'dired-mode-hook
-  (nerd-icons-dired-mode 1))
+(add-hook! 'dired-mode-hook #'nerd-icons-dired-mode)
 
 ;; Icon support for Corfu.
 (after! 'corfu

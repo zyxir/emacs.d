@@ -41,11 +41,13 @@
   (require 'org-tempo)
 
   (add-hook! 'org-mode-hook
-    ;; Use variable-pitch-mode for Org buffers.
-    (variable-pitch-mode 1)
-    ;; Make Olivetti use a larger width to accomodate `org-indent-mode'.
-    (when (boundp 'olivetti-body-width)
-      (setq-local olivetti-body-width 90)))
+    (defun +org-setup-buffer (&rest _)
+      "Set up modes and vars for an Org buffer."
+      ;; Use variable-pitch-mode for Org buffers.
+      (variable-pitch-mode 1)
+      ;; Make Olivetti use a larger width to accomodate `org-indent-mode'.
+      (when (boundp 'olivetti-body-width)
+        (setq-local olivetti-body-width 90))))
 
   (defprefix! +org-map "Org"
               nil org-mode-map "<localleader>"
@@ -68,7 +70,7 @@
              (python . t)))))
 
 ;; Prettify Org buffers with Org-modern.
-(add-hook! 'org-mode-hook (org-modern-mode 1))
+(add-hook! 'org-mode-hook #'org-modern-mode)
 (add-hook! 'org-agenda-finalize-hook #'org-modern-agenda)
 
 (after! 'org-modern

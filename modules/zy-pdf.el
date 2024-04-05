@@ -23,7 +23,9 @@
 
 ;; HACK: Fix page blinking while Evil is on.
 (add-hook! 'pdf-view-mode-hook
-  (setq-local evil-normal-state-cursor (list nil)))
+  (defun +pdf-fix-cursor-h (&rest _)
+    "Fix blinking cursor in a PDF buffer."
+    (setq-local evil-normal-state-cursor (list nil))))
 
 ;; HACK: Silence "File *.pdf is large (X MiB), really open?" prompts for PDFs.
 (advice-add

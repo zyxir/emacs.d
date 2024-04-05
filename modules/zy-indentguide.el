@@ -33,8 +33,10 @@
 ;; guidelines for Lisp modes.
 (after-frame!
   (add-hook! 'prog-mode-hook
-    (unless (derived-mode-p 'lisp-data-mode)
-      (highlight-indent-guides-mode 1))))
+    (defun +indentguide-activate-h (&rest _)
+      "Activate indent guides for any non-Lisp prog-mode."
+      (unless (derived-mode-p 'lisp-data-mode)
+        (highlight-indent-guides-mode 1)))))
 
 (after! 'highlight-indent-guides
   ;; Use characters for highlighting, which is conventional.

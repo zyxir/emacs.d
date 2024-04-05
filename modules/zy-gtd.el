@@ -57,7 +57,7 @@ Automatically set when `+personal-zybox-dir' is customized.")
     (evil-set-initial-state 'org-agenda-mode 'normal))
 
   ;; Use variable pitch font for the agenda.
-  (add-hook! 'org-agenda-mode-hook (variable-pitch-mode 1)))
+  (add-hook! 'org-agenda-mode-hook #'variable-pitch-mode))
 
 (after! 'org-capture
   ;; Capture template for todo entries.
