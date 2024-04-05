@@ -78,6 +78,9 @@
 ;; Never use GUI dialog boxes since they cause problems on WSLg.
 (setq use-dialog-box nil)
 
+;; Enable repeating keys.
+(repeat-mode 1)
+
 (provide 'zy-defaults)
 
 ;;; zy-defaults.el ends here
