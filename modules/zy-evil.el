@@ -112,12 +112,7 @@
   ;; way of defining macros makes sense to me.
   (keybind! 'normal global-map
     "Q" #'kmacro-start-macro-or-insert-counter
-    "q" #'kmacro-end-or-call-macro)
-
-  ;; More Unimpaired style keybindings.
-  (keybind! 'motion global-map
-    "[ t" #'tab-previous
-    "] t" #'tab-next))
+    "q" #'kmacro-end-or-call-macro))
 
 (provide 'zy-evil)
 

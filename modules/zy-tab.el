@@ -17,13 +17,12 @@
 (pkg! 'consult)
 (pkg! 'bufferlo)
 
-;; Load Bufferlo right after Tab-bar.
-(after! 'tab-bar (require 'bufferlo))
-
-;; And start tab-bar at startup, otherwise some strange error may occur when the
-;; first tab is created.
-(add-hook! 'window-setup-hook
-  (tab-bar-mode 1))
+;; Enable Bufferlo right before a tab is created.
+(defun +tab-load-bufferlo-a (&rest _)
+  "Enable Bufferlo."
+  (advice-remove #'tab-new '+tab-load-bufferlo-a)
+  (bufferlo-mode 1))
+(advice-add #'tab-new :before #'+tab-load-bufferlo-a)
 
 (after! '(tab-bar bufferlo)
   ;; For a newly-created tab, display the dashboard if there is one, otherwise

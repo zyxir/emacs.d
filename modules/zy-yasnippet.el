@@ -38,7 +38,11 @@ ARGS are passed to OLDFUN as is."
   ;; HACK: `yas--parse-template' sometimes prints uninterested warnings, and it
   ;; uses the function `message' instead of `yas--message'. Let's inhibit these
   ;; unnecessary messages.
-  (advice-add #'yas--parse-template :around #'+yasnippet--inhibit-message-a))
+  (advice-add #'yas--parse-template :around #'+yasnippet--inhibit-message-a)
+
+  ;; Don't occupy the TAB key for snippet expansion.
+  (keybind! nil yas-minor-mode-map
+    "TAB" nil))
 
 (provide 'zy-yasnippet)
 

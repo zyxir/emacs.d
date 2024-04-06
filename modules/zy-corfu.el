@@ -39,6 +39,10 @@
     [remap previous-line] nil
     [remap next-line] nil)
 
+  ;; Also use "C-y" for confirmation in insert mode, like Vim does.
+  (keybind! 'insert corfu-map
+    "C-y" #'corfu-complete)
+
   ;; Remember completion history.
   (corfu-history-mode 1)
 

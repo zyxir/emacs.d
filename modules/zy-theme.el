@@ -49,8 +49,7 @@ to make the loading of themes more deterministic."
   ;; Use more variants to enhance distinguishability.
   (setq modus-themes-italic-constructs t
         modus-themes-bold-constructs t
-        modus-themes-mixed-fonts t
-        modus-themes-variable-pitch-ui t)
+        modus-themes-mixed-fonts t)
 
   ;; Do not extend region highlight to the edge of the window.
   (set-face-attribute 'region nil :extend nil)

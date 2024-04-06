@@ -4,24 +4,10 @@
 
 ;; This file provides the `+font' module of the configuration.
 
-;; It sets font for various faces and multiple character sets. I used to aim at
-;; making the width of one Chinese character equal that of two Latin characters,
-;; so that the following two lines could align:
-;;
-;; 這句話一共由十三個漢字組成
-;; abcdefghijklmnopqrstuvwxyz
-;;
-;; In order to make them align, a special font should be chosen. The best font
-;; for this alignment is Sarasa Fixed.
-;;
-;; However, as I used that font in a day to day basis, I found that it is too
-;; thin (for alignment) and is hard to read. As long as I tried other
-;; programming fonts (like Inconsolata, JetBrains Mono, and so on), I found that
-;; these professional fonts are far more clear and beautiful than Sarasa Fixed
-;; (or Iosevka, the font that Sarasa's Latin part is based on). Therefore, now I
-;; value font appearance more than pure alignment. When alignment is really that
-;; necessary, for instance in tables in Markdown or Org-mode, we can use the
-;; package Valign for perfect text alignment.
+;; It sets font for various faces and multiple character sets. Currently the
+;; default font is JetBrains Mono NL Nerd Font, the variable pitch font is Noto
+;; Sans, and the Chinese font for both faces is Sarasa Fixed SC (which comes
+;; from Source Han Sans SC).
 
 ;;; Code:
 
@@ -49,7 +35,7 @@ This function set the value of FONT-SYM to FONT-VAL, and run
   :group '+font
   :set #'+font--set-var)
 
-(defcustom +font-varpitch-relsize 2
+(defcustom +font-varpitch-relsize 0
   "The relative pixel size of font for the `variable-pitch' face.
 For example, if `+font-size' is 16 and this is 2, the
 font size of the face `variable-pitch' will be 18."
@@ -74,11 +60,11 @@ string. The defined customizable variable will have the
 ;; a lexical scope, preventing the defined variables from being used globally.
 (setq +font-no-refresh-on-set t)
 
-(+font-define-font +font-default "JetBrainsMonoNL Nerd Font"
+(+font-define-font +font-default "JetBrains Mono NL"
   "Font for the `default' face.")
 (+font-define-font +font-default-cjk "Sarasa Fixed SC Nerd Font"
   "CJK font for the `default' face.")
-(+font-define-font +font-varpitch "Source Sans 3"
+(+font-define-font +font-varpitch "Noto Sans"
   "Font for the `variable-pitch' face.")
 (+font-define-font +font-varpitch-cjk "Sarasa Fixed SC Nerd Font"
   "CJK font for the `variable-pitch' face.")
@@ -156,31 +142,27 @@ checked."
   (let ((available-fonts (font-family-list frame))
         (height (round (* +font-size 7.5)))
         (varpitch-relheight (round (* +font-varpitch-relsize 7.5))))
-    ;; Default face, fixed-pitch face and global font size.
-    (dolist (face '(default fixed-pitch))
-      (eval
-       (append `(set-face-attribute ',face nil)
-               ;; Set font family when `+font-default' is available.
-               (when (member +font-default available-fonts)
-                 `(:family ,+font-default))
-               ;; Only set font height for the default face.
-               (when (eq face 'default)
-                 `(:height ,height))))
-      (when (member +font-default-cjk available-fonts)
-        (+font-set-charset-font face nil
-                                +font-cjk-charsets +font-default-cjk)))
+    ;; Default/fixed-pitch face and global font size.
+    (when (member +font-default available-fonts)
+      (set-face-attribute 'default nil :family +font-default)
+      (set-face-attribute 'fixed-pitch nil :family +font-default))
+    (when height
+      (set-face-attribute 'default nil :height height))
+    (set-face-attribute 'fixed-pitch nil :height 1.0)
+    (when (member +font-default-cjk available-fonts)
+      (+font-set-charset-font
+       'default nil +font-cjk-charsets +font-default-cjk)
+      (+font-set-charset-font
+       'fixed-pitch nil +font-cjk-charsets +font-default-cjk))
     ;; Variable-pitch face.
-    (eval
-     (append '(set-face-attribute 'variable-pitch nil)
-             ;; Set font when the specified one is available.
-             (when (member +font-varpitch available-fonts)
-               `(:family ,+font-varpitch))
-             ;; Only set font height if a relative one is specified.
-             (unless (= varpitch-relheight 0)
-               `(:height (lambda (height) (+ height ,varpitch-relheight))))))
+    (when (member +font-varpitch available-fonts)
+      (set-face-attribute 'variable-pitch nil :family +font-varpitch))
+    (when varpitch-relheight
+      (set-face-attribute 'variable-pitch nil :height
+                          (lambda (height) (+ height varpitch-relheight))))
     (when (member +font-varpitch-cjk available-fonts)
-      (+font-set-charset-font 'variable-pitch nil
-                              +font-cjk-charsets +font-varpitch-cjk))))
+      (+font-set-charset-font
+       'variable-pitch nil +font-cjk-charsets +font-varpitch-cjk))))
 
 (defun +font/setup (&optional frame)
   "Setup font faces according to font variables.
