@@ -60,7 +60,7 @@ string. The defined customizable variable will have the
 ;; a lexical scope, preventing the defined variables from being used globally.
 (setq +font-no-refresh-on-set t)
 
-(+font-define-font +font-default "JetBrains Mono NL"
+(+font-define-font +font-default "JetBrainsMonoNL Nerd Font Mono"
   "Font for the `default' face.")
 (+font-define-font +font-default-cjk "Sarasa Fixed SC Nerd Font"
   "CJK font for the `default' face.")

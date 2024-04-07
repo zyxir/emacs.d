@@ -44,6 +44,10 @@
   (setq initial-buffer-choice
         (lambda () (get-buffer-create "*dashboard*"))))
 
+(after! 'dashboard
+  ;; Make the footer more noticeable.
+  (set-face-attribute 'dashboard-footer nil :height 1.20))
+
 (provide 'zy-dashboard)
 
 ;;; zy-dashboard.el ends here
