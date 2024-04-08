@@ -15,10 +15,14 @@
 (require 'zylib)
 
 (pkg! 'flycheck)
+(pkg! 'flycheck-inline)
 (pkg! 'flycheck-eglot)
 
 ;; Enable Flycheck everywhere.
 (add-hook! 'window-setup-hook (global-flycheck-mode 1))
+
+;; Show diagnostics inline.
+(add-hook! 'flycheck-mode-hook #'flycheck-inline-mode)
 
 (daemon-require! 'flycheck)
 (after! 'flycheck
