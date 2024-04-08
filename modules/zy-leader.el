@@ -54,6 +54,7 @@
   "B" (cons "Go to Buffer*" #'switch-to-buffer)
   "C-b" (cons "List Buffers" #'list-buffers)
   "d" (cons "Dired" #'dired)
+  "D" (cons "List Dir" #'list-directory)
   "s" (cons "Save Buffer" #'save-buffer)
   "k" (cons "Kill Buffer" #'kill-buffer)
   "]" (cons "Next Tab" #'tab-next)

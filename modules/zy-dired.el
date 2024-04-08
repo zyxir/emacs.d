@@ -29,7 +29,9 @@
    ;; Command line switches used for `ls'.
   (setq dired-listing-switches (eval-when-compile
                                  (string-join
-                                  '(;; Natural sort of version numbers.
+                                  '(;; List hidden files as well.
+                                    "--all"
+                                    ;; Natural sort of version numbers.
                                     "-v"
                                     ;; Group directories and show them first.
                                     "--group-directories-first"
