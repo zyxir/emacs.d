@@ -4,8 +4,8 @@
 
 ;; This file provides the `+prose' module of the configuration.
 
-;; This file introduces several features for prose-editing, including a
-;; distraction-free mode (`olivetti-mode').
+;; The `+prose-mode' is defined here, which is a minor mode built on top of
+;; `olivetti-mode', and is specifically for prose-editing.
 
 ;;; Code:
 
@@ -13,17 +13,20 @@
 
 (pkg! 'olivetti)
 
+(define-minor-mode +prose-mode
+  "A minor mode for distraction-free prose editing."
+  :group '+prose
+  ;; Toggle Olivetti mode.
+  (olivetti-mode 'toggle)
+  ;; Toggle serif fonts.
+  (when (fboundp '+font/serif-mode)
+    (+font/serif-mode 'toggle))
+  ;; Toggle line numbers.
+  (display-line-numbers-mode 'toggle))
+
 (after! '+leader
   (keybind! nil +leader-y-map
-    "v" (cons "Distraction Free" #'olivetti-mode)))
-
-(after! 'olivetti
-  ;; Use larger font when Olivetti is on.
-  (let ((olivetti-inc 2))
-    (add-hook! 'olivetti-mode-on-hook
-      (text-scale-adjust olivetti-inc))
-    (add-hook! 'olivetti-mode-off-hook
-      (text-scale-adjust (- olivetti-inc)))))
+    "p" (cons "Prose Display" #'+prose-mode)))
 
 (provide 'zy-prose)
 

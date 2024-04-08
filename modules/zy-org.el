@@ -44,10 +44,7 @@
     (defun +org-setup-buffer (&rest _)
       "Set up modes and vars for an Org buffer."
       ;; Use variable-pitch-mode for Org buffers.
-      (variable-pitch-mode 1)
-      ;; Make Olivetti use a larger width to accomodate `org-indent-mode'.
-      (when (boundp 'olivetti-body-width)
-        (setq-local olivetti-body-width 90))))
+      (variable-pitch-mode 1)))
 
   (defprefix! +org-map "Org"
               nil org-mode-map "<localleader>"

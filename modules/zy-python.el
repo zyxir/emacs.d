@@ -66,13 +66,15 @@ Always use the Black profile."
     (defun +python-switch-to-python-shell ()
       "Switch to inferior Python process buffer.
 When there is no Python process running, start one before
-switching to it."
+switching to it.
+
+When in a project, start one associated with the project."
       (interactive)
-      (let ((proc (python-shell-get-process)))
-        (unless proc
-          (run-python)
-          (setq proc (python-shell-get-process)))
-        (pop-to-buffer (process-buffer proc))))
+      (unless (python-shell-get-process)
+        (run-python (python-shell-calculate-command)
+                    (if (project-current) 'project nil))
+        (setq proc (python-shell-get-process)))
+        (pop-to-buffer (process-buffer proc)))
 
     ;; Wrap some commands to mimic `eglot-format'.
     (defun +python-format (&optional beg end)
@@ -85,17 +87,7 @@ This uses `python-black-buffer' or `python-black-region'."
         (python-black-buffer))))
 
   (defprefix! +python-map "Python"
-              nil python-base-mode-map "<localleader>")
-
-  (defprefix! +python-import-map "Import"
-              nil +python-map "i"
-    "a" (cons "Add" #'python-add-import)
-    "f" (cons "Fix" #'python-fix-imports)
-    "r" (cons "Remove" #'python-remove-import)
-    "s" (cons "Sort" #'python-sort-imports))
-
-  (defprefix! +python-shell-map "Shell"
-              nil +python-map "s"
+              nil python-base-mode-map "<localleader>"
     "s" (cons "Open" #'+python-switch-to-python-shell)
     "R" (cons "Restart" #'python-shell-restart)
     "b" (cons "Send Buffer" #'python-shell-send-buffer)
@@ -103,6 +95,13 @@ This uses `python-black-buffer' or `python-black-region'."
     "r" (cons "Send Region" #'python-shell-send-region)
     "d" (cons "Send Defun" #'python-shell-send-defun)
     "e" (cons "Send Statement" #'python-shell-send-statement))
+
+  (defprefix! +python-import-map "Import"
+              nil +python-map "i"
+    "a" (cons "Add" #'python-add-import)
+    "f" (cons "Fix" #'python-fix-imports)
+    "r" (cons "Remove" #'python-remove-import)
+    "s" (cons "Sort" #'python-sort-imports))
 
   ;; Remap some code actions in Python mode.
   (keybind! nil python-base-mode-map

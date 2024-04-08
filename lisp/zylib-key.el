@@ -161,6 +161,7 @@ per `keybind!' in BINDINGS."
 (define-minor-mode zy-leader-mode
   "Global minor mode for enabling leader keybindings."
   :global t
+  :interactive nil
   :group 'zyemacs)
 
 (defvar zy-leader-mode-map (make-sparse-keymap)

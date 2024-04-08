@@ -26,7 +26,11 @@
     (setq eglot-server-programs
           (remove old-entry eglot-server-programs)
           eglot-server-programs
-          (cons new-entry eglot-server-programs))))
+          (cons new-entry eglot-server-programs)))
+
+  ;; Some handy keys.
+  (keybind! nil eglot-mode-map
+    "<f2>" #'eglot-rename))
 
 ;; Try to enable Eglot for all prog-modes if possible, unless explicitly
 ;; blacklisted.
