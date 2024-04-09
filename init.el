@@ -76,6 +76,7 @@
     +org
     +pdf
     +python
+    +rust
     +scala
     +tex
     +othermodes
