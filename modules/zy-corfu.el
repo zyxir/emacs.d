@@ -28,19 +28,23 @@
   ;; Enable auto completion.
   (setq corfu-auto t)
 
+  ;; Auto-complete immediately on type.
+  (setq corfu-auto-prefix 1)
+
   ;; No delay for auto completion.
   (setq corfu-auto-delay 0)
 
-  ;; Do not intefere with cursor movement keys.
+  ;; Do not intefere with cursor movement keys or the TAB key.
   (keybind! nil corfu-map
-    "RET" nil
     "<up>" nil
     "<down>" nil
+    "TAB" nil
+    "<tab>" nil
     [remap previous-line] nil
     [remap next-line] nil)
 
-  ;; Also use "C-y" for confirmation in insert mode, like Vim does.
-  (keybind! 'insert corfu-map
+  ;; Also use "C-y" for confirmation, like Vim does.
+  (keybind! nil corfu-map
     "C-y" #'corfu-complete)
 
   ;; Remember completion history.

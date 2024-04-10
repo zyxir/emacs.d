@@ -13,21 +13,10 @@
 (require 'zylib)
 
 (pkg! 'python-black)
-(pkg! 'python-docstring)
 
 (after! 'python
-  ;; Fill docstring with according to PEP-257. However I am not sure whether
-  ;; this is overriden by the `python-docstring' package.
+  ;; Fill docstring with according to PEP-257.
   (setq python-fill-docstring-style 'pep-257-nn)
-
-  ;; `python-docstring-mode' remaps `fill-paragraph' to its own command, which
-  ;; is bad. I think that setting `fill-paragraph-function' is a better and
-  ;; safer way.
-  (add-hook! 'python-base-mode-hook
-    (setq-local
-     fill-paragraph-function
-     (defun +python-fill-paragraph-fn (&rest _)
-       (python-docstring-fill))))
 
   ;; No additional indentation for def blocks, like Black does.
   (setq python-indent-def-block-scale 1)
