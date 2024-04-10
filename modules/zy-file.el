@@ -25,7 +25,7 @@
     (when filename
       (if (vc-backend filename)
           (vc-delete-file filename)
-        (progn
+        (when (y-or-n-p (format "Delete %s?" filename))
           (delete-file filename)
           (message "Deleted file %s" filename)
           (kill-buffer))))))
