@@ -24,7 +24,10 @@
   ;; is bad. I think that setting `fill-paragraph-function' is a better and
   ;; safer way.
   (add-hook! 'python-base-mode-hook
-    (setq-local fill-paragraph-function #'python-docstring-fill))
+    (setq-local
+     fill-paragraph-function
+     (defun +python-fill-paragraph-fn (&rest _)
+       (python-docstring-fill))))
 
   ;; No additional indentation for def blocks, like Black does.
   (setq python-indent-def-block-scale 1)
@@ -73,8 +76,7 @@ When in a project, start one associated with the project."
       (unless (python-shell-get-process)
         (run-python (python-shell-calculate-command)
                     (if (project-current) 'project nil))
-        (setq proc (python-shell-get-process)))
-        (pop-to-buffer (process-buffer proc)))
+        (pop-to-buffer (process-buffer (python-shell-get-process)))))
 
     ;; Wrap some commands to mimic `eglot-format'.
     (defun +python-format (&optional beg end)
