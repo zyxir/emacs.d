@@ -43,6 +43,7 @@
 When there is no sbt process running, start one before
 switching to it."
       (interactive)
+      (require 'sbt-mode)
       (unless (and (get-buffer (sbt:buffer-name))
                    (get-buffer-process (sbt:buffer-name)))
         (sbt:run-sbt nil nil))

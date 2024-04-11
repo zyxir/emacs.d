@@ -72,7 +72,13 @@
   (setq evil-echo-state nil)
 
   ;; Setup Evil in many other modes with Evil-collection.
-  (evil-collection-init)
+  (require 'evil-collection)
+  (after! 'evil-collection
+    (let ((disabled-modes '(corfu)))
+      (evil-collection-init
+       (seq-filter (lambda (mode)
+                     (not (memq mode disabled-modes)))
+                   evil-collection-mode-list))))
 
   ;; Enable Evil-surround for powerful pair-editing commands (see doc).
   (global-evil-surround-mode 1)

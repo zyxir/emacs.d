@@ -21,27 +21,6 @@
   ;; No additional indentation for def blocks, like Black does.
   (setq python-indent-def-block-scale 1)
 
-  ;; Call "isort" instead of "python -m isort".
-  (advice-add
-   #'python--do-isort :override
-   (defun +python-do-isort-a (&rest args)
-     "Edit the current buffer using isort called with ARGS.
-Return non-nil if the buffer was actually modified."
-     (let ((buffer (current-buffer)))
-       (with-temp-buffer
-         (let ((temp (current-buffer)))
-           (with-current-buffer buffer
-             (let ((status (apply #'call-process-region
-                                  (point-min) (point-max)
-                                  "isort"
-                                  nil (list temp nil) nil
-                                  "-" args))
-                   (tick (buffer-chars-modified-tick)))
-               (unless (eq 0 status)
-                 (error "%s exited with status %s" "isort" status))
-               (replace-buffer-contents temp)
-               (not (eq tick (buffer-chars-modified-tick))))))))))
-
   ;; Use the Black profile for Isort.
   (advice-add
    #'python-sort-imports :override

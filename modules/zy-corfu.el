@@ -28,8 +28,13 @@
   ;; Enable auto completion.
   (setq corfu-auto t)
 
-  ;; Auto-complete immediately on type.
-  (setq corfu-auto-prefix 1)
+  ;; Auto-complete for 2+ letters, since the "if" keyword is exactly 2 letters.
+  (setq corfu-auto-prefix 2)
+
+  ;; Do not insert for exact match, since this may trigger unwanted snippet
+  ;; expansion by some language servers (rust-analyzer, for instance), or
+  ;; unwanted spaces when typing in a shell.
+  (setq corfu-on-exact-match nil)
 
   ;; No delay for auto completion.
   (setq corfu-auto-delay 0)
