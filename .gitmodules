@@ -1,0 +1,3 @@
+[submodule "site-lisp/smartparens"]
+	path = site-lisp/smartparens
+	url = https://github.com/Fuco1/smartparens.git

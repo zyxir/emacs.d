@@ -74,7 +74,8 @@
   ;; Setup Evil in many other modes with Evil-collection.
   (require 'evil-collection)
   (after! 'evil-collection
-    (let ((disabled-modes '(corfu)))
+    (let (;; Put disabled modes here.
+          (disabled-modes '()))
       (evil-collection-init
        (seq-filter (lambda (mode)
                      (not (memq mode disabled-modes)))

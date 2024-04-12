@@ -25,7 +25,14 @@ I sticked to Emacs keybindings for years before switching to Evil, because of se
 
 ** Installation
 
-Clone this repository to =~/.emacs.d= and run emacs. All packages should be installed automatically.
+Clone this repository recursively to =~/.emacs.d=, then run the synchronization script in batch mode.
+
+#+begin_src sh
+  git clone https://github.com/zyxir/emacs.d $HOME/.emacs.d --recurse-submodules -j$(nproc)
+  emacs --batch --load $HOME/.emacs.d/zy-sync.el
+#+end_src
+
+Now Emacs should be ready.
 
 These third-party programs enable additional functionalities of my configuration:
 

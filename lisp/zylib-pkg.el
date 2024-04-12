@@ -84,11 +84,19 @@ to install the package again."
        (package-refresh-contents)
        (zy--install-symbol-package package 'no-refresh)))))
 
+(defun zy--install-site-lisp-package (subdir)
+  "Install SUBDIR in the site-lisp directory."
+  (package-install-file
+   (expand-file-name
+    subdir
+    (expand-file-name "site-lisp" user-emacs-directory))))
+
 (defun zy-get-package-version (package)
   "Get the version of PACKAGE as a string."
-  (package-version-join
-   (package-desc-version
-    (package-get-descriptor package))))
+  (or (package-version-join
+       (package-desc-version
+        (package-get-descriptor package)))
+      "unknown"))
 
 (defun zy-require-package (package &rest spec)
   "Make sure that PACKAGE is installed.
@@ -99,10 +107,15 @@ PACKAGE via `package-install' when it is not installed. It
 respects packages pinned to a specific archive via `pin-to!', and
 respects `package-archive-priority'.
 
-Otherwise, SPEC should be a property list describing a package
+Otherwise, if SPEC is a property list describing a package
 specification specifying a package from source, which will be
 installed via `package-vc-install', as described in the Info
 node `(emacs)Fetching Package Sources'.
+
+SPEC can also contain a single string, which is the name of a
+sub-directory in the \"site-lisp\" directory in
+`user-emacs-directory'. This way we can install a package pinned
+to a specific commit as a git submodule.
 
 If the package is successfully installed or already installed, it
 is added to `zy-required-packages', which will eventually replace
@@ -112,18 +125,29 @@ the content of `package-selected-packages'."
     (package-initialize))
   ;; Install the package unless it is already installed yet.
   (unless (package-installed-p package)
-    (let (;; Messages generated while installing a package generally do not
-          ;; matter. We want to be notified only when an error occurs.
-          (inhibit-message t))
-      (cond
-       ;; Case 1: No `spec' provided. Install normally.
-       ((not spec) (zy--install-symbol-package package))
-       ;; Case 2: `spec' is a plist. Install with VC.
-       ((plistp spec) (package-vc-install (cons package spec)))
-       ;; Other cases: invalid `spec' provided.
-       (t (error "Invalid package specification: %s" spec))))
-    (message "Package `%s' with version %s installed."
-             package (zy-get-package-version package)))
+    (let* ((type (cond
+                  ;; Case 1: No `spec' provided. Install normally.
+                  ((not spec) 'normal)
+                  ;; Case 2: `spec' is a plist. Install with VC.
+                  ((plistp spec) 'vc)
+                  ;; Case 3: `spec' is a string. Install local file.
+                  ((and (not (cdr-safe spec)) (stringp (car-safe spec)))
+                   'local)
+                  ;; Other cases: invalid `spec' provided.
+                  (t (error "Invalid package specification: %s" spec))))
+           (type-indicator (pcase type
+                             ('normal "")
+                             ('vc " (via VC)")
+                             ('local " (via git submodule)"))))
+      (let (;; Messages generated while installing a package generally do not
+            ;; matter. We want to be notified only when an error occurs.
+            (inhibit-message t))
+        (pcase type
+          ('normal (zy--install-symbol-package package))
+          ('vc (package-vc-install (cons package spec)))
+          ('local (zy--install-site-lisp-package (car spec)))))
+      (message "Package `%s' with version %s installed%s."
+               package (zy-get-package-version package) type-indicator)))
   ;; Track explicitly required packages.
   (add-to-list 'zy-required-packages package)
   ;; Return the package symbol.
