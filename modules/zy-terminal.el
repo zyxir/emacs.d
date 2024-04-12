@@ -39,11 +39,6 @@
 (pkg! 'evil-terminal-cursor-changer)
 (pkg! 'corfu-terminal)
 
-;; Use a prettier character to divide windows.
-(unless standard-display-table
-  (setq standard-display-table (make-display-table)))
-(set-display-table-slot standard-display-table 5 #x2502)
-
 ;; Enable mouse clicks in the terminal.
 (xterm-mouse-mode 1)
 
