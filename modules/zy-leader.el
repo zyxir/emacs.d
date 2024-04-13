@@ -176,7 +176,7 @@ cell is ready to be used in `define-key'."
   "c" (cons "Close" #'delete-window)
   "o" (cons "Only" #'delete-other-windows)
   "h" (cons "Left" #'windmove-left)
-  "j" (cons "Down" #'windmove-right)
+  "j" (cons "Down" #'windmove-down)
   "k" (cons "Up" #'windmove-up)
   "l" (cons "Right" #'windmove-right)
   "s" (cons "Split" #'split-window-below)
