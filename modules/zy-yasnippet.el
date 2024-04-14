@@ -17,6 +17,7 @@
 
 (pkg! 'yasnippet)
 (pkg! 'yasnippet-snippets)
+(pkg! 'yasnippet-capf)
 
 ;; Make Yasnippet ready after setup.
 (add-hook! 'window-setup-hook (yas-global-mode 1))
@@ -42,7 +43,10 @@ ARGS are passed to OLDFUN as is."
 
   ;; Don't occupy the TAB key for snippet expansion.
   (keybind! nil yas-minor-mode-map
-    "TAB" nil))
+    "TAB" nil)
+
+  ;; Use the Yasnippet CAPF.
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 (provide 'zy-yasnippet)
 

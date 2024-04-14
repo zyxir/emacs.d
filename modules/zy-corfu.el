@@ -43,8 +43,6 @@
   (keybind! nil corfu-map
     "<up>" nil
     "<down>" nil
-    "TAB" nil
-    "<tab>" nil
     [remap previous-line] nil
     [remap next-line] nil)
 
