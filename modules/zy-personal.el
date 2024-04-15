@@ -62,7 +62,11 @@ Org-journal, Org-roam, and many more."
               ebib-notes-directory
               (expand-file-name "ebib/notes" path)
               ebib-file-search-dirs
-              `(,(expand-file-name "ebib/files" path))))
+              `(,(expand-file-name "ebib/files" path)))
+        ;; Citar paths (same as the Ebib ones).
+        (defvar citar-bibliography)
+        (setq citar-bibliography
+              `(,(expand-file-name "ebib/references.bib" path))))
     ;; Otherwise, warn about it when necessary.
     (when +personal-enable
       (lwarn 'zyemacs :warning "Zybox path is not valid."))))

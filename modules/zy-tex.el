@@ -59,10 +59,15 @@
               nil LaTeX-mode-map "<localleader>"
     "a" (cons "Run All" #'TeX-command-run-all)
     "c" (cons "Run Command" #'TeX-command-master)
-    "e" (cons "Insert Env" #'LaTeX-environment)
+    "e" (cons "Ins. Env" #'LaTeX-environment)
     "f" (cons "Set Font" #'TeX-font)
     "v" (cons "View" #'TeX-view)
-    "_" (cons "Choose Master File" #'TeX-master-file-ask)))
+    "_" (cons "Choose Master File" #'TeX-master-file-ask))
+
+  ;; Use a key for inserting citations with Citar.
+  (after! '(+bib citar)
+    (keybind! nil +tex-map
+      "i" (cons "Ins. Citation" #'citar-insert-citation))))
 
 (provide 'zy-tex)
 

@@ -59,8 +59,12 @@
 (after! '(+platform citar)
   (setq citar-file-open-functions '((t . +platform/open-externally))))
 
-;; Embark integration for Citar.
+;; Load Citar early for relevant modes.
+(after! '(tex-mode org markdown-mode)
+  (require 'citar))
+
 (after! 'citar
+  ;; Embark integration for Citar.
   (citar-embark-mode 1))
 
 ;; Configure the built-in library `bibtex', which is used to edit BibTeX files
@@ -71,6 +75,9 @@
 
   ;; Using 5 words for title is too long. I prefer shorter keys.
   (setq bibtex-autokey-titlewords 2)
+
+  ;; Do not use more than 2 words. Short keys are prettier!
+  (setq bibtex-autokey-titlewords-stretch 0)
 
   ;; Separate everything with underscores.
   (setq bibtex-autokey-name-year-separator "_"
