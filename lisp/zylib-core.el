@@ -58,27 +58,27 @@ availability of native compilation."
   (and (fboundp 'native-comp-available-p)
        (native-comp-available-p)))
 
-(defun zy--require-recursively (fcomp)
-  "Require the nested feature list FCOMP recursively.
-
-FCOMP is either a feature symbol or a list. If FCOMP is a feature
-symbol, `require' it. If FCOMP is a list, apply this function to
-every element of it. As a result, all feature symbols in the
-nested list got required.
-
-Return the list of features that is actually required."
-  (cond
-   ((symbolp fcomp) (list (require fcomp)))
-   ((listp fcomp) (mapcan #'zy--require-recursively fcomp))
-   (t (user-error "%s is not a nested feature symbol" fcomp))))
-
-(defun zy--require-when-compile (features)
-  "Require every feature in FEATURES during byte compilation.
+(defun zy--require-when-compile (flist)
+  "Require every feature in FLIST during byte compilation.
 This is only used internally in Zylib."
   (when (bound-and-true-p byte-compile-current-file)
-    (zy--require-recursively features)))
+    (seq-map #'require flist)))
 
 ;;;; Module Management
+
+(defun featurify! (symbol)
+  "Convert SYMBOL into a feature symbol.
+
+If SYMBOL is a module symbol which starts with `+', like
+`+quickins' or `+font', it is converted into its feature symbol,
+like `zy-quickins' and `zy-font'.
+
+Otherwise SYMBOL is returned as is."
+  (let ((symbol-name (symbol-name symbol)))
+    (if (string-prefix-p "+" symbol-name)
+        (intern
+         (format "zy-%s" (substring symbol-name 1)))
+      symbol)))
 
 (defun modulep! (symbol)
   "Determine if SYMBOL is a enabled module.
@@ -210,57 +210,86 @@ This function is based on `remove-hook!' of Doom Emacs."
 
 ;;;; Lazy Loading Macros
 
-(defun zy--gen-after-load (features body)
-  "Generate `eval-after-load' statements to represent FEATURES.
-FEATURES is a list of feature symbols and BODY is the body to be
-lazy loaded.
+(defun zy--gen-after-load (features* body)
+  "Generate statements to load BODY after FEATURES.
+FEATURES* is a normalized nested feature list returned by
+`zy--process-features'.
+
+The list can contain keywords `:any' and `:all', where no
+keywords implied `:all'.
 
 ALl features will be required at compile time to silence compiler
 warnings."
-  ;; While byte-compiling the file, require all features so that all its symbols
-  ;; are in scope, like `use-package' does.
-  (zy--require-when-compile features)
-  (let* ((fn-name (cl-gensym "after!-"))
-         (body `(defun ,fn-name (&rest _) ,@body t)))
-    (dolist (feature features)
-      (setq body `(eval-after-load ',feature ,body)))
-    body))
+  (cond
+   ((and features* (symbolp features*))
+    `((eval-after-load ',features* ',(macroexp-progn body))))
+   ((and (consp features*) (memq (car features*) '(:or :any)))
+    (cl-mapcan #'(lambda (x) (zy--gen-after-load x body)) (cdr features*)))
+   ((and (consp features*) (memq (car features*) '(:and :all)))
+    (cl-dolist (next (cdr features*))
+      (setq body (zy--gen-after-load next body)))
+    body)
+   ((listp features*)
+    (zy--gen-after-load (cons :all features*) body))))
 
-(defun zy--normalize-features (features)
-  "Normalize FEATURES for macro expansion.
-FEATURES can be:
+(defun zy--process-features (features*)
+  "Convert FEATURES* for macro expansion.
+FEATURES* can be:
 
-- A quoted list of symbols.
 - A quoted symbol.
+- A quoted nested list of symbols.
 
-This function always returns an unquoted list of unquoted
-symbols.
+The list can contain keywords `:any' and `:all', where no
+keywords implied `:all'.
 
 If there is any symbol starting with the plus sign, like
 `+leader' does, it is recognized as a module of Zyxir's Emacs
 configuration, and is converted to its feature name accordingly,
-like `+leader' is converted to `zy-leader'."
-  ;; Unquote and listify the form.
-  (setq features (ensure-list (cadr features)))
-  ;; Normalize elements.
-  (mapcar (lambda (feature)
-            (when (and (listp feature)
-                       (eq (car feature) 'quote))
-              (error "Feature should not be double-quoted"))
-            (if (string-prefix-p "+" (symbol-name feature))
-                (intern (format "zy-%s" (substring (symbol-name feature) 1)))
-              feature))
-          features))
+like `+leader' is converted to `zy-leader'.
 
-(defmacro after! (features &rest body)
-  "Evaluate BODY after FEATURES are available.
+This function returns (NORMALIZED FLIST), where:
 
-FEATURES can be a symbol or a list of symbols. It can be quoted
-or unquoted. If a symbol starts with the plus sign like `+leader'
+- NORMALIZED is the normalized FERATURES*, where there is no
+  quote and every symbol is converted.
+
+- FLIST is the flattened list of features. All keywords are
+excluded."
+  ;; Remove the quote.
+  (setq features* (cadr features*))
+  ;; Normalize and flatten elements.
+  (cl-labels ((normalize (symbol)
+                (featurify! symbol))
+              (normalize-recursively (features*)
+                (if (listp features*)
+                    (mapcar #'normalize-recursively features*)
+                  (normalize features*)))
+              (flatten-recursively (normalized)
+                (if (listp normalized)
+                    (mapcan #'flatten-recursively normalized)
+                  (unless (keywordp normalized)
+                    (list normalized)))))
+    (let* ((normalized (normalize-recursively features*))
+           (flist (flatten-recursively normalized)))
+      (list normalized flist))))
+
+(defmacro after! (features* &rest body)
+  "Evaluate BODY after FEATURES* are available.
+
+FEATURES* can be a symbol or a nested list of symbols. It should
+be quoted. If a symbol starts with the plus sign like `+leader'
 does, it is considered a module of the configuration, and will be
-processed accordingly."
+processed accordingly. It can contain keywords like `:all' and
+`:any'."
   (declare (indent 1) (debug (form def-body)))
-  (zy--gen-after-load (zy--normalize-features features) body))
+  (let* ((result (zy--process-features features*))
+         (features* (car result))
+         (flist (cadr result)))
+    ;; While byte-compiling the file, require all features so that all its
+    ;; symbols are in scope, like `use-package' does.
+    (zy--require-when-compile flist)
+    ;; Generate the `eval-after-load' statement.
+    (macroexp-progn
+     (zy--gen-after-load features* body))))
 
 (defmacro after-frame! (&rest body)
   "Run BODY when the first frame is created.
