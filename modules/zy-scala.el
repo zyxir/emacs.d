@@ -11,31 +11,44 @@
 
 (require 'zylib)
 
+(pkg! 'scala-mode)
 (pkg! 'scala-ts-mode)
 (pkg! 'sbt-mode)
 
-(add-hook! 'scala-ts-mode-hook
+(defvar +scala-disable-treesit t
+  "Use `scala-mode' instead of `scala-ts-mode' for Scala files.
+
+`scala-ts-mode' fits Scala 3 better in my opinion. In my work
+with Scala 2 I prefer `scala-mode'.")
+
+(add-hook! '(scala-mode-hook scala-ts-mode-hook)
   (setq-local fill-column 100))
 
-(after! '(scala-ts-mode sbt-mode)
+(after! 'scala-ts-mode
   ;; Indent 4 spaces for function arguments and class parameters, as the scala
   ;; formatter does.
-  (setf (alist-get
-         '(parent-is "^class_parameters$")
-         (alist-get 'scala scala-ts--indent-rules)
-         nil nil #'equal)
-        '(parent-bol 4)
-        (alist-get
-         '(parent-is "^arguments$")
-         (alist-get 'scala scala-ts--indent-rules)
-         nil nil #'equal)
-        '(parent-bol 4)
-        (alist-get
-         '(parent-is "^parameters$")
-         (alist-get 'scala scala-ts--indent-rules)
-         nil nil #'equal)
-        '(parent-bol 4))
+  (after! 'scala-ts-mode
+    (setf (alist-get
+           '(parent-is "^class_parameters$")
+           (alist-get 'scala scala-ts--indent-rules)
+           nil nil #'equal)
+          '(parent-bol 4)
+          (alist-get
+           '(parent-is "^arguments$")
+           (alist-get 'scala scala-ts--indent-rules)
+           nil nil #'equal)
+          '(parent-bol 4)
+          (alist-get
+           '(parent-is "^parameters$")
+           (alist-get 'scala scala-ts--indent-rules)
+           nil nil #'equal)
+          '(parent-bol 4))))
 
+(after! 'scala-mode
+  ;; Indent run-on lines according to operators.
+  (setq scala-indent:default-run-on-strategy scala-indent:operator-strategy))
+
+(after! '(:or scala-mode scala-ts-mode)
   ;; Command to start and switch to the sbt shell.
   (eval-and-compile
     (defun +scala-switch-to-sbt-shell ()
@@ -50,7 +63,7 @@ switching to it."
       (sbt-switch-to-active-sbt-buffer)))
 
   (defprefix! +scala-map "Scala"
-              nil scala-ts-mode-map "<localleader>")
+              nil (scala-mode-map scala-ts-mode-map) "<localleader>")
 
   (defprefix! +scala-s-map "Sbt"
               nil +scala-map "s"

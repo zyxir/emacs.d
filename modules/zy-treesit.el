@@ -37,10 +37,18 @@
 
 ;; HACK: These tree-sitter grammars are currently problematic: (a) Org makes
 ;; Emacs crash in segmentation fault; (b) Janet, LaTeX, and Markdown could not
-;; be correctly installed. Disable them.
+;; be correctly installed. Add them to the blacklist.
+(defvar +treesit-blacklist '(org janet latex markdown)
+  "List of languages to disable tree-sitter.")
+
+;; Blacklist some languages based on their settings.
+(when (bound-and-true-p +scala-disable-treesit)
+  (add-to-list '+treesit-blacklist 'scala))
+
+;; Remove the blacklisted langauges.
 (setq treesit-auto-langs
       (seq-remove (lambda (lang)
-                    (memq lang '(org janet latex markdown)))
+                    (memq lang +treesit-blacklist))
                   treesit-auto-langs))
 
 ;; Enable Treesit-auto.

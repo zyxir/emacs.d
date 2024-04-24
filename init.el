@@ -67,7 +67,6 @@
     +pair
     +editorconfig
     +eglot
-    +treesit
     +prose
     +kmacro
     ;; Programming Languages or file formats.
@@ -80,6 +79,9 @@
     +scala
     +tex
     +othermodes
+    ;; Some language modules disable their tree-sitter grammar, therefore load
+    ;; tree-sitter after them.
+    +treesit
     ;; Setup GCMH last to prevent GC during startup.
     +gcmh)
   "Enabled modules of Zyxir's Emacs configuration.")
