@@ -44,15 +44,14 @@
 ;; Load and configure RefTeX for LaTeX.
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (after! 'reftex
-  (setq
-   ;; Integrate with AUCTeX.
-   reftex-plug-into-AUCTeX t
-   ;; Reparse only 1 file when asked to.
-   reftex-enable-partial-scans t
-   ;; Save parsed information.
-   reftex-save-parse-info t
-   ;; Use a separate selection buffer for each label type.
-   reftex-use-multiple-selection-buffers t))
+  ;; Integrate with AUCTeX.
+  (setq reftex-plug-into-AUCTeX t)
+  ;; Reparse only 1 file when asked to.
+  (setq reftex-enable-partial-scans t)
+  ;; Save parsed information.
+  (setq reftex-save-parse-info t)
+  ;; Use a separate selection buffer for each label type.
+  (setq reftex-use-multiple-selection-buffers t))
 
 (after! 'latex
   (defprefix! +tex-map "LaTeX"

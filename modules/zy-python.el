@@ -21,6 +21,17 @@
   ;; No additional indentation for def blocks, like Black does.
   (setq python-indent-def-block-scale 1)
 
+  ;; Set the compile command to executing the file itself in the project root.
+  (add-hook! 'python-base-mode-hook
+    (defun +python-set-compile-command-h (&rest _)
+      "Set up compile command."
+      (when (bound-and-true-p buffer-file-name)
+        ;; Set up the compile command.
+        (setq-local compile-command (format "python %s" buffer-file-name))
+        ;; Do not read an explicit command since we have set an implicit one. If
+        ;; we want to use another command, use a prefix argument.
+        (setq-local compilation-read-command nil))))
+
   ;; Use the Black profile for Isort.
   (advice-add
    #'python-sort-imports :override

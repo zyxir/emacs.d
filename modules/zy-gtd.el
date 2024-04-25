@@ -60,6 +60,9 @@ Automatically set when `+personal-zybox-dir' is customized.")
   (add-hook! 'org-agenda-mode-hook #'variable-pitch-mode))
 
 (after! 'org-capture
+  ;; Load the agenda so that we have tag completion.
+  (require 'org-agenda)
+
   ;; Capture template for todo entries.
   (add-to-list 'org-capture-templates
                `("i" "GTD inbox" entry
