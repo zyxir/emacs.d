@@ -344,27 +344,22 @@ Each FEATURE in FEATURES is a quoted feature symbol.
 
 ;;;; Color manipulation
 
-(defun zy--lighten-color (color percent &optional darken)
-  "Lighten a color tag COLOR by PERCENT.
+(defun blend! (color1 color2 extent)
+  "Blend COLOR1 to COLOR2 by EXTENT to get a new color.
 
-Return the lightened color tag. If optional argument DARKEN is
-non-nil, return the darkened color instead."
+COLOR1 and COLOR2 are both color names (each is either a word or
+an rgb string), and EXTENT is a floating-point number between 0
+and 1, which describes to what extent should COLOR1 be blended to
+COLOR2."
   (eval-and-compile (require 'color))
-  (let* ((rgb (color-name-to-rgb color))
-         (hsl (apply #'color-rgb-to-hsl rgb))
-         (hsl (apply (if darken #'color-darken-hsl #'color-lighten-hsl)
-                     (append hsl `(,percent))))
-         (rgb (apply #'color-hsl-to-rgb hsl))
-         (color (apply #'color-rgb-to-hex (append rgb '(2)))))
+  (let* ((rgb1 (color-name-to-rgb color1))
+         (rgb2 (color-name-to-rgb color2))
+         (suppliment (- 1 extent))
+         (r (+ (* (pop rgb1) extent) (* (pop rgb2) suppliment)))
+         (g (+ (* (pop rgb1) extent) (* (pop rgb2) suppliment)))
+         (b (+ (* (pop rgb1) extent) (* (pop rgb2) suppliment)))
+         (color (color-rgb-to-hex r g b 2)))
     color))
-
-(defun lighten! (color percent)
-  "Return a color tag of COLOR lightened by PERCENT."
-  (zy--lighten-color color percent))
-
-(defun darken! (color percent)
-  "Return a color tag of COLOR darkened by PERCENT."
-  (zy--lighten-color color percent 'darken))
 
 (provide 'zylib-core)
 

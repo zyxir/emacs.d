@@ -43,13 +43,19 @@
   (setq highlight-indent-guides-method 'character)
   (setq highlight-indent-guides-character #x2502)
 
-  ;; Use colors from the background.
-  (set-face-attribute 'highlight-indent-guides-character-face nil
-                      :foreground
-                      (lighten! (face-attribute 'shadow :foreground) 120))
-  (set-face-attribute 'highlight-indent-guides-top-character-face nil
-                      :foreground
-                      (lighten! (face-attribute 'shadow :foreground) 40))
+  ;; The default color scheme, which lightens the background color to get the
+  ;; indent guide color, doesn't work when the background color is completely
+  ;; dark/light. We use an alternate approach which blends the background color
+  ;; and foreground color of the default face.
+  (setq highlight-indent-guides-auto-enabled nil)
+  (set-face-foreground 'highlight-indent-guides-character-face
+                       (blend! (face-attribute 'default :foreground)
+                               (face-attribute 'default :background)
+                               0.25))
+  (set-face-foreground 'highlight-indent-guides-top-character-face
+                       (blend! (face-attribute 'default :foreground)
+                               (face-attribute 'default :background)
+                               0.5))
 
   ;; Highlight the current indentation.
   (setq highlight-indent-guides-responsive 'top))
