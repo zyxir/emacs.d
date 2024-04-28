@@ -15,7 +15,7 @@
 (pkg! 'scala-ts-mode)
 (pkg! 'sbt-mode)
 
-(defvar +scala-disable-treesit t
+(defvar +scala-disable-treesit nil
   "Use `scala-mode' instead of `scala-ts-mode' for Scala files.
 
 `scala-ts-mode' fits Scala 3 better in my opinion. In my work
@@ -56,7 +56,7 @@ with Scala 2 I prefer `scala-mode'.")
 When there is no sbt process running, start one before
 switching to it."
       (interactive)
-      (require 'sbt-mode)
+      (eval-and-compile (require 'sbt-mode))
       (unless (and (get-buffer (sbt:buffer-name))
                    (get-buffer-process (sbt:buffer-name)))
         (sbt:run-sbt nil nil))
