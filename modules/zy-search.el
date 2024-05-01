@@ -13,6 +13,7 @@
 (require 'zylib)
 
 (pkg! 'anzu)
+(pkg! 'rg)
 
 ;; Use Anzu's `query-replace' alternatives for replace preview. Anzu actually
 ;; provides more features than previewing query-replace, but some of them are
