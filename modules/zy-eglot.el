@@ -30,6 +30,7 @@
 
   ;; Some handy keys.
   (keybind! nil eglot-mode-map
+    "<f1>" #'eglot-code-action-quickfix
     "<f2>" #'eglot-rename))
 
 ;; Try to enable Eglot for all prog-modes if possible, unless explicitly

@@ -42,7 +42,7 @@
     "B" #'ebib-biblio-import-doi)
 
   ;; Import file from one of these directories.
-  (setq ebib-import-directory
+  (setq ebib-import-source-directory
         (some-path! (format "/mnt/c/Users/%s/Downloads/" user-login-name)
                     "~/Downloads/")))
 
