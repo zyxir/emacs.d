@@ -54,8 +54,8 @@ When in a project, start one associated with the project."
       (interactive)
       (unless (python-shell-get-process)
         (run-python (python-shell-calculate-command)
-                    (if (project-current) 'project nil))
-        (pop-to-buffer (process-buffer (python-shell-get-process)))))
+                    (if (project-current) 'project nil)))
+      (pop-to-buffer (process-buffer (python-shell-get-process))))
 
     ;; Wrap some commands to mimic `eglot-format'.
     (defun +python-format (&optional beg end)
