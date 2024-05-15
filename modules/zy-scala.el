@@ -34,11 +34,6 @@ with Scala 2 I prefer `scala-mode'.")
            nil nil #'equal)
           '(parent-bol 4)
           (alist-get
-           '(parent-is "^arguments$")
-           (alist-get 'scala scala-ts--indent-rules)
-           nil nil #'equal)
-          '(parent-bol 4)
-          (alist-get
            '(parent-is "^parameters$")
            (alist-get 'scala scala-ts--indent-rules)
            nil nil #'equal)
