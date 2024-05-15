@@ -44,7 +44,9 @@
     "<up>" nil
     "<down>" nil
     [remap previous-line] nil
-    [remap next-line] nil)
+    [remap next-line] nil
+    "TAB" nil
+    "<tab>" nil)
 
   ;; Also use "C-y" for confirmation, like Vim does.
   (keybind! nil corfu-map
