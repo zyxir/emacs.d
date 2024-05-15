@@ -1,4 +1,5 @@
 *.elc
+/bookmarks
 /.cache
 /auto-save-list
 /custom.el
