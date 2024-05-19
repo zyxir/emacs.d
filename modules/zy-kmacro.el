@@ -16,24 +16,14 @@
 
 ;; Disable unnecessary minor modes before performing a keyboard macro, and
 ;; re-enable them afterwards.
-
-(defvar +kmacro--corfu-mode nil
-  "The original state of `corfu-mode'.")
-
 (advice-add
- #'kmacro-call-macro :before
- (defun +kmacro-disable-modes-before-exec-a (&rest _)
-   "Disable some minor modes and record their states."
-   (when (fboundp 'corfu-mode)
-     (setq +kmacro--corfu-mode (and (boundp 'corfu-mode) corfu-mode))
-     (corfu-mode -1))))
-
-(advice-add
- #'kmacro-call-macro :after
- (defun +kmacro-restore-modes-after-exec-a (&rest _)
-   "Restore some minor modes based on recorded states."
-   (when (fboundp 'corfu-mode)
-     (corfu-mode (if +kmacro--corfu-mode 1 -1)))))
+ #'kmacro-call-macro :around
+ (defun +kmacro-disable-modes (oldfun &rest args)
+   "Disable some minor modes while executing kmacros."
+   (let ((orig-corfu-mode (if (bound-and-true-p corfu-mode) 1 -1)))
+     (corfu-mode -1)
+     (apply oldfun args)
+     (corfu-mode orig-corfu-mode))))
 
 (provide 'zy-kmacro)
 
