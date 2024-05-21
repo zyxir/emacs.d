@@ -22,6 +22,9 @@
   (bufferlo-mode 1))
 
 (after! '(tab-bar bufferlo)
+  ;; Create new tabs at the rightmost position.
+  (setq tab-bar-new-tab-to 'rightmost)
+
   ;; For a newly-created tab, display the dashboard if there is one, otherwise
   ;; create a new scratch buffer dedicated to that tab.
   (setq
