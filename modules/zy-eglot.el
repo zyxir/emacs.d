@@ -19,6 +19,9 @@
    ;; Do not require confirmation on code actions.
   (setq eglot-confirm-server-initiated-edits nil)
 
+  ;; Automatically shutdown the server.
+  (setq eglot-autoshutdown t)
+
   ;; HACK: Fix Scala language server association.
   (when-let* ((old-entry (assoc 'scala-mode eglot-server-programs))
               (new-entry `((scala-mode scala-ts-mode) . ,(cdr old-entry))))
