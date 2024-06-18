@@ -15,7 +15,7 @@
 (pkg! 'scala-ts-mode)
 (pkg! 'sbt-mode)
 
-(defvar +scala-disable-treesit nil
+(defvar +scala-disable-treesit t
   "Use `scala-mode' instead of `scala-ts-mode' for Scala files.
 
 `scala-ts-mode' fits Scala 3 better in my opinion. In my work
