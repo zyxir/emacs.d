@@ -121,6 +121,13 @@
     "Q" #'kmacro-start-macro-or-insert-counter
     "q" #'kmacro-end-or-call-macro))
 
+(after! 'evil-collection
+  (keybind! 'normal evil-collection-unimpaired-mode-map
+    "]t" #'tab-bar-switch-to-next-tab
+    "[t" #'tab-bar-switch-to-prev-tab
+    "]T" #'tab-bar-move-tab
+    "[T" #'tab-bar-move-tab-backward))
+
 (provide 'zy-evil)
 
 ;;; zy-evil.el ends here

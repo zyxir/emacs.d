@@ -56,9 +56,7 @@
   "d" (cons "Dired" #'dired)
   "D" (cons "List Dir" #'list-directory)
   "s" (cons "Save Buffer" #'save-buffer)
-  "k" (cons "Kill Buffer" #'kill-buffer)
-  "]" (cons "Next Tab" #'tab-next)
-  "[" (cons "Prev Tab" #'tab-previous))
+  "k" (cons "Kill Buffer" #'kill-buffer))
 
 (defmacro +leader-c-create-action (action &optional eglot-action)
   "Create a placeholder command for action ACTION.
