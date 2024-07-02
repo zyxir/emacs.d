@@ -29,6 +29,9 @@
 ;; with CJK characters in `visual-line-mode'.
 (setq word-wrap-by-category t)
 
+;; Separate Chinese and English with spaces.
+(setq fill-separate-heterogeneous-words-with-space t)
+
 ;; Ability to unfill a paragraph.
 (defun +paragraph/unfill-paragraph ()
   "Do the inverse of `fill-paragraph'."
