@@ -15,20 +15,13 @@
 (require 'zylib)
 
 (pkg! 'flycheck)
-(pkg! 'flycheck-inline)
-(pkg! 'flycheck-eglot)
 
-;; Enable Flycheck everywhere.
-(add-hook! 'window-setup-hook (global-flycheck-mode 1))
-
-;; Show diagnostics inline.
-(add-hook! 'flycheck-mode-hook #'flycheck-inline-mode)
+;; Enable Flycheck for modes without Eglot support.
+(add-hook! 'emacs-lisp-mode-hook
+  (flycheck-mode 1))
 
 (daemon-require! 'flycheck)
 (after! 'flycheck
-  ;; Unset Flycheck's default echoing function, which breaks Eldoc.
-  (setq flycheck-display-errors-function nil)
-
   ;; Don't show Flycheck markers. They are useless and don't work well with
   ;; other packages.
   (setq flycheck-indication-mode nil)
@@ -47,10 +40,6 @@
                 "Error during package initialization: %S"
               (setq package-check-signature nil)
               (package-initialize))))))
-
-;; Use Flycheck rather than Flymake with Eglot.
-(after! 'eglot
-  (global-flycheck-eglot-mode 1))
 
 (provide 'zy-syncheck)
 
