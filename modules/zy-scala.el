@@ -66,6 +66,13 @@ switching to it."
     "c" (cons "Command" #'sbt-command)
     "C" (cons "Run Last Command" #'sbt-run-previous-command)))
 
+;; Remove Smartparens post-handlers to fix double newlines.
+(after! '(scala-mode smartparens-scala)
+  (sp-local-pair 'scala-mode "(" nil
+                 :post-handlers nil)
+  (sp-local-pair 'scala-mode "{" nil
+                 :post-handlers '(sp-scala-wrap-with-indented-newlines)))
+
 (provide 'zy-scala)
 
 ;;; zy-scala.el ends here

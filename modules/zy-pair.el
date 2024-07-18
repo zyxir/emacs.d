@@ -16,7 +16,7 @@
 ;; to pin it to Melpa to provide a better experience.
 (pin-to! "melpa" 'smartparens)
 
-(pkg! 'smartparens "smartparens")
+(pkg! 'smartparens)
 
 ;; Use Smartparens for most modes.
 (add-hook! '(prog-mode-hook
@@ -49,6 +49,9 @@
     [remap mark-sexp] #'sp-mark-sexp
     [remap forward-sexp] #'sp-forward-sexp
     [remap backward-sexp] #'sp-backward-sexp
+    [remap backward-delete-char] #'sp-backward-delete-char
+    [remap backward-delete-char-untabify] #'sp-backward-delete-char
+    [remap backward-kill-word] #'sp-backward-delete-word
     ;; Provide additional keys.
     "C-M-d" #'sp-delete-sexp
     "C-M-h" #'sp-backward-delete-sexp
