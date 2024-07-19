@@ -171,7 +171,8 @@ file (init.el)."
 
   ;; Load the custom file now.
   (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-  (zy-load-rel custom-file)
+  (when (file-exists-p custom-file)
+    (zy-load-rel custom-file))
 
   ;; Load all modules in order.
   (dolist (module zy-modules)
