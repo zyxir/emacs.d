@@ -49,14 +49,19 @@
     [remap mark-sexp] #'sp-mark-sexp
     [remap forward-sexp] #'sp-forward-sexp
     [remap backward-sexp] #'sp-backward-sexp
-    [remap backward-delete-char] #'sp-backward-delete-char
-    [remap backward-delete-char-untabify] #'sp-backward-delete-char
     [remap backward-kill-word] #'sp-backward-delete-word
     ;; Provide additional keys.
     "C-M-d" #'sp-delete-sexp
     "C-M-h" #'sp-backward-delete-sexp
     "M-)" #'sp-unwrap-sexp
-    "M-(" #'sp-backward-unwrap-sexp))
+    "M-(" #'sp-backward-unwrap-sexp)
+
+  ;; Insert mode keys.
+  (keybind! 'insert smartparens-mode-map
+    [remap backward-delete-char] #'sp-backward-delete-char
+    [remap backward-delete-char-untabify] #'sp-backward-delete-char
+    [remap evil-delete-backward-char] #'sp-backward-delete-char
+    [remap evil-delete-backward-char-and-join] #'sp-backward-delete-char))
 
 (provide 'zy-pair)
 
