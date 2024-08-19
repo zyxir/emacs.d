@@ -100,7 +100,7 @@ string. The defined customizable variable will have the
   "Font for the `variable-pitch' face.")
 (+font-define-font +font-varpitch-cjk "Sarasa Fixed SC Nerd Font"
   "CJK font for the `variable-pitch' face.")
-(+font-define-font +font-serif "IBM Plex Serif"
+(+font-define-font +font-serif "Noto Serif"
   "Font for the `+font-serif' face.")
 (+font-define-font +font-serif-cjk "Source Han Serif HC"
   "CJK font for the `+font-serif' face.")
