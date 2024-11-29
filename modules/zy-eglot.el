@@ -14,6 +14,7 @@
 (require 'zylib)
 
 (daemon-require! 'eglot)
+(pkg! 'eglot-booster :url "https://github.com/jdtsmith/eglot-booster")
 
 (after! 'eglot
    ;; Do not require confirmation on code actions.
@@ -78,6 +79,12 @@ source code. BUF is used as the current buffer."
                 (not (memq result '(none error))))
        (with-current-buffer buf
          (+eglot-try-to-ensure-h))))))
+
+;; Enhance Eglot performance with eglot-booster. This will not work until the
+;; emacs-lsp-booster program is avaiable. See README for more info.
+(add-hook! 'window-setup-hook
+  (when (executable-find "emacs-lsp-booster")
+    (eglot-booster-mode)))
 
 (provide 'zy-eglot)
 

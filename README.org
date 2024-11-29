@@ -38,6 +38,7 @@ These third-party programs enable additional functionalities of my configuration
 
 - Fd :: Fast filesystem search. Used by commands like ~project-find-file~.
 - Ripgrep :: Fast text search. Used by commands like ~rg~.
+- [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] :: Make LSP clients like Eglot more performant.
 
 ** Customization
 
