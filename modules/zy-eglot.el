@@ -32,6 +32,11 @@
           eglot-server-programs
           (cons new-entry eglot-server-programs)))
 
+  ;; HACK: Fix AucTeX language IDs.
+  (put 'TeX-mode 'eglot-language-id "tex")
+  (put 'LaTeX-mode 'eglot-language-id "latex")
+  (put 'ConTeXt-mode 'eglot-language-id "context")
+
   ;; Some handy keys.
   (keybind! nil eglot-mode-map
     "<f1>" #'eglot-code-action-quickfix
