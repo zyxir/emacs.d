@@ -8,6 +8,9 @@
 ;; interactive minibuffer completion UI which replaces the default one. The
 ;; package Marginalia provides additional annotations to completion candidates,
 ;; further enhancing the completion experience.
+;;
+;; Another important package is Stillness-mode, which prevents the minibuffer
+;; from resizing the windows.
 
 ;;; Code:
 
@@ -15,6 +18,7 @@
 
 (pkg! 'vertico)
 (pkg! 'marginalia)
+(pkg! 'stillness-mode :url "https://github.com/neeasade/stillness-mode.el")
 
 (defun +minibuffer-crm-indicator (args)
   "Indicator for `completing-read-multiple'.
@@ -59,7 +63,10 @@ ARGS are the arguments passed."
   (marginalia-mode 1)
 
   (advice-add #'completing-read-multiple :filter-args
-              #'+minibuffer-crm-indicator))
+              #'+minibuffer-crm-indicator)
+
+  ;; Enable stillness mode.
+  (stillness-mode 1))
 
 (provide 'zy-minibuffer)
 
