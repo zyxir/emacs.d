@@ -33,12 +33,11 @@
     "s" (cons "Sync" #'org-roam-db-sync)
     "u" (cons "UI" #'org-roam-ui-mode)))
 
-;; Keys inside an Org-roam buffer.
-(after! '(+leader org-roam-mode)
-  (defprefix! +roam-map "Roam"
-              nil org-roam-mode-map "<localleader>"
-    "a" (cons "Add Alias" #'org-roam-alias-add)
-    "l" (cons "Toggle Buffer" #'org-roam-buffer-toggle)))
+;; Keys inside an Org-roam buffer (added to org-mode-map).
+(after! '(+leader +org org-roam-mode)
+  (keybind! nil +org-map
+    "A" (cons "Roam Alias" #'org-roam-alias-add)
+    "l" (cons "Roam Buffer" #'org-roam-buffer-toggle)))
 
 (provide 'zy-roam)
 
