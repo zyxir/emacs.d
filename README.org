@@ -44,7 +44,8 @@ These third-party programs enable additional functionalities of my configuration
 
 Most behavior of this configuration is hard-coded. That is because I am currently the only user of this configuration, and I can change any behavior by modifying the source code. However, there are some machine-dependent settings that is not consistent in every device of mine. It is recommended to configure these settings via the ~customize~ UI:
 
-- ~zy~font-size~ :: This determines the default font size. Customize this according to the screen size of the device.
+- ~+theme-theme~ :: The default theme.
+- ~+font-size~ :: The default font size.
 
 ** Tips
 
