@@ -13,7 +13,7 @@
 
 (require 'zylib)
 
-(defvar +project-dominating-files '("shell.nix")
+(defvar +project-dominating-files '("shell.nix" "pyproject.toml")
   "List of dominating files that define a project.
 This is useful to recognize a non-version-controlled project or a
 sub-project inside another project.")
