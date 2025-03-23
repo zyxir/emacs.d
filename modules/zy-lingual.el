@@ -12,7 +12,6 @@
 (require 'zylib)
 
 (pkg! 'rime)
-(pkg! 'sis)
 
 ;; Use the integrated Rime input method as the default input method.
 (setq-default default-input-method "rime")
@@ -66,13 +65,6 @@
             (set-cursor-color (if (im-p)
                                   cursor-color-im
                                 cursor-color-default))))))))
-
-;; Automatically toggle input method with Sis.
-(add-hook! 'window-setup-hook
-  (require 'sis)
-  (sis-ism-lazyman-config nil "rime" 'native)
-  (sis-global-respect-mode 1)
-  (sis-global-context-mode 1))
 
 (provide 'zy-lingual)
 
