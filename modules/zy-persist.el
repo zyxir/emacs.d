@@ -28,8 +28,11 @@
   ;; Save more recent files (default is 20).
   (setq recentf-max-saved-items 200)
   ;; Do periodic cleanup when running in daemon mode, otherwise cleanup only
-   ;; when turning the mode on.
-  (setq recentf-auto-cleanup (if (daemonp) 300 'mode)))
+  ;; when turning the mode on.
+  (setq recentf-auto-cleanup (if (daemonp) 300 'mode))
+  ;; Exclude special directories.
+  (setq recentf-exclude (append recentf-exclude
+                                '("/nix"))))
 
 (after! 'savehist
   ;; Savehist only saves minibuffer history by default. I want these variables
