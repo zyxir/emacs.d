@@ -13,6 +13,7 @@
 (require 'zylib)
 
 (pkg! 'python-black)
+(pkg! 'python-pytest)
 
 (after! 'python
   ;; Fill docstring with according to PEP-257.
@@ -75,7 +76,8 @@ This uses `python-black-buffer' or `python-black-region'."
     "f" (cons "Send File" #'python-shell-send-file)
     "r" (cons "Send Region" #'python-shell-send-region)
     "d" (cons "Send Defun" #'python-shell-send-defun)
-    "e" (cons "Send Statement" #'python-shell-send-statement))
+    "e" (cons "Send Statement" #'python-shell-send-statement)
+    "t" (cons "Test with Pytest" #'python-pytest-dispatch))
 
   (defprefix! +python-import-map "Import"
               nil +python-map "i"
