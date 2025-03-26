@@ -77,7 +77,7 @@ This uses `python-black-buffer' or `python-black-region'."
     "r" (cons "Send Region" #'python-shell-send-region)
     "d" (cons "Send Defun" #'python-shell-send-defun)
     "e" (cons "Send Statement" #'python-shell-send-statement)
-    "t" (cons "Test with Pytest" #'python-pytest-dispatch))
+    "t" (cons "Pytest" #'python-pytest-dispatch))
 
   (defprefix! +python-import-map "Import"
               nil +python-map "i"
