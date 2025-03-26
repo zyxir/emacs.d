@@ -18,7 +18,7 @@
 
 (after! 'eglot
    ;; Do not require confirmation on code actions.
-  (setq eglot-confirm-server-initiated-edits nil)
+  (setq eglot-confirm-server-edits nil)
 
   ;; Automatically shutdown the server.
   (setq eglot-autoshutdown t)

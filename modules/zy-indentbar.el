@@ -47,11 +47,11 @@
   (setq indent-bars-treesit-support t)
 
   ;; Configure tree-sitter for each individual mode.
-  (setq indent-bars-treesit-wrap
-        '((python argument_list parameters list list_comprehension
-                  dictionary dictionary_comprehension
-                  parenthesized_expression subscript)
-          (c argument_list parameter_list init_declarator))))
+  (setq-default indent-bars-treesit-wrap
+                '((python argument_list parameters list list_comprehension
+                          dictionary dictionary_comprehension
+                          parenthesized_expression subscript)
+                  (c argument_list parameter_list init_declarator))))
 
 (provide 'zy-indentbar)
 
