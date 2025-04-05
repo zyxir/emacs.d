@@ -26,8 +26,10 @@
   (after! '+leader
     (keybind! nil +leader-h-map "." '("At Point" . eldoc-doc-buffer)))
 
-  ;; Toggle eldoc-box with M-h.
+  ;; Invoke eldoc-box with M-h, and quit with C-g.
   (keybind! nil 'global "M-h" '("Eldoc Box" . eldoc-box-help-at-point)))
+  (after! 'eldoc-box
+    (setq eldoc-box-clear-with-C-g t))
 
 (provide 'zy-eldoc)
 
