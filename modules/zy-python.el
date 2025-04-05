@@ -8,6 +8,9 @@
 ;; it. This file simply rebinds some of the keys and wrap some features to make
 ;; them more smooth.
 
+;; To use the import management features, "isort" should be installed in the
+;; project virtual environment.
+
 ;;; Code:
 
 (require 'zylib)
