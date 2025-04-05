@@ -4,9 +4,6 @@
 ;; This file acts as a script to synchronize the configuration, which means to
 ;; install all packages required and re-compile all modified files, so that all
 ;; modifications take effect.
-;;
-;; The function `zy/sync', which run this script asynchronously from within
-;; Emacs, is actually defined in init.el.
 
 ;;; Code:
 
@@ -26,9 +23,6 @@
 
 (defconst zy-sync-files (append zy-sync-zylib-files zy-sync-module-files)
   "List of all files that should be synchronized.")
-
-(defconst zy-sync-buffer "*ZyEmacs-Sync*"
-  "The buffer name for the synchronization process.")
 
 (defconst zy-sync-level
   (let* (;; Change `maximum' according to the docstring.
