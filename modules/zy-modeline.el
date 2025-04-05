@@ -21,6 +21,8 @@
  doom-modeline-height 1
  ;; Show word count.
  doom-modeline-enable-word-count t
+ ;; Show total line number.
+ doom-modeline-total-line-number t
  ;; Only display miscellaneous information on the active mode line.
  doom-modeline-display-misc-in-all-mode-lines nil
  ;; Do not use icons.
