@@ -15,6 +15,7 @@
 
 (pkg! 'evil)
 (pkg! 'evil-collection)
+(pkg! 'evil-org :url "https://github.com/Somelauw/evil-org-mode")
 (pkg! 'evil-surround)
 (pkg! 'evil-lion)
 (pkg! 'avy)
@@ -80,6 +81,13 @@
        (seq-filter (lambda (mode)
                      (not (memq mode disabled-modes)))
                    evil-collection-mode-list))))
+
+  ;; Enable Org keybindings provided by Evil-org.
+  (add-hook! 'org-mode-hook
+    (evil-org-mode)
+    (require 'evil-org-agenda)
+    (when (fboundp 'evil-org-agenda-set-keys)
+      (evil-org-agenda-set-keys)))
 
   ;; Enable Evil-surround for powerful pair-editing commands (see doc).
   (global-evil-surround-mode 1)

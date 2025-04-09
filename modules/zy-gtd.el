@@ -4,36 +4,21 @@
 
 ;; This file provides the `+gtd' module of the configuration.
 
-;; Org-mode can be used as a powerful GTD (getting things done) system via its
-;; todo management and agenda features. This file sets up my personal GTD system
-;; with processes including idea capturing, entry refiling, and agenda viewing.
+;; Org-mode can serve as a powerful GTD (Getting Things Done) system via its
+;; todo management and agenda features. This file configures my personal GTD
+;; system centered around "gtd.org".
 
 ;;; Code:
 
 (require 'zylib)
 
-(defvar +gtd-dir nil
-  "My directory for the GTD system.")
-
-(defvar +gtd-inbox-file nil
-  "My inbox file of the GTD system.
-Automatically set when `+personal-zybox-dir' is customized.")
-
-(defvar +gtd-gtd-file nil
-  "My GTD file of the GTD system.
-Automatically set when `+personal-zybox-dir' is customized.")
-
-(defvar +gtd-someday-file nil
-  "My someday file of the GTD system.
+(defvar +gtd-file nil
+  "The gtd.org file of the GTD system.
 Automatically set when `+personal-zybox-dir' is customized.")
 
 (after! 'org
   ;; Track the time of an entry set to done.
   (setq org-log-done 'time)
-
-  ;; Refile entries from inbox to other GTD files.
-  (setq-default org-refile-targets `((,+gtd-gtd-file :level . 2)
-                                     (,+gtd-someday-file :maxlevel . 3)))
 
   ;; Customized todo keywords.
   (setq org-todo-keywords '((sequence "TODO(t)"
@@ -47,10 +32,8 @@ Automatically set when `+personal-zybox-dir' is customized.")
                                  ("CANCELED" . shadow))))
 
 (after! 'org-agenda
-  ;; Add GTD files to agenda files.
-  (add-to-list 'org-agenda-files +gtd-inbox-file)
-  (add-to-list 'org-agenda-files +gtd-gtd-file)
-  (add-to-list 'org-agenda-files +gtd-someday-file)
+  ;; Add the GTD file to agenda files.
+  (add-to-list 'org-agenda-files +gtd-file)
 
   ;; Use normal state for the agenda buffer.
   (after! 'evil
@@ -60,15 +43,22 @@ Automatically set when `+personal-zybox-dir' is customized.")
   (add-hook! 'org-agenda-mode-hook #'variable-pitch-mode))
 
 (after! 'org-capture
-  ;; Load the agenda so that we have tag completion.
-  (require 'org-agenda)
-
-  ;; Capture template for todo entries.
-  (add-to-list 'org-capture-templates
-               `("i" "GTD inbox" entry
-                 (file+headline ,+gtd-inbox-file "Inbox")
-                 "* TODO %i%? %^G\nCREATED: %U"
-                 :kill-buffer t)))
+  ;; Capture templates (in accordance with gtd.org headings).
+  (let ((templates
+         `(("c" "Computer" entry
+            (file+headline ,+gtd-file "Computer")
+            "* TODO %i%?\nCREATED: %U"
+            :kill-buffer t)
+           ("l" "Life" entry
+            (file+headline ,+gtd-file "Life")
+            "* TODO %i%?\nCREATED: %U"
+            :kill-buffer t)
+           ("g" "Gaming" entry
+            (file+headline ,+gtd-file "Gaming")
+            "* TODO %i%?\nCREATED: %U"
+            :kill-buffer t))))
+    (dolist (template templates)
+      (add-to-list 'org-capture-templates template))))
 
 (provide 'zy-gtd)
 
