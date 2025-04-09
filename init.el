@@ -53,6 +53,7 @@
     +lingual
     +bib
     ;; Text-editing and coding.
+    +imenu
     +embark
     +corfu
     +dabbrev
