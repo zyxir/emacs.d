@@ -10,6 +10,9 @@
 ;; installtion code here. However, if any mode requires further configuration
 ;; some day, I will extract their code into a dedicated module.
 
+;; In addition, the package Valign is declared and managed here. This package
+;; keeps tables in Org and Markdown files visually aligned.
+
 ;;; Code:
 
 (require 'zylib)
@@ -19,6 +22,10 @@
 (pkg! 'nginx-mode)
 (pkg! 'powershell)
 (pkg! 'verilog-ts-mode)
+
+(pkg! 'valign)
+
+(add-hook! '(org-mode-hook markdown-mode-hook) (valign-mode 1))
 
 (provide 'zy-othermodes)
 

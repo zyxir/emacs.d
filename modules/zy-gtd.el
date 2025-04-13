@@ -16,6 +16,29 @@
   "The gtd.org file of the GTD system.
 Automatically set when `+personal-zybox-dir' is customized.")
 
+(defvar +gtd-notebook-file nil
+  "The notebook.org for arbitrary note-taking.
+Automatically set when `+personal-zybox-dir' is customized.")
+
+;; Add the files to `org-agenda-files'.
+(if (boundp 'org-agenda-files)
+    (progn
+      (add-to-list 'org-agenda-files +gtd-file)
+      (add-to-list 'org-agenda-files +gtd-notebook-file))
+  (setq-default org-agenda-files
+                `(,+gtd-file ,+gtd-notebook-file)))
+
+;; Command to open agenda files.
+(defun +gtd-open-file ()
+  "Open a file in `org-agenda-files'."
+  (interactive)
+  (defvar org-agenda-files)
+  (let ((selected-file
+         (completing-read "Choose file to open: "
+                          org-agenda-files nil t)))
+    (find-file selected-file)))
+(keybind! nil +leader-o-map "f" (cons "Agenda Files" #'+gtd-open-file))
+
 (after! 'org
   ;; Track the time of an entry set to done.
   (setq org-log-done 'time)
@@ -32,9 +55,6 @@ Automatically set when `+personal-zybox-dir' is customized.")
                                  ("CANCELED" . shadow))))
 
 (after! 'org-agenda
-  ;; Add the GTD file to agenda files.
-  (add-to-list 'org-agenda-files +gtd-file)
-
   ;; Use normal state for the agenda buffer.
   (after! 'evil
     (evil-set-initial-state 'org-agenda-mode 'normal))

@@ -33,9 +33,11 @@ Org-journal, Org-roam, and many more."
         ;; The Org directory.
         (defvar org-directory)
         (setq org-directory (expand-file-name "org" path))
-        ;; My GTD file.
+        ;; Org agenda files.
         (defvar +gtd-file)
         (setq +gtd-file (expand-file-name "gtd.org" org-directory))
+        (defvar +gtd-notebook-file)
+        (setq +gtd-notebook-file (expand-file-name "notebook.org" org-directory))
         ;; The Org-journal directory.
         (defvar org-journal-dir)
         (setq org-journal-dir
