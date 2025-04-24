@@ -42,24 +42,17 @@
 ;; completions. However the Orderless completion style is much more versatile
 ;; and includes the features of most of them. Therefore just use Orderless by
 ;; default and fallback to the basic style.
-(setq completion-styles '(orderless basic))
+(setq completion-styles '(basic substring orderless))
 
 ;; Reset all the built-in per-category defaults so that `completion-styles' is
 ;; used everywhere, and we can tweak `completion-category-overrides' to fine
 ;; tune completion styles for a single category.
-(setq completion-category-defaults nil)
+;; (setq completion-category-defaults nil)
 
 ;; Fine-tune category-specific completion styles. If Orderless does not do good
 ;; in some categories, just override it.
 (setq completion-category-overrides
-      '((file (styles . (basic partial-completion orderless)))
-        (bookmark (styles . (basic substring)))
-        (library (styles . (basic substring)))
-        (embark-keybinding (styles . (basic substring)))
-        (imenu (styles . (basic substring orderless)))
-        (consult-location (styles . (basic substring orderless)))
-        (kill-ring (styles . (emacs22 orderless)))
-        (eglot (styles . (emacs22 substring orderless)))))
+      '((file (styles . (basic partial-completion)))))
 
 (provide 'zy-orderless)
 
