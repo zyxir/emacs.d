@@ -31,7 +31,14 @@
       "Set up compile command."
       (when (bound-and-true-p buffer-file-name)
         ;; Set up the compile command.
-        (setq-local compile-command (format "python %s" buffer-file-name))
+        (if-let* ((file (shell-quote-argument
+                         (expand-file-name buffer-file-name)))
+                  (proj (project-current))
+                  (root (shell-quote-argument
+                         (expand-file-name (project-root proj)))))
+            (setq-local compile-command
+                        (format "cd %s && python %s" root file))
+          (setq-local compile-command (format "python %s" file)))
         ;; Do not read an explicit command since we have set an implicit one. If
         ;; we want to use another command, use a prefix argument.
         (setq-local compilation-read-command nil))))
