@@ -1,6 +1,0 @@
-patch:
-  "menu/page_size": 10
-  schema_list:
-    - {schema: cangjie6}
-    - {schema: double_pinyin}
-    - {schema: luna_pinyin}

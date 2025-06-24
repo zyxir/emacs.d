@@ -2,6 +2,7 @@
 /bookmarks
 /.cache
 /auto-save-list
+/backup
 /custom.el
 /eln-cache
 /elpa*
