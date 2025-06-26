@@ -30,6 +30,8 @@
 (require 'init-util)
 
 (require-package 'consult)
+(require-package 'hl-todo)
+(require-package 'consult-todo)
 (require-package 'corfu)
 (require-package 'magit)
 
@@ -48,6 +50,11 @@
 
 ;; Smart pair matching.
 (add-hook 'prog-mode-hook #'electric-pair-local-mode)
+
+;; Highlight and navigate todo keywords.
+(add-hook 'prog-mode-hook #'hl-todo-mode)
+(keymap-global-set "M-g t" #'consult-todo)
+(keymap-global-set "M-g M-t" #'consult-todo)
 
 ;; File outlining with `outline-minor-mode'.
 (add-hook 'prog-mode-hook #'outline-minor-mode)

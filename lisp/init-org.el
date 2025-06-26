@@ -28,6 +28,7 @@
 
 (require 'init-util)
 
+(require-package 'org-appear)
 (require-package 'org-modern)
 (require-package 'org-roam)
 
@@ -47,6 +48,9 @@
 
 ;; Use variable-pitch fonts in Org-mode.
 (add-hook 'org-mode-hook #'variable-pitch-mode)
+
+;; Use `org-appear' to auto hide/show emphasis markers.
+(add-hook 'org-mode-hook #'org-appear-mode)
 
 ;; Use Org-modern prettification.
 (add-hook 'org-mode-hook #'org-modern-mode)
