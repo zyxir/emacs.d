@@ -29,7 +29,6 @@
 (require 'init-util)
 
 (require-package 'nano-theme)
-(require-package 'nano-modeline)
 
 ;;;; Themes
 
@@ -41,88 +40,6 @@
 
 ;; Do not extend region selection to the edge of the window.
 (set-face-attribute 'region nil :extend nil)
-
-;;;; Modeline
-
-;; Load Nano Modeline.
-(require 'nano-modeline)
-(nano-modeline-prog-mode 'default)
-
-(declare-function warning-numeric-level "warning")
-(declare-function flymake-show-buffer-diagnostics "flymake")
-(declare-function flymake-show-project-diagnostics "flymake")
-(declare-function flymake--diag-type "flymake")
-(declare-function flymake--lookup-type-property "flymake")
-(declare-function flymake--state-diags "flymake")
-(defvar flymake--state)
-
-;; Function to count flymake diagnostics.
-(defun zy-count-diags ()
-  "Count the number of diagnostics, grouped by level."
-  (let ((warning-level (warning-numeric-level :warning))
-        (note-level (warning-numeric-level :debug))
-        (note 0) (warning 0) (error 0))
-    (maphash (lambda (_b state)
-               (cl-loop
-                with diags = (flymake--state-diags state)
-                for diag in diags do
-                (let ((severity
-		       (flymake--lookup-type-property
-			(flymake--diag-type diag) 'severity
-			(warning-numeric-level :error))))
-                  (cond ((> severity warning-level) (cl-incf error))
-                        ((> severity note-level) (cl-incf warning))
-                        (t (cl-incf note))))))
-             flymake--state)
-    `((note . ,note) (warning . ,warning) (error . ,error))))
-
-(defvar zy-nano-modeline-diags-map
-  (let ((map (make-sparse-keymap)))
-    (define-key map [header-line mouse-1]
-		#'flymake-show-buffer-diagnostics)
-    (define-key map [header-line mouse-3]
-		#'flymake-show-project-diagnostics)
-    map))
-
-;; Custom diagnostics info.
-(defun zy-nano-modeline-diags ()
-  "Diagnostics information."
-  (if (bound-and-true-p flymake-mode)
-      (propertize
-       (let ((count-alist (zy-count-diags)))
-	 (format "%d/%d/%d  "
-		 (alist-get 'error count-alist)
-		 (alist-get 'warning count-alist)
-		 (alist-get 'note count-alist)))
-       'face (nano-modeline-face 'secondary)
-       'help-echo "Flymake diagnostics (Errors/Warnings/Notes)
-mouse-1: Show Buffer Diagnostics
-mouse-3: Show Project Diagnostics"
-       'mouse-face 'bold
-       'local-map zy-nano-modeline-diags-map)
-    ""))
-
-;; Custom position indicator.
-(defun zy-nano-modeline-cursor-position ()
-  "Cursor position in the buffer."
-  (propertize (format-mode-line "%p%%  %l:%c ")
-	      'face (nano-modeline-face 'secondary)))
-
-;; Use a custom modeline composition.
-(let ((left '((nano-modeline-buffer-status) " "
-	      (nano-modeline-buffer-name) " "
-	      (nano-modeline-git-info)))
-      (right '((zy-nano-modeline-diags)
-	       (zy-nano-modeline-cursor-position)
-	       (nano-modeline-window-dedicated))))
- (nano-modeline-header left right 'default))
-
-;; The default git info shows a wierd CJK character (which may display
-;; as a symbol in the author's computer).  Replace it with a better
-;; icon.
-
-;; Disable the default modeline.
-(setq-default mode-line-format nil)
 
 ;;;; Layout
 
@@ -181,15 +98,16 @@ font name string."
 (defvar zy-font-list
   (cond
    ((eq system-type 'darwin)
-    '("MesloLGS NF" "PingFang TC"))
+    '("MesloLGS NF" "PingFang TC" "Times New Roman" "Songti SC"))
    ((eq system-type 'windows-nt)
-    '("Cascadia Code" "Microsoft JhengHei"))
+    '("Cascadia Code" "Microsoft JhengHei" "Times New Roman" "SimSun"))
    (t nil))
   "Platform-specific font list.
 
-The first is the default and fixed-pitch font.
+1st and 2nd fonts: latin and CJK font for the `default' and
+`fixed-pitch' faces.
 
-The second is the default and fixed-pitch font for CJK characters.")
+3rd and 4th fonts: latin and CJK font for the `variable-pitch' face.")
 
 ;; Customize this variable for machine-specific font height.
 (defcustom zy-font-height 140
@@ -228,8 +146,21 @@ The second is the default and fixed-pitch font for CJK characters.")
   (set-face-attribute 'default nil :height zy-font-height)
   (let ((cjk-charsets '(han cjk-misc bopomofo kana hangul)))
     (dolist (face '(default fixed-pitch))
-      (set-face-attribute face nil :family (nth 0 zy-font-list))
-      (zy-set-charset-font face cjk-charsets (nth 1 zy-font-list)))))
+      (set-face-attribute face nil
+                          :family (nth 0 zy-font-list))
+      (zy-set-charset-font face cjk-charsets
+                           (nth 1 zy-font-list)))
+    (set-face-attribute 'variable-pitch nil
+                        :family (nth 2 zy-font-list)
+                        :height (lambda (h) (+ h 30)))
+    (zy-set-charset-font 'variable-pitch cjk-charsets
+                         (nth 3 zy-font-list))))
+
+;; Render `org-code' in monospace font, but in smaller size.
+(zy-eval-after-load 'org
+  (set-face-attribute 'org-code nil
+                      :family (nth 0 zy-font-list)
+                      :height 0.9))
 
 (provide 'init-theming)
 

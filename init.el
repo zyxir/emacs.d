@@ -55,6 +55,7 @@
   ;; Then other files.
   (require 'init-defaults)
   (require 'init-theming)
+  (require 'init-modeline)
   (require 'init-prog)
   (require 'init-org))
 
