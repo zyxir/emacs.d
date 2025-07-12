@@ -29,11 +29,12 @@
 
 (require 'init-util)
 
+(require-package 'magit)
 (require-package 'consult)
 (require-package 'hl-todo)
 (require-package 'consult-todo)
 (require-package 'corfu)
-(require-package 'magit)
+(require-package 'paredit)
 
 ;;;; Manage trusted content
 
@@ -92,9 +93,11 @@
 
 ;;;; Emacs Lisp settings
 
+;; Use paredit for structural Lisp editing.
+(add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+
 ;; Use flymake syntax checking for Emacs Lisp.
-(use-package flymake
-  :hook (emacs-lisp-mode . flymake-mode))
+(add-hook 'emacs-lisp-mode-hook #'flymake-mode)
 
 (zy-eval-after-load 'flymake
   ;; Make flymake read `load-path'.

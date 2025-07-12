@@ -55,11 +55,14 @@
 ;; Use Org-modern prettification.
 (add-hook 'org-mode-hook #'org-modern-mode)
 
-;; Customize the Unicode symbols Org-modern uses, otherwise some
-;; characters don't display properly on macOS.
 (zy-eval-after-load 'org-modern
+  ;; Customize the Unicode symbols Org-modern uses, otherwise some
+  ;; characters don't display properly on macOS.
   (setq org-modern-fold-stars
-	'(("▶" . "▼") ("▷" . "▽") ("⏵" . "⏷") ("▹" . "▿") ("▸" . "▾"))))
+	'(("▶" . "▼") ("▷" . "▽") ("⏵" . "⏷") ("▹" . "▿") ("▸" . "▾")))
+
+  ;; Display symbols using a Nerd Font.
+  (set-face-attribute 'org-modern-symbol nil :family "MesloLGS NF"))
 
 ;;;; Org-Roam
 

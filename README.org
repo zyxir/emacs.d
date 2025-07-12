@@ -1,73 +1,17 @@
 #+html: <div align="center">
-* Zyxir's Emacs config
+* ZyEmacs v3.0
 #+html: </div>
 
-Fast and lightweight Emacs configuration tailored for my daily usage.
+Zyxir's lightweight and elegant Emacs config.  Key features include:
 
-- Support *Emacs 29.1+* on *WSL* (Windows Subsystem for Linux).
-- Use Vim keybindings (via Evil).
-- Works in terminal.
-- Tailored for development in: Python, Scala.
-- Org-mode powered PKM (personal knowledge management) system.
-
-** Philosophy
-
-- Efficiency :: Being fast and productive is the utmost goal.
-- Minimal :: Stick to a simple, text-based UI. Terminal support is highly valued.
-- Modular :: Composed of modules without inter-dependency, except a common library.
-
-*** Why Evil
-
-I sticked to Emacs keybindings for years before switching to Evil, because of several problems:
-
-- *Key availability*: As I assign more keys to different functionalities, the keybindings have been a mess. I do not hate the Ctrl key, but it is often hard for my muscle memory to distinguish between =C-x= and =C-c=. Evil's modal keybindings are more mnemonic and provide more free keys.
-- *Efficiency*: Vim keys are easier to press correctly. Killer features like Evil-surround can be implemented without mess up the keybindings.
+- PKM & GTD :: Personal Knowledge Magagement and Getting Things Done workflows powered by Org-mode.
+- Minimalism :: Only essential packages and UI elements.
+- macOS Optimized :: Supports Emacs version 30 and newer on macOS.
 
 ** Installation
 
-Clone this repository recursively to =~/.emacs.d=, then run the synchronization script in batch mode.
-
-#+begin_src sh
-  git clone https://github.com/zyxir/emacs.d $HOME/.emacs.d --recurse-submodules -j$(nproc)
-  emacs --batch --load $HOME/.emacs.d/zy-sync.el
-#+end_src
-
-Now Emacs should be ready.
-
-These third-party programs enable additional functionalities of my configuration:
-
-- Fd :: Fast filesystem search. Used by commands like ~project-find-file~.
-- Ripgrep :: Fast text search. Used by commands like ~rg~.
-- [[https://github.com/blahgeek/emacs-lsp-booster][emacs-lsp-booster]] :: Make LSP clients like Eglot more performant.
+~git clone~ this repository to ~$HOME/emacs.d~.  That's all.
 
 ** Customization
 
-Most behavior of this configuration is hard-coded. That is because I am currently the only user of this configuration, and I can change any behavior by modifying the source code. However, there are some machine-dependent settings that is not consistent in every device of mine. It is recommended to configure these settings via the ~customize~ UI:
-
-- ~+theme-theme~ :: The default theme.
-- ~+font-size~ :: The default font size.
-
-** Tips
-
-*** Python
-
-To use the import management features, `isort` should be installed in the project virtual environment.
-
-** Naming Conventions
-
-This configuration conforms to [[https://github.com/bbatsov/emacs-lisp-style-guide][The Emacs Lisp Style Guide]] by Bozhidar Bastov. Symbol names in this configuration follow the following conventions:
-
-- =abc!= :: A public function or macro that should be defined all the time. Such function or macro is often defined in =zylib.el=.
-- =zy/NAME= or =+MODULE/NAME= :: A command designed to be used interactively.
-- =zy-[-]NAME= or =+MODULE-[-]NAME= :: A non-interactive function or variable.
-- =zy-[-]NAME-h= or =+MODULE-[-]NAME-h= :: A hook function.
-- =zy-[-]NAME-a= or =+MODULE-[-]NAME-a= :: An advice function.
-- =zy-[-]NAME-fn= or =+MODULE-[-]NAME-fn= :: A strategy (replaceable) function.
-
-It is worth noting that most of these conventions are learned from Doom Emacs.
-
-** Links
-
-This configuration has been heavily influenced by:
-
-- [[https://github.com/doomemacs/doomemacs][Doom Emacs]]
+Menu→Options→Customize Emacs, see options begin with "[ℤ]".
